@@ -1,0 +1,838 @@
+001 Identificateur de la notice (O, NR) 
+005 Identificateur de la version  
+009 Identifiant pérenne ARK de la notice  
+010 ISBN (International Standard Book Number) 
+$a Numéro (ISBN) 
+$b Qualificatifs 
+$d Disponibilité et/ou prix 
+$z ISBN erroné 
+011 ISSN (International Standard Serial Number) 
+$a Numéro (ISSN) 
+$d Disponibilité et/ou prix 
+$y ISSN annulé 
+013 ISMN (International Standard Music Number) 
+$a Numéro (ISMN) 
+$b Qualificatifs 
+$d Disponibilité et/ou prix 
+$z ISMN erroné 
+015 ISRN (International Standard technical Report  Number) 
+$a Numéro (ISRN) 
+$b Qualificatifs 
+016 ISRC (International Standard Recording Code) 
+$9 Identifiant hiérarchique de sous-notice analytique 
+$a Numéro (ISRC) 
+$b Qualificatif 
+$z ISRC erroné 
+020 Numéro de la bibliographie nationale 
+$a Code de pays : "FR" (France) 
+$b Numéro 
+021 Numéro de dépôt légal 
+$a Code de pays : "FR" (France) 
+$b Numéro 
+022 Numéro de publication officielle 
+$a Code Pays 
+$b Numéro 
+035 Identificateur de la notice dans un autre système 
+$a Numéro de contrôle 
+$z Numéro erroné ou annulé 
+036 Incipit (Musique) 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Numérotation de l’œuvre dans un ensemble 
+$b Numérotation du mouvement 
+$c Numérotation de l’Incipit 
+$g Tonalité ou mode 
+$n Armure 
+$o Chiffre de mesure 
+$p Incipit codé 
+$q Commentaires 
+$t Incipit textuel 
+$u Armure 
+039 Numéro de notice récupérée d'un ancien système BnF  
+$o Source 
+$a Numéro de contrôle 
+$d date de la fusion/mise à jour5
+071 Référence éditoriale 
+$9a Identifiant hiérarchique de sous-notice analytique 
+$a Numéro d’éditeur 
+$b Source (nom de la marque) 
+$c Qualificatif 
+$d Mention de disponibilité et de prix 
+073 EAN (European Article Numbering) 
+$9 Identifiant hiérarchique de sous-notice analytique 
+$a Numéro normalisé 
+$b Qualificatif 
+100 Données générales de traitement (O, NR) 
+$a Données générales de traitement
+101 Langue de la ressource (O, NR)  
+$9 Identifiant hiérarchique de sous-notice analytique 
+$a Langue du texte, d'une bande son, etc. 
+$b Langue du texte intermédiaire quand le document n’est pas une traduction de l’original 
+$c Langue de l’œuvre originale 
+$d Langue d’un résumé 
+$g Langue du titre propre si elle diffère de la langue principale du texte, de la bande son, etc. 
+$h Langue du livret, etc. 
+$i Langues des textes d'accompagnement (autres que résumé, analyse ou livret…) 
+$j Langues des sous-titres 
+102 Pays de publication ou de production  
+$a Pays d’édition  
+105 Zone de données codées : Ressources textuelles -  Monographies  
+$a Données codées – Monographies 
+106 Zone de données codées : Forme de la ressource  
+$a Données codées : textes - présentation physique 
+110 Zone de données codées : Ressources continues  
+115 Zone de données codées : Images projetées, enregistrements vidéo et films  
+$a  Données codées générales 
+116 Zone de données codées : Ressources graphiques 
+$a Données codées pour les documents graphiques 
+120 Zone de données codées : Ressources cartographiques – Généralités (O, NR) 
+$9 Identifiant hiérarchique de sous-notice analytique 
+$a Données codées sur les documents cartographiques (généralités)  
+121 Zone de données codées : Ressources cartographiques - Caractéristiques physiques  
+$a Documents cartographiques - Caractéristiques physiques générales 
+$b Données codées : photographie aérienne et télédétection – caractéristiques physiques  
+122 Zone de données codées : période chronologique couverte par la ressource  
+$a Période chronologique, de 9999 avant J.C. à nos jours 
+123 Zone de données codées : Ressources cartographiques – échelle et coordonnées (O, R) 
+$9 Identifiant hiérarchique de sous-notice analytique 
+$a Type d'échelle (obligatoire) 
+$b Echelle horizontale à taux linéaire constant 
+$c Echelle horizontale à taux constant vertical 
+$d Coordonnées – Longitude ouest 
+$e Coordonnées – Longitude est 
+$f Coordonnées – Longitude nord 
+$g Coordonnées – Longitude sud 
+$h Echelle angulaire 
+$i Déclinaison – Limite Nord 
+$j Déclinaison – Limite Sud 
+$k Ascension droite – Limites Est 
+$m Ascension droite – Limites Ouest 
+$n Equinoxe 
+124 Zone de données codées : Ressources cartographiques – Autres caractéristiques physiques  
+$a Origine de l’image 
+$b Forme du document cartographique 
+$d Position de la base pour les images photographiques ou de télédétection 
+$e Catégorie de satellite pour la télédétection 
+$f Nom du satellite pour la télédétection Météorologique 
+$g Technique d'enregistrement pour les images de télédétection 
+125 Zone de données codées : Enregistrements sonores et musique notée 
+$a Nature de la musique imprimée 
+126 Zone de données codées : Enregistrements sonores – Caractéristiques physiques  
+$a Données codées générales pour les enregistrements sonores (généralités) 
+$b Données codées pour les enregistrements sonores (particularités)  
+127 Zone de données codées : Enregistrements sonores et musique notée - Durée  
+$9 Identifiant hiérarchique de sous-notice analytique 
+$a  Durée 
+128 Zone de données codées : Forme de l’œuvre musicale et tonalité ou mode  
+$9 Identifiant hiérarchique de sous-notice analytique 
+$a Forme de la composition (interprétation musicale ou partition)  
+$b Instruments ou voix dans un ensemble  (interprétation musicale ou partition) 
+$c Instruments ou voix pour solistes (interprétation musicale ou partition) 
+130 Zone de données codées : Microformes - Caractéristiques physiques  
+$a Caractéristiques physiques 
+135 Zone de données codées : Ressources électroniques  
+$a Données  codées pour les ressources électroniques  
+140 Zone de données codées : Livres anciens - Généralités  
+$a Données codées pour les livres anciens - généralités  
+145 Zone de données codées : Distribution instrumentale et vocale 
+$b Instrument, voix ou exécutant 
+$c Type d'ensemble 
+200 Titre et mention de responsabilité
+$6 Données de lien entre zones 
+$7 Alphabet ou écriture de la zone 
+$a Titre propre 
+$b Indication générale du type de document 
+$c Titre propre d’un auteur différent 
+$e Complément du titre 
+$f Première mention de responsabilité 
+$g Mention de responsabilité suivante 
+$h Numéro de partie 
+$i Titre de partie 
+$z Langue du titre parallèle 
+205 Mention d’édition 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Mention d’édition 
+$b Autre mention d'édition 
+$d Mention parallèle d’édition 
+$f Mention de responsabilité relative à l’édition 
+$g Mention de responsabilité suivante 
+206 Zone particulière à certains types de ressources  : Ressources  cartographiques : 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$b Mention de l’échelle 
+$c Mention de la projection 
+$d Mention des coordonnées 
+$e Mention de la zone 
+$f Mention de l’équinoxe 
+207 Zone particulière à certains types de ressources : Ressources continues - Numérotation 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$a Numérotation : indication de date et de volume 
+$z Source d'information sur la numérotation 
+208 Zone particulière à certains types de ressources : Musique notée – Présentation musicale 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Mention spécifique de musique imprimée 
+$d Mention spécifique parallèle de musique imprimée 
+210 Publication, production, diffusion, etc. 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$a Lieu de publication, de diffusion, etc. 
+$b Adresse de l’éditeur, du diffuseur, etc. 
+$c Nom de l’éditeur, du diffuseur, etc. 
+$d Date de publication, de diffusion, etc. 
+$e Lieu de fabrication 
+$f Adresse du fabricant 
+$g Nom du fabricant 
+$h Date de fabrication 
+215 Description matérielle 
+$a Indication du type de document et importance matérielle 
+$c Autres caractéristiques matérielles 
+$d Format 
+$e Matériel d’accompagnement 
+225 Collection 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$a Titre de la collection 
+$e Compléments du titre de la collection 
+$h Numéro de la sous-collection 
+$i Titre de la sous-collection 
+$f Mention de responsabilité 
+$v Numéro du volume 
+$x ISSN de la collection 
+$d Titre parallèle de la collection 
+$z Langue du titre parallèle (voir la liste des codes de langues dans l'Annexe A du Manuel UNIMARC)
+230 Zone particulière à certains types de ressources : Ressources électroniques 
+$a Définition et volume des fichiers 
+300 Note générale 
+$a Texte de la note 
+302 Note sur les informations codées 
+$a Texte de la note 
+303 Note générale sur la description bibliographique 
+$a Texte de la note 
+304 Note sur le titre et la mention de responsabilité7
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+305 Note sur l’édition et l’histoire bibliographique 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+306 Note sur la publication, la production, la distribution, etc. 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+307 Note sur la description matérielle 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+308 Note sur la collection 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+310 Note sur la reliure et la disponibilité 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+311 Note sur les zones de liens 
+$a Texte de la note 
+312 Note sur les titres associés 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+313 Note sur les vedettes matière 
+$a Texte de la note 
+315 Note sur les informations propres au type de ressources (ou au type de publications) 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+321 Note sur les index, extraits et citations publiés séparément 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Nom de la source 
+$c Localisation dans la source 
+$x Numéro international normalisé (ISBN ,ISSN) de la source 
+322 Note sur le générique (films, vidéogrammes et enregistrements sonores) 
+$a Texte de la note 
+324 Note sur l’original reproduit 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+326 Note sur la périodicité (ressources continues) 
+$a Périodicité 
+$b dates 
+327 Note de contenu 
+$a Texte de la note 
+328 Note de thèse 
+$b Détails sur la thèse ou le mémoire dont le type de diplôme 
+$c Discipline 
+$d Date du diplôme 
+$e Organisme donnant le diplôme 
+$t Titre d’une autre édition de la thèse 
+$z Texte précédent ou suivant la note 
+330 Résumé ou extrait 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+336 Note sur le type de ressource électronique 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+337 Note sur la configuration requise (ressources électroniques) 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Texte de la note 
+345 Renseignements sur l'acquisition 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$b Numéro d'éditeur 
+410 Appartient à la collection 
+$0 Numéro d’identification de la notice de collection 
+$t Titre 
+$v Numéro de volume10
+$d Date de publication11
+$x ISSN 
+411 A  pour  sous-collection 
+$0 Numéro d’identification de la notice de collection 
+$t Titre 
+$v Numéro de volume 
+$d Date de publication 
+$x ISSN 
+421 A pour supplément 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$y Numéro international normalisé de livre/Numéro international normalisé de la musique 
+$d Date de publication12
+$v Numéro de volume 
+422 Est un supplément de 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$y Numéro international normalisé de livre/Numéro international normalisé de la musique 
+$x ISSN 
+$d Date de publication 
+$v Numéro de volume 
+423 Est publié avec 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$t Titre 
+$o Complément du titre 
+$f Première mention de responsabilité 
+$g Mention de responsabilité suivante 
+$h Numéro de section ou de partie 
+$i Titre de section ou de partie  
+430 Suite de 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v  numéro de volume 
+431 Suite partielle
+$0 Numéro d’identification de la notice de périodique 
+$t Titre 
+$x ISSN 
+$v  numéro de volume 
+432 Remplace 
+$0 Numéro d’identification de la notice de périodique 
+$t Titre 
+$x ISSN 
+$v  numéro de volume 
+434 Absorbe 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v  numéro de volume 
+435 Absorbe partiellement 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v  numéro de volume 
+436 Fusion de 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v  numéro de volume 
+437 Séparé de
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v  numéro de volume 
+440 Devient 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v Numéro de volume 
+441 Devient partiellement 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v numéro de volume 
+442 Remplacé par 
+$0 Numéro d’identification de la notice de périodique 
+$t Titre 
+$x ISSN 
+$v numéro de volume  
+444 Absorbé par 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v Numéro de volume 
+445 Absorbé partiellement par 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v Numéro de volume 
+446 Scindé en …et en … 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v Numéro de volume 
+447 Fusionne avec …pour former 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$d Date de publication 
+$v Numéro de volume 
+451 A pour autre édition sur le même support 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$x ISSN 
+$y Numéro international normalisé de livre/Numéro international normalisé de la musique 
+$d Date de publication 
+$e Mention d’édition 
+$v Numéro de volume 
+452 A pour autre édition sur un support différent 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$b Indication générale du type de document 
+$p Description physique 
+$x ISSN 
+$y Numéro international normalisé de livre/Numéro international normalisé de la musique 
+$d Date de publication 
+$v Numéro de volume 
+454 Est une traduction de  
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$t Titre 
+$h Numéro de section ou de partie 
+$i Titre de section ou de partie 
+455 Est une reproduction de 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$d Date de publication 
+$y Numéro international normalisé de livre/Numéro international normalisé de la musique 
+$v Numéro de volume 
+461 Ensemble
+$0 Numéro d’identification de la notice bibliographique liée 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$t Titre 
+$d Date de publication 
+$y Numéro international normalisé de livre/Numéro international normalisé de la musique 
+$v Numéro de volume 
+$x ISSN 
+462 Sous-ensemble 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$d Date de publication 
+$y Numéro international normalisé de livre/Numéro international normalisé de la musique 
+$v Numéro de volume 
+$x ISSN 
+463 Unité matérielle 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$v Numéro de volume 
+464 Partie composante 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$t Titre 
+$o Complément du titre 
+$f 1re mention de responsabilité 
+$g Mention de responsabilité suivante 
+$h Numéro de section ou de partie 
+$i Titre de section ou de partie  
+$v Numéro de volume 
+488 Autre type de relation 
+$0 Numéro d’identification de la notice bibliographique liée 
+$t Titre 
+$b Indication générale du type de document 
+$y Numéro international normalisé de livre/Numéro international normalisé de la musique 
+$v Numéro de volume 
+$x ISSN 
+$d Date de publication 
+500 Titre uniforme 
+$3 Numéro d'identification de la notice d'autorité Titre uniforme 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$9/b Appariement des couples auteur/titre 
+$a Titre uniforme 
+$h Numéro de partie 
+$i Titre de partie 
+$k Date de publication 
+$l Sous-vedette de forme 
+$m Langue 
+$n Autre information 
+$q Version 
+$r Distribution d'exécution (pour la musique) 
+$s Référence numérique (pour la musique) 
+$u Tonalité (pour la musique) 
+$w Mention d'arrangement (pour la musique) 
+501 Rubrique de classement 
+$a Rubrique de classement 
+$e Subdivision 
+$k Date de publication, etc. 
+$m Langue 
+503 Titre de forme 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Titre de forme 
+$b Subdivision 
+$h Qualificatif 
+$i Titre de partie 
+$e Nom de personne 
+$f Elément(s) du nom rejeté(s) 
+$j Année 
+$d Mois et jour 
+$n Etablissement précisant la localisation 
+$m Localisation 
+$l Numérotation 
+510 Titre parallèle 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Titre parallèle 
+$e Complément du titre 
+$h Numéro de partie 
+$i Titre de partie 
+$z Langue du titre 
+512 Titre de couverture 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Titre de couverture 
+$e Complément du titre 
+$h Numéro de partie 
+$i Titre de partie 
+514 Titre de départ 
+$a Titre de départ 
+515 Titre courant 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Titre courant 
+$e Complément du titre 
+$h Numéro de partie 
+$i Titre de partie 
+516 Titre de dos 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Titre de dos 
+$e Complément du titre 
+$h Numéro de partie 
+$i Titre de partie 
+517 Autres variantes du titre 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Variante de titre 
+$e Complément du titre 
+$h Numéro de partie 
+$i Titre de partie 
+518 Titre dans un alphabet moderne 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Titre propre, variante du titre ou titre uniforme dans un alphabet moderne 
+$e Complément du titre 
+$h Numéro de partie 
+$i Titre de partie 
+519 Variante graphique du titre (Livre ancien) 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$a Variante graphique du titre 
+520 Titre précédent (ressources continues) 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$a Titre précédent 
+$n Autres informations 
+$j Volume ou dates du titre précédent 
+530 Titre clé (ressources continues) 
+$a Titre clé 
+$b Qualificatif 
+531 Titre clé abrégé (ressources continues) 
+$a Titre abrégé 
+$b Qualificatif 
+532 Titre développé (ressources continues) 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Titre développé 
+$h Numéro de partie  
+$i Titre de partie  
+$e Complément du titre  
+540 Titre ajouté par le catalogueur 
+$6 Données de liens entre zones 
+$7 Alphabet ou écriture de la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Titre ajouté 
+$e Complément du titre  
+$h Numéro de partie  
+$i Titre de partie  
+$j Volume ou dates associés au titre 
+$n Autres informations 
+600 Vedette matière – Nom de personne 
+$a Élément d’entrée 
+$b Partie du nom autre que l’élément d’entrée 
+$c Qualificatifs autres que les dates 
+$d Chiffres romains 
+$f Dates 
+$t Titre d’œuvre 
+$x Subdivision de sujet 
+$y Subdivision géographique 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "rameau" 
+$3 Numéro d’identification de la notice d’autorité liée 
+$3 Numéro fictif : 99999999 pour signaler une indexation sans lien à une notice d’autorité17
+$9/a Identifiant hiérarchique de sous-notice analytique 
+601 Vedette matière - Collectivité 
+$a Élément d’entrée 
+$b Subdivision (ou nom si l’entrée est au nom de lieu) 
+$g Elément rejeté 
+$c Élément ajouté au nom ou qualificatif 
+$d Numéro de congrès et/ou de session 
+$e Lieu du congrès 
+$f Date du congrès 
+$x Subdivision de sujet 
+$y Subdivision géographique 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "rameau" 
+$3 Numéro d’identification de la notice d’autorité liée 
+$3 Numéro fictif : 99999999 pour signaler une indexation sans lien à une notice d’autorité 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+602 Vedette matière - Famille 
+$a Élément d’entrée 
+$f Dates 
+$x Subdivision de sujet 
+$y Subdivision géographique 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "rameau" 
+$3 Numéro d’identification de la notice d’autorité liée 
+$3 Numéro fictif : 99999999 pour signaler une indexation sans lien à une notice d’autorité 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+604 Vedette matière - Auteur/titre 
+$a Élément d’entrée 
+$b Partie du nom autre que l’élément d’entrée 
+$c Qualificatifs autres que les dates 
+$d Chiffres romains 
+$e Lieu 
+$f Dates 
+$g Elément rejeté 
+$t Titre d’œuvre 
+$x Subdivision de sujet 
+$y Subdivision géographique 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "rameau" 
+$3 Numéro d’identification de la notice d’autorité liée 
+$3 Numéro fictif : 99999999 pour signaler une indexation sans lien à une notice d’autorité 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+605 Vedette matière - Titre 
+$a Élément d’entrée 
+$h Numéro de partie 
+$i Nom de partie 
+$k Date de publication 
+$l Sous-vedette de forme 
+$m Langue 
+$n Autres informations 
+$q Version  
+$r Instrument musical 
+$s Numéro (musique) 
+$u Tonalité (pour la musique) 
+$x Subdivision de sujet 
+$y Subdivision géographique 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "rameau" 
+$3 Numéro d’identification de la notice d’autorité liée 
+$3 Numéro fictif : 99999999 pour signaler une indexation sans lien à une notice d’autorité 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+606 Vedette matière – Nom commun 
+$a Élément d’entrée 
+$x Subdivision de sujet 
+$y Subdivision géographique 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "rameau" 
+$3 Numéro d’identification de la notice d’autorité RAMEAU liée 
+$3 Numéro fictif : 99999999 pour signaler une indexation sans lien à une notice d’autorité 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+607 Vedette matière – Nom géographique 
+$a Élément d’entrée 
+$x Subdivision de sujet 
+$y Subdivision géographique 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "rameau" 
+$2 Code du système d’indexation : "AFNOR NF Z 44-081" 
+$3 Numéro d’identification de la notice d’autorité RAMEAU ou Z 44-081 liée 
+$3 Numéro fictif : 99999999 pour signaler une indexation sans lien à une notice d’autorité 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+608 Vedette matière - Forme, genre ou caractéristiques physiques 
+$a Elément d'entrée 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "frTAV" 
+$2 Code du système d’indexation : "frTCP" 
+$2 Code du système d’indexation : "frTICO" 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+610 Indexation en vocabulaire libre 
+$a Descripteur 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+615 Catégorie sujet (provisoire) 
+$a Catégorie sujet sous forme textuelle 
+$2 Code du système d’indexation : "frTAV" 
+$2 Code du système d’indexation : "BnF Cartes et plans" 
+$3 Numéro d’identifiant de la notice d’autorité liée (indexation "BnF Cartes et  plans") 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+616 Vedette matière - Marque déposée 
+$a Marque (et éventuellement sous-vedette) 
+$c Qualificatif(s) 
+$f Dates 
+$j Précision 
+$x Subdivision de sujet 
+$y Subdivision géographique 
+$z Subdivision chronologique 
+$2 Code du système d’indexation : "rameau" 
+$3 Numéro d’identification de la notice d’autorité liée 
+$3 Numéro fictif : 99999999 pour signaler une indexation sans lien à une notice d’autorité 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+620 Accès par le lieu et la date 
+$a Pays 
+$d Ville 
+$e Lieu 
+$f Date 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+660 Code de zone géographique (GAC) 
+$a Code 
+675 Classification décimale universelle (CDU) 
+$a Indice 
+$v Edition 
+676 Classification décimale Dewey 
+$a Indice 
+$v Edition 
+686 Autres classifications 
+$a Indice  
+$2 Code du système de classification  
+700 Nom de personne - Responsabilité principale 
+$3 Numéro d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Élément d’entrée 
+$b Partie du nom autre que l’élément d’entrée 
+$c Qualificatifs autres que les dates 
+$d Chiffres romains 
+$f Dates 
+701 Nom de personne - Autre responsabilité principale 
+$3 d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$9/b appariement des couples auteur/titre 
+$a Élément d’entrée 
+$b Partie du nom autre que l’élément d’entrée 
+$c Qualificatifs autres que les dates 
+$d Chiffres romains 
+$f Dates 
+702 Nom de personne - Responsabilité secondaire 
+$3 d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$5 Code de l'Institution à laquelle s'applique la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$9/b appariement des couples auteur/titre 
+$a Élément d’entrée 
+$b Partie du nom autre que l’élément d’entrée 
+$c Qualificatifs autres que les dates 
+$d Chiffres romains 
+$f Dates 
+710 Collectivité - Responsabilité principale  
+$3 d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Élément d’entrée 
+$b Subdivision 
+$c Élément ajouté au nom ou qualificatif 
+$d Numéro de congrès et/ou de session 
+$e Lieu du congrès 
+$f Date du congrès 
+$g Elément rejeté 
+711 Collectivité - Autre responsabilité principale  
+$3 d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Élément d’entrée 
+$b Subdivision 
+$c Élément ajouté au nom ou qualificatif 
+$d Numéro de congrès et/ou de session 
+$e Lieu du congrès 
+$f Date du congrès 
+$g Elément rejeté 
+712 Collectivité - Responsabilité secondaire 
+$3 d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$5 Code de l'Institution à laquelle s'applique la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Élément d’entrée 
+$b Subdivision 
+$c Élément ajouté au nom ou qualificatif 
+$d Numéro de congrès et/ou de session 
+$e Lieu du congrès 
+$f Date du congrès 
+$g Elément rejeté 
+716 Marque déposée 
+$3 d’identification de la notice d’autorité liée 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Marque 
+$f dates 
+$c Qualificatifs 
+720 Famille – Responsabilité principale 
+$3 d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$a Elément d'entrée 
+$f Dates 
+721 Famille – Autre responsabilité principale  
+$3 d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Elément d'entrée 
+$f Dates 
+722 Famille – Responsabilité secondaire  
+$3 d’identification de la notice d’autorité liée 
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$5 Code de l'Institution à laquelle s'applique la zone 
+$9/a Identifiant hiérarchique de sous-notice analytique 
+$a Elément d'entrée 
+$f Dates 
+970 Editeur, distributeur, producteur, producteur de documents sonores ou audiovisuels - Personne
+$3 Numéro de la notice d'autorité  
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC) 
+$a Élément d'entrée 
+$m Élément(s) du nom rejeté(s) 
+$d Dates biographiques 
+$e Qualificatif 
+$h Numérotation –sous-zone de transcription 
+$u Numérotation – sous-zone de classement 
+$r Reste de la zone
+970 Editeur, distributeur, producteur, producteur de documents sonores ou audiovisuels - Collectivité 
+$3 Numéro de la notice d'autorité  
+$4 Code de fonction (voir Annexe C du Manuel UNIMARC)                                                      
+$a Elément d'entrée 
+$b Sous-vedette 
+$c Lieu 
+$q Autre qualificatif 
+$p Elément rejeté 
+801 Origine de la notice 
+$2 intermrc 
+$a Pays : "FR" 
+$b Agence de catalogage : "BNF" 
+$c Date de la transaction (on y génère la date de l’extraction des données) 
+$g Règles de catalogage utilisées (conventions de description) : "AFNOR" 
+802 Centre ISSN 
+$a Code du centre ISSN  
+856 Adresse électronique et mode d'accès 
+$u Identificateur électronique normalisé (URI ex URL) 
+$e Date et heure de la consultation et de l'accès 
+918 Numéro de notice fusionnée avant chargement dans BN OPALE PLUS  
+$a  Numéro de la notice 
