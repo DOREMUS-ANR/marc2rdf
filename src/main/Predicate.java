@@ -12,7 +12,7 @@ public class Predicate {
 	public String extract (String etiquette){
 		
 		/*************************** Liste des Etiquettes dans UNIMARC *********************************/
-	    String filePath = "Data\\UNIMARC.txt"; //Fichier UNIMARC contenant toutes les étiquettes et toutes les sous zones
+	    String filePath = "Data\\UNIMARC-B.txt"; //Fichier UNIMARC contenant toutes les étiquettes et toutes les sous zones
 		try{
 		BufferedReader buff = new BufferedReader(new FileReader(filePath));
 		String line;

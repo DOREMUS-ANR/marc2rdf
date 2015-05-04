@@ -14,7 +14,7 @@ public class SousZones {
 	 String dollarValeur =""; // dollarValeur = texte correspondant à la sous zone courante
 	 boolean trouve = false; // indique si l'étiquette a été trouvée dans le document UNIMARC
 	 boolean termine = false ; // indique si on a parcourru toutes les sous zones d'une étiquette donnée
-	 String filePath = "Data\\UNIMARC.txt"; //Fichier UNIMARC contenant la liste des étiquettes et des sous zones
+	 String filePath = "Data\\UNIMARC-B.txt"; //Fichier UNIMARC contenant la liste des étiquettes et des sous zones
 	 try{
 	 BufferedReader buff = new BufferedReader(new FileReader(filePath));
 	 String line;

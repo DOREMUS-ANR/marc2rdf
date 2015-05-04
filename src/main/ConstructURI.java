@@ -20,6 +20,7 @@ public class ConstructURI {
 		/****************** CLASSE = Récupérer le type du document (200 ---> $b) *******************/
 		SpecificSousZone typeDocument = new SpecificSousZone();
 		classe = typeDocument.extract("200", "$b"); // Exemple : "musique imprimée"
+		classe = removeAccent(classe); // Supprimer les lettres accentuèes
 		
 			/************ Mettre la 1ere lettre de chaque mot en MAJ et supprimer l'espace ********/
 			String classe2 = ""; // La chaine de caractères (APRES)
@@ -56,11 +57,32 @@ public class ConstructURI {
             
 		 URIBuilder builder = new URIBuilder()
          .setScheme("http")
-         .setHost("id.example.com")
+         .setHost("data.doremus.org")
          .setPath("/musique/"+ classe +"/"+ identifiant);
  
  URI uri = builder.build();
  return uri;
 			
 		}
+	
+	/*************** Suppression des lettres accentuées *******************/
+	public static String removeAccent(String phrase) {
+		
+		final String lettreAvecAccent = "ÀÂÉÈÊËÎÏÔÖÙÛÜÇàâéèêëîïôöùûüç";
+		final String lettreSansAccent = "AAEEEEIIOOUUUCaaeeeeiioouuuc"; 
+ 
+		StringBuffer buff = null;
+		for(int i=phrase.length()-1 ; i>=0; i--) {
+			int index = lettreAvecAccent.indexOf(phrase.charAt(i));
+			if (index>=0) {
+				if (buff ==null) {
+					buff = new StringBuffer(phrase);
+				}
+				buff.setCharAt(i, lettreSansAccent.charAt(index));
+			}
+		}
+		return buff==null ? phrase : buff.toString();
+	}
+	/**********************************************************************/
+	
 		}

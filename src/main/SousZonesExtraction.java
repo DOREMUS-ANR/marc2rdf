@@ -46,7 +46,7 @@ public class SousZonesExtraction {
 				Boolean found = false; 
 				String predicate; 
 				String sousZone = ""; // sousZone = texte correspondant à la sousZone
-				String filePath = "Data\\UNIMARC.txt"; //Fichier UNIMARC contenant toutes les étiquettes et toutes les sous zones
+				String filePath = "Data\\UNIMARC-B.txt"; //Fichier UNIMARC contenant toutes les étiquettes et toutes les sous zones
 					try{
 					BufferedReader buff = new BufferedReader(new FileReader(filePath));
 					String ligne;

@@ -1,0 +1,841 @@
+017 NUMÉRO DE NOTICE DANS UN SYSTÈME EXTÉRIEUR
+$a Numéro de la notice dans le système extérieur
+$b Numéro supprimé ou invalide 
+$o Source : nom de l’agence d’origine 
+031 ISNI
+$2   Source d'import
+$a   ISNI 
+$d   Date (forme AAAAMMJJ) 
+$e   ISNI erroné
+$z   ISNI annulé
+040 PAYS          
+$a Pays contemporain
+041 LANGUES       
+$a   Langue d'écriture 
+$t   Langue de traduction 
+$v   Langue d’une autre version 
+042 COORDONNÉES GÉOGRAPHIQUES        
+$d   Longitude Ouest
+$e   Longitude Est
+$f   Latitude Nord
+$g   Latitude Sud
+045 ACTIVITÉS         
+$a   Responsabilité intellectuelle ou artistique
+$c   Responsabilité commerciale
+$d   Type de document concerné
+048 DISTRIBUTION MUSICALE          
+$a   Exécutant ou ensemble 
+$b   Soliste  
+051 PRÉCISION CODÉE          
+$a   Mort pour la France ? 
+072 CADRE DE CLASSEMENT GÉOGRAPHIQUE     
+$a   Cadre de classement 
+100 NOM DE PERSONNE PHYSIQUE - FORME RETENUE        
+$a   Élément d'entrée
+$d   Dates biographiques
+$e   Qualificatif 
+$h   Numérotation - sous-zone de transcription
+$m   Élément(s) du nom rejeté(s)
+$r   Reste de la zone
+$u   Numérotation - sous-zone de classement
+$w   Informations codées (10 caractères)
+$3   Numéro de la notice d'autorité Personne physique liée 
+110 NOM DE COLLECTIVITÉ OU DE CONGRÈS - FORME RETENUE         
+$a   Élément d'entrée
+$b   Sous-vedette
+$c   Lieu 
+$d   Année du congrès 
+$i   Numéro du congrès 
+$j   Jour du congrès 
+$k   Mois du congrès 
+$l   Lieu du congrès 
+$p   Élément rejeté
+$q   Autre qualificatif
+$w   Informations codées (10 caractères)
+$3   Numéro de la notice d'autorité Collectivité liée
+123 NOM DE MARQUE - FORME RETENUE        
+$a   Marque 
+$b   Sous-vedette 
+$d   Dates 
+$q   Qualificatif(s) 
+$w   Informations codées (10 caractères)
+141 TITRE UNIFORME TEXTUEL - FORME RETENUE         
+$a   Titre uniforme 
+$e   Qualificatif
+$h   Numéro de partie - sous-zone de transcription
+$i   Titre de partie
+$o   Inversion
+$u   Numéro de partie - sous-zone de classement
+$w   Informations codées (10 caractères)
+144 TITRE UNIFORME MUSICAL - FORME RETENUE         
+$a   Titre
+$b   Distribution musicale (en clair) 
+$c   Titre original de l'oeuvre adaptée 
+$e   Qualificatif de genre ou de forme (en clair) 
+$f   Langue (en clair)  
+$g   Auteur du thème adapté
+$h   Numéro de partie
+$i   Titre de partie
+$j   Année
+$k   Numéro de catalogue thématique (sous forme abrégée) 
+$n   Numéro d'ordre
+$p   Numéro d'opus
+$q   Version
+$t   Tonalité 
+$w   Informations codées (10 caractères)
+145 TITRE CONVENTIONNEL - FORME RETENUE         
+$a   Titre 
+$e   Qualificatif
+$h   Numéro de partie - sous-zone de transcription
+$i   Titre de partie 
+$o   Inversion
+$u   Numéro de partie - sous-zone de classement
+$w   Informations codées (10 caractères)
+160 VEDETTE MATIÈRE NOM DE PERSONNE - FORME RETENUE       
+$a   Élément d'entrée
+$d   Dates biographiques
+$e   Qualificatif
+$g   Précision 
+$h   Numérotation - sous-zone de transcription 
+$m   Élément(s) du nom rejeté(s) 
+$o   Inversion
+$s   Reste de l'élément 
+$t   Titre 
+$u   Numérotation - sous-zone de classement 
+$w   Informations codées (10 caractères) 
+$x   Subdivision de sujet ou de forme 
+$y   Subdivision géographique
+$z   Subdivision chronologique  
+161 VEDETTE MATIÈRE NOM DE COLLECTIVITÉ - FORME RETENUE        
+$a   Élément d'entrée
+$b   Sous-vedette
+$c   Lieu
+$d   Année du congrès 
+$g   Précision
+$i   Numéro du congrès 
+$j   Jour du congrès 
+$k   Mois du congrès  
+$l   Lieu du congrès
+$o   Inversion  
+$q   Autre qualificatif 
+$s   Reste de l'élément  
+$t   Titre 
+$w   Informations codées (10 caractères) 
+$x   Subdivision de sujet ou de forme
+$y   Subdivision géographique 
+$z   Subdivision chronologique
+163 VEDETTE MATIÈRE TITRE PROPRE D’ANONYME - FORME RETENUE        
+$a   Titre 
+$e   Qualificatif 
+$g   Précision 
+$h   Numéro de partie - sous-zone de transcription 
+$i   Titre de partie 
+$o   Inversion 
+$s   Reste de l'élément 
+$u   Numéro de partie - sous-zone de classement 
+$w   Informations codées (10 caractères) 
+$x   Subdivision de sujet ou de forme  
+$y   Subdivision géographique 
+$z   Subdivision chronologique 
+164 VEDETTE MATIÈRE TITRE DE PUBLICATION EN SÉRIE -FORME RETENUE         
+$a   Titre 
+$g   Qualificatif(s)
+$o   Inversion 
+$s   Reste de l'élément
+$w   Informations codées (10 caractères)
+$x   Subdivision de sujet ou de forme  
+$y   Subdivision géographique  
+$z   Subdivision chronologique 
+165 VEDETTE MATIÈRE TITRE UNIFORME TEXTUEL - FORME RETENUE         
+$a   Titre uniforme 
+$e   Qualificatif(s) 
+$g   Précision  
+$h   Numéro de partie - sous-zone de transcription  
+$i   Titre de partie 
+$o   Inversion  
+$s   Reste de l'élément  
+$u   Numéro de partie - sous-zone de classement  
+$w   Informations codées (10 caractères)  
+$x   Subdivision de sujet ou de forme  
+$y   Subdivision géographique  
+$z   Subdivision chronologique  
+166 VEDETTE MATIÈRE NOM COMMUN - FORME RETENUE         
+$a   Élément d'entrée 
+$b   Sous-vedette
+$g   Précision 
+$o   Inversion 
+$s   Reste de l'élément 
+$w   Sous-zone d'informations codées  
+$x   Subdivision de sujet ou de forme 
+$y   Subdivision géographique  
+$z   Subdivision chronologique 
+167 VEDETTE MATIÈRE NOM GÉOGRAPHIQUE - FORME RETENUE         
+$a   Élément d'entrée 
+$g   Précision 
+$o   Inversion  
+$s   Reste de l'élément  
+$w   Informations codées (10 caractères) 
+$x   Subdivision de sujet ou de forme  
+$y   Subdivision géographique 
+$z   Subdivision chronologique 
+168 SUBDIVISION CHRONOLOGIQUE - FORME RETENUE         
+$a   Élément d'entrée 
+$g   Précision 
+$w   Informations codées (10 caractères) 
+170 NOM GÉOGRAPHIQUE - FORME RETENUE       
+$a   Élément d'entrée 
+$b   Sous-vedette  
+$c   Localisation  
+$d   Datation  
+$g   Désignation 
+$o   Inversion 
+$w   Informations codées (10 caractères) 
+176 SUJET D'UNE VEDETTE GÉOGRAPHIQUE - FORME RETENUE         
+$a   Élément d'entrée 
+$g   Précision 
+$o   Inversion 
+$w   Informations codées (10 caractères)
+177 PRÉCISION GÉOGRAPHIQUE D'UNE VEDETTE GÉOGRAPHIQUE - FORME RETENUE          
+$a   Élément d'entrée 
+$g   Précision  
+$o   Inversion 
+$w   Informations codées (10 caractères) 
+178 SUBDIVISION CHRONOLOGIQUE D'UNE VEDETTE GÉOGRAPHIQUE - FORME RETENUE       
+$a   Élément d'entrée 
+$g   Précision 
+$w   Informations codées (10 caractères) 
+202 NOTE PUBLIQUE SUR LE CHAMP D’APPLICATION DE LA VEDETTE         
+$a   Texte 
+$b   Citation d'une vedette 
+206 NOTE PUBLIQUE SUR LA FORME RETENUE COMME VEDETTE MATIÈRE        
+$a   Texte 
+$b   Citation d'une vedette 
+300 RENVOI GÉNÉRAL D’ORIENTATION         
+$b   Citation d'une vedette 
+$r   Texte 
+301 RENVOI D'ORIENTATION SYMÉTRIQUE ENTRE NOTICES D'AUTORITÉ DE MÊME TYPE        
+$a    
+$b     
+$c    
+$d    
+$e    
+$f    
+$g    
+$h    
+$i    
+$j    
+$k    
+$l    
+$m    
+$n    
+$o    
+$p    
+$q    
+$r   Formule explicative
+$s    
+$t    
+$u    
+$v     
+$w     
+$x     
+$y    
+$z     
+$3   Numéro de la notice d'autorité liée
+302 RENVOI D’ORIENTATION VERS UNE VEDETTE SPÉCIFIQUE DE MÊME TYPE        
+$a    
+$b   
+$c    
+$d    
+$e    
+$f    
+$g    
+$h    
+$i    
+$j     
+$k    
+$l    
+$m    
+$n     
+$o     
+$p     
+$q    
+$s    
+$t     
+$u    
+$v    
+$w     
+$x     
+$y    
+$z    
+$3   Numéro de la notice d'autorité liée 
+304 RENVOI D’ORIENTATION D’UN GROUPE DE PERSONNES VERS UNE PERSONNE PHYSIQUE        
+$a   
+$d    
+$e    
+$h   
+$m    
+$u    
+$w    
+$3   Numéro de la notice d'autorité liée 
+310 RENVOI D’ORIENTATION VERS UNE VEDETTE SPÉCIFIQUE ENTRE NOTICES D’AUTORITÉ DE TYPES DIFFÉRENTS          
+$a    
+$b    
+$c    
+$d     
+$e     
+$f     
+$g     
+$h     
+$i     
+$j    
+$k    
+$l    
+$m    
+$n    
+$o    
+$p    
+$q    
+$r   Formule explicative  
+$s    
+$t    
+$u     
+$v     
+$w   
+$x   
+$y   
+$z     
+$3   Numéro de la notice d'autorité liée 
+$9   Etiquette de la zone vedette de la notice liée 
+311 RENVOI D’ORIENTATION D’UNE COLLECTIVITÉ VERS UNE PERSONNE PHYSIQUE         
+$a    
+$d    
+$e     
+$h    
+$m     
+$r   Formule explicative 
+$s   Dates  
+$u    
+$w    
+$3   Numéro de la notice d'autorité liée 
+313 RENVOI D’ORIENTATION D’UN RESPONSABLE COMMERCIAL VERS UNE MARQUE         
+$a    
+$b    
+$d    
+$q    
+$r   Formule explicative 
+$s   Date(s) 
+$w    
+$3   Numéro de la notice d'autorité liée
+315 RENVOI D'UNE COLLECTIVITÉ VERS UNE PERSONNE PHYSIQUE SUR LA FORMATION DES ARTISTES         
+$a   
+$d     
+$e    
+$h     
+$m    
+$r   Formule explicative 
+$s   Dates 
+$u     
+$w    
+$3   Numéro de la notice d'autorité liée 
+320 RENVOI D'ORIENTATION SYMÉTRIQUE ENTRE NOTICES D'AUTORITÉ DE TYPES DIFFÉRENTS         
+$a    
+$b   
+$c     
+$d    
+$e    
+$f    
+$g    
+$h    
+$i    
+$j    
+$k    
+$l     
+$m    
+$n     
+$o    
+$p    
+$q     
+$s    
+$t    
+$u    
+$v    
+$w     
+$x     
+$y    
+$z   
+$r   Formule explicative 
+$3   Numéro de la notice d'autorité liée  
+$9   Etiquette de la zone vedette de la notice liée 
+321 RENVOI D’ORIENTATION ENTRE UNE OEUVRE (ANONYME OU NON) ET UN AUTEUR PERSONNE PHYSIQUE OU COLLECTIVITÉ         
+$a   
+$b    
+$c    
+$d   
+$e    
+$h    
+$i    
+$j     
+$k    
+$l   
+$m    
+$o    
+$p    
+$q    
+$r   Formule explicative 
+$t   
+$u    
+$w    
+$3   Numéro de la notice d'autorité liée  
+$9   Etiquette de la zone vedette de la notice liée 
+322 RENVOI D'ORIENTATION ENTRE UNE OEUVRE MUSICALE ET UNE PERSONNE PHYSIQUE OU UNE COLLECTIVITÉ          
+$a     
+$b    
+$c    
+$d     
+$e    
+$f    
+$g    
+$h   
+$i    
+$j    
+$k    
+$l    
+$m    
+$n    
+$p    
+$q     
+$r   Formule explicative 
+$t    
+$u    
+$w    
+$3   Numéro de la notice d'autorité liée 
+$9   Etiquette de la zone vedette de la notice liée 
+331 LIEN AVEC UNE NOTICE CRÉÉE POUR UNE AUTRE IDENTITÉ DE LA MÊME ENTITÉ        
+$a    
+$b    
+$c  
+$d     
+$e     
+$h    
+$i    
+$j    
+$k    
+$l    
+$m    
+$p     
+$q    
+$r     
+$u    
+$w    
+$3   Numéro de la notice d'autorité liée 
+400 NOM DE PERSONNE PHYSIQUE - FORME REJETÉE         
+$a   Élément d'entrée
+$d   Dates biographiques 
+$e   Qualificatif  
+$h   Numérotation - sous-zone de transcription  
+$m   Élément(s) du nom rejeté(s) 
+$r   Reste de la zone  
+$u   Numérotation - sous-zone de classement  
+$w   Informations codées (10 caractères)  
+410 NOM DE COLLECTIVITÉ OU DE CONGRÈS - FORME REJETÉE        
+$a   Élément d'entrée 
+$b   Sous-vedette  
+$c   Lieu 
+$d   Année du congrès 
+$i   Numéro du congrès 
+$j   Jour du congrès 
+$k   Mois du congrès 
+$l   Lieu du congrès 
+$o   Inversion 
+$p   Élément rejeté 
+$q   Autre qualificatif  
+$w   Informations codées (10 caractères)
+423 NOM DE MARQUE - FORME REJETÉE         
+$a   Marque 
+$b   Sous-vedette  
+$d   Dates  
+$q   Qualificatif(s)  
+$w   Informations codées (10 caractères)  
+441 TITRE UNIFORME TEXTUEL - FORME REJETÉE        
+$a   Titre uniforme  
+$e   Qualificatif 
+$h   Numéro de partie - sous-zone de transcription 
+$i   Titre de partie 
+$o   Inversion 
+$u   Numéro de partie - sous-zone de classement 
+$w   Informations codées (10 caractères)  
+444 TITRE UNIFORME MUSICAL - FORME REJETÉE          
+$a   Titre 
+$b   Distribution musicale (en clair) 
+$c   Titre original de l'oeuvre adaptée  
+$e   Qualificatif de genre ou de forme (en clair)  
+$f   Langue (en clair)  
+$g   Auteur du thème adapté 
+$h   Numéro de partie 
+$i   Titre de partie 
+$j   Année  
+$k   Numéro de catalogue thématique (sous forme abrégée) 
+$n   Numéro d'ordre 
+$p   Numéro d'opus  
+$q   Version 
+$t   Tonalité  
+$w   Informations codées (10 caractères)
+445 TITRE CONVENTIONNEL - FORME REJETÉE         
+$a   Titre 
+$e   Qualificatif 
+$h   Numéro de partie - sous-zone de transcription 
+$i   Titre de partie 
+$o   Inversion 
+$u   Numéro de partie - sous-zone de classement  
+$w   Informations codées (10 caractères) 
+460 VEDETTE MATIÈRE NOM DE PERSONNE - FORME REJETÉE          
+$a   Élément d'entrée 
+$d   Dates biographiques 
+$e   Qualificatif 
+$g   Précision 
+$h   Numérotation - sous-zone de transcription  
+$m   Élément(s) du nom rejeté(s) 
+$o   Inversion 
+$s   Reste de l'élément  
+$t   Titre 
+$u   Numérotation - sous-zone de classement  
+$w   Informations codées (10 caractères)  
+$x   Subdivision de sujet ou de forme 
+$y   Subdivision géographique 
+$z   Subdivision chronologique 
+461 VEDETTE MATIÈRE NOM DE COLLECTIVITÉ - FORME REJETÉE         
+$a   Élément d'entrée 
+$b   Sous-vedette 
+$c   Lieu  
+$d   Année du congrès 
+$g   Précision 
+$i   Numéro du congrès  
+$j   Jour du congrès 
+$k   Mois du congrès  
+$l   Lieu du congrès 
+$o   Inversion 
+$q   Autre qualificatif 
+$s   Reste de l'élément  
+$t   Titre 
+$w   Informations codées (10 caractères) 
+$x   Subdivision de sujet ou de forme 
+$y   Subdivision géographique 
+$z   Subdivision chronologique  
+463 VEDETTE MATIÈRE TITRE PROPRE D’ANONYME - FORME REJETÉE        
+$a   Titre 
+$e   Qualificatif 
+$g   Précision 
+$h   Numéro de partie - sous-zone de transcription  
+$i   Titre de partie 
+$o   Inversion  
+$s   Reste de l'élément  
+$u   Numéro de partie - sous-zone de classement 
+$w   Informations codées (10 caractères) 
+$x   Subdivision de sujet ou de forme 
+$y   Subdivision géographique 
+$z   Subdivision chronologique 
+463 VEDETTE MATIÈRE TITRE DE PUBLICATION EN SÉRIE - FORME REJETÉE          
+$a   Titre 
+$g   Qualificatif(s)  
+$o   Inversion 
+$s   Reste de l'élément 
+$w   Informations codées (10 caractères)  
+$x   Subdivision de sujet ou de forme 
+$y   Subdivision géographique 
+$z   Subdivision chronologique
+465 VEDETTE MATIÈRE TITRE UNIFORME TEXTUEL - FORME REJETÉE         
+$a   Titre uniforme 
+$e   Qualificatif(s) 
+$g   Précision  
+$h   Numéro de partie - sous-zone de transcription 
+$i   Titre de partie 
+$o   Inversion 
+$s   Reste de l'élément  
+$u   Numéro de partie - sous-zone de classement 
+$w   Informations codées (10 caractères) 
+$x   Subdivision de sujet ou de forme  
+$y   Subdivision géographique  
+$z   Subdivision chronologique 
+466 VEDETTE MATIÈRE NOM COMMUN - FORME REJETÉE         
+$a   Élément d'entrée 
+$b   Sous-vedette 
+$g   Précision  
+$o   Inversion  
+$s   Reste de l'élément 
+$w   Sous-zone d'informations codées 
+$x   Subdivision de sujet ou de forme  
+$y   Subdivision géographique  
+$z   Subdivision chronologique 
+467 VEDETTE MATIÈRE NOM GÉOGRAPHIQUE - FORME REJETÉE         
+$a   Élément d'entrée 
+$g   Précision
+$o   Inversion
+$w   Informations codées (10 caractères) 
+$x   Subdivision de sujet ou de forme 
+$y   Subdivision géographique 
+$z   Subdivision chronologique 
+468 SUBDIVISION CHRONOLOGIQUE - FORME REJETÉE       
+$a   Élément d'entrée 
+$g   Précision 
+$w   Informations codées (10 caractères) 
+470 NOM GÉOGRAPHIQUE - FORME REJETÉE         
+$a   Élément d'entrée 
+$b   Sous-vedette 
+$c   Localisation 
+$d   Datation 
+$g   Désignation 
+$o   Inversion  
+$w   Informations codées (10 caractères) 
+$z   Date de la forme 
+476 SUJET D'UNE VEDETTE GÉOGRAPHIQUE - FORME REJETÉE         
+$a   Élément d'entrée 
+$g   Précision  
+$o   Inversion  
+$w   Informations codées (10 caractères)   
+477 PRÉCISION GÉOGRAPHIQUE D'UNE VEDETTE GÉOGRAPHIQUE - FORME REJETÉE        
+$a   Élément d'entrée 
+$g   Précision 
+$o   Inversion 
+$w   Informations codées (10 caractères) 
+478 SUBDIVISION CHRONOLOGIQUE D'UNE VEDETTE GÉOGRAPHIQUE - FORME REJETÉE        
+$a   Élément d'entrée 
+$g   Précision 
+$w   Informations codées (10 caractères)
+502 RENVOI D'ORIENTATION VERS UNE VEDETTE GÉNÉRIQUE DE MÊME TYPE         
+$a    
+$b    
+$c     
+$d     
+$e    
+$f    
+$g     
+$h    
+$i    
+$j    
+$k   
+$l    
+$m     
+$n    
+$o     
+$p     
+$q     
+$s    
+$t    
+$u     
+$v    
+$w     
+$x     
+$y     
+$z     
+$3   Numéro de la notice d'autorité liée
+504 RENVOI D’ORIENTATION D’UNE PERSONNE PHYSIQUE VERS UN GROUPE DE PERSONNES         
+$a    
+$d     
+$e    
+$h    
+$m    
+$u     
+$w    
+$3   Numéro de la notice d'autorité liée 
+510 RENVOI D’ORIENTATION VERS UNE VEDETTE GÉNÉRIQUE ENTRE NOTICES D’AUTORITÉ DE TYPES DIFFÉRENTS         
+$a    
+$b    
+$c    
+$d    
+$e     
+$f    
+$g    
+$h    
+$i    
+$j   
+$k     
+$l     
+$m    
+$n    
+$o    
+$p     
+$q    
+$r   Formule explicative 
+$s     
+$t    
+$u     
+$v    
+$w     
+$x    
+$y    
+$z    
+$3   Numéro de la notice d'autorité liée 
+$9   Étiquette de la zone vedette de la notice liée 
+511 RENVOI D’ORIENTATION D’UNE PERSONNE PHYSIQUE VERS UNE COLLECTIVITÉ         
+$a    
+$b    
+$c    
+$d    
+$i    
+$j    
+$k    
+$l    
+$p   
+$q    
+$r   Formule explicative
+$s   Dates 
+$w    
+$3   Numéro de la notice d'autorité liée 
+513 RENVOI D’ORIENTATION D'UNE MARQUE VERS UN RESPONSABLE COMMERCIAL         
+$a    
+$b    
+$c    
+$d    
+$e    
+$h  
+$i    
+$j    
+$k    
+$l     
+$m     
+$p    
+$q     
+$r   Formule explicative 
+$s   Date(s) 
+$u    
+$w    
+$3   Numéro de la notice d'autorité liée 
+$9   Étiquette de la zone vedette de la notice liée 
+515 RENVOI D’UNE PERSONNE PHYSIQUE VERS UNE COLLECTIVITÉ SUR LA FORMATION DES ARTISTES          
+$a    
+$b    
+$c    
+$d    
+$i    
+$j     
+$k     
+$l    
+$p    
+$q    
+$r   Formule explicative 
+$s   Dates 
+$w    
+$3   Numéro de la notice d'autorité liée  
+600 NOTE D’INFORMATION PUBLIQUE        
+$a   Texte  
+$b   Citation d’une vedette 
+Zone 602 NOTE SUR LA NATIONALITÉ       
+$a   Texte 
+603 NOTE SUR LES LIEUX DE NAISSANCE ET DE MORT         
+$a   Lieu de naissance  
+$b   Lieu de mort
+604 NOTE SUR L'ADRESSE D'ACTIVITÉ ET L'ENSEIGNE DES IMPRIMEURSLIBRAIRES, MARCHANDS D'ESTAMPES OU RELIEURS        
+$a   Ville  d'activité 
+$d   Dates d'activité dans la ville 
+$e   Enseigne(s) 
+$j   Dates d'utilisation des adresses successives 
+$l   Adresse(s) dans la ville   
+605 NOTE PUBLIQUE SUR L’ADRESSE         
+$a   Information sur l’adresse 
+$b   Adresse détaillée  
+$c   Code postal 
+$d   Ville 
+$t   Téléphone 
+$u   Télécopie
+$v   Adresse électronique
+606 NOTE PUBLIQUE SUR L'URL         
+$d   Date de consultation 
+$u   URL  
+607 NOTE SUR LA COMPOSITION D’UNE COLLECTIVITÉ         
+$a   Texte  
+608 NOTE SUR LA DISTRIBUTION MUSICALE         
+$a   Texte de la note 
+$b   Rôles 
+610 NOTE PUBLIQUE SUR LES SOURCES CONSULTÉES AVEC PROFIT         
+$a   Texte 
+$d   Date de consultation du site Internet 
+$u   Adresse URL (sans lien actif)  
+612 NOTE PUBLIQUE SUR LES SOURCES CONSULTÉES EN VAIN         
+$a   Texte 
+$d   Date de consultation du site Internet 
+$u   Adresse URL (sans lien actif) 
+620 NOTE SUR L'ÉQUIVALENT LCSH DE LA VEDETTE RAMEAU       
+$a   Équivalent LCSH 
+$v   Référence de la source utilisée 
+622 NOTE SUR L'ÉQUIVALENT DANS D'AUTRES RÉFÉRENTIELS DE LA VEDETTE RAMEAU         
+$a   Texte 
+$v   Référence de la source utilisée 
+624 NOTE DE REGROUPEMENT PAR DOMAINES       
+$a   Indice 
+$v   Informations sur la provenance de l’indice 
+640 NOTE BIOGRAPHIQUE GÉNÉRALE       
+$a   Texte 
+641 NOTE SUR LA FAMILLE       
+$a   Texte 
+642 NOTE SUR LES VOYAGES        
+$a   Destination 
+$d   Date 
+643 NOTE SUR LA PROFESSION         
+$a   Texte 
+644 NOTE SUR LA GAMME DES PRODUITS ET SERVICES D'UNE MARQUE       
+$a   Texte 
+645 NOTE SUR LES INVENTIONS        
+$a   Invention 
+$d   Date 
+646 NOTE SUR LES DISTINCTIONS        
+$a   Distinction 
+$d   Date 
+647 NOTE SUR LA TITULATURE        
+$a   Texte 
+650 NOTE SUR LE DOMAINE D'EXPRESSION ARTISTIQUE       
+$a   Texte  
+651 NOTE SUR LA TECHNIQUE        
+$a   Texte 
+652 NOTE SUR LE TYPE DOMINANT DE PRODUCTION      
+$a   Typologie (Image fixe) 
+$g   Genre (Audio-visuel)  
+653 NOTE SUR L’INFLUENCE        
+$a   Influence 
+654 NOTE SUR LA (OU LES) DEVISE(S)        
+$a   Texte
+656 COORDONNÉES GÉOGRAPHIQUES         
+$c   Mention des coordonnées  
+657 COORDONNÉES LAMBERT        
+$a   Mention des coordonnées 
+660 NOTE BIBLIOGRAPHIQUE - SALON        
+$a   Elément d'entrée  
+$b   Sous-vedette 
+$c   Lieu 
+$d   Année du salon 
+$i   Numéro du salon 
+$j   Jour du salon 
+$k   Mois du salon  
+$l   Lieu du salon 
+$t   Titre 
+661 NOTE BIBLIOGRAPHIQUE - EXPOSITION        
+$a   Lieu d'exposition 
+$d   Année de l'exposition 
+$n   Établissement  
+$t   Titre 
+666 RÉFÉRENCES AUX CARTES IGN        
+$a   Feuille IGN 1:50 000 
+$b   Feuille IGN 1:25 000 
+671 CODES D'IDENTIFICATION ADMINISTRATIVE        
+$i   Code INSEE 
+$p   Code postal 
+672 SUPERFICIE          
+$a   Texte 
+673 ALTITUDE         
+$a   Texte 
+674 GENTILÉ          
+$a   Texte 
+675 POPULATION       
+$a   Population 
+$d   Recensement source 
+907 NUMÉRO DE NOTICE RECUPÉRÉE D’UN ANCIEN SYSTÈME BNF (BASE PARALLÈLE)     
+$a   Numéro 
+$b   Type de notice
+$o   Source
+917 NUMÉRO DE NOTICE RÉCUPÉRÉE D'UN ANCIEN SYSTÈME BNF         
+$a   Numéro 
+$b   Type de notice 
+$o   Source 
+996 NUMÉRO DE NOTICE FUSIONNÉE AU SEIN DU CATALOGUE GÉNÉRAL DE LA BNF        
+$a   Numéro 
+$d   Date de disparition de la notice fusionnée 
+$o   Source 
