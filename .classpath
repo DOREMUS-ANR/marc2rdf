@@ -2,9 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="jars/j-text-utils-0.3.3.jar"/>
-	<classpathentry kind="lib" path="jars/commons-lang-2.3.jar"/>
-	<classpathentry kind="lib" path="jars/pdfbox-app-1.8.8.jar"/>
+	<classpathentry kind="lib" path="jars/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="jars/poi-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="jars/poi-ooxml-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="jars/poi-ooxml-schemas-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="jars/poi-scratchpad-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="jars/xmlbeans-2.6.0.jar"/>
 	<classpathentry kind="lib" path="jars/httpclient/commons-codec-1.9.jar"/>
 	<classpathentry kind="lib" path="jars/httpclient/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="jars/httpclient/fluent-hc-4.4.1.jar"/>
@@ -15,5 +18,7 @@
 	<classpathentry kind="lib" path="jars/httpclient/httpmime-4.4.1.jar"/>
 	<classpathentry kind="lib" path="jars/httpclient/jna-4.1.0.jar"/>
 	<classpathentry kind="lib" path="jars/httpclient/jna-platform-4.1.0.jar"/>
+	<classpathentry kind="lib" path="jars/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="jars/j-text-utils-0.3.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

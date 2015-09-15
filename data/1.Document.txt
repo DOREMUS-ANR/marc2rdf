@@ -1,17 +1,13 @@
-000 ncm 22 3n 450 
-001FRBNF428405510000000
-003http://catalogue.bnf.fr/ark:/12148/cb428405517
-010 $dNet, 1 fr. 25
-039 $oMUS$aFG004410710001P 
-100 $a20120319d1923 u y0frey50 ba
-1010 $afre
-102 $aFR
-106 $ar
-128 $auu 
-2001 $aAdagio, de la sonate Clair de lune, de Beethoven (1770-1827). Violon et piano. Violon, facile ; piano, moyenne force$bMusique imprimée
-210 $aParis$b3, rue de Grammont$cAlphonse Leduc, éditions musicales$d1923
-2251 $aˆLes ‰Classiques de violon. Transcriptions, de G. Catherine$vN° 286
-50011$313908188$aSonates$rPiano$sOp. 27, no 2$uDo dièse mineur
-700 |$313891295$aBeethoven$bLudwig van$f1770-1827$4230
-701 |$314792926$aCatherine$bGeorges$f1872-1958$4230
-801 0$aFR$bFR-751131015$c20120319$gAFNOR$hFRBNF428405510000000$2intermrc
+000       n6 m 22     1h   c 
+001  FRBNF428405510000000
+008  120319s 1923                 fr        b  001 
+009  c              uu   
+020     $dNet, 1 fr. 25
+100     $313891295 $w.0..b.....$aBeethoven$mLudwig van$d1770-1827$40220
+144 0   $313908188 $w....b.fre.$aSonates$bPiano$pOp. 27, no 2$tDo dièse mineur
+245 1   $aAdagio, de la sonate Clair de lune, de Beethoven (1770-1827). Violon et piano. Violon, facile ; piano, moyenne force$dMusique imprimée
+260     $aParis$b3, rue de Grammont$cAlphonse Leduc, éditions musicales$d1923
+295 1   $aLes |Classiques de violon. Transcriptions, de G. Catherine$vN° 286
+690     $aFichGén
+700     $314792926 $w 0  b     $aCatherine$mGeorges$d1872-1958$40220
+917     $oMUS$aFG004410710001P  
