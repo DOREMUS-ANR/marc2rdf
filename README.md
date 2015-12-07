@@ -46,8 +46,9 @@
 
 <B> RDF Store: </B>
 <p> Virtuoso 7.2.1 (http://www.openlinksw.com/) </p>
-
-<p> <a name="">1</a>: https://drive.google.com/file/d/0B_nxZpGQv9GKZmpKRGl2dmRENGc/view </p>
-<p> <a name="">2</a>: https://fr.wikipedia.org/wiki/Machine-Readable_Cataloging / </p>
-<p> <a name="">3</a>: https://www.loc.gov/standards/marcxml/ </p>
-<p> <a name="">4</a>:https://www.loc.gov/marc/ </p>
+<br>
+<br>
+<p> <a name="">[1]</a>: https://drive.google.com/file/d/0B_nxZpGQv9GKZmpKRGl2dmRENGc/view </p>
+<p> <a name="">[2]</a>: https://fr.wikipedia.org/wiki/Machine-Readable_Cataloging / </p>
+<p> <a name="">[3]</a>: https://www.loc.gov/standards/marcxml/ </p>
+<p> <a name="">[4]</a>:https://www.loc.gov/marc/ </p>
