@@ -8,15 +8,15 @@
 <B> RDF conversion </B>
 <p> The figure, below, illustrates an example an INTERMARC-XML file: <p>
 
- <img src="D:\1.png">
+ <img src="https://github.com/DOREMUS-ANR/marc2rdf/blob/master/img/1.png">
  
 <p> Its display in INTERMARC format: <p>
 
-<img src="D:\2.png">
+<img src="https://github.com/DOREMUS-ANR/marc2rdf/blob/master/img/2.png">
  
 <p> And its conversion in RDF triples: <p>
  
- <img src="D:\3.png">
+ <img src="https://github.com/DOREMUS-ANR/marc2rdf/blob/master/img/3.png">
 
 <p> <B> How to run: </B> </p>
 <ol>
