@@ -1,9 +1,9 @@
 <B> <U> MARCXML Parser </U> </B>
 
 <B> About </B>
-<p> MARCXML Parser is based on the DOREMUS model that allows a detailed description of a musical work and the events associated with it (creation, execution, etc.). It takes as input INTERMARC-XML files and generates as output RDF triples. A display in MARC format is an option of our prototype to view an INTERMARC-XML file in MARC format. </p>
+<p> MARCXML Parser is based on the DOREMUS model <sup>[1]</sup> that allows a detailed description of a musical work and the events associated with it (creation, execution, etc.). It takes as input INTERMARC-XML files and generates as output RDF triples. A display in MARC format is an option of our prototype to view an INTERMARC-XML file in MARC format. </p>
 
-<p> The MARCXML format, developed by the Library of Congress in 2001, consists to structure data to MARC in an XML environment. It was founded initially on the MARC21 format, and then it was extended by applying ISO 25577 (MarcXchange), other variants of the MARC (whose INTERMARCXML format used by BNF). </p>
+<p> The MARCXML format <sup>[2]</sup>, developed by the Library of Congress in 2001, consists to structure data to MARC in an XML environment. It was founded initially on the MARC21 format, and then it was extended by applying ISO 25577 (MarcXchange), other variants of the MARC (whose INTERMARCXML format used by BNF). </p>
 
 <B> RDF conversion </B>
 <p> The figure, below, illustrates an example an INTERMARC-XML file: <p>
@@ -46,3 +46,6 @@
 
 <B> RDF Store: </B>
 <p> Virtuoso 7.2.1 (http://www.openlinksw.com/) </p>
+
+<p> <a name="">1</a>: https://drive.google.com/file/d/0B_nxZpGQv9GKZmpKRGl2dmRENGc/view </p>
+<p> <a name="">2</a>: https://www.loc.gov/standards/marcxml/ </p>
