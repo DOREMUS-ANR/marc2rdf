@@ -37,11 +37,16 @@
 	<classpathentry kind="lib" path="jars/jena/slf4j-log4j12-1.7.12.jar"/>
 	<classpathentry kind="lib" path="jars/jena/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="jars/jena/xml-apis-1.4.01.jar"/>
-	<classpathentry kind="lib" path="jars/arq-2.8.7.jar"/>
 	<classpathentry kind="lib" path="jars/com.ibm.icu_3.4.4.1.jar"/>
 	<classpathentry kind="lib" path="jars/iri-0.8.jar"/>
-	<classpathentry kind="lib" path="jars/jena-2.6.0.jar"/>
 	<classpathentry kind="lib" path="jars/virt_jena2.jar"/>
 	<classpathentry kind="lib" path="jars/virtjdbc4_1.jar"/>
+	<classpathentry kind="lib" path="jars/poi-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="jars/poi-ooxml-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="jars/poi-ooxml-schemas-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="jars/poi-scratchpad-3.12-20150511.jar"/>
+	<classpathentry kind="lib" path="jars/xmlbeans-2.6.0.jar"/>
+	<classpathentry kind="lib" path="jars/arq-2.8.6.jar"/>
+	<classpathentry kind="lib" path="jars/jena-2.6.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -28,7 +28,7 @@ public class CIDOCExample {
 		ConstructURI uriWork = new ConstructURI();
 		GenerateUUID uuidWork = new GenerateUUID();
 		
-		model.createResource(uriWork.get("work","F15", uuidWork.get()).toString())
+		model.createResource(uriWork.getUUID("work","F15", uuidWork.get()).toString())
 				.addProperty(model.createProperty(doremus+ "r45i_was_assigned_by"),
 						"Ibrahim");
 		

@@ -4,13 +4,15 @@ import identifierAssignment.IdentifierAssignment;
 import identifierAssignmentOther.IdentifierAssignmentOther;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import selfContainedExpression.SelfContainedExpression;
 import work.Work;
 import expressionCreation.ExpressionCreation;
 
 public class Main {
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws IOException, URISyntaxException {
 		
 		/****************************************************************************************/
 		Work work = new Work();

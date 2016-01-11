@@ -22,12 +22,12 @@ public class ExpressionCreation {
         		 if (s.controlFields.get(i).getEtiq().equals("008")) {
         			 if (((s.controlFields.get(i).getData().charAt(36))==((" ").charAt(0)))&&
         			 ((s.controlFields.get(i).getData().charAt(46))==((" ").charAt(0)))){
-        			 	for (int j=28; j<=35; j++){
+        			 	for (int j=28; j<=31; j++){
         			 		buffer.append(s.controlFields.get(i).getData().charAt(j));
         			 	}
         			 	String st = "";
         			 	boolean nothing = true;
-        			 	for (int j=38; j<=45; j++){
+        			 	for (int j=38; j<=41; j++){
         			 		char character = s.controlFields.get(i).getData().charAt(j);
         			 		st = st+ character;
         			 		if (!(character==(' '))) {nothing = false;}
@@ -135,10 +135,10 @@ public class ExpressionCreation {
         	 Record s = reader.next();
         	 for (int i=0; i<s.dataFields.size(); i++) {
         		 if (s.dataFields.get(i).getEtiq().equals("100")) {
-        			 	 if (s.dataFields.get(i).isCode('w')){
+        			/* 	 if (s.dataFields.get(i).isCode('w')){
         			 		 String wSubField = s.dataFields.get(i).getSubfield('w').getData();
         			 		 buffer.append(wSubField+" ");
-        			 	 }
+        			 	 } */
         			 	 if (s.dataFields.get(i).isCode('a')){
         			 		 String aSubField = s.dataFields.get(i).getSubfield('a').getData();
         			 		 buffer.append(aSubField+" ");

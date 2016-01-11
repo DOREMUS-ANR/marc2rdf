@@ -3,28 +3,37 @@ package identifierAssignment;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.http.client.utils.URIBuilder;
 
 import marcXMLparser.MarcXmlReader;
 import marcXMLparser.Record;
 
 public class IdentifierAssignment {
 	
-	/******** L'agence bibliographique qui a attribué l'identifiant *****************/
-    public static String getBiblioAgency(String xmlFile) throws FileNotFoundException {
-        StringBuilder buffer = new StringBuilder();
+	/******** L'agence bibliographique qui a attribué l'identifiant @throws URISyntaxException *****************/
+    public static URI getBiblioAgency(String xmlFile) throws FileNotFoundException, URISyntaxException {
+    	URIBuilder builder = null ;
         InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
         MarcXmlReader reader = new MarcXmlReader(file);
+        String agence = "";
         while (reader.hasNext()) { // Parcourir le fichier MARCXML
         	 Record s = reader.next();
         	 for (int i=0; i<s.controlFields.size(); i++) {
         		 if (s.controlFields.get(i).getEtiq().equals("001")) {
         			 for (int j=0; j<=4; j++){
-        				 buffer.append(s.controlFields.get(i).getData().charAt(j));
+        				 agence = agence + s.controlFields.get(i).getData().charAt(j);
         			 }
         		 }
         	 }
         }
-        return buffer.toString();
+        if (agence.equals("FRBNF")) {
+        	builder = new URIBuilder().setPath("http://isni.org/isni/0000000121751303");
+        }
+        URI uri = builder.build();
+        return uri;
     }
     /*********************** Le créateur de l'identifiant *************************************/
     public static String getCreator(String xmlFile) throws FileNotFoundException {
@@ -169,8 +178,8 @@ public class IdentifierAssignment {
         	 Record s = reader.next();
         	 for (int i=0; i<s.dataFields.size(); i++) {
         		 if (s.dataFields.get(i).getEtiq().equals("144")) {
-        			 if (s.dataFields.get(i).isCode('e'))
-        				 buffer.append(s.dataFields.get(i).getSubfield('e').getData());
+        			 if (s.dataFields.get(i).isCode('a'))
+        				 buffer.append(s.dataFields.get(i).getSubfield('a').getData());
         		 }
         	 }
         }
