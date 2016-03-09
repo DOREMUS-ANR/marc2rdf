@@ -20,8 +20,8 @@
 
 <p> <B> How to run: </B> </p>
 <ol>
-<li> Load the INTERMARC-XML file in the "Data" folder and name it "XMLFile.xml". </li>
 <li> Execute “RDFConversion.java” class in “main” package.</li>
+<li> Load the INTERMARC-XML file you want to convert (.xml)</li>
 <li> Display of RDF triples :</li>
 <ol type=A>
 <li> Go to Virtuoso (http: // localhost: 8890)</li>
@@ -30,7 +30,7 @@
 <li> Click on "Linked Data"</li>
 <li> Click on "Graphs"</li>
 <li> Click on "DOREMUS"
-------> Display of all RDF triples generated from “XMLFile.xml”</li>
+------> Display of all RDF triples generated from the INTERMARC-XML file</li>
 </ol>
 </ol>
 
