@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="BNFConverter"/>
+	<classpathentry kind="src" path="BNFParser"/>
+	<classpathentry kind="src" path="PPConverter"/>
+	<classpathentry kind="src" path="PPParser"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="jars/jdom-2.0.6.jar"/>
 	<classpathentry kind="lib" path="jars/httpclient/commons-codec-1.9.jar"/>
@@ -41,12 +45,12 @@
 	<classpathentry kind="lib" path="jars/iri-0.8.jar"/>
 	<classpathentry kind="lib" path="jars/virt_jena2.jar"/>
 	<classpathentry kind="lib" path="jars/virtjdbc4_1.jar"/>
+	<classpathentry kind="lib" path="jars/xmlbeans-2.6.0.jar"/>
+	<classpathentry kind="lib" path="jars/arq-2.8.6.jar"/>
+	<classpathentry kind="lib" path="jars/jena-2.6.3.jar"/>
 	<classpathentry kind="lib" path="jars/poi-3.12-20150511.jar"/>
 	<classpathentry kind="lib" path="jars/poi-ooxml-3.12-20150511.jar"/>
 	<classpathentry kind="lib" path="jars/poi-ooxml-schemas-3.12-20150511.jar"/>
 	<classpathentry kind="lib" path="jars/poi-scratchpad-3.12-20150511.jar"/>
-	<classpathentry kind="lib" path="jars/xmlbeans-2.6.0.jar"/>
-	<classpathentry kind="lib" path="jars/arq-2.8.6.jar"/>
-	<classpathentry kind="lib" path="jars/jena-2.6.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
