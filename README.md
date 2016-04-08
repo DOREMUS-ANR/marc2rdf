@@ -1,7 +1,7 @@
-<B> <U> MARCXML Parser </U> </B>
+<B> <U> MARC2RDF </U> </B>
 
 <B> About </B>
-<p> MARCXML Parser is based on the DOREMUS model <sup>[1]</sup> that allows a detailed description of a musical work and the events associated with it (creation, execution, etc.). It takes as input INTERMARC-XML and UNIMARC-XML files and generates as output RDF triples. A display in MARC (MAchine Readable Cataloging) <sup>[2]</sup> format is an option of our prototype to view an INTERMARC-XML or an UNIMARC-XML file in MARC format. </p>
+<p> MARC2RDF is based on the DOREMUS model <sup>[1]</sup> that allows a detailed description of a musical work and the events associated with it (creation, execution, etc.). It takes as input INTERMARC-XML and UNIMARC-XML files and generates as output RDF triples. A display in MARC (MAchine Readable Cataloging) <sup>[2]</sup> format is an option of our prototype to view an INTERMARC-XML or an UNIMARC-XML file in MARC format. </p>
 
 <p> The MARCXML format <sup>[3]</sup>, developed by the Library of Congress in 2001, consists to structure data to MARC in an XML environment. It was founded initially on the MARC21 <sup>[4]</sup> format, and then it was extended by applying ISO 25577 (MarcXchange), other variants of the MARC (whose INTERMARCXML format used by BNF). </p>
 
@@ -18,10 +18,23 @@
  
  <img src="https://github.com/DOREMUS-ANR/marc2rdf/blob/master/img/3.png">
 
+<p> <B> MARC2RDF description: </B> </p>
+
+<p> This tool consists of 4 components:
+<ol>
+<li> BNFConverter: converts INTERMARC-XML records from BNF (Bibliothèque Nationale de France) in RDF triples. </li>
+<li> BNFParser: a parser of INTERMARC-XML records from BNF and displays them in MARC format. </li>
+<li> PPConverter: converts INTERMARC-XML and UNIMARC-XML records from Philharmonie de Paris in RDF triples. </li>
+<li> PPParser:  a parser of INTERMARC-XML and UNIMARC-XML records from Philharmonie de Paris and displayes them in MARC format. </li>
+</ol>
+The class "Converter" is the "main" class to start converting MARCXML records in RDF triples.
+The class "MainParser" is the "main" class to launch the parser and to display the MARCXML records in MARC format.
+</p>
+
 <p> <B> How to run: </B> </p>
 <ol>
-<li> Load the INTERMARC-XML file in the "Data" folder and name it "XMLFile.xml". </li>
-<li> Execute “RDFConversion.java” class in “main” package.</li>
+<li> Edit the path about records to be converted in “Converter.java” class in “main” package. </li>
+<li> Execute “Converter.java” class in “main” package.</li>
 <li> Display of RDF triples :</li>
 <ol type=A>
 <li> Go to Virtuoso (http: // localhost: 8890)</li>
