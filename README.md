@@ -31,19 +31,30 @@ The class "Converter" is the "main" class to start converting MARCXML records in
 The class "MainParser" is the "main" class to launch the parser and to display the MARCXML records in MARC format.
 </p>
 
+### Install on Eclipse
+
+- Create a Java project on Eclipse
+- From a command line, point the project folder and execute this: 
+	<pre>
+	git init
+	git remote add origin https://github.com/DOREMUS-ANR/marc2rdf.git
+	git pull origin master
+	</pre>
+- Add libraries. Right click on project and select Build Path/Configure Build Path.../Libraries/Add JARs... (add all the jars contained in the jars folder)
+
 <p> <B> How to run: </B> </p>
 <ol>
-<li> Edit the path about records to be converted in “Converter.java” class in “main” package. </li>
-<li> Execute “Converter.java” class in “main” package.</li>
+<li> Edit the path about records to be converted in Converter.java class in main package. </li>
+<li> Execute Converter.java class in main package.</li>
 <li> Display of RDF triples :</li>
 <ol type=A>
 <li> Go to Virtuoso (http: // localhost: 8890)</li>
 <li> Click on "Conductor"</li>
-<li> Login (“dba”, “dba”)</li>
+<li> Login (dba, dba)</li>
 <li> Click on "Linked Data"</li>
 <li> Click on "Graphs"</li>
 <li> Click on "DOREMUS"
-------> Display of all RDF triples generated from “XMLFile.xml”</li>
+------> Display of all RDF triples generated from XMLFile.xml</li>
 </ol>
 </ol>
 
