@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
 
-import ppConverter.PP2RDF;
-import bnfConverter.BNF2RDF;
-import bnfMarcXML.MarcXmlReader;
-import bnfMarcXML.Record;
+import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
+import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
+import org.doremus.marc2rdf.bnfparser.Record;
+import org.doremus.marc2rdf.ppconverter.PP2RDF;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -33,33 +33,35 @@ public class Converter {
 			/*********** Copier/Coller tous les fichiers dans un seul **************/
 		    final Collection<File> all = new ArrayList<File>();
 		    findFilesRecursively(new File("C:\\Users\\Manel\\Music\\A\\"), all, ".xml");
-	       // FileWriter out = new FileWriter("C:\\Users\\Manel\\Videos\\A\\notice.nt");
-	        Model model = ModelFactory.createDefaultModel();
-	        Model m = ModelFactory.createDefaultModel();
+
+	     //   Model model = ModelFactory.createDefaultModel();
+	      //  Model m = ModelFactory.createDefaultModel();
 	        FileWriter out = null;
 		    for (File file : all) {
 		    	fich= file.getAbsolutePath();
+		    	Model m = ModelFactory.createDefaultModel();
 		    	/***************************************************************/
-		    	//BNF2RDF rdf = new BNF2RDF ();
-		    	PP2RDF rdf = new PP2RDF ();
+		    	BNF2RDF rdf = new BNF2RDF ();
+		    	//PP2RDF rdf = new PP2RDF ();
 		    	m = rdf.convert(file.getAbsolutePath());
-		    	model.add(m);
-		    }
+		   // 	model.add(m);
+		    
 		    	//  Mettre dans des fichiers séparés
-		 /*         String fileName = "C:\\Users\\Manel\\Music\\AA\\"+file.getName();
+		          String fileName = "C:\\Users\\Manel\\Music\\AA\\"+file.getName()+".ttl";
 		          out = new FileWriter( fileName );
-		    	/***************************************************************/
-		/*    }
-		     try {
-	             model.write(out);
-	         }
-	         finally {
-	            try {
-	                out.close();
-	            }
-	            catch (IOException closeException) {
-	            }
-	         }*/
+		          
+		          try {
+			             m.write(out, "TURTLE");
+			         }
+			         finally {
+			            try {
+			                out.close();
+			            }
+			            catch (IOException closeException) {
+			            }
+			         }
+		     }
+		     
 		    	}
 	/*************************************************************************************************/
 	private static void findFilesRecursively(File file, Collection<File> all, final String extension) {
