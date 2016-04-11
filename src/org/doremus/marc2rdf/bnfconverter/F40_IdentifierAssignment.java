@@ -6,11 +6,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import main.Converter;
-
 import org.apache.http.client.utils.URIBuilder;
 import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
+import org.doremus.marc2rdf.main.Converter;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;

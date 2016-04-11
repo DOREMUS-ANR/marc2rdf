@@ -1,4 +1,4 @@
-package main;
+package org.doremus.marc2rdf.main;
 
 /**
  * 

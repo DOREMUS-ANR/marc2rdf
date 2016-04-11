@@ -8,8 +8,7 @@ import java.net.URISyntaxException;
 
 import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
-
-import main.Converter;
+import org.doremus.marc2rdf.main.Converter;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;

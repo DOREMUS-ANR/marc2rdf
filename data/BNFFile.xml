@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<record Numero="13909561" format="InterXMarc_Complet" type="Authority">
+<leader>00765c1 au22000272  45  <Pos Code="0004">00765</Pos>
+<Pos Code="05" Sens="notice modifiée">c</Pos>
+<Pos Code="06" Sens="notice validée en catalogage courant">1</Pos>
+<Pos Code="08" Sens="notice d&apos;autorité">a</Pos>
+<Pos Code="09" Sens="titre uniforme musical (TUM)">u</Pos>
+<Pos Code="10">2</Pos>
+<Pos Code="11">2</Pos>
+<Pos Code="1216">00027</Pos>
+<Pos Code="17" Sens="autres cas">2</Pos>
+<Pos Code="20">4</Pos>
+<Pos Code="21">5</Pos>
+</leader>
+<controlfield tag="001">FRBNF139095615<Pos Code="0001">FR</Pos>
+<Pos Code="0204">BNF</Pos>
+<Pos Code="0512">13909561</Pos>
+<Pos Code="13">5</Pos>
+</controlfield>
+<controlfield tag="008">890821070620yyger or        1736      ....                   1   <Pos Code="0001">89</Pos>
+<Pos Code="0203">08</Pos>
+<Pos Code="0405">21</Pos>
+<Pos Code="0607">07</Pos>
+<Pos Code="0809">06</Pos>
+<Pos Code="1011">20</Pos>
+<Pos Code="1213" Sens="ne s&apos;applique pas">yy</Pos>
+<Pos Code="1416" Sens="allemand">ger</Pos>
+<Pos Code="1820">or </Pos>
+<Pos Code="2831">1736</Pos>
+<Pos Code="3841">....</Pos>
+<Pos Code="61" Sens="La vedette peut être liée à une notice bibliographique sauf pour l&apos;accès matière RAMEAU">1</Pos>
+</controlfield>
+<datafield tag="048" ind1=" " ind2=" ">
+	<subfield code="a">va01<Pos Code="0001" Sens="voix - soprano">va</Pos>
+<Pos Code="02">0</Pos>
+<Pos Code="03">1</Pos>
+</subfield>
+	<subfield code="a">vc01<Pos Code="0001" Sens="voix - alto">vc</Pos>
+<Pos Code="02">0</Pos>
+<Pos Code="03">1</Pos>
+</subfield>
+	<subfield code="a">vd01<Pos Code="0001" Sens="voix - ténor">vd</Pos>
+<Pos Code="02">0</Pos>
+<Pos Code="03">1</Pos>
+</subfield>
+	<subfield code="a">vf01<Pos Code="0001" Sens="voix - basse">vf</Pos>
+<Pos Code="02">0</Pos>
+<Pos Code="03">1</Pos>
+</subfield>
+	<subfield code="a">cn01<Pos Code="0001" Sens="choeurs - non spécifié">cn</Pos>
+<Pos Code="02">0</Pos>
+<Pos Code="03">1</Pos>
+</subfield>
+	<subfield code="a">oa01<Pos Code="0001" Sens="orchestre - orchestre symphonique XIXe-XXe s.">oa</Pos>
+<Pos Code="02">0</Pos>
+<Pos Code="03">1</Pos>
+</subfield>
+</datafield>
+<datafield tag="100" ind1=" " ind2=" ">
+	<subfield code="3">11889790</subfield>
+	<subfield code="w"> 0  b.....</subfield>
+	<subfield code="a">Bach</subfield>
+	<subfield code="m">Johann Sebastian</subfield>
+	<subfield code="d">1685-1750</subfield>
+</datafield>
+<datafield tag="144" ind1="1" ind2=" ">
+	<subfield code="w">....b.ger.</subfield>
+	<subfield code="a">Oster-Oratorium</subfield>
+	<subfield code="k">BWV 249</subfield>
+</datafield>
+<datafield tag="301" ind1=" " ind2=" ">
+	<subfield code="3">16145285</subfield>
+	<subfield code="a">Bach</subfield>
+	<subfield code="m">Johann Sebastian</subfield>
+	<subfield code="d">1685-1750</subfield>
+	<subfield code="t">[Concertos. Hautbois (2), basson, orchestre à cordes, basse continue]</subfield>
+</datafield>
+<datafield tag="444" ind1="1" ind2=" ">
+	<subfield code="w">....b.fre.</subfield>
+	<subfield code="a">Kantate zum Osterfest</subfield>
+	<subfield code="k">BWV 249</subfield>
+</datafield>
+<datafield tag="444" ind1="1" ind2=" ">
+	<subfield code="w">....b.fre.</subfield>
+	<subfield code="a">Cantates</subfield>
+	<subfield code="n">No 249</subfield>
+</datafield>
+<datafield tag="444" ind1="1" ind2=" ">
+	<subfield code="w">....b.ger.</subfield>
+	<subfield code="a">Kommt, eilet und laufet</subfield>
+	<subfield code="k">BWV 249</subfield>
+</datafield>
+<datafield tag="444" ind1="1" ind2=" ">
+	<subfield code="w">....b.fre.</subfield>
+	<subfield code="a">Oratorio de Pâques</subfield>
+	<subfield code="k">BWV 249</subfield>
+</datafield>
+<datafield tag="502" ind1=" " ind2=" ">
+	<subfield code="3">14033680</subfield>
+	<subfield code="a">Bach</subfield>
+	<subfield code="m">Johann Sebastian</subfield>
+	<subfield code="d">1685-1750</subfield>
+	<subfield code="t">[Oratorios]</subfield>
+</datafield>
+<datafield tag="600" ind1=" " ind2=" ">
+	<subfield code="a">Date de composition : 1736</subfield>
+</datafield>
+<datafield tag="610" ind1=" " ind2=" ">
+	<subfield code="a">Grove 6</subfield>
+</datafield>
+<datafield tag="917" ind1=" " ind2=" ">
+	<subfield code="o">OPC</subfield>
+	<subfield code="a">100381450</subfield>
+</datafield>
+<datafield tag="917" ind1=" " ind2=" ">
+	<subfield code="o">OPD</subfield>
+	<subfield code="a">100776510</subfield>
+	<subfield code="b">ATUM</subfield>
+</datafield>
+<datafield tag="996" ind1=" " ind2=" ">
+	<subfield code="o">OPP</subfield>
+	<subfield code="a">14847431</subfield>
+	<subfield code="d">20070620</subfield>
+</datafield>
+<Alter Ori="11889790">
+<datafield tag="400" ind1=" " ind2=" ">
+	<subfield code="w">. . b.....</subfield>
+	<subfield code="a">Bach</subfield>
+	<subfield code="m">Jean Sébastien</subfield>
+	<subfield code="d">1685-1750</subfield>
+</datafield>
+</Alter>
+<Attr Nom="IDPerenne">ark:/12148/cb13909561w</Attr>
+<Attr Nom="NumSource">OPC 100381450</Attr>
+<Attr Nom="Source" Sens="BnF catalogue général (depuis 1999)">A</Attr>
+<Attr Nom="NumAutoriteLiee">118897901614528514033680</Attr>
+<Attr Nom="DateCreation">21/08/ 1989</Attr>
+<Attr Nom="ResponsableCreation">MIGV2</Attr>
+<Attr Nom="StructCreation">1</Attr>
+<Attr Nom="DateDerniereValidation">08/11/ 2010</Attr>
+<Attr Nom="ResponsableDerniereValidation">MIGV4</Attr>
+<Attr Nom="StructPremiereValidation">1</Attr>
+<Attr Nom="DatePremiereValidation">21/08/ 1989</Attr>
+<Attr Nom="ResponsablePremiereValidation">MIGV2</Attr>
+<Attr Nom="StructDerniereValidation">1</Attr>
+<Attr Nom="NumSource" Rep="1">OPD 100776510</Attr>
+<Attr Nom="NumSource" Rep="2">OPP 14847431</Attr>
+</record>
