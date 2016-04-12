@@ -33,8 +33,8 @@ The class "MainParser" is the "main" class to launch the parser and to display t
 
 <p> <B> How to run: </B> </p>
 <ol>
-<li> Edit the path about records to be converted in “Converter.java” class in “main” package. </li>
 <li> Execute “Converter.java” class in “main” package.</li>
+<li> Choose the directory that contains the records to be converted. </li>
 <li> Display of RDF triples :</li>
 <ol type=A>
 <li> Go to Virtuoso (http: // localhost: 8890)</li>
