@@ -32,8 +32,9 @@ public class FileChooser extends JPanel implements ActionListener {
 		log.setEditable(false);
 		//Create a file chooser
 		fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		
-		chooseButton = new JButton("Choose a File...");
+		chooseButton = new JButton("Choose Directory...");
 		chooseButton.addActionListener(this);
 		
 		
@@ -60,7 +61,7 @@ public class FileChooser extends JPanel implements ActionListener {
                 dir = file.getAbsolutePath().toString();
                 getInsets();
                 choosed = true;
-                System.out.println("Choosed File Directory: " + dir);
+                System.out.println("Choosed Directory: " + dir);
                 synchronized(this) {
                     this.notify();
                 }
