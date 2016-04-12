@@ -127,6 +127,7 @@ public class F28_ExpressionCreation {
         			 	if(!noSy && noSm && noSd && noFy && noFm && noFd){
         			 		sm = "01";
         			 		sd = "01";
+        			 		fy = sy;
         			 		fm = "12";
         			 		fd = "31";
         			 	}
