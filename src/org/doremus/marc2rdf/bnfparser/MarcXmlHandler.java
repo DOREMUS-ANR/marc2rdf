@@ -54,6 +54,7 @@ public class MarcXmlHandler implements ContentHandler {
     String realname = (name.length() == 0) ? qName : name;
     Integer elementType = (Integer) elementMap.get(realname);
 
+	bDATA = false;
     if ((qName.equalsIgnoreCase("controlfield"))||(qName.equalsIgnoreCase("subfield"))) {
     	bDATA = true;
     }
@@ -95,7 +96,7 @@ public class MarcXmlHandler implements ContentHandler {
   public void characters(char[] ch, int start, int length) throws SAXException {
 	  if (bDATA) {
 	    	buffer.append(new String(ch, start, length)); // Récupérer le contenu de la balise "data"
-	        bDATA = false;
+	        //bDATA = false;
 	    }
   }
   /*********************************************************************************/
