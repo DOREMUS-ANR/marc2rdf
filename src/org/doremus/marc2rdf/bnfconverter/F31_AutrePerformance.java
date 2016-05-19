@@ -7,15 +7,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
-import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
+import org.doremus.marc2rdf.ppparser.MarcXmlReader;
+import org.doremus.marc2rdf.ppparser.Record;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public class F31_Performance {
+public class F31_AutrePerformance {
 	
 	static Model modelF31 = ModelFactory.createDefaultModel();
 	static URI uriF31=null;
@@ -40,39 +40,39 @@ public class F31_Performance {
     	uriF31 = getURIF31();
     	Resource F31 = modelF31.createResource(uriF31.toString());
     	
-    	/**************************** création d'une expression de plan d'exécution *************/
-    	F28_ExpressionCreation F28= new F28_ExpressionCreation();
-    	modelF31.createResource(F28.getURIF28().toString()).addProperty(modelF31.createProperty(frbroo+ "R17_created"), getURIF31().toString());
-    	
-    	/**************************** exécution du plan *****************************************/
-    	F25_PerformancePlan F25= new F25_PerformancePlan();
-    	modelF31.createResource(F25.getURIF25().toString()).addProperty(modelF31.createProperty(frbroo+ "R25i_was_performed_by"), getURIF31().toString());
-    	
     	/**************************** Performance: 1ère exécution *******************************/
-    	F14_IndividualWork F14= new F14_IndividualWork();
-    	modelF31.createResource(F14.getURIF14().toString()).addProperty(modelF31.createProperty(mus+ "U5_had_premiere"), getURIF31().toString());
-
-    	/**************************** Performance: 1ère exécution *******************************/
-    	F31.addProperty(modelF31.createProperty(mus+ "U5_had_premiere"), getExecution(Converter.getFile()));
+    	F31.addProperty(modelF31.createProperty(cidoc+ "P3_has_note"), getNote(Converter.getFile()));
     	
     	return modelF31;
     }
     
     /*********************************** L'exécution ***********************************/
-    public static String getExecution(String xmlFile) throws FileNotFoundException {
+    public static String getNote(String xmlFile) throws FileNotFoundException {
         StringBuilder buffer = new StringBuilder();
         InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
         MarcXmlReader reader = new MarcXmlReader(file);
+        String note="";
+        String st;
+        
         while (reader.hasNext()) { // Parcourir le fichier MARCXML
         	 Record s = reader.next();
         	 for (int i=0; i<s.dataFields.size(); i++) {
         		 if (s.dataFields.get(i).getEtiq().equals("600")) {
         			 if (s.dataFields.get(i).isCode('a')){
-        			 String execution = s.dataFields.get(i).getSubfield('a').getData();
-    			 	 if ((execution.contains("exécution : "))||(execution.contains("éxécution : "))||(execution.contains("représentation : "))){
-    				 buffer.append(execution);
-    			 	 }
-        		 }
+        				 note = s.dataFields.get(i).getSubfield('a').getData();
+        				 if (note.contains("exécution ")){
+        					 st = note.substring(note.lastIndexOf("exécution") + 2);
+        					 if (!(st.contains(":"))) buffer.append(note);
+        				 }
+        				 if (note.contains("éxécution ")){
+        					 st = note.substring(note.lastIndexOf("éxécution") + 2);
+        					 if (!(st.contains(":"))) buffer.append(note);
+        				 }
+        				 if (note.contains("représentation  ")){
+        					 st = note.substring(note.lastIndexOf("représentation") + 2);
+        					 if (!(st.contains(":"))) buffer.append(note);
+        				 }
+        			 }
         		 }
         	 }
         }

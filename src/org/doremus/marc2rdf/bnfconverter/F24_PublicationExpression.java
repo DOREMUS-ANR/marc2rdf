@@ -7,10 +7,10 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public class F25_PerformancePlan {
-
-	static Model modelF25 = ModelFactory.createDefaultModel();
-	static URI uriF25=null;
+public class F24_PublicationExpression {
+	
+	static Model modelF24 = ModelFactory.createDefaultModel();
+	static URI uriF24 = null;
 	
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -18,26 +18,25 @@ public class F25_PerformancePlan {
     String xsd = "http://www.w3.org/2001/XMLSchema#";
     
 	/********************************************************************************************/
-    public URI getURIF25() throws URISyntaxException {
-    	if (uriF25==null){
+    public URI getURIF24() throws URISyntaxException {
+    	if (uriF24==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
-    	uriF25 = uri.getUUID("Performance_Plan","F25", uuid.get());
+    	uriF24 = uri.getUUID("Publication_Expression","F24", uuid.get());
     	}
-    	return uriF25;
+    	return uriF24;
     }
     
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException{
-    	uriF25 = getURIF25();
-    	Resource F25 = modelF25.createResource(uriF25.toString());
+    	uriF24 = getURIF24();
+    	Resource F24 = modelF24.createResource(uriF24.toString());
     	
-    	/**************************** exécution du plan ******************************************/
-    	F31_Performance F31= new F31_Performance();
-    	F25.addProperty(modelF25.createProperty(frbroo+ "R25i_was_performed_by"), modelF25.createResource(F31.getURIF31().toString()));
+    	/*********** création d'une expression de publication incorporant l'expression **********/
+    	F22_SelfContainedExpression F22= new F22_SelfContainedExpression();
+    	F24.addProperty(modelF24.createProperty(cidoc+ "P165_incorporates"), modelF24.createResource(F22.getURIF22().toString()));
     	
-    	
-		return modelF25;
+		return modelF24;
     }
     /********************************************************************************************/
 }

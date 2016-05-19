@@ -7,10 +7,10 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public class F25_PerformancePlan {
+public class F19_PublicationWork {
 
-	static Model modelF25 = ModelFactory.createDefaultModel();
-	static URI uriF25=null;
+	static Model modelF19 = ModelFactory.createDefaultModel();
+	static URI uriF19 = null;
 	
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -18,26 +18,25 @@ public class F25_PerformancePlan {
     String xsd = "http://www.w3.org/2001/XMLSchema#";
     
 	/********************************************************************************************/
-    public URI getURIF25() throws URISyntaxException {
-    	if (uriF25==null){
+    public URI getURIF19() throws URISyntaxException {
+    	if (uriF19==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
-    	uriF25 = uri.getUUID("Performance_Plan","F25", uuid.get());
+    	uriF19 = uri.getUUID("Publication_Work","F19", uuid.get());
     	}
-    	return uriF25;
+    	return uriF19;
     }
     
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException{
-    	uriF25 = getURIF25();
-    	Resource F25 = modelF25.createResource(uriF25.toString());
+    	uriF19 = getURIF19();
+    	Resource F19 = modelF19.createResource(uriF19.toString());
     	
-    	/**************************** exécution du plan ******************************************/
-    	F31_Performance F31= new F31_Performance();
-    	F25.addProperty(modelF25.createProperty(frbroo+ "R25i_was_performed_by"), modelF25.createResource(F31.getURIF31().toString()));
+    	/**************************** réalisation d'une work ************************************/
+    	F24_PublicationExpression F24= new F24_PublicationExpression();
+    	F19.addProperty(modelF19.createProperty(frbroo+ "R3_is_realised_in"), modelF19.createResource(F24.getURIF24().toString()));
     	
-    	
-		return modelF25;
+		return modelF19;
     }
     /********************************************************************************************/
 }

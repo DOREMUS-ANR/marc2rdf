@@ -9,6 +9,9 @@ import java.net.URISyntaxException;
 import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
+import org.doremus.marc2rdf.ppconverter.PF14_IndividualWork;
+import org.doremus.marc2rdf.ppconverter.PF19_PublicationWork;
+import org.doremus.marc2rdf.ppconverter.PF24_PublicationExpression;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;
@@ -39,6 +42,14 @@ public class F30_PublicationEvent {
     public Model getModel() throws URISyntaxException, FileNotFoundException{
     	uriF30 = getURIF30();
     	Resource F30 = modelF30.createResource(uriF30.toString());
+    	
+    	/**************************** création d'une expression de publication *************/
+    	F24_PublicationExpression F24= new F24_PublicationExpression();
+    	F30.addProperty(modelF30.createProperty(frbroo+ "R24_created"), modelF30.createResource(F24.getURIF24().toString()));
+    	
+    	/**************************** réalisation d'une work *******************************/
+    	F19_PublicationWork F19= new F19_PublicationWork();
+    	F30.addProperty(modelF30.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF30.createResource(F19.getURIF19().toString()));
     	
     	/**************************** Publication Event: édition princeps ******************/
     	F14_IndividualWork F14= new F14_IndividualWork();

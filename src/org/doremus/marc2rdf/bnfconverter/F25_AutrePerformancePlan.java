@@ -7,7 +7,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public class F25_PerformancePlan {
+public class F25_AutrePerformancePlan {
 
 	static Model modelF25 = ModelFactory.createDefaultModel();
 	static URI uriF25=null;
@@ -33,9 +33,12 @@ public class F25_PerformancePlan {
     	Resource F25 = modelF25.createResource(uriF25.toString());
     	
     	/**************************** exécution du plan ******************************************/
-    	F31_Performance F31= new F31_Performance();
+    	F31_AutrePerformance F31= new F31_AutrePerformance();
     	F25.addProperty(modelF25.createProperty(frbroo+ "R25i_was_performed_by"), modelF25.createResource(F31.getURIF31().toString()));
     	
+    	/**************************** exécution du plan ******************************************/
+    //	PF31_AutrePerformance FA31= new PF31_AutrePerformance();
+    //	F25.addProperty(modelF25.createProperty(frbroo+ "R25i_is_performed_by"), modelF25.createResource(F31.getURIF31().toString()));
     	
 		return modelF25;
     }

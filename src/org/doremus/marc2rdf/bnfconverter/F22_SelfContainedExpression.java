@@ -57,13 +57,14 @@ public class F22_SelfContainedExpression {
     	F22.addProperty(modelF22.createProperty(frbroo+ "R40i_is_representative_expression_of"), modelF22.createResource(F15.getURIF15().toString()));
     	
     	/**************************** Expression: Context for the expression ********************/
-    	F22.addProperty(modelF22.createProperty(cidoc+ "P67_refers_to"), getDedicace(Converter.getFile()));
+    	F22.addProperty(modelF22.createProperty(cidoc+ "P67_refers_to"), modelF22.createResource()
+    			.addProperty(modelF22.createProperty(cidoc+ "P3_has_note"), getDedicace(Converter.getFile()))
+				);
+    			
     	
     	/**************************** Expression: Title *****************************************/
-    //	String lang = (Converter.getFile());
-    //	if (lang.equals("fre"))
-    //	F22.addProperty(modelF22.createProperty(cidoc+ "P102_has_title"), getTitle(Converter.getFile()), "http://id.loc.gov/vocabulary/iso639-2/fre");
-    	F22.addProperty(modelF22.createProperty(cidoc+ "P102_has_title"), getTitle(Converter.getFile()));
+    	F22.addProperty(modelF22.createProperty(cidoc+ "P102_has_title"), modelF22.createLiteral(getTitle(Converter.getFile(), "144"), getLang(Converter.getFile(), "144") ));
+    	F22.addProperty(modelF22.createProperty(cidoc+ "P102_has_title"), modelF22.createLiteral(getTitle(Converter.getFile(), "444"), getLang(Converter.getFile(), "444") ));
     	/**************************** Expression: Catalogue *************************************/
     	F22.addProperty(modelF22.createProperty(mus+ "U16_has_catalogue_statement"), modelF22.createResource()
     			.addProperty(modelF22.createProperty(cidoc+ "P3_has_note"), getCatalog(Converter.getFile()))
@@ -82,11 +83,17 @@ public class F22_SelfContainedExpression {
     	F22.addProperty(modelF22.createProperty(cidoc+ "P3_has_note"), getNote(Converter.getFile()));
     	
     	/**************************** Expression: key *******************************************/
-    	F22.addProperty(modelF22.createProperty(mus+ "U11_has_key"), getKey(Converter.getFile()));
-    	
+    	if (!(getKey(Converter.getFile()).equals(""))){
+        	F22.addProperty(modelF22.createProperty(mus+ "U11_has_key"), modelF22.createResource()
+        			.addProperty(modelF22.createProperty(cidoc+ "P1_is_identified_by"), modelF22.createLiteral(getKey(Converter.getFile()),"fr")) // Le nom du genre est toujours en français
+    				);
+        	}
     	/**************************** Expression: Genre *****************************************/
-    	F22.addProperty(modelF22.createProperty(mus+ "U12_has_genre"), getGenre(Converter.getFile()));
-    	
+    	if (!(getGenre(Converter.getFile()).equals(""))){
+        	F22.addProperty(modelF22.createProperty(mus+ "U12_has_genre"), modelF22.createResource()
+        			.addProperty(modelF22.createProperty(cidoc+ "P1_is_identified_by"), modelF22.createLiteral(getGenre(Converter.getFile()),"fr")) // Le nom du genre est toujours en français
+    				);
+        	}
     	/**************************** Expression: Order Number **********************************/
     	F22.addProperty(modelF22.createProperty(mus+ "U10_has_order_number"), getOrderNumber(Converter.getFile()));
     	
@@ -123,14 +130,14 @@ public class F22_SelfContainedExpression {
     	}
     
     /****************************La langue du titre ************************************/
-    public static String getLang(String xmlFile) throws IOException {
+    public static String getLang(String xmlFile, String etiq) throws IOException {
     	InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
         MarcXmlReader reader = new MarcXmlReader(file);
         String langue="";
         while (reader.hasNext()) { // Parcourir le fichier MARCXML
        	 Record s = reader.next();
        	 for (int i=0; i<s.dataFields.size(); i++) {
-       		 if (s.dataFields.get(i).getEtiq().equals("144")) {
+       		 if (s.dataFields.get(i).getEtiq().equals(etiq)) {
        			if (s.dataFields.get(i).isCode('w'))
 				 {
 					 for (int j=0; j<=8; j++){
@@ -144,7 +151,7 @@ public class F22_SelfContainedExpression {
 		return langue;
     }
     /*********************************** Le titre **************************************/
-    public static String getTitle(String xmlFile) throws IOException {
+    public static String getTitle(String xmlFile, String etiq) throws IOException {
         StringBuilder buffer = new StringBuilder();
         InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
         MarcXmlReader reader = new MarcXmlReader(file);
@@ -154,7 +161,7 @@ public class F22_SelfContainedExpression {
         while (reader.hasNext()) { // Parcourir le fichier MARCXML
         	 Record s = reader.next();
         	 for (int i=0; i<s.dataFields.size(); i++) {
-        		 if (s.dataFields.get(i).getEtiq().equals("144")) {
+        		 if (s.dataFields.get(i).getEtiq().equals(etiq)) {
         					 if (s.dataFields.get(i).isCode('a'))
         						 title_a = s.dataFields.get(i).getSubfield('a').getData();
         						 //buffer.append(s.dataFields.get(i).getSubfield('a').getData());
