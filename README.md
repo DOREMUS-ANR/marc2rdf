@@ -9,13 +9,13 @@ The [MARCXML][3] format, developed by the Library of Congress in 2001, consists 
 The figure, below, illustrates an example an INTERMARC-XML file:
 
 ![INTERMARC-XML](https://github.com/DOREMUS-ANR/marc2rdf/blob/master/img/1.png)
- 
+
 Its display in INTERMARC format:
 
 ![INTERMARC format](https://github.com/DOREMUS-ANR/marc2rdf/blob/master/img/2.png)
- 
+
 And its conversion in RDF triples:
- 
+
 ![RDF triples](https://github.com/DOREMUS-ANR/marc2rdf/blob/master/img/3.png)
 
 ### MARC2RDF description:
@@ -32,6 +32,8 @@ The class "MainParser" is the "main" class to launch the parser and to display t
 
 
 ### How to run:
+
+Setup the `config.properties` file as you need.
 
 1. Execute “Converter.java” class in “main” package.
 2. Choose the directory that contains the records to be converted.
@@ -52,7 +54,7 @@ The class "MainParser" is the "main" class to launch the parser and to display t
 5. com.ibm.icu_3.4.4.1:http://www.java2s.com/.../Jar/c/Downloadcomibmicu3441jar.htm
 6. iri-0.8 : http://www.java2s.com/Code/Jar/i/Downloadiri08jar.htm
 
-### RDF Store: 
+### RDF Store:
 Virtuoso 7.2.1 (http://www.openlinksw.com)
 
 [1]: https://drive.google.com/file/d/0B_nxZpGQv9GKZmpKRGl2dmRENGc/view
