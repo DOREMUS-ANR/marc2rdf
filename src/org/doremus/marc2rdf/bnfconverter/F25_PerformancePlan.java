@@ -12,6 +12,11 @@ public class F25_PerformancePlan {
 	static Model modelF25 = ModelFactory.createDefaultModel();
 	static URI uriF25=null;
 	
+	public F25_PerformancePlan() throws URISyntaxException{
+		this.modelF25 = ModelFactory.createDefaultModel();
+		this.uriF25= getURIF25();
+	}
+	
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
@@ -19,22 +24,19 @@ public class F25_PerformancePlan {
     
 	/********************************************************************************************/
     public URI getURIF25() throws URISyntaxException {
-    	if (uriF25==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF25 = uri.getUUID("Performance_Plan","F25", uuid.get());
-    	}
     	return uriF25;
     }
     
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException{
-    	uriF25 = getURIF25();
+    	
     	Resource F25 = modelF25.createResource(uriF25.toString());
     	
     	/**************************** exécution du plan ******************************************/
-    	F31_Performance F31= new F31_Performance();
-    	F25.addProperty(modelF25.createProperty(frbroo+ "R25i_was_performed_by"), modelF25.createResource(F31.getURIF31().toString()));
+    	F25.addProperty(modelF25.createProperty(frbroo+ "R25i_was_performed_by"), modelF25.createResource(F31_Performance.uriF31.toString()));
     	
     	
 		return modelF25;

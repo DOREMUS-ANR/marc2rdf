@@ -20,24 +20,29 @@ public class F31_AutrePerformance {
 	static Model modelF31 = ModelFactory.createDefaultModel();
 	static URI uriF31=null;
 	
+	public F31_AutrePerformance() throws URISyntaxException{
+		this.modelF31 = ModelFactory.createDefaultModel();
+		this.uriF31= getURIF31();
+	}
+	
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
+    String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
+    String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     
 	/********************************************************************************************/
     public URI getURIF31() throws URISyntaxException {
-    	if (uriF31==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF31 = uri.getUUID("Performance","F31", uuid.get());
-    	}
     	return uriF31;
     }
     
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException, IOException{
-    	uriF31 = getURIF31();
+    	
     	Resource F31 = modelF31.createResource(uriF31.toString());
     	
     	/**************************** Performance: 1ère exécution *******************************/
