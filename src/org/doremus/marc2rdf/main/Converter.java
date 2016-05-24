@@ -82,25 +82,17 @@ public class Converter {
     }
 
     for (File file : list) {
-      if (!file.isFile()) continue;
+      if (!file.isFile() || !file.getName().endsWith(".xml")) continue;
 
       fich = file.getAbsolutePath();
+      Model m = ModelFactory.createDefaultModel();
 
-      if (file.getName().length() == 12) { // Notice BNF
+      if (file.getName().length() == 12) {
+        // Notice BNF
+        m = BNF2RDF.convert(file.getAbsolutePath());
+      } else if (file.getName().length() == 11) {
+        // Notice PP
 
-        Model m = BNF2RDF.convert(file.getAbsolutePath());
-        File dir = Paths.get(file.getParentFile().getAbsolutePath(), "RDF").toFile();
-        dir.mkdirs(); // Créer un nouveau dossier
-        // Mettre dans des fichiers séparés
-        File fileName = Paths.get(dir.getAbsolutePath(), file.getName() + ".ttl").toFile();
-        fileName.getParentFile().mkdirs();
-        FileWriter out = new FileWriter(fileName);
-        m.write(out, "TURTLE");
-        out.close();
-
-      } else if (file.getName().length() == 11) { // Notice PP
-
-        Model m = ModelFactory.createDefaultModel();
 
         /******
          * Verifier si c'est une notice d'oeuvre ou un TUM
@@ -140,17 +132,14 @@ public class Converter {
           m.add(PP2RDF.convert(tum.getAbsolutePath()));
           // Convertir le TUM correspondant
         }
-        /****************************************************************/
-
-        File dir = Paths.get(file.getParentFile().getAbsolutePath(), "RDF").toFile();
-        dir.mkdirs(); // Créer un nouveau dossier
-        // Mettre dans des fichiers séparés
-        File fileName = Paths.get(dir.getAbsolutePath(), file.getName() + ".ttl").toFile();
-        fileName.getParentFile().mkdirs();
-        FileWriter out = new FileWriter(fileName);
-        m.write(out, "TURTLE");
-        out.close();
       }
+
+      // Write the output file
+      File fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName() + ".ttl").toFile();
+      fileName.getParentFile().mkdirs();
+      FileWriter out = new FileWriter(fileName);
+      m.write(out, "TURTLE");
+      out.close();
     }
     for (File subList : list) {
       if (subList.isDirectory())
