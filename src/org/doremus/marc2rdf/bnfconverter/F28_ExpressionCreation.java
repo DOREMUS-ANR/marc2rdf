@@ -19,19 +19,19 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 public class F28_ExpressionCreation {
-	
+
 /*** Correspond à l'expression représentative de l'oeuvre musicale ***/
-	
+
 	static Model modelF28 = ModelFactory.createDefaultModel();
 	static URI uriF28=null;
-	
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
     String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
     String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    
+
 	/********************************************************************************************/
     public URI getURIF28() throws URISyntaxException {
     	if (uriF28==null){
@@ -41,19 +41,19 @@ public class F28_ExpressionCreation {
     	}
     	return uriF28;
     }
-    
+
     public Model getModel() throws URISyntaxException, FileNotFoundException{
     	uriF28 = getURIF28();
     	Resource F28 = modelF28.createResource(uriF28.toString());
-    	
+
     	/**************************** Work: created a realisation *******************************/
     	F14_IndividualWork F14= new F14_IndividualWork();
     	F28.addProperty(modelF28.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF28.createResource(F14.getURIF14().toString()));
-    	
+
     	/**************************** Expression: created ***************************************/
     	F22_SelfContainedExpression F22= new F22_SelfContainedExpression();
     	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(F22.getURIF22().toString()));
-    	
+
     	/**************************** Work: Date of the work (expression représentative) ********/
     	if (!(getDateMachine(Converter.getFile()).equals(""))){
         	RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(dcterms + "terms-W3CDTF");
@@ -74,11 +74,11 @@ public class F28_ExpressionCreation {
         						))
         				);
         	}
-        
+
 		return modelF28;
     }
     /********************************************************************************************/
-	
+
 	/************* Date de creation de l'expression (Format machine) ***********************/
     public static String getDateMachine(String xmlFile) throws FileNotFoundException {
         StringBuilder buffer = new StringBuilder();
@@ -87,51 +87,50 @@ public class F28_ExpressionCreation {
         while (reader.hasNext()) { // Parcourir le fichier MARCXML
         	 Record s = reader.next();
         	 for (int i=0; i<s.controlFields.size(); i++) {
-        		 
         		 if (s.controlFields.get(i).getEtiq().equals("008")) {
-            		 /***************************** Cas 1 *********************************/
-        			 if (((s.controlFields.get(i).getData().charAt(36))==((" ").charAt(0)))&&
-        			 ((s.controlFields.get(i).getData().charAt(46))==((" ").charAt(0)))){
-        				String sy = ""; 
+               String controlFieldData = s.controlFields.get(i).getData();
+               /***************************** Cas 1 *********************************/
+               if ((controlFieldData.charAt(36)==' ')&&
+        			 (controlFieldData.length()== 46 || controlFieldData.charAt(46)==' ')){
+        				String sy = "";
         			 	boolean noSy = true;
         			 	for (int j=28; j<=31; j++){
-
-        			 		char character = s.controlFields.get(i).getData().charAt(j);
+        			 		char character = controlFieldData.charAt(j);
         			 		sy = sy + character;
         			 		if (!(character==(' '))) {noSy = false;}
         			 	}
         			 	String sm = "";
         			 	boolean noSm = true;
         			 	for (int j=32; j<=33; j++){
-        			 		char character = s.controlFields.get(i).getData().charAt(j);
+        			 		char character = controlFieldData.charAt(j);
         			 		sm = sm + character;
         			 		if (!(character==(' '))) {noSm = false;}
         			 	}
         			 	String sd = "";
         			 	boolean noSd = true;
         			 	for (int j=34; j<=35; j++){
-        			 		char character = s.controlFields.get(i).getData().charAt(j);
+        			 		char character = controlFieldData.charAt(j);
         			 		sd = sd + character;
         			 		if (!(character==(' '))) {noSd = false;}
         			 	}
-        			 	String fy = ""; 
+        			 	String fy = "";
         			 	boolean noFy = true;
         			 	for (int j=38; j<=41; j++){
-        			 		char character = s.controlFields.get(i).getData().charAt(j);
+        			 		char character = controlFieldData.charAt(j);
         			 		fy = fy + character;
         			 		if (!(character==(' '))) {noFy = false;}
         			 	}
         			 	String fm = "";
         			 	boolean noFm = true;
         			 	for (int j=42; j<=43; j++){
-        			 		char character = s.controlFields.get(i).getData().charAt(j);
+        			 		char character = controlFieldData.charAt(j);
         			 		fm = fm + character;
         			 		if (!(character==(' '))) {noFm = false;}
         			 	}
         			 	String fd = "";
         			 	boolean noFd = true;
         			 	for (int j=44; j<=45; j++){
-        			 		char character = s.controlFields.get(i).getData().charAt(j);
+        			 		char character = controlFieldData.charAt(j);
         			 		fd = fd + character;
         			 		if (!(character==(' '))) {noFd = false;}
         			 	}
@@ -178,7 +177,7 @@ public class F28_ExpressionCreation {
         			 		else if(noFd){
         			 			fd = getLastDay(fm, fy);
         			 		}
-        			 		
+
         			 	}
        				    /******************** Sous cas 1.5 ********************************/
         			 	if(noSy && !noFy){
@@ -196,19 +195,19 @@ public class F28_ExpressionCreation {
         			 	buffer.append(sy + sm + sd + "/" + fy + fm + fd);
         			 }
         			 /***************************** Cas 2 *********************************/
-        			 else if (((s.controlFields.get(i).getData().charAt(36))==(("?").charAt(0)))||
-                			 ((s.controlFields.get(i).getData().charAt(46))==(("?").charAt(0)))||
-                			 ((s.controlFields.get(i).getData().charAt(30))==((".").charAt(0)))||
-                			 ((s.controlFields.get(i).getData().charAt(31))==((".").charAt(0)))||
-                			 ((s.controlFields.get(i).getData().charAt(40))==((".").charAt(0)))||
-                			 ((s.controlFields.get(i).getData().charAt(41))==((".").charAt(0)))){
+        			 else if ((controlFieldData.charAt(36)=='?')||
+                			 (controlFieldData.charAt(46)=='?')||
+                			 (controlFieldData.charAt(30)=='.')||
+                			 (controlFieldData.charAt(31)=='.')||
+                			 (controlFieldData.charAt(40)=='.')||
+                			 (controlFieldData.charAt(41)=='.')){
         				 /******************** Sous cas 2.1 ********************************/
-	        				 if (((s.controlFields.get(i).getData().charAt(30))==((".").charAt(0)))&&
-	        						 ((s.controlFields.get(i).getData().charAt(31))==((".").charAt(0)))){
+	        				 if ((controlFieldData.charAt(30)=='.')&&
+	        						 controlFieldData.charAt(31)==('.')){
 	        				 String dt ="";
 	        				 for (int j=28; j<=29; j++){
-	         			 		buffer.append(s.controlFields.get(i).getData().charAt(j));
-	         			 		dt = dt+s.controlFields.get(i).getData().charAt(j);
+	         			 		buffer.append(controlFieldData.charAt(j));
+	         			 		dt = dt+controlFieldData.charAt(j);
 	         			 	 }
         				     buffer.append("00/"+dt+"99");
         				 }
@@ -223,22 +222,22 @@ public class F28_ExpressionCreation {
 	        				 buffer.append("0/"+dt+"9");
         				 }
         				 /******************** Sous cas 2.3 ********************************/
-        				 if (((s.controlFields.get(i).getData().charAt(40))==((".").charAt(0)))&&
-        						 ((s.controlFields.get(i).getData().charAt(41))==((".").charAt(0)))){
+        				 if ((controlFieldData.charAt(40)=='.')&&
+        						 (controlFieldData.charAt(41)=='.')){
 	        				 String dt ="";
 	        				 for (int j=38; j<=39; j++){
-	         			 		buffer.append(s.controlFields.get(i).getData().charAt(j));
-	         			 		dt = dt+s.controlFields.get(i).getData().charAt(j);
+	         			 		buffer.append(controlFieldData.charAt(j));
+	         			 		dt = dt+controlFieldData.charAt(j);
 	         			 	 }
 	        				 buffer.append("00/"+dt+"99");
         				 }
         				 /******************** Sous cas 2.4 ********************************/
-        				 if (!((s.controlFields.get(i).getData().charAt(40))==((".").charAt(0)))&&
-        						 ((s.controlFields.get(i).getData().charAt(41))==((".").charAt(0)))){
+        				 if (!(controlFieldData.charAt(40)=='.')&&
+        						 (controlFieldData.charAt(41)=='.')) {
 	        				 String dt ="";
 	        				 for (int j=38; j<=40; j++){
-	         			 		buffer.append(s.controlFields.get(i).getData().charAt(j));
-	         			 		dt = dt+s.controlFields.get(i).getData().charAt(j);
+	         			 		buffer.append(controlFieldData.charAt(j));
+	         			 		dt = dt+controlFieldData.charAt(j);
 	         			 	 }
 	        				 buffer.append("0/"+dt+"9");
         				 }
@@ -268,7 +267,7 @@ public class F28_ExpressionCreation {
         }
         return buffer.toString();
     }
-    
+
     /***************** Le compositeur qui a crée l'oeuvre ******************************/
     public static String getComposer(String xmlFile) throws FileNotFoundException {
         StringBuilder buffer = new StringBuilder();
@@ -308,7 +307,7 @@ public class F28_ExpressionCreation {
         buffer.append(eSubField); buffer.append(hSubField); buffer.append(uSubField);
         return buffer.toString();
     }
-    
+
     public static String getLastDay(String fm, String fy) {
     	String fd;
     	if(fm.equals("04")||fm.equals("06")||fm.equals("09")||fm.equals("11")){
