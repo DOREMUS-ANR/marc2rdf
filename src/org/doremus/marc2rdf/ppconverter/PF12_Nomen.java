@@ -23,8 +23,13 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class PF12_Nomen {
 
-	static Model modelF12 = ModelFactory.createDefaultModel();
-	static URI uriF12=null;
+	static Model modelF12;
+	static URI uriF12;
+	
+	public PF12_Nomen() throws URISyntaxException{
+		this.modelF12 = ModelFactory.createDefaultModel();
+		this.uriF12= getURIF12();
+	}
 	
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -33,16 +38,14 @@ public class PF12_Nomen {
     
 	/********************************************************************************************/
     public URI getURIF12() throws URISyntaxException {
-    	if (uriF12==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF12 = uri.getUUID("Nomen","F12", uuid.get());
-    	}
     	return uriF12;
     }
     
     public Model getModel() throws URISyntaxException, IOException{
-    	uriF12 = getURIF12();
+    	
     	Resource F12 = modelF12.createResource(uriF12.toString());
     	
     	/**************************** Expression: Title *****************************************/

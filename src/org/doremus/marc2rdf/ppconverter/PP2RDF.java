@@ -24,9 +24,40 @@ import virtuoso.jena.driver.VirtuosoUpdateRequest;
 
 public class PP2RDF {
 
+	static Model model;
+	static PF15_ComplexWork f15;
+	static PF14_IndividualWork f14;
+	static PF28_ExpressionCreation f28;
+	static PF22_SelfContainedExpression f22;
+	static PF42_representativeExpressionAssignment f42;
+	static PF25_PerformancePlan f25;
+	static PF31_Performance f31;
+	static PF25_AutrePerformancePlan fa25;
+	static PF31_AutrePerformance fa31;
+	static PF30_PublicationEvent f30;
+	static PF40_IdentifierAssignment f40;
+	static PF50_ControlledAccessPoint f50;
+	static PF24_PublicationExpression f24;
+	static PF19_PublicationWork f19;
+	static PM18_DenominationControlledAccessPoint m18;
+	
+	public PP2RDF() throws URISyntaxException{
+        model = ModelFactory.createDefaultModel();
+		f15 = new PF15_ComplexWork();
+		f14 = new PF14_IndividualWork();
+		f28 = new PF28_ExpressionCreation();
+		f22 = new PF22_SelfContainedExpression();
+		f42 = new PF42_representativeExpressionAssignment();
+		f25 = new PF25_PerformancePlan();
+		f31 = new PF31_Performance();
+		fa25 = new PF25_AutrePerformancePlan();
+		fa31 = new PF31_AutrePerformance();
+		f30 = new PF30_PublicationEvent();
+		f40 = new PF40_IdentifierAssignment ();
+        }
+	
 	public static Model convert (String file) throws URISyntaxException, IOException {
 		
-		file= file;
 		
 		/************* Creer un modele vide **************************/
 		//Model model = VirtModel.openDatabaseModel("DOREMUS", "jdbc:virtuoso://localhost:1111", "dba", "dba");
@@ -38,37 +69,16 @@ public class PP2RDF {
         String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
         
 		/******************************** F15_ComplexWork ***************************************/
-		PF15_ComplexWork f15 = new PF15_ComplexWork();
 		model.add(f15.getModel());
-		
-		PF14_IndividualWork f14 = new PF14_IndividualWork();
 		model.add(f14.getModel());
-		
-		PF28_ExpressionCreation f28 = new PF28_ExpressionCreation();
 		model.add(f28.getModel());
-		
-		PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression();
 		model.add(f22.getModel());
-		
-		PF42_representativeExpressionAssignment f42 = new PF42_representativeExpressionAssignment();
 		model.add(f42.getModel());
-		
-		PF25_PerformancePlan f25 = new PF25_PerformancePlan();
 		model.add(f25.getModel());
-		
-		PF31_Performance f31 = new PF31_Performance();
 		model.add(f31.getModel());
-		
-		PF25_AutrePerformancePlan fa25 = new PF25_AutrePerformancePlan();
 		model.add(fa25.getModel());
-		
-		PF31_AutrePerformance fa31 = new PF31_AutrePerformance();
 		model.add(fa31.getModel());
-		
-		PF30_PublicationEvent f30 = new PF30_PublicationEvent();
 		model.add(f30.getModel());
-		
-		PF40_IdentifierAssignment f40 = new PF40_IdentifierAssignment ();
 		model.add(f40.getModel());
 		
 		/****************************************************************************************/

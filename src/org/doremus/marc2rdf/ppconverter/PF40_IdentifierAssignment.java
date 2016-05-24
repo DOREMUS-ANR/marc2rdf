@@ -20,8 +20,13 @@ public class PF40_IdentifierAssignment {
 	
 	/*** Correspond à l'attribution d'identifiant pour l'oeuvre ***/
 	
-	static Model modelF40 = ModelFactory.createDefaultModel();
-	static URI uriF40=null;
+	static Model modelF40;
+	static URI uriF40;
+	
+	public PF40_IdentifierAssignment() throws URISyntaxException{
+		this.modelF40 = ModelFactory.createDefaultModel();
+		this.uriF40= getURIF40();
+	}
 	
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -30,25 +35,21 @@ public class PF40_IdentifierAssignment {
     
 	/********************************************************************************************/
     public URI getURIF40() throws URISyntaxException {
-    	if (uriF40==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF40 = uri.getUUID("Identifier_Assignment","F40", uuid.get());
-    	}
     	return uriF40;
     }
     
     public Model getModel() throws URISyntaxException, FileNotFoundException{
-    	uriF40 = getURIF40();
+    	
     	Resource F40 = modelF40.createResource(uriF40.toString());
     	
     	/**************************** Work: was assigned by *************************************/
-    	PF50_ControlledAccessPoint F50= new PF50_ControlledAccessPoint();
-    	F40.addProperty(modelF40.createProperty(frbroo+ "R46_assigned"), modelF40.createResource(F50.getURIF50().toString()));
+    	F40.addProperty(modelF40.createProperty(frbroo+ "R46_assigned"), modelF40.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
     	
     	/**************************** Schéma général : Attribution ******************************/
-    	PF22_SelfContainedExpression F22= new PF22_SelfContainedExpression();
-    	F40.addProperty(modelF40.createProperty(frbroo+ "R45_assigned_to"), modelF40.createResource(F22.getURIF22().toString()));
+    	F40.addProperty(modelF40.createProperty(frbroo+ "R45_assigned_to"), modelF40.createResource(PF22_SelfContainedExpression.uriF22.toString()));
     	
     //	/**************************** Schéma général : agence ***********************************/
     	F40.addProperty(modelF40.createProperty(cidoc+ "P14_carried_out_by"), modelF40.createResource("http://data.doremus.org/Philharmonie_de_Paris"));

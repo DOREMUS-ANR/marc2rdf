@@ -6,7 +6,7 @@ import org.apache.http.client.utils.URIBuilder;
 
 public class ConstructURI {
 
-	public static URI getUUID(String classe, String identificator, String uuid) throws URISyntaxException  {
+	public URI getUUID(String classe, String identificator, String uuid) throws URISyntaxException  {
 		
          /**************************************************************************/   
 		 URIBuilder builder = new URIBuilder().setScheme("http").setHost("data.doremus.org")
