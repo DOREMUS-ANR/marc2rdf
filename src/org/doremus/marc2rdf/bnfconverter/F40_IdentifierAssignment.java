@@ -16,17 +16,17 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class F40_IdentifierAssignment {
-	
+
 	/*** Correspond à l'attribution d'identifiant pour l'oeuvre ***/
-	
+
 	static Model modelF40 = ModelFactory.createDefaultModel();
 	static URI uriF40=null;
-	
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
-    
+
 	/********************************************************************************************/
     public URI getURIF40() throws URISyntaxException {
     	if (uriF40==null){
@@ -36,50 +36,55 @@ public class F40_IdentifierAssignment {
     	}
     	return uriF40;
     }
-    
+
     public Model getModel() throws URISyntaxException, FileNotFoundException{
     	uriF40 = getURIF40();
     	Resource F40 = modelF40.createResource(uriF40.toString());
-    	
+
     	/**************************** Schéma général : Attribution ******************************/
     	F22_SelfContainedExpression F22= new F22_SelfContainedExpression();
     	F40.addProperty(modelF40.createProperty(frbroo+ "R45_assigned_to"), modelF40.createResource(F22.getURIF22().toString()));
-    	
+
     	/**************************** Schéma général : agence ***********************************/
     	F40.addProperty(modelF40.createProperty(cidoc+ "P14_carried_out_by"), modelF40.createResource(getBiblioAgency(Converter.getFile()).toString()));
-    	
+
     	/**************************** Schéma général : règles ***********************************/
     	F40.addProperty(modelF40.createProperty(frbroo+ "R52_used_rule"), "NF Z 44-079 (Novembre 1993) - Documentation - Catalogage- Forme et structure des vedettes titres musicaux");
-    	
+
     	/****************************  Schéma général : type d'identifiant************************/
     	//F40.addProperty(modelF40.createProperty(cidoc+ "P2_has_type"), "NF Z 44-079 (Novembre 1993) - Documentation - Catalogage- Forme et structure des vedettes titres musicaux");
-    	
+
 		return modelF40;
     }
     /********************************************************************************************/
-	
-	/******** L'agence bibliographique qui a attribué l'identifiant @throws URISyntaxException *****************/
-    public static URI getBiblioAgency(String xmlFile) throws FileNotFoundException, URISyntaxException {
-    	URIBuilder builder = null ;
-        InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-        MarcXmlReader reader = new MarcXmlReader(file);
-        String agence = "";
-        while (reader.hasNext()) { // Parcourir le fichier MARCXML
-        	 Record s = reader.next();
-        	 for (int i=0; i<s.controlFields.size(); i++) {
-        		 if (s.controlFields.get(i).getEtiq().equals("001")) {
-        			 for (int j=0; j<=4; j++){
-        				 agence = agence + s.controlFields.get(i).getData().charAt(j);
-        			 }
-        		 }
-        	 }
+
+  /********
+   * L'agence bibliographique qui a attribué l'identifiant @throws URISyntaxException
+   *****************/
+  public static URI getBiblioAgency(String xmlFile) throws FileNotFoundException, URISyntaxException {
+    URIBuilder builder;
+    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
+    MarcXmlReader reader = new MarcXmlReader(file);
+    String agence = "";
+    lineLoop: while (reader.hasNext()) { // Parcourir le fichier MARCXML
+      Record s = reader.next();
+      for (int i = 0; i < s.controlFields.size(); i++) {
+        if (s.controlFields.get(i).getEtiq().equals("001")) {
+          for (int j = 0; j <= 4; j++) {
+            agence = agence + s.controlFields.get(i).getData().charAt(j);
+          }
+          // FIXME temporary solution (see https://github.com/DOREMUS-ANR/marc2rdf/issues/6)
+          break lineLoop;
         }
-        if (agence.equals("FRBNF")) {
-        	builder = new URIBuilder().setPath("http://isni.org/isni/0000000121751303");
-        }
-        URI uri = builder.build();
-        return uri;
+      }
     }
+    if (agence.equals("FRBNF")) {
+      builder = new URIBuilder().setPath("http://isni.org/isni/0000000121751303");
+      return builder.build();
+    }
+    // FIXME returning null crash the program
+    return null;
+  }
     /************************** 4. Work: identifier assignment (Identifier) *********************/
 	 public static String getIdentifier (String xmlFile) throws FileNotFoundException {
 	    	StringBuilder buffer = new StringBuilder();
