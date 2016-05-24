@@ -41,21 +41,6 @@ public class PP2RDF {
 	static PF19_PublicationWork f19;
 	static PM18_DenominationControlledAccessPoint m18;
 	
-	public PP2RDF() throws URISyntaxException{
-        model = ModelFactory.createDefaultModel();
-		f15 = new PF15_ComplexWork();
-		f14 = new PF14_IndividualWork();
-		f28 = new PF28_ExpressionCreation();
-		f22 = new PF22_SelfContainedExpression();
-		f42 = new PF42_representativeExpressionAssignment();
-		f25 = new PF25_PerformancePlan();
-		f31 = new PF31_Performance();
-		fa25 = new PF25_AutrePerformancePlan();
-		fa31 = new PF31_AutrePerformance();
-		f30 = new PF30_PublicationEvent();
-		f40 = new PF40_IdentifierAssignment ();
-        }
-	
 	public static Model convert (String file) throws URISyntaxException, IOException {
 		
 		
@@ -69,17 +54,37 @@ public class PP2RDF {
         String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
         
 		/******************************** F15_ComplexWork ***************************************/
-		model.add(f15.getModel());
-		model.add(f14.getModel());
-		model.add(f28.getModel());
-		model.add(f22.getModel());
-		model.add(f42.getModel());
-		model.add(f25.getModel());
-		model.add(f31.getModel());
-		model.add(fa25.getModel());
-		model.add(fa31.getModel());
-		model.add(f30.getModel());
-		model.add(f40.getModel());
+        f15 = new PF15_ComplexWork();
+    	f14  = new PF14_IndividualWork();
+    	f28  = new PF28_ExpressionCreation();
+    	f22  = new PF22_SelfContainedExpression();
+    	f42  = new PF42_representativeExpressionAssignment();
+    	f25 = new PF25_PerformancePlan();
+    	f31 = new PF31_Performance();
+    	fa25  = new PF25_AutrePerformancePlan();
+    	fa31  = new PF31_AutrePerformance();
+    	f30  = new PF30_PublicationEvent();
+    	f40  = new PF40_IdentifierAssignment();
+    	f50  = new PF50_ControlledAccessPoint();
+    	f24 = new PF24_PublicationExpression();
+    	f19  = new PF19_PublicationWork();
+    	m18 = new PM18_DenominationControlledAccessPoint();
+        
+        model.add(f15.getModel());
+        model.add(f14.getModel());
+        model.add(f28.getModel());
+        model.add(f22.getModel());
+        model.add(f42.getModel());
+        model.add(f25.getModel());
+        model.add(f31.getModel());
+        model.add(fa25.getModel());
+        model.add(fa31.getModel());
+        model.add(f30.getModel());
+        model.add(f40.getModel());
+        model.add(f50.getModel());
+        model.add(f24.getModel());
+        model.add(f19.getModel());
+        model.add(m18.getModel());
 		
 		/****************************************************************************************/
 		

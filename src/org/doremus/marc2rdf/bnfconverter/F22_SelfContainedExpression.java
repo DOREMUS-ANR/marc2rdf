@@ -36,6 +36,7 @@ public class F22_SelfContainedExpression {
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
+  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
   public URI getURIF22() throws URISyntaxException {
@@ -48,6 +49,8 @@ public class F22_SelfContainedExpression {
   public Model getModel() throws URISyntaxException, IOException {
 	  
     Resource F22 = modelF22.createResource(uriF22.toString());
+    
+    F22.addProperty(modelF22.createProperty(rdf+ "type"), modelF22.createResource(mus+"Self_Contained_Expression"));
 
     /**************************** Expression: was created by ********************************/
     F22.addProperty(modelF22.createProperty(frbroo + "R17i_was_created_by"), modelF22.createResource(F28_ExpressionCreation.uriF28.toString()));
