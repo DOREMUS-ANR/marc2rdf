@@ -82,7 +82,6 @@ public static Model convert (String file) throws URISyntaxException, IOException
 	    String query = "delete where {?x ?p \"\" }";
 	    UpdateAction.parseExecute(query, model);
 
-	    model.write(System.out, "TURTLE");
 	    return model;
 
 	    /****************************************************************************************/

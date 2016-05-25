@@ -50,7 +50,7 @@ public class Converter {
     FileChooser folder = new FileChooser();
 
     JFrame frame = new JFrame("MARC to RDF");
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.setLocationRelativeTo(null);
     // Add content to the window.
     frame.add(folder);
@@ -124,10 +124,10 @@ public class Converter {
             }
           }
         }
-        if (typeNotice.equals("AIC:14")) {
+        if ("AIC:14".equals(typeNotice)) {
           // Si c'est un TUM
           m = PP2RDF.convert(file.getAbsolutePath());
-        } else if (typeNotice.equals("UNI:100")) {
+        } else if ("UNI:100".equals(typeNotice)) {
           // Si c'est une notice d'oeuvre
 
           m = PP2RDF.convert(file.getAbsolutePath());
@@ -144,8 +144,11 @@ public class Converter {
 
       // Write the output file
       File fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName() + ".ttl").toFile();
+      //noinspection ResultOfMethodCallIgnored
       fileName.getParentFile().mkdirs();
       FileWriter out = new FileWriter(fileName);
+
+      m.write(System.out, "TURTLE");
       m.write(out, "TURTLE");
       out.close();
 
@@ -159,7 +162,7 @@ public class Converter {
   private static void loadVocabularies() {
     final String vocabularyRoot = properties.getProperty("vocabularyRoot");
 
-    vocabularies = new ArrayList<Model>();
+    vocabularies = new ArrayList<>();
 
     for (String name : vocabularyNames) {
       String url = vocabularyRoot + name + ".ttl";
@@ -204,10 +207,28 @@ public class Converter {
       StmtIterator iter = model.listStatements(new SimpleSelector(null, null, key));
       List<Statement> statementsToRemove = new ArrayList<>();
       while (iter.hasNext()) {
-        Statement s = iter.next();
+        Statement s = iter.nextStatement();
 
-        System.out.println("FOUND " + key + " --> " + value);
-        model.add(s.getSubject(), s.getPredicate(), value);
+        // System.out.println("FOUND " + key + " --> " + value);
+        if (s.getPredicate().toString().equals("http://www.cidoc-crm.org/cidoc-crm/P1_is_identified_by")) {
+          // replace the whole node
+          StmtIterator parentIter = model.listStatements(new SimpleSelector(null, null, s.getSubject()));
+          int howManyIteration = 0;
+          while (parentIter.hasNext()) {
+            Statement ps = parentIter.nextStatement();
+
+            model.add(ps.getSubject(), ps.getPredicate(), value);
+            statementsToRemove.add(ps);
+
+            howManyIteration++;
+          }
+          if (howManyIteration != 1)
+            System.out.println("Converter.link2Vocabulary | Exactly one iteration expected. Please check.");
+        } else {
+          // replace only the literal
+          model.add(s.getSubject(), s.getPredicate(), value);
+        }
+
         statementsToRemove.add(s);
       }
       model.remove(statementsToRemove);
@@ -215,7 +236,7 @@ public class Converter {
   }
 
 
-  public static File getTUM(final File folder, String idTUM) {
+  private static File getTUM(final File folder, String idTUM) {
     for (final File fileEntry : folder.listFiles()) {
       if (fileEntry.isDirectory()) {
         getTUM(fileEntry, idTUM);

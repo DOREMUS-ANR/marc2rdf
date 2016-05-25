@@ -97,7 +97,6 @@ public class PP2RDF {
 	    String query = "delete where {?x ?p \"\" }";
 	    UpdateAction.parseExecute(query, model);
 
-	    model.write(System.out, "TURTLE");
 	    return model;
 
 	    /****************************************************************************************/
