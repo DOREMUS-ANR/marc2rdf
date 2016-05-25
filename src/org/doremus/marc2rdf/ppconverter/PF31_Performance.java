@@ -17,8 +17,13 @@ import org.apache.jena.rdf.model.Resource;
 
 public class PF31_Performance {
 
-	static Model modelF31 = ModelFactory.createDefaultModel();
-	static URI uriF31=null;
+	static Model modelF31;
+	static URI uriF31;
+
+	public PF31_Performance() throws URISyntaxException{
+		this.modelF31 = ModelFactory.createDefaultModel();
+		this.uriF31= getURIF31();
+	}
 
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -27,17 +32,15 @@ public class PF31_Performance {
 
 	/********************************************************************************************/
     public URI getURIF31() throws URISyntaxException {
-    	if (uriF31==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF31 = uri.getUUID("Performance","F31", uuid.get());
-    	}
     	return uriF31;
     }
 
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException, IOException{
-    	uriF31 = getURIF31();
+
     	Resource F31 = modelF31.createResource(uriF31.toString());
 
     	/**************************** Performance: 1ère exécution *******************************/

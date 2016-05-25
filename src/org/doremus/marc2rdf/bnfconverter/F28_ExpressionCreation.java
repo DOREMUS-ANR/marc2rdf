@@ -24,35 +24,36 @@ public class F28_ExpressionCreation {
 
 	static Model modelF28 = ModelFactory.createDefaultModel();
 	static URI uriF28=null;
-
+	
+	public F28_ExpressionCreation() throws URISyntaxException{
+		this.modelF28 = ModelFactory.createDefaultModel();
+		this.uriF28= getURIF28();
+	}
+	
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
     String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
     String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
+    
 	/********************************************************************************************/
     public URI getURIF28() throws URISyntaxException {
-    	if (uriF28==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF28 = uri.getUUID("Expression_Creation","F28", uuid.get());
-    	}
     	return uriF28;
     }
 
     public Model getModel() throws URISyntaxException, FileNotFoundException{
-    	uriF28 = getURIF28();
+    	
     	Resource F28 = modelF28.createResource(uriF28.toString());
 
     	/**************************** Work: created a realisation *******************************/
-    	F14_IndividualWork F14= new F14_IndividualWork();
-    	F28.addProperty(modelF28.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF28.createResource(F14.getURIF14().toString()));
+    	F28.addProperty(modelF28.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF28.createResource(F14_IndividualWork.uriF14.toString()));
 
     	/**************************** Expression: created ***************************************/
-    	F22_SelfContainedExpression F22= new F22_SelfContainedExpression();
-    	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(F22.getURIF22().toString()));
+    	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(F22_SelfContainedExpression.uriF22.toString()));
 
     	/**************************** Work: Date of the work (expression représentative) ********/
     	if (!(getDateMachine(Converter.getFile()).equals(""))){

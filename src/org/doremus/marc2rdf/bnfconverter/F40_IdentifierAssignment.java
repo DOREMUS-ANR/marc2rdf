@@ -21,29 +21,33 @@ public class F40_IdentifierAssignment {
 
 	static Model modelF40 = ModelFactory.createDefaultModel();
 	static URI uriF40=null;
-
+	
+	public F40_IdentifierAssignment() throws URISyntaxException{
+		this.modelF40 = ModelFactory.createDefaultModel();
+		this.uriF40= getURIF40();
+	}
+	
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
-
+    String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
+    String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    
 	/********************************************************************************************/
     public URI getURIF40() throws URISyntaxException {
-    	if (uriF40==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF40 = uri.getUUID("Identifier_Assignment","F40", uuid.get());
-    	}
     	return uriF40;
     }
 
     public Model getModel() throws URISyntaxException, FileNotFoundException{
-    	uriF40 = getURIF40();
+    	
     	Resource F40 = modelF40.createResource(uriF40.toString());
 
     	/**************************** Schéma général : Attribution ******************************/
-    	F22_SelfContainedExpression F22= new F22_SelfContainedExpression();
-    	F40.addProperty(modelF40.createProperty(frbroo+ "R45_assigned_to"), modelF40.createResource(F22.getURIF22().toString()));
+    	F40.addProperty(modelF40.createProperty(frbroo+ "R45_assigned_to"), modelF40.createResource(F22_SelfContainedExpression.uriF22.toString()));
 
     	/**************************** Schéma général : agence ***********************************/
     	F40.addProperty(modelF40.createProperty(cidoc+ "P14_carried_out_by"), modelF40.createResource(getBiblioAgency(Converter.getFile()).toString()));

@@ -20,37 +20,39 @@ public class F31_Performance {
 	static Model modelF31 = ModelFactory.createDefaultModel();
 	static URI uriF31=null;
 
+	public F31_Performance() throws URISyntaxException{
+		this.modelF31 = ModelFactory.createDefaultModel();
+		this.uriF31= getURIF31();
+	}
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
+    String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
+    String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 	/********************************************************************************************/
     public URI getURIF31() throws URISyntaxException {
-    	if (uriF31==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF31 = uri.getUUID("Performance","F31", uuid.get());
-    	}
     	return uriF31;
     }
 
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException, IOException{
-    	uriF31 = getURIF31();
+
     	Resource F31 = modelF31.createResource(uriF31.toString());
 
     	/**************************** création d'une expression de plan d'exécution *************/
-    	F28_ExpressionCreation F28= new F28_ExpressionCreation();
-    	modelF31.createResource(F28.getURIF28().toString()).addProperty(modelF31.createProperty(frbroo+ "R17_created"), getURIF31().toString());
+    	modelF31.createResource(F28_ExpressionCreation.uriF28.toString()).addProperty(modelF31.createProperty(frbroo+ "R17_created"), getURIF31().toString());
 
     	/**************************** exécution du plan *****************************************/
-    	F25_PerformancePlan F25= new F25_PerformancePlan();
-    	modelF31.createResource(F25.getURIF25().toString()).addProperty(modelF31.createProperty(frbroo+ "R25i_was_performed_by"), getURIF31().toString());
+    	modelF31.createResource(F25_PerformancePlan.uriF25.toString()).addProperty(modelF31.createProperty(frbroo+ "R25i_was_performed_by"), getURIF31().toString());
 
     	/**************************** Performance: 1ère exécution *******************************/
-    	F14_IndividualWork F14= new F14_IndividualWork();
-    	modelF31.createResource(F14.getURIF14().toString()).addProperty(modelF31.createProperty(mus+ "U5_had_premiere"), getURIF31().toString());
+    	modelF31.createResource(F14_IndividualWork.uriF14.toString()).addProperty(modelF31.createProperty(mus+ "U5_had_premiere"), getURIF31().toString());
 
     	/**************************** Performance: 1ère exécution *******************************/
     	F31.addProperty(modelF31.createProperty(mus+ "U5_had_premiere"), getExecution(Converter.getFile()));

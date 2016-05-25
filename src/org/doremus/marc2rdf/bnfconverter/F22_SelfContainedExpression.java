@@ -23,34 +23,39 @@ public class F22_SelfContainedExpression {
    * Correspond à la description développée de l'expression représentative
    ***/
 
-  private static Model modelF22 = ModelFactory.createDefaultModel();
-  private static URI uriF22 = null;
+  static Model modelF22 = ModelFactory.createDefaultModel();
+  static URI uriF22 = null;
+
+  public F22_SelfContainedExpression() throws URISyntaxException{
+		this.modelF22 = ModelFactory.createDefaultModel();
+		this.uriF22= getURIF22();
+	}
 
   String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
+  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
   public URI getURIF22() throws URISyntaxException {
-    if (uriF22 == null) {
-      GenerateUUID uuid = new GenerateUUID();
-      uriF22 = ConstructURI.getUUID("Self_Contained_Expression", "F22", uuid.get());
-    }
-    return uriF22;
+  	ConstructURI uri = new ConstructURI();
+  	GenerateUUID uuid = new GenerateUUID();
+  	uriF22 = uri.getUUID("Self_Contained_Expression","F22", uuid.get());
+  	return uriF22;
   }
 
   public Model getModel() throws URISyntaxException, IOException {
-    uriF22 = getURIF22();
+
     Resource F22 = modelF22.createResource(uriF22.toString());
 
+    F22.addProperty(modelF22.createProperty(rdf+ "type"), modelF22.createResource(mus+"Self_Contained_Expression"));
+
     /**************************** Expression: was created by ********************************/
-    F28_ExpressionCreation F28 = new F28_ExpressionCreation();
-    F22.addProperty(modelF22.createProperty(frbroo + "R17i_was_created_by"), modelF22.createResource(F28.getURIF28().toString()));
+    F22.addProperty(modelF22.createProperty(frbroo + "R17i_was_created_by"), modelF22.createResource(F28_ExpressionCreation.uriF28.toString()));
 
     /**************************** Expression: is representative expression of (Work) ********/
-    F15_ComplexWork F15 = new F15_ComplexWork();
-    F22.addProperty(modelF22.createProperty(frbroo + "R40i_is_representative_expression_of"), modelF22.createResource(F15.getURIF15().toString()));
+    F22.addProperty(modelF22.createProperty(frbroo + "R40i_is_representative_expression_of"), modelF22.createResource(F15_ComplexWork.uriF15.toString()));
 
     /**************************** Expression: Context for the expression ********************/
     F22.addProperty(modelF22.createProperty(cidoc + "P67_refers_to"), modelF22.createResource()
@@ -97,8 +102,7 @@ public class F22_SelfContainedExpression {
     F22.addProperty(modelF22.createProperty(mus + "U13_has_casting"), getCasting(Converter.getFile()));
 
     /**************************** Expression: Assignation d'identifiant *********************/
-    F40_IdentifierAssignment F40 = new F40_IdentifierAssignment();
-    F22.addProperty(modelF22.createProperty(frbroo + "R45i_was_assigned_by"), modelF22.createResource(F40.getURIF40().toString()));
+    F22.addProperty(modelF22.createProperty(frbroo + "R45i_was_assigned_by"), modelF22.createResource(F40_IdentifierAssignment.uriF40.toString()));
 
     return modelF22;
   }

@@ -12,8 +12,13 @@ public class PM18_DenominationControlledAccessPoint {
 
 /*** Correspond à l'attribution d'identifiant pour l'oeuvre ***/
 
-	static Model modelM18 = ModelFactory.createDefaultModel();
-	static URI uriM18=null;
+	static Model modelM18;
+	static URI uriM18;
+
+	public PM18_DenominationControlledAccessPoint() throws URISyntaxException{
+		this.modelM18 = ModelFactory.createDefaultModel();
+		this.uriM18= getURIM18();
+	}
 
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -22,21 +27,18 @@ public class PM18_DenominationControlledAccessPoint {
 
 	/********************************************************************************************/
     public URI getURIM18() throws URISyntaxException {
-    	if (uriM18==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriM18 = uri.getUUID("Denomination_Controlled_Access_Point","M18", uuid.get());
-    	}
     	return uriM18;
     }
 
     public Model getModel() throws URISyntaxException, FileNotFoundException{
-    	uriM18 = getURIM18();
+
     	Resource M18 = modelM18.createResource(uriM18.toString());
 
     	/**************************** Work: was assigned by *************************************/
-    	PF50_ControlledAccessPoint F50= new PF50_ControlledAccessPoint();
-    	M18.addProperty(modelM18.createProperty(frbroo+ "R46_assigned"), modelM18.createResource(F50.getURIF50().toString()));
+    	M18.addProperty(modelM18.createProperty(frbroo+ "R46_assigned"), modelM18.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
 
     	return modelM18;
     }

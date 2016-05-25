@@ -15,10 +15,15 @@ import org.apache.jena.rdf.model.Resource;
 
 public class PF15_ComplexWork {
 
-						/*** Correspond à l'oeuvre musicale ***/
+	/*** Correspond à l'oeuvre musicale ***/
 
-	static Model modelF15 = ModelFactory.createDefaultModel();
-	static URI uriF15=null;
+	static Model modelF15;
+	static URI uriF15;
+
+	public PF15_ComplexWork() throws URISyntaxException{
+		this.modelF15 = ModelFactory.createDefaultModel();
+		this.uriF15= getURIF15();
+	}
 
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -27,30 +32,25 @@ public class PF15_ComplexWork {
 
 	/********************************************************************************************/
     public URI getURIF15() throws URISyntaxException {
-    	if (uriF15==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF15 = uri.getUUID("Complex_Work","F15", uuid.get());
-    	}
     	return uriF15;
     }
 
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException{
-    	uriF15 = getURIF15();
+
     	Resource F15 = modelF15.createResource(uriF15.toString());
 
     	/**************************** Work: has member  (Work) **********************************/
-    	PF14_IndividualWork F14= new PF14_IndividualWork();
-    	F15.addProperty(modelF15.createProperty(frbroo+ "R10_has_member"), modelF15.createResource(F14.getURIF14().toString()));
+    	F15.addProperty(modelF15.createProperty(frbroo+ "R10_has_member"), modelF15.createResource(PF14_IndividualWork.uriF14.toString()));
 
     	/**************************** Work: has representative Expression ***********************/
-    	PF22_SelfContainedExpression F22= new PF22_SelfContainedExpression();
-    	F15.addProperty(modelF15.createProperty(frbroo+ "R40_has_representative_expression"), modelF15.createResource(F22.getURIF22().toString()));
+    	F15.addProperty(modelF15.createProperty(frbroo+ "R40_has_representative_expression"), modelF15.createResource(PF22_SelfContainedExpression.uriF22.toString()));
 
     	/**************************** Work: was assigned by *************************************/
-    	PF40_IdentifierAssignment F40= new PF40_IdentifierAssignment();
-    	F15.addProperty(modelF15.createProperty(frbroo+ "R45i_was_assigned_by"), modelF15.createResource(F40.getURIF40().toString()));
+    	F15.addProperty(modelF15.createProperty(frbroo+ "R45i_was_assigned_by"), modelF15.createResource(PF40_IdentifierAssignment.uriF40.toString()));
 
 		return modelF15;
     }

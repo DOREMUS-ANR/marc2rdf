@@ -26,31 +26,37 @@ public class PF22_SelfContainedExpression {
 
           /*** Correspond à la description développée de l'expression représentative ***/
 
-	static Model modelF22 = ModelFactory.createDefaultModel();
-	static URI uriF22=null;
+	static Model modelF22;
+	static URI uriF22;
+
+	public PF22_SelfContainedExpression() throws URISyntaxException{
+		this.modelF22 = ModelFactory.createDefaultModel();
+		this.uriF22= getURIF22();
+	}
+
 
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
+    String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 	/********************************************************************************************/
     public URI getURIF22() throws URISyntaxException {
-    	if (uriF22==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF22 = uri.getUUID("Self_Contained_Expression","F22", uuid.get());
-    	}
     	return uriF22;
     }
 
     public Model getModel() throws URISyntaxException, IOException{
-    	uriF22 = getURIF22();
+
     	Resource F22 = modelF22.createResource(uriF22.toString());
 
+    	F22.addProperty(modelF22.createProperty(rdf+ "type"), modelF22.createResource(mus+"Self_Contained_Expression"));
+
     	/**************************** Expression: was created by ********************************/
-    	PF28_ExpressionCreation F28= new PF28_ExpressionCreation();
-    	F22.addProperty(modelF22.createProperty(frbroo+ "R17i_was_created_by"), modelF22.createResource(F28.getURIF28().toString()));
+    	F22.addProperty(modelF22.createProperty(frbroo+ "R17i_was_created_by"), modelF22.createResource(PF28_ExpressionCreation.uriF28.toString()));
 
     	/**************************** Expression: is representative expression of (Work) ********/
     	if (getTypeNotice(Converter.getFile()).equals("UNI:100")){ //Si c'est une notice d'oeuvre
@@ -123,16 +129,13 @@ public class PF22_SelfContainedExpression {
 				);
     	}
     	/**************************** Expression: Assignation d'identifiant ***********************/
-    	PF40_IdentifierAssignment F40= new PF40_IdentifierAssignment();
-    	F22.addProperty(modelF22.createProperty(frbroo+ "R45i_was_assigned_by"), modelF22.createResource(F40.getURIF40().toString()));
+    	F22.addProperty(modelF22.createProperty(frbroo+ "R45i_was_assigned_by"), modelF22.createResource(PF40_IdentifierAssignment.uriF40.toString()));
 
     	/**************************** Expression: Point d'Accès ********************************/
-    	PF50_ControlledAccessPoint F50= new PF50_ControlledAccessPoint();
-    	F22.addProperty(modelF22.createProperty(cidoc+ "P1_is_identified_by"), modelF22.createResource(F50.getURIF50().toString()));
+    	F22.addProperty(modelF22.createProperty(cidoc+ "P1_is_identified_by"), modelF22.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
 
     	/**************************** Expression: 1ère exécution********************************/
-    	PF25_AutrePerformancePlan FA25= new PF25_AutrePerformancePlan();
-    	F22.addProperty(modelF22.createProperty(cidoc+ "P165i_is_incorporated_in"), modelF22.createResource(FA25.getURIF25().toString()));
+    	F22.addProperty(modelF22.createProperty(cidoc+ "P165i_is_incorporated_in"), modelF22.createResource(PF25_AutrePerformancePlan.uriF25.toString()));
 
 		return modelF22;
     }
@@ -251,7 +254,7 @@ public class PF22_SelfContainedExpression {
         			 String[] caracter = catalogName.split("");
         				int x = 0 ;
         				catalogName="";
-        				while (!(caracter[x].equals(" "))) {
+        				while (!(caracter[x].equals(" ")) && !(caracter[x].equals("."))) {
         					catalogName = catalogName + caracter[x];
         					x++;
         				}
@@ -277,7 +280,7 @@ public class PF22_SelfContainedExpression {
         				boolean t = false ;
         				catalogNumber="";
         				for (int x=0; x<caracter.length; x++){
-        					if ((caracter[x].equals(" "))) t = true ;
+        					if ((caracter[x].equals(" "))||(caracter[x].equals("."))) t = true ;
         					else if (t==true) catalogNumber = catalogNumber + caracter[x];
         				}
         			  buffer.append(catalogNumber);

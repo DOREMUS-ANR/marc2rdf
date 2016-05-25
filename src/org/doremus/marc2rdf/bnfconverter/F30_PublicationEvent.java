@@ -24,36 +24,38 @@ public class F30_PublicationEvent {
 	static Model modelF30 = ModelFactory.createDefaultModel();
 	static URI uriF30=null;
 
+	public F30_PublicationEvent() throws URISyntaxException{
+		this.modelF30 = ModelFactory.createDefaultModel();
+		this.uriF30= getURIF30();
+	}
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
+    String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
+    String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 	/********************************************************************************************/
     public URI getURIF30() throws URISyntaxException {
-    	if (uriF30==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF30 = uri.getUUID("Publication_Event","F30", uuid.get());
-    	}
     	return uriF30;
     }
 
     public Model getModel() throws URISyntaxException, FileNotFoundException{
-    	uriF30 = getURIF30();
+
     	Resource F30 = modelF30.createResource(uriF30.toString());
 
     	/**************************** création d'une expression de publication *************/
-    	F24_PublicationExpression F24= new F24_PublicationExpression();
-    	F30.addProperty(modelF30.createProperty(frbroo+ "R24_created"), modelF30.createResource(F24.getURIF24().toString()));
+    	F30.addProperty(modelF30.createProperty(frbroo+ "R24_created"), modelF30.createResource(F24_PublicationExpression.uriF24.toString()));
 
     	/**************************** réalisation d'une work *******************************/
-    	F19_PublicationWork F19= new F19_PublicationWork();
-    	F30.addProperty(modelF30.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF30.createResource(F19.getURIF19().toString()));
+    	F30.addProperty(modelF30.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF30.createResource(F19_PublicationWork.uriF19.toString()));
 
     	/**************************** Publication Event: édition princeps ******************/
-    	F14_IndividualWork F14= new F14_IndividualWork();
-    	F30.addProperty(modelF30.createProperty(mus+ "U4i_is_princeps_publication_of"), modelF30.createResource(F14.getURIF14().toString()));
+    	F30.addProperty(modelF30.createProperty(mus+ "U4i_is_princeps_publication_of"), modelF30.createResource(F14_IndividualWork.uriF14.toString()));
 
     	/**************************** Expression: 1ère publication *************************/
     	F30.addProperty(modelF30.createProperty(cidoc+ "P3_has_note"), getNote(Converter.getFile()));

@@ -15,8 +15,13 @@ import org.apache.jena.rdf.model.Resource;
 
 public class PF42_representativeExpressionAssignment {
 
-	static Model modelF42 = ModelFactory.createDefaultModel();
-	static URI uriF42=null;
+	static Model modelF42;
+	static URI uriF42;
+
+	public PF42_representativeExpressionAssignment() throws URISyntaxException{
+		this.modelF42 = ModelFactory.createDefaultModel();
+		this.uriF42= getURIF42();
+	}
 
 	String mus = "http://data.doremus.org/ontology/";
 	String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -25,29 +30,25 @@ public class PF42_representativeExpressionAssignment {
 
 	/********************************************************************************************/
 	public URI getURIF42() throws URISyntaxException {
-		if (uriF42==null){
 			ConstructURI uri = new ConstructURI();
 			GenerateUUID uuid = new GenerateUUID();
 			uriF42 = uri.getUUID("Representative_Expression_Assignment","F42", uuid.get());
-		}
 		return uriF42;
 	}
 
 	/********************************************************************************************/
 	public Model getModel() throws URISyntaxException{
-		uriF42 = getURIF42();
+
 		Resource F42 = modelF42.createResource(uriF42.toString());
 
 		/**************************** Responsable de l'attribution **********************************/
 		F42.addProperty(modelF42.createProperty(frbroo+ "R44_carried_out_by"), modelF42.createResource("http://data.doremus.org/Philharmonie_de_Paris"));
 
 		/**************************** Attribution à ***********************************************/
-		PF15_ComplexWork F15= new PF15_ComplexWork();
-		F42.addProperty(modelF42.createProperty(frbroo+ "R50_assigned_to"), modelF42.createResource(F15.getURIF15().toString()));
+		F42.addProperty(modelF42.createProperty(frbroo+ "R50_assigned_to"), modelF42.createResource(PF15_ComplexWork.uriF15.toString()));
 
 		/**************************** Attribution à ***********************************************/
-		PF22_SelfContainedExpression F22= new PF22_SelfContainedExpression();
-		F42.addProperty(modelF42.createProperty(frbroo+ "R51_assigned"), modelF42.createResource(F22.getURIF22().toString()));
+		F42.addProperty(modelF42.createProperty(frbroo+ "R51_assigned"), modelF42.createResource(PF22_SelfContainedExpression.uriF22.toString()));
 
 		return modelF42;
 	}

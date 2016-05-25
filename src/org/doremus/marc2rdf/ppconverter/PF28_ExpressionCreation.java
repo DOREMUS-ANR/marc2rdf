@@ -22,8 +22,13 @@ public class PF28_ExpressionCreation {
 
 /*** Correspond à l'expression représentative de l'oeuvre musicale ***/
 
-	static Model modelF28 = ModelFactory.createDefaultModel();
-	static URI uriF28=null;
+	static Model modelF28;
+	static URI uriF28;
+
+	public PF28_ExpressionCreation() throws URISyntaxException{
+		this.modelF28 = ModelFactory.createDefaultModel();
+		this.uriF28= getURIF28();
+	}
 
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
@@ -34,25 +39,21 @@ public class PF28_ExpressionCreation {
 
 	/********************************************************************************************/
     public URI getURIF28() throws URISyntaxException {
-    	if (uriF28==null){
     	ConstructURI uri = new ConstructURI();
     	GenerateUUID uuid = new GenerateUUID();
     	uriF28 = uri.getUUID("Expression_Creation","F28", uuid.get());
-    	}
     	return uriF28;
     }
 
     public Model getModel() throws URISyntaxException, FileNotFoundException{
-    	uriF28 = getURIF28();
+
     	Resource F28 = modelF28.createResource(uriF28.toString());
 
     	/**************************** Work: created a realisation *******************************/
-    	PF14_IndividualWork F14= new PF14_IndividualWork();
-    	F28.addProperty(modelF28.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF28.createResource(F14.getURIF14().toString()));
+    	F28.addProperty(modelF28.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF28.createResource(PF14_IndividualWork.uriF14.toString()));
 
     	/**************************** Expression: created ***************************************/
-    	PF22_SelfContainedExpression F22= new PF22_SelfContainedExpression();
-    	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(F22.getURIF22().toString()));
+    	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(PF22_SelfContainedExpression.uriF22.toString()));
 
     	/**************************** Work: Date of the work (expression représentative) ********/
     	if (!(getDateMachine(Converter.getFile()).equals(""))){
@@ -85,12 +86,10 @@ public class PF28_ExpressionCreation {
     	}
 
     	/**************************** création d'une expression de plan d'exécution *************/
-    	PF25_PerformancePlan F25= new PF25_PerformancePlan();
-    	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(F25.getURIF25().toString()));
+    	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(PF25_PerformancePlan.uriF25.toString()));
 
     	/**************************** création d'une expression de plan d'exécution *************/
-    	PF25_AutrePerformancePlan FA25= new PF25_AutrePerformancePlan();
-    	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(FA25.getURIF25().toString()));
+    	F28.addProperty(modelF28.createProperty(frbroo+ "R17_created"), modelF28.createResource(PF25_AutrePerformancePlan.uriF25.toString()));
 		return modelF28;
     }
     /********************************************************************************************/
