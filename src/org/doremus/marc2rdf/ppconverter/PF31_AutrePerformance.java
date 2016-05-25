@@ -11,20 +11,20 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 
 public class PF31_AutrePerformance {
-	
+
 	static Model modelF31 = ModelFactory.createDefaultModel();
 	static URI uriF31=null;
-	
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
-    
+
 	/********************************************************************************************/
     public URI getURIF31() throws URISyntaxException {
     	if (uriF31==null){
@@ -34,18 +34,18 @@ public class PF31_AutrePerformance {
     	}
     	return uriF31;
     }
-    
+
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException, IOException{
     	uriF31 = getURIF31();
     	Resource F31 = modelF31.createResource(uriF31.toString());
-    	
+
     	/**************************** Performance: 1ère exécution *******************************/
     	F31.addProperty(modelF31.createProperty(cidoc+ "P3_has_note"), getNote(Converter.getFile()));
-    	
+
     	return modelF31;
     }
-    
+
     /*********************************** L'exécution ***********************************/
     public static String getNote(String xmlFile) throws FileNotFoundException {
         StringBuilder buffer = new StringBuilder();
@@ -86,16 +86,16 @@ public class PF31_AutrePerformance {
         	int index = note.indexOf(". 1ere publication");
         	note = note.substring(0, index+1);
         }
-       
+
         if (note.contains("Création française")){
         int index = note.indexOf("Création française");
 		note = note.substring(index, note.length());
 		buffer.append(note);
         }
-        
+
         else buffer.append("");
-        
+
         return buffer.toString();
     	}
-    
+
 }

@@ -11,9 +11,9 @@ import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 
 public class F40_IdentifierAssignment {
 

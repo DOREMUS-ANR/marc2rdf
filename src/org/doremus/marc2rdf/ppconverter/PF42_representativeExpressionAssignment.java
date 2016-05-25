@@ -8,13 +8,13 @@ import java.net.URISyntaxException;
 
 import org.apache.http.client.utils.URIBuilder;
 
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 
 public class PF42_representativeExpressionAssignment {
-	
+
 	static Model modelF42 = ModelFactory.createDefaultModel();
 	static URI uriF42=null;
 
@@ -48,7 +48,7 @@ public class PF42_representativeExpressionAssignment {
 		/**************************** Attribution à ***********************************************/
 		PF22_SelfContainedExpression F22= new PF22_SelfContainedExpression();
 		F42.addProperty(modelF42.createProperty(frbroo+ "R51_assigned"), modelF42.createResource(F22.getURIF22().toString()));
-		
+
 		return modelF42;
 	}
 	/********************************************************************************************/

@@ -17,20 +17,20 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 
 public class PF12_Nomen {
 
 	static Model modelF12 = ModelFactory.createDefaultModel();
 	static URI uriF12=null;
-	
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
-    
+
 	/********************************************************************************************/
     public URI getURIF12() throws URISyntaxException {
     	if (uriF12==null){
@@ -40,28 +40,28 @@ public class PF12_Nomen {
     	}
     	return uriF12;
     }
-    
+
     public Model getModel() throws URISyntaxException, IOException{
     	uriF12 = getURIF12();
     	Resource F12 = modelF12.createResource(uriF12.toString());
-    	
+
     	/**************************** Expression: Title *****************************************/
     	if (getTypeNotice(Converter.getFile()).equals("UNI:100")){ // Si c'est une notice d'oeuvre
     		F12.addProperty(modelF12.createProperty(cidoc+ "P106_is_composed_of"), getTitle200(Converter.getFile()));
     	}
-    	
+
     	if (getTypeNotice(Converter.getFile()).equals("AIC:14")) { // Si c'est une notice TUM
     		F12.addProperty(modelF12.createProperty(cidoc+ "P106_is_composed_of"), getTitle(Converter.getFile(), "144"));
     		F12.addProperty(modelF12.createProperty(cidoc+ "P106_is_composed_of"), getTitle(Converter.getFile(), "444"));
     	}
-    
+
     	/**************************** Order Number **********************************/
     	F12.addProperty(modelF12.createProperty(cidoc+ "P106_is_composed_of"), getOrderNumber(Converter.getFile(), "144"));
     	F12.addProperty(modelF12.createProperty(cidoc+ "P106_is_composed_of"), getOrderNumber(Converter.getFile(), "444"));
-    	
+
     	return modelF12;
     }
-    
+
     /************************** Type de notice  *********************************************/
 	 public static String getTypeNotice (String xmlFile) throws FileNotFoundException {
 	    	StringBuilder buffer = new StringBuilder();
@@ -75,11 +75,11 @@ public class PF12_Nomen {
 	        buffer.append(typeNotice);
 	        return buffer.toString();
 	    }
-	 
+
 	 /*********************************** Le titre **************************************/
 	    public static String getTitle200(String xmlFile) throws IOException {
-	    	
-	    	StringBuilder buffer = new StringBuilder(); 
+
+	    	StringBuilder buffer = new StringBuilder();
 	    	InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
 	        MarcXmlReader reader = new MarcXmlReader(file);
 	        String title = "";
@@ -97,16 +97,16 @@ public class PF12_Nomen {
 	    }
  /*********************************** Le titre **************************************/
  public static String getTitle(String xmlFile, String etiq) throws IOException {
- 	
- 	StringBuilder buffer = new StringBuilder(); 
+
+ 	StringBuilder buffer = new StringBuilder();
  	InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
  	MarcXmlReader reader = new MarcXmlReader(file);
- 	String title_a= ""; 
+ 	String title_a= "";
  	String title_h= "";
  	String title_i= "";
  	String title_g= "";
  	String title_c= "";
- 		
+
  	while (reader.hasNext()) { // Parcourir le fichier MARCXML
  		Record s = reader.next();
  		for (int i=0; i<s.dataFields.size(); i++) {
@@ -124,9 +124,9 @@ public class PF12_Nomen {
  			}
  		}
  	}
-     
+
  		/*******************************************************************/
- 		
+
  	Boolean trouve = false ; // "trouve=true" si "codeGenre" a �t� trouv� dans le fichier
  	File fichier = new File("Data\\GenresBNF.xlsx");
  	FileInputStream fis = new FileInputStream(fichier);
@@ -134,23 +134,23 @@ public class PF12_Nomen {
  	XSSFWorkbook myWorkBook = new XSSFWorkbook (fis); // Trouver l'instance workbook du fichier XLSX
  	XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
  	Iterator<Row> iter = mySheet.iterator(); //It�rateur de toutes les lignes de la feuille courante
-    
+
  	while ((iter.hasNext())&&(trouve==false)) { // Traverser chaque ligne du fichier XLSX
  		Boolean correspondance = false ; // correspondance entre 144 $a et le genre courant parcouru
  		Row row = iter.next();
- 		Iterator<Cell> cellIterator = row.cellIterator(); 
- 		int numColonne = 0; 
- 		
+ 		Iterator<Cell> cellIterator = row.cellIterator();
+ 		int numColonne = 0;
+
  		while ((cellIterator.hasNext())&&(correspondance==false)) { // Pour chaque ligne, it�rer chaque colonne
  			Cell cell = cellIterator.next();
  			if (title_a.equals(cell.getStringCellValue()) ) trouve = true ; //On a trouv� le code du genre dans le fichier
  			if (trouve == true) {
         	 		correspondance = true ;
- 			} 
+ 			}
  			numColonne ++;
  		}
  	}
- 	if ((trouve==false)&&((title_g).equals(""))&&((title_c).equals(""))){ //si 144 ne contient ni la sous-zone $g ni la sous-zone $c 
+ 	if ((trouve==false)&&((title_g).equals(""))&&((title_c).equals(""))){ //si 144 ne contient ni la sous-zone $g ni la sous-zone $c
  		buffer.append(title_a);
  		buffer.append(",");
  		buffer.append(title_h);
@@ -162,7 +162,7 @@ public class PF12_Nomen {
  		/*******************************************************************/
      return buffer.toString();
  	}
- 
+
  public static String getOrderNumber(String xmlFile, String etiq) throws FileNotFoundException {
      StringBuilder buffer = new StringBuilder();
      InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser

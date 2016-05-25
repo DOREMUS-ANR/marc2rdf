@@ -1,7 +1,8 @@
 package org.doremus.marc2rdf.main;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.SKOS;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
@@ -11,11 +12,14 @@ import javax.swing.*;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.Properties;
+import java.util.*;
 
 public class Converter {
-  public static Properties properties;
 
+  private static final String[] vocabularyNames = new String[]{"key", "mode", "derivation", "iaml", "rameau"};
+  private static ArrayList<Model> vocabularies;
+
+  public static Properties properties;
   private static String fich = "";
 
   public static String getFile() {
@@ -26,8 +30,10 @@ public class Converter {
     String inputFolderPath;
 
     loadProperties();
-
     System.out.println("Running with the following properties: " + properties);
+
+    loadVocabularies();
+
     inputFolderPath = properties.getProperty("defaultInput");
 
     if (inputFolderPath == null || inputFolderPath.isEmpty())
@@ -134,19 +140,80 @@ public class Converter {
         }
       }
 
+      for (Model v : vocabularies) link2Vocabulary(m, v);
+
       // Write the output file
       File fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName() + ".ttl").toFile();
       fileName.getParentFile().mkdirs();
       FileWriter out = new FileWriter(fileName);
       m.write(out, "TURTLE");
       out.close();
+
     }
     for (File subList : list) {
       if (subList.isDirectory())
         listeRepertoire(subList);
     }
-
   }
+
+  private static void loadVocabularies() {
+    final String vocabularyRoot = properties.getProperty("vocabularyRoot");
+
+    vocabularies = new ArrayList<Model>();
+
+    for (String name : vocabularyNames) {
+      String url = vocabularyRoot + name + ".ttl";
+      Model vocabulary = ModelFactory.createDefaultModel();
+      vocabulary.read(url, "TURTLE");
+      System.out.println("Loaded vocabulary at " + url);
+      vocabularies.add(vocabulary);
+    }
+  }
+
+
+  private static void link2Vocabulary(Model model, Model vocabulary) {
+    // Build a map
+    HashMap<String, Resource> substitutionMap = new HashMap<>();
+
+    // for each concept
+    StmtIterator conceptIter =
+      vocabulary.listStatements(new SimpleSelector(null, RDF.type, vocabulary.getResource(SKOS.Concept.toString())));
+
+    if (!conceptIter.hasNext()) {
+      System.out.println("No concepts in the reference rdf");
+      return;
+    }
+
+    while (conceptIter.hasNext()) {
+      Resource resource = conceptIter.nextStatement().getSubject();
+
+      // get the labels
+      NodeIterator labelIterator = vocabulary.listObjectsOfProperty(resource, SKOS.prefLabel);
+      //for each label
+      while (labelIterator.hasNext()) {
+        String value = labelIterator.next().toString();
+        //  add it to the map
+        substitutionMap.put(value, resource);
+      }
+    }
+
+    for (Map.Entry<String, Resource> entry : substitutionMap.entrySet()) {
+      String key = entry.getKey();
+      Resource value = entry.getValue();
+
+      StmtIterator iter = model.listStatements(new SimpleSelector(null, null, key));
+      List<Statement> statementsToRemove = new ArrayList<>();
+      while (iter.hasNext()) {
+        Statement s = iter.next();
+
+        System.out.println("FOUND " + key + " --> " + value);
+        model.add(s.getSubject(), s.getPredicate(), value);
+        statementsToRemove.add(s);
+      }
+      model.remove(statementsToRemove);
+    }
+  }
+
 
   public static File getTUM(final File folder, String idTUM) {
     for (final File fileEntry : folder.listFiles()) {

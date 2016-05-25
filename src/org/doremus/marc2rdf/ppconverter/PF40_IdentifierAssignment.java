@@ -11,23 +11,23 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 
 
 public class PF40_IdentifierAssignment {
-	
+
 	/*** Correspond à l'attribution d'identifiant pour l'oeuvre ***/
-	
+
 	static Model modelF40 = ModelFactory.createDefaultModel();
 	static URI uriF40=null;
-	
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
-    
+
 	/********************************************************************************************/
     public URI getURIF40() throws URISyntaxException {
     	if (uriF40==null){
@@ -37,42 +37,42 @@ public class PF40_IdentifierAssignment {
     	}
     	return uriF40;
     }
-    
+
     public Model getModel() throws URISyntaxException, FileNotFoundException{
     	uriF40 = getURIF40();
     	Resource F40 = modelF40.createResource(uriF40.toString());
-    	
+
     	/**************************** Work: was assigned by *************************************/
     	PF50_ControlledAccessPoint F50= new PF50_ControlledAccessPoint();
     	F40.addProperty(modelF40.createProperty(frbroo+ "R46_assigned"), modelF40.createResource(F50.getURIF50().toString()));
-    	
+
     	/**************************** Schéma général : Attribution ******************************/
     	PF22_SelfContainedExpression F22= new PF22_SelfContainedExpression();
     	F40.addProperty(modelF40.createProperty(frbroo+ "R45_assigned_to"), modelF40.createResource(F22.getURIF22().toString()));
-    	
+
     //	/**************************** Schéma général : agence ***********************************/
     	F40.addProperty(modelF40.createProperty(cidoc+ "P14_carried_out_by"), modelF40.createResource("http://data.doremus.org/Philharmonie_de_Paris"));
-    	
+
    // 	/**************************** Work: identifier assignment (Identifier) ******************/
     	F40.addProperty(modelF40.createProperty(frbroo+ "R46_assigned"), getIdentifier(Converter.getFile()).toString()); // L'identifiant de l'oeuvre
-    	
+
     //	/**************************** Work: identifier assignment (type) ************************/
-    	F40.addProperty(modelF40.createProperty(cidoc+ "P2_has_Type"), "N° de notice"); // "N° de notice" par défaut pour toutes les notices 
-    	
+    	F40.addProperty(modelF40.createProperty(cidoc+ "P2_has_Type"), "N° de notice"); // "N° de notice" par défaut pour toutes les notices
+
     //	/**************************** Work: was assigned by *************************************/
     	F40.addProperty(modelF40.createProperty(cidoc+ "P2_has_Type"), getTypeTitle(Converter.getFile()).toString());
-    	
+
     	/**************************** Schéma général : règles ***********************************/
     	F40.addProperty(modelF40.createProperty(frbroo+ "R52_used_rule"), getRule(Converter.getFile()).toString());
-    	
+
     	/**************************** Attribution d'identifiant compositeur *********************/
     //	F40.addProperty(modelF40.createProperty(frbroo+ "R52_used_rule"), getCreator(Converter.getFile()).toString());
     	// Il faut voir pour la propriété à utiliser ici avec la PP
-    	
+
 		return modelF40;
     }
     /********************************************************************************************/
-	
+
     /************************** 4. Work: identifier assignment (Identifier) *********************/
 	 public static String getIdentifier (String xmlFile) throws FileNotFoundException {
 	    	StringBuilder buffer = new StringBuilder();
@@ -84,7 +84,7 @@ public class PF40_IdentifierAssignment {
 	        }
 	        return buffer.toString();
 	    }
-	 
+
 	 /************************** Schéma général : règles  **************************************/
 	 public static String getRule (String xmlFile) throws FileNotFoundException {
 	    	StringBuilder buffer = new StringBuilder();
@@ -99,16 +99,16 @@ public class PF40_IdentifierAssignment {
 	        else if (typeNotice.equals("UNI:100")) buffer.append("Usages de la Philharmonie de Paris");
 	        return buffer.toString();
 	    }
-	 
+
 	 /************************** Type du titre  ************************************************/
 	 public static String getTypeTitle (String xmlFile) throws FileNotFoundException {
-		 	
+
 		 	StringBuilder buffer = new StringBuilder();
 	        if (getTypeNotice(xmlFile).equals("AIC:14")) buffer.append("Variante");
 	        else if (getTypeNotice(xmlFile).equals("UNI:100")) buffer.append("Point d'accès privilégié");
 	        return buffer.toString();
 	    }
-	 
+
 	 /************************** Type de notice  *********************************************/
 	 public static String getTypeNotice (String xmlFile) throws FileNotFoundException {
 	    	StringBuilder buffer = new StringBuilder();
@@ -122,7 +122,7 @@ public class PF40_IdentifierAssignment {
 	        buffer.append(typeNotice);
 	        return buffer.toString();
 	    }
-	
+
     /*********************** Le créateur de l'identifiant *************************************/
     public static String getCreator(String xmlFile) throws FileNotFoundException {
     	StringBuilder buffer = new StringBuilder();
@@ -162,7 +162,7 @@ public class PF40_IdentifierAssignment {
         	 }
         }
         if ((aSubField.equals("")) && (bSubField.equals("")) && (fSubField.equals(""))) buffer.append("");
-        
+
         else {buffer.append(aSubField); buffer.append(","); buffer.append(bSubField); buffer.append("("); buffer.append(fSubField); buffer.append(")");}
         }
         return buffer.toString();

@@ -13,22 +13,22 @@ import org.doremus.marc2rdf.ppconverter.PF14_IndividualWork;
 import org.doremus.marc2rdf.ppconverter.PF19_PublicationWork;
 import org.doremus.marc2rdf.ppconverter.PF24_PublicationExpression;
 
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.TypeMapper;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.TypeMapper;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 
 public class F30_PublicationEvent {
 
 	static Model modelF30 = ModelFactory.createDefaultModel();
 	static URI uriF30=null;
-	
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
-    
+
 	/********************************************************************************************/
     public URI getURIF30() throws URISyntaxException {
     	if (uriF30==null){
@@ -38,32 +38,32 @@ public class F30_PublicationEvent {
     	}
     	return uriF30;
     }
-    
+
     public Model getModel() throws URISyntaxException, FileNotFoundException{
     	uriF30 = getURIF30();
     	Resource F30 = modelF30.createResource(uriF30.toString());
-    	
+
     	/**************************** création d'une expression de publication *************/
     	F24_PublicationExpression F24= new F24_PublicationExpression();
     	F30.addProperty(modelF30.createProperty(frbroo+ "R24_created"), modelF30.createResource(F24.getURIF24().toString()));
-    	
+
     	/**************************** réalisation d'une work *******************************/
     	F19_PublicationWork F19= new F19_PublicationWork();
     	F30.addProperty(modelF30.createProperty(frbroo+ "R19_created_a_realisation_of"), modelF30.createResource(F19.getURIF19().toString()));
-    	
+
     	/**************************** Publication Event: édition princeps ******************/
     	F14_IndividualWork F14= new F14_IndividualWork();
     	F30.addProperty(modelF30.createProperty(mus+ "U4i_is_princeps_publication_of"), modelF30.createResource(F14.getURIF14().toString()));
-    	
+
     	/**************************** Expression: 1ère publication *************************/
     	F30.addProperty(modelF30.createProperty(cidoc+ "P3_has_note"), getNote(Converter.getFile()));
-    	
-  
-        
+
+
+
 		return modelF30;
     }
     /********************************************************************************************/
-    
+
     /*********************************** La note ***********************************/
     public static String getNote(String xmlFile) throws FileNotFoundException {
         StringBuilder buffer = new StringBuilder();

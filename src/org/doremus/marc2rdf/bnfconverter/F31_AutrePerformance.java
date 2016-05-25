@@ -11,20 +11,20 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 
 public class F31_AutrePerformance {
-	
+
 	static Model modelF31 = ModelFactory.createDefaultModel();
 	static URI uriF31=null;
-	
+
 	String mus = "http://data.doremus.org/ontology/";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";
-    
+
 	/********************************************************************************************/
     public URI getURIF31() throws URISyntaxException {
     	if (uriF31==null){
@@ -34,18 +34,18 @@ public class F31_AutrePerformance {
     	}
     	return uriF31;
     }
-    
+
     /********************************************************************************************/
     public Model getModel() throws URISyntaxException, IOException{
     	uriF31 = getURIF31();
     	Resource F31 = modelF31.createResource(uriF31.toString());
-    	
+
     	/**************************** Performance: 1ère exécution *******************************/
     	F31.addProperty(modelF31.createProperty(cidoc+ "P3_has_note"), getNote(Converter.getFile()));
-    	
+
     	return modelF31;
     }
-    
+
     /*********************************** L'exécution ***********************************/
     public static String getNote(String xmlFile) throws FileNotFoundException {
         StringBuilder buffer = new StringBuilder();
@@ -53,7 +53,7 @@ public class F31_AutrePerformance {
         MarcXmlReader reader = new MarcXmlReader(file);
         String note="";
         String st;
-        
+
         while (reader.hasNext()) { // Parcourir le fichier MARCXML
         	 Record s = reader.next();
         	 for (int i=0; i<s.dataFields.size(); i++) {
@@ -78,5 +78,5 @@ public class F31_AutrePerformance {
         }
         return buffer.toString();
     	}
-    
+
 }
