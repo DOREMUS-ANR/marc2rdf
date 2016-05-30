@@ -6,6 +6,10 @@ import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.eclipse.egit.github.core.Repository;
+import org.eclipse.egit.github.core.RepositoryContents;
+import org.eclipse.egit.github.core.service.ContentsService;
+import org.eclipse.egit.github.core.service.RepositoryService;
 
 import javax.swing.*;
 import java.io.*;
@@ -16,7 +20,6 @@ import java.util.Properties;
 
 public class Converter {
 
-  private static final String[] vocabularyNames = new String[]{"key", "mode", "derivation", "iaml", "rameau"};
   private static ArrayList<Vocabulary> vocabularies;
 
   public static Properties properties;
@@ -159,13 +162,17 @@ public class Converter {
     }
   }
 
-  private static void loadVocabularies() {
+  private static void loadVocabularies() throws IOException {
     final String vocabularyRoot = properties.getProperty("vocabularyRoot");
-
     vocabularies = new ArrayList<>();
 
-    for (String name : vocabularyNames) {
-      String url = vocabularyRoot + name + ".ttl";
+    //get repo from GitHub
+    RepositoryService service = new RepositoryService();
+    Repository repo = service.getRepository("DOREMUS-ANR", "knowledge-base");
+
+    ContentsService contentsService = new ContentsService();
+    for (RepositoryContents contents : contentsService.getContents(repo, "/vocabularies/")) {
+      String url = vocabularyRoot + contents.getName();
       vocabularies.add(new Vocabulary(url));
       System.out.println("Loaded vocabulary at " + url);
     }
@@ -207,3 +214,4 @@ public class Converter {
 
   }
 }
+
