@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    jcenter()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.21',
+            'org.slf4j:slf4j-simple:1.7.21',
+            'org.apache.jena:apache-jena-libs:3.1.0',
+            'org.apache.poi:poi:3.14',
+            'org.apache.poi:poi-ooxml:3.14',
+            'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5',
+            'com.openlinksw:virtjdbc4@jar',
+            'virtuoso.jena.driver:virt_jena3@jar'
+}
+
+run {
+    standardOutput = System.out
+}
+// Plugin: 'application'
+// fill with the complete package path of the "main" class
+mainClassName = 'org.doremus.marc2rdf.main.Converter'
+

@@ -1,27 +1,29 @@
-*.class
+.gradle
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# output directory
+build/
 
-# Package Files #
-# *.jar
-*.war
-*.ear
+# eclim daemon conf file
+workspace.xml
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-
-.metadata
-bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
+# eclim/eclipse specific file
+.classpath
+.project
 .settings/
-.loadpath
-.recommenders
-.idea/
-*.iml
-*.eml
+bin/
+
+# Vim
+*.sw[op]
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+#intellij
+.idea
+*.iws
