@@ -35,7 +35,12 @@ public class Converter {
     loadProperties();
     System.out.println("Running with the following properties: " + properties);
 
-    loadVocabularies();
+    try {
+      loadVocabularies();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println("Cannot load vocabularies. Continuing without accessing to them.");
+    }
 
     inputFolderPath = properties.getProperty("defaultInput");
 
@@ -79,6 +84,8 @@ public class Converter {
 
   /*************************************************************************************************/
   private static void listeRepertoire(File repertoire) throws URISyntaxException, IOException {
+    String outputFolderPath = properties.getProperty("defaultOutput");
+
     if (!repertoire.isDirectory()) {
       System.out.println("Input directory not specified or not existing");
       return;
@@ -127,6 +134,7 @@ public class Converter {
             }
           }
         }
+
         if ("AIC:14".equals(typeNotice)) {
           // Si c'est un TUM
           m = PP2RDF.convert(file.getAbsolutePath());
@@ -141,12 +149,20 @@ public class Converter {
           m.add(PP2RDF.convert(tum.getAbsolutePath()));
           // Convertir le TUM correspondant
         }
+      } else {
+        System.out.println("Skipping not recognized file: " + file.getName());
+        continue;
       }
 
       for (Vocabulary v : vocabularies) v.buildReferenceIn(m);
 
       // Write the output file
-      File fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName() + ".ttl").toFile();
+      File fileName;
+      if (outputFolderPath != null && !outputFolderPath.isEmpty()) {
+        fileName = Paths.get(outputFolderPath, file.getName().replaceFirst(".xml", ".ttl")).toFile();
+      } else {
+        fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName().replaceFirst(".ttl", ".xml")).toFile();
+      }
       //noinspection ResultOfMethodCallIgnored
       fileName.getParentFile().mkdirs();
       FileWriter out = new FileWriter(fileName);
@@ -166,8 +182,13 @@ public class Converter {
     final String vocabularyRoot = properties.getProperty("vocabularyRoot");
     vocabularies = new ArrayList<>();
 
+    String token = properties.getProperty("githubToken");
+
     //get repo from GitHub
     RepositoryService service = new RepositoryService();
+    if (token != null && !token.isEmpty())
+      service.getClient().setOAuth2Token(token);
+
     Repository repo = service.getRepository("DOREMUS-ANR", "knowledge-base");
 
     ContentsService contentsService = new ContentsService();
@@ -180,14 +201,14 @@ public class Converter {
 
 
   private static File getTUM(final File folder, String idTUM) {
-    for (final File fileEntry : folder.listFiles()) {
+    for (File fileEntry : folder.listFiles()) {
+      System.out.println(fileEntry.getName());
       if (fileEntry.isDirectory()) {
         getTUM(fileEntry, idTUM);
-      } else {
-        if (fileEntry.getName().equals(idTUM + ".xml")) {
-          return fileEntry;
-        }
+      } else if (fileEntry.getName().equals(idTUM + ".xml")) {
+        return fileEntry;
       }
+
     }
     return folder;
   }

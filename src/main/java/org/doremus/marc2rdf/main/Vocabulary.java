@@ -43,6 +43,15 @@ public class Vocabulary {
         //  add it to the map
         substitutionMap.put(value, resource);
       }
+
+      labelIterator = resource.listProperties(SKOS.altLabel);
+      //for each label
+      while (labelIterator.hasNext()) {
+        String value = labelIterator.nextStatement().getObject().toString();
+        //  add it to the map
+        substitutionMap.put(value, resource);
+      }
+
     }
 
   }

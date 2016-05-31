@@ -90,9 +90,10 @@ public class F22_SelfContainedExpression {
       );
     }
     /**************************** Expression: Genre *****************************************/
-    if (!(getGenre(Converter.getFile()).equals(""))) {
+    String genre = getGenre(Converter.getFile());
+    if (!genre.isEmpty()) {
       F22.addProperty(modelF22.createProperty(mus + "U12_has_genre"), modelF22.createResource()
-        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(getGenre(Converter.getFile()), "fr")) // Le nom du genre est toujours en français
+        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
       );
     }
     /**************************** Expression: Order Number **********************************/

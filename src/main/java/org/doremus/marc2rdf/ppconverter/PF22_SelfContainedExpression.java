@@ -200,29 +200,24 @@ public class PF22_SelfContainedExpression {
     /*******************************************************************/
 
     Boolean trouve = false; // "trouve=true" si "codeGenre" a �t� trouv� dans le fichier
-    File fichier = new File("Data\\GenresBNF.xlsx");
+    String fileName = PF22_SelfContainedExpression.class.getClass().getResource(Converter.properties.getProperty("BNFGenres")).getFile();
+    File fichier = new File(fileName);
     FileInputStream fis = new FileInputStream(fichier);
 
     XSSFWorkbook myWorkBook = new XSSFWorkbook(fis); // Trouver l'instance workbook du fichier XLSX
     XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
     Iterator<Row> iter = mySheet.iterator(); //It�rateur de toutes les lignes de la feuille courante
 
-    while ((iter.hasNext()) && (trouve == false)) { // Traverser chaque ligne du fichier XLSX
-      Boolean correspondance = false; // correspondance entre 144 $a et le genre courant parcouru
+    while (iter.hasNext() && !trouve) { // Traverser chaque ligne du fichier XLSX
       Row row = iter.next();
       Iterator<Cell> cellIterator = row.cellIterator();
-      int numColonne = 0;
 
-      while ((cellIterator.hasNext()) && (correspondance == false)) { // Pour chaque ligne, it�rer chaque colonne
+      while ((cellIterator.hasNext()) && !trouve) { // Pour chaque ligne, it�rer chaque colonne
         Cell cell = cellIterator.next();
         if (title.equals(cell.getStringCellValue())) trouve = true; //On a trouv� le code du genre dans le fichier
-        if (trouve == true) {
-          correspondance = true;
-        }
-        numColonne++;
       }
     }
-    if (trouve == false) {
+    if (!trouve) {
       buffer.append(title);
     } else buffer.append("");
     /*******************************************************************/
@@ -261,11 +256,11 @@ public class PF22_SelfContainedExpression {
         if (s.dataFields.get(i).getEtiq().equals(etiq)) {
           if (s.dataFields.get(i).isCode('k')) {
             String catalogName = (s.dataFields.get(i).getSubfield('k').getData());
-            String[] caracter = catalogName.split("");
+            String[] character = catalogName.split("");
             int x = 0;
             catalogName = "";
-            while (!(caracter[x].equals(" ")) && !(caracter[x].equals("."))) {
-              catalogName = catalogName + caracter[x];
+            while (!(character[x].equals(" ")) && !(character[x].equals("."))) {
+              catalogName = catalogName + character[x];
               x++;
             }
             buffer.append(catalogName);
