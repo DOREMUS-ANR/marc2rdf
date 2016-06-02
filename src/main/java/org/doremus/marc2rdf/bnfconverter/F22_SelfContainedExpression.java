@@ -3,10 +3,12 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.doremus.marc2rdf.bnfparser.ControlField;
 import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
@@ -14,7 +16,9 @@ import org.doremus.marc2rdf.main.Converter;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 public class F22_SelfContainedExpression {
@@ -31,11 +35,9 @@ public class F22_SelfContainedExpression {
     this.uriF22 = getURIF22();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+  private static final String mus = "http://data.doremus.org/ontology/";
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
+  private static final String frbroo = "http://erlangen-crm.org/efrbroo/";
 
   /********************************************************************************************/
   public URI getURIF22() throws URISyntaxException {
@@ -49,7 +51,7 @@ public class F22_SelfContainedExpression {
 
     Resource F22 = modelF22.createResource(uriF22.toString());
 
-    F22.addProperty(modelF22.createProperty(rdf + "type"), modelF22.createResource(mus + "Self_Contained_Expression"));
+    F22.addProperty(RDF.type, modelF22.createResource(mus + "Self_Contained_Expression"));
 
     /**************************** Expression: was created by ********************************/
     F22.addProperty(modelF22.createProperty(frbroo + "R17i_was_created_by"), modelF22.createResource(F28_ExpressionCreation.uriF28.toString()));
@@ -90,12 +92,9 @@ public class F22_SelfContainedExpression {
       );
     }
     /**************************** Expression: Genre *****************************************/
-    String genre = getGenre(Converter.getFile());
-    if (!genre.isEmpty()) {
-      F22.addProperty(modelF22.createProperty(mus + "U12_has_genre"), modelF22.createResource()
-        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
-      );
-    }
+    List<Resource> genreList = getGenre(Converter.getFile());
+    for (Resource genre : genreList) F22.addProperty(modelF22.createProperty(mus + "U12_has_genre"), genre);
+
     /**************************** Expression: Order Number **********************************/
     F22.addProperty(modelF22.createProperty(mus + "U10_has_order_number"), getOrderNumber(Converter.getFile()));
 
@@ -190,18 +189,12 @@ public class F22_SelfContainedExpression {
     XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
     Iterator<Row> iter = mySheet.iterator(); //It�rateur de toutes les lignes de la feuille courante
 
-    while ((iter.hasNext()) && (!trouve)) { // Traverser chaque ligne du fichier XLSX
-      Boolean correspondance = false; // correspondance entre 144 $a et le genre courant parcouru
+    while (iter.hasNext() && !trouve) { // Traverser chaque ligne du fichier XLSX
       Row row = iter.next();
       Iterator<Cell> cellIterator = row.cellIterator();
-      while (cellIterator.hasNext() && !correspondance) { // Pour chaque ligne, it�rer chaque colonne
+      while (cellIterator.hasNext() && !trouve) { // Pour chaque ligne, it�rer chaque colonne
         Cell cell = cellIterator.next();
         if (title_a.equals(cell.getStringCellValue())) trouve = true; //On a trouv� le code du genre dans le fichier
-        if (trouve) {
-
-          correspondance = true;
-
-        }
       }
     }
     /*******************************************************************/
@@ -437,54 +430,38 @@ public class F22_SelfContainedExpression {
   }
 
   /*****************************************
-   * Le genre
+   * Les genres
    *************************************/
-  public static String getGenre(String xmlFile) throws IOException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
+  private static List<Resource> getGenre(String xmlFile) throws IOException {
+    List<Resource> genres = new ArrayList<>();
+
+    // Charger le fichier MARCXML a parser
+    InputStream file = new FileInputStream(xmlFile);
     MarcXmlReader reader = new MarcXmlReader(file);
-    String codeGenre = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
+
+    // search the code of the genre in the file
+    // Parcourir le fichier MARCXML
+    while (reader.hasNext()) {
       Record s = reader.next();
-      for (int i = 0; i < s.controlFields.size(); i++) {
-        if (s.controlFields.get(i).getEtiq().equals("008")) {
-          for (int j = 18; j <= 20; j++) {
-            codeGenre = codeGenre + s.controlFields.get(i).getData().charAt(j);
-            //buffer.append(s.controlFields.get(i).getData().charAt(j));
-          }
+      for (ControlField field : s.controlFields) {
+        if (field.getEtiq().equals("008")) {
+          String codeGenre = field.getData().substring(18, 21).replace(".", "").trim();
+
+          // special case
+          if (codeGenre.isEmpty()) continue;
+          if (codeGenre.equals("uu")) codeGenre = "uuu";
+
+          Resource res = null;
+          if (Converter.genreVocabulary != null)
+            res = Converter.genreVocabulary.findConcept(codeGenre);
+
+          if (res == null) System.out.println("Code genre not found: " + codeGenre);
+          else genres.add(res);
         }
       }
     }
-    if (((codeGenre.length() == 3) && (codeGenre.contains(" "))) || (codeGenre.length() == 2)) {
-      codeGenre = codeGenre.replace(" ", "#");
-    }
-    /*******************************************************************/
-    Boolean trouve = false; // "trouve=true" si "codeGenre" a ete trouve dans le fichier
-    String fileName = F22_SelfContainedExpression.class.getClass().getResource(properties.getProperty("IAMLGenres")).getFile();
-    File fichier = new File(fileName);
-    FileInputStream fis = new FileInputStream(fichier);
 
-    XSSFWorkbook myWorkBook = new XSSFWorkbook(fis); // Trouver l'instance workbook du fichier XLSX
-    XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
-    Iterator<Row> iter = mySheet.iterator(); //Iterateur de toutes les lignes de la feuille courante
-
-    while (iter.hasNext() && !trouve) { // Traverser chaque ligne du fichier XLSX
-      Row row = iter.next();
-      Iterator<Cell> cellIterator = row.cellIterator();
-      int numColonne = 0;
-      while (cellIterator.hasNext()) { // Pour chaque ligne, iterer chaque colonne
-        Cell cell = cellIterator.next();
-        if (codeGenre.equals(cell.getStringCellValue())) trouve = true; //On a trouve le code du genre dans le fichier
-
-        if (trouve && (numColonne > 0)) {
-          buffer.append(cell.getStringCellValue());
-        }
-        numColonne++;
-      }
-    }
-
-    /*******************************************************************/
-    return buffer.toString();
+    return genres;
   }
 
   /***********************************

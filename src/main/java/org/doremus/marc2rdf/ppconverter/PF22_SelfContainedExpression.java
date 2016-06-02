@@ -8,13 +8,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.doremus.marc2rdf.main.Converter;
+import org.doremus.marc2rdf.ppparser.DataField;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class PF22_SelfContainedExpression {
 
@@ -110,9 +113,10 @@ public class PF22_SelfContainedExpression {
       );
     }
     /**************************** Expression: Genre *****************************************/
-    if (!(getGenre(Converter.getFile()).equals(""))) {
+    List<String> genres = getGenre(Converter.getFile());
+    for (String genre: genres) {
       F22.addProperty(modelF22.createProperty(mus + "U12_has_genre"), modelF22.createResource()
-        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(getGenre(Converter.getFile()), "fr")) // Le nom du genre est toujours en français
+        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
       );
     }
     /**************************** Expression: Order Number **********************************/
@@ -445,11 +449,11 @@ public class PF22_SelfContainedExpression {
         if (s.dataFields.get(i).getEtiq().equals(etiq)) {
           if (s.dataFields.get(i).isCode('n')) {
             orderNumber = (s.dataFields.get(i).getSubfield('n').getData());
-            String[] caracter = orderNumber.split("");
+            String[] character = orderNumber.split("");
             orderNumber = "";
-            for (int x = 0; x < caracter.length; x++) {
-              if (!(caracter[x].equals("N")) && !(caracter[x].equals("o")) && !(caracter[x].equals(" ")))
-                orderNumber = orderNumber + caracter[x];
+            for (String aCharacter : character) {
+              if (!(aCharacter.equals("N")) && !(aCharacter.equals("o")) && !(aCharacter.equals(" ")))
+                orderNumber = orderNumber + aCharacter;
             }
           }
         }
@@ -460,28 +464,27 @@ public class PF22_SelfContainedExpression {
   }
 
   /*****************************************
-   * Le genre
+   * Les genres
    *************************************/
-  public static String getGenre(String xmlFile) throws IOException {
-    StringBuilder buffer = new StringBuilder();
+  private static List<String> getGenre(String xmlFile) throws IOException {
+    List<String> genres = new ArrayList<>();
+
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
     MarcXmlReader reader = new MarcXmlReader(file);
-    String genreA = "", genreB = "";
+
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("610")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            genreA = s.dataFields.get(i).getSubfield('a').getData();
-          }
-          if (s.dataFields.get(i).isCode('b')) {
-            genreB = s.dataFields.get(i).getSubfield('b').getData();
+      for (DataField field : s.dataFields) {
+        if (field.getEtiq().equals("610")) {
+          if (field.isCode('a') && field.isCode('b') && field.getSubfield('b').getData().equals("04")) {
+            //$b=04 veut dire "genre"
+            genres.add(field.getSubfield('a').getData().toLowerCase());
           }
         }
       }
     }
-    if (genreB.equals("04")) buffer.append(genreA); //$b=04 veut dire "genre"
-    return buffer.toString();
+
+    return genres;
   }
 
   /***********************************

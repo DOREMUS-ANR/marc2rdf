@@ -21,6 +21,7 @@ import java.util.Properties;
 public class Converter {
 
   private static ArrayList<Vocabulary> vocabularies;
+  public static Vocabulary genreVocabulary;
 
   public static Properties properties;
   private static String fich = "";
@@ -85,6 +86,8 @@ public class Converter {
   /*************************************************************************************************/
   private static void listeRepertoire(File repertoire) throws URISyntaxException, IOException {
     String outputFolderPath = properties.getProperty("defaultOutput");
+    File folderTUMs = new File(properties.getProperty("TUMFolder"));
+
 
     if (!repertoire.isDirectory()) {
       System.out.println("Input directory not specified or not existing");
@@ -99,7 +102,6 @@ public class Converter {
 
     for (File file : list) {
       if (!file.isFile() || !file.getName().endsWith(".xml")) continue;
-
       fich = file.getAbsolutePath();
       Model m = ModelFactory.createDefaultModel();
 
@@ -108,7 +110,6 @@ public class Converter {
         m = BNF2RDF.convert(file.getAbsolutePath());
       } else if (file.getName().length() == 11) {
         // Notice PP
-
 
         /******
          * Verifier si c'est une notice d'oeuvre ou un TUM
@@ -123,7 +124,6 @@ public class Converter {
           // Parcourir le fichier MARCXML
           Record s = reader.next();
           typeNotice = s.getType();
-
           if (typeNotice.equals("UNI:100")) {
             // Si c'est une notice d'oeuvre
             for (int i = 0; i < s.dataFields.size(); i++) {
@@ -143,11 +143,14 @@ public class Converter {
 
           m = PP2RDF.convert(file.getAbsolutePath());
           // Convertir la notice d'oeuvre
-          final File folderTUMs = new File(properties.getProperty("TUMFolder"));
           File tum = getTUM(folderTUMs, idTUM);
           fich = tum.getAbsolutePath();
           m.add(PP2RDF.convert(tum.getAbsolutePath()));
           // Convertir le TUM correspondant
+        } else {
+          // TODO other notice types?
+          System.out.println("Skipping not recognized PP notice type " + typeNotice + " for file " + file.getName());
+          continue;
         }
       } else {
         System.out.println("Skipping not recognized file: " + file.getName());
@@ -159,15 +162,17 @@ public class Converter {
       // Write the output file
       File fileName;
       if (outputFolderPath != null && !outputFolderPath.isEmpty()) {
+        // default folder specified, write there
         fileName = Paths.get(outputFolderPath, file.getName().replaceFirst(".xml", ".ttl")).toFile();
       } else {
+        // write in the same folder, in the "RDF" subfolder
         fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName().replaceFirst(".ttl", ".xml")).toFile();
       }
       //noinspection ResultOfMethodCallIgnored
       fileName.getParentFile().mkdirs();
       FileWriter out = new FileWriter(fileName);
 
-      m.write(System.out, "TURTLE");
+     // m.write(System.out, "TURTLE");
       m.write(out, "TURTLE");
       out.close();
 
@@ -194,16 +199,21 @@ public class Converter {
     ContentsService contentsService = new ContentsService();
     for (RepositoryContents contents : contentsService.getContents(repo, "/vocabularies/")) {
       String url = vocabularyRoot + contents.getName();
-      vocabularies.add(new Vocabulary(url));
+      Vocabulary vocabulary = new Vocabulary(url);
+      vocabularies.add(vocabulary);
       System.out.println("Loaded vocabulary at " + url);
+      if (contents.getName().equals("genre.ttl")) {
+        genreVocabulary = vocabulary;
+      }
     }
   }
 
 
   private static File getTUM(final File folder, String idTUM) {
     for (File fileEntry : folder.listFiles()) {
-      System.out.println(fileEntry.getName());
+      // System.out.println(fileEntry.getName());
       if (fileEntry.isDirectory()) {
+        // FIXME the following result get lost
         getTUM(fileEntry, idTUM);
       } else if (fileEntry.getName().equals(idTUM + ".xml")) {
         return fileEntry;
@@ -215,22 +225,14 @@ public class Converter {
 
   private static void loadProperties() {
     properties = new Properties();
-    InputStream input = null;
+    String filename = "config.properties";
 
     try {
-      String filename = "config.properties";
-      input = new FileInputStream(filename);
+      InputStream input = new FileInputStream(filename);
       properties.load(input);
+      input.close();
     } catch (IOException ex) {
       ex.printStackTrace();
-    } finally {
-      if (input != null) {
-        try {
-          input.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
     }
 
   }

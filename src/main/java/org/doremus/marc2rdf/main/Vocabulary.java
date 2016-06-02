@@ -16,10 +16,20 @@ import java.util.Map;
 public class Vocabulary {
   private Model vocabulary;
   private HashMap<String, Resource> substitutionMap;
+  private String schemePath;
 
   public Vocabulary(String url) {
     vocabulary = ModelFactory.createDefaultModel();
     vocabulary.read(url, "TURTLE");
+
+    // Save default path
+    StmtIterator conceptSchemeIter =
+      vocabulary.listStatements(new SimpleSelector(null, RDF.type, vocabulary.getResource(SKOS.ConceptScheme.toString())));
+    if (!conceptSchemeIter.hasNext()) {
+      System.out.println("Vocabulary constructor | Warning: No ConceptScheme in the reference rdf at " + url + ". Method \"findConcept\" will not work for it.");
+    }else {
+      schemePath = conceptSchemeIter.nextStatement().getSubject().toString();
+    }
 
     // Build a map
     substitutionMap = new HashMap<>();
@@ -93,5 +103,15 @@ public class Vocabulary {
     model.remove(statementsToRemove);
 
     return model;
+  }
+
+  public Resource findConcept(String code) {
+    if (schemePath == null) return null;
+
+    Resource concept = vocabulary.getResource(schemePath + "/" + code);
+
+    if (vocabulary.contains(concept, null, (RDFNode) null)) {
+      return concept;
+    } else return null;
   }
 }
