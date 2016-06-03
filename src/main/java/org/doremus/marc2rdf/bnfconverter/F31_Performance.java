@@ -45,13 +45,14 @@ public class F31_Performance {
     Resource F31 = modelF31.createResource(uriF31.toString());
 
     /**************************** création d'une expression de plan d'exécution *************/
-    modelF31.createResource(F28_ExpressionCreation.uriF28.toString()).addProperty(modelF31.createProperty(frbroo + "R17_created"), getURIF31().toString());
+    modelF31.createResource(F28_ExpressionCreation.uriF28.toString()).addProperty(modelF31.createProperty(frbroo + "R17_created"), modelF31.createResource(getURIF31().toString()));
 
     /**************************** exécution du plan *****************************************/
-    modelF31.createResource(F25_PerformancePlan.uriF25.toString()).addProperty(modelF31.createProperty(frbroo + "R25i_was_performed_by"), getURIF31().toString());
+    modelF31.createResource(F25_PerformancePlan.uriF25.toString()).addProperty(modelF31.createProperty(frbroo + "R25i_was_performed_by"), modelF31.createResource(getURIF31().toString()));
 
     /**************************** Performance: 1ère exécution *******************************/
-    modelF31.createResource(F14_IndividualWork.uriF14.toString()).addProperty(modelF31.createProperty(mus + "U5_had_premiere"), getURIF31().toString());
+    modelF31.createResource(F14_IndividualWork.uriF14.toString())
+    	.addProperty(modelF31.createProperty(mus + "U5_had_premiere"), modelF31.createResource(getURIF31().toString()));
 
     /**************************** Performance: 1ère exécution *******************************/
     F31.addProperty(modelF31.createProperty(mus + "U5_had_premiere"), getExecution(Converter.getFile()));
