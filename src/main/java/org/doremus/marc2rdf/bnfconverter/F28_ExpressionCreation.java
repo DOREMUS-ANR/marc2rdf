@@ -68,7 +68,7 @@ public class F28_ExpressionCreation {
     if (!(getComposer(Converter.getFile()).equals(""))) {
       F28.addProperty(modelF28.createProperty(cidoc + "P9_consists_of"), modelF28.createResource()
         .addProperty(modelF28.createProperty(rdf + "type"), modelF28.createResource(cidoc + "E7_activity"))
-        .addProperty(modelF28.createProperty(cidoc + "U35_had_function_of_type"), "compositeur")
+        .addProperty(modelF28.createProperty(mus + "U31_had_function_of_type"), "compositeur")
         .addProperty(modelF28.createProperty(cidoc + "P14_carried_out_by"), modelF28.createResource()
           .addProperty(modelF28.createProperty(rdf + "type"), modelF28.createResource(cidoc + "E21_Person"))
           .addProperty(modelF28.createProperty(cidoc + "P131_is_identified_by"), getComposer(Converter.getFile())
