@@ -3,6 +3,8 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,6 +40,7 @@ public class F14_IndividualWork {
   public Model getModel() throws URISyntaxException {
 
     Resource F14 = modelF14.createResource(uriF14.toString());
+    F14.addProperty(RDF.type, FRBROO.F14_Individual_Work);
 
     /**************************** Work: is member of (Work) *********************************/
     F14.addProperty(modelF14.createProperty(frbroo + "R10i_is_member_of"), modelF14.createResource(F15_ComplexWork.uriF15.toString()));

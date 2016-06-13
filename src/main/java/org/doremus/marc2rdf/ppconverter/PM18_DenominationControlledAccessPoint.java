@@ -3,6 +3,9 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -38,9 +41,10 @@ public class PM18_DenominationControlledAccessPoint {
   public Model getModel() throws URISyntaxException, FileNotFoundException {
 
     Resource M18 = modelM18.createResource(uriM18.toString());
+    M18.addProperty(RDF.type, MUS.M18_Controlled_Access_Point_Denomination);
 
     /**************************** Work: was assigned by *************************************/
-    M18.addProperty(modelM18.createProperty(frbroo + "R46_assigned"), modelM18.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
+    M18.addProperty(FRBROO.R46_assigned, modelM18.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
 
     return modelM18;
   }

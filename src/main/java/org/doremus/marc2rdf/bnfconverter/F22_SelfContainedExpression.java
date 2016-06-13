@@ -12,6 +12,7 @@ import org.doremus.marc2rdf.bnfparser.ControlField;
 import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
+import org.doremus.ontology.FRBROO;
 
 import java.io.*;
 import java.net.URI;
@@ -50,6 +51,7 @@ public class F22_SelfContainedExpression {
   public Model getModel() throws URISyntaxException, IOException {
 
     Resource F22 = modelF22.createResource(uriF22.toString());
+    F22.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
     F22.addProperty(RDF.type, modelF22.createResource(mus + "Self_Contained_Expression"));
 

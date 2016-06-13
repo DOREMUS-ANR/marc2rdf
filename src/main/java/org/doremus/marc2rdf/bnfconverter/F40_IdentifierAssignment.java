@@ -4,9 +4,11 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,6 +48,7 @@ public class F40_IdentifierAssignment {
   public Model getModel() throws URISyntaxException, FileNotFoundException {
 
     Resource F40 = modelF40.createResource(uriF40.toString());
+    F40.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);
 
     /**************************** Schéma général : Attribution ******************************/
     F40.addProperty(modelF40.createProperty(frbroo + "R45_assigned_to"), modelF40.createResource(F22_SelfContainedExpression.uriF22.toString()));

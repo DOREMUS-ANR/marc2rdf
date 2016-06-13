@@ -3,9 +3,11 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,6 +46,7 @@ public class PF40_IdentifierAssignment {
   public Model getModel() throws URISyntaxException, FileNotFoundException {
 
     Resource F40 = modelF40.createResource(uriF40.toString());
+    F40.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);
 
     /**************************** Work: was assigned by *************************************/
     F40.addProperty(modelF40.createProperty(frbroo + "R46_assigned"), modelF40.createResource(PF50_ControlledAccessPoint.uriF50.toString()));

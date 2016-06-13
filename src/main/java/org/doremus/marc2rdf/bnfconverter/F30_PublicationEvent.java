@@ -3,9 +3,11 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,7 +30,6 @@ public class F30_PublicationEvent {
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
   String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
-  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
   public URI getURIF30() throws URISyntaxException {
@@ -41,6 +42,7 @@ public class F30_PublicationEvent {
   public Model getModel() throws URISyntaxException, FileNotFoundException {
 
     Resource F30 = modelF30.createResource(uriF30.toString());
+    F30.addProperty(RDF.type, FRBROO.F30_Publication_Event);
 
     /**************************** création d'une expression de publication *************/
     F30.addProperty(modelF30.createProperty(frbroo + "R24_created"), modelF30.createResource(F24_PublicationExpression.uriF24.toString()));

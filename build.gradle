@@ -28,3 +28,57 @@ run {
 // fill with the complete package path of the "main" class
 mainClassName = 'org.doremus.marc2rdf.main.Converter'
 
+buildscript {
+    repositories {
+        jcenter()
+        flatDir {
+            dirs 'libs'
+        }
+    }
+    // TODO gradle jena plugin is waiting for a pull request
+    // see https://github.com/gnagy/gradle-jena-plugin/pull/2
+    dependencies {
+        classpath 'org.apache.jena:jena-cmds:3.1.0',
+                'hu.webhejj.gradle:gradle-jena-plugin:1.1.0@jar'
+    }
+}
+
+task schemagen(dependsOn: ['schemagenFrbroo', 'schemagenCidoc', 'schemagenDoremus'])
+
+//TODO load from uri
+task schemagenDoremus(type: hu.webhejj.gradle.jena.SchemaGen) {
+    source = file("/Users/pasquale/git/doremus-ontology/Doremus-v0.1.owl")
+    outputDirectory = file("src/main/java/")
+    packageName = "org.doremus.ontology"
+    classNameSuffix = "MUS"
+    ontology = true
+    inference = true
+    nostrict = true
+    nocomments = true
+    namespace = 'http://erlangen-crm.org/efrbroo/'
+}
+
+task schemagenFrbroo(type: hu.webhejj.gradle.jena.SchemaGen) {
+    source = file("/Users/pasquale/git/doremus-ontology/FRBRoo-v2.4.owl")
+    outputDirectory = file("src/main/java/")
+    packageName = "org.doremus.ontology"
+    classNameSuffix = "FRBROO"
+    ontology = true
+    inference = false
+    nostrict = true
+    nocomments = true
+    namespace = 'http://erlangen-crm.org/efrbroo/'
+}
+
+task schemagenCidoc(type: hu.webhejj.gradle.jena.SchemaGen) {
+    // FIXME the namespace is different from what we have in files
+    source = file("/Users/pasquale/git/doremus-ontology/FRBRoo-v2.4.owl")
+    outputDirectory = file("src/main/java/")
+    packageName = "org.doremus.ontology"
+    classNameSuffix = "CIDOC"
+    ontology = true
+    inference = false
+    nostrict = true
+    nocomments = true
+    namespace = 'http://erlangen-crm.org/current/'
+}

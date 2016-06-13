@@ -3,6 +3,8 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,11 +19,6 @@ public class PF19_PublicationWork {
     this.uriF19 = getURIF19();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-
   /********************************************************************************************/
   public URI getURIF19() throws URISyntaxException {
     ConstructURI uri = new ConstructURI();
@@ -34,9 +31,10 @@ public class PF19_PublicationWork {
   public Model getModel() throws URISyntaxException {
 
     Resource F19 = modelF19.createResource(uriF19.toString());
+    F19.addProperty(RDF.type, FRBROO.F19_Publication_Work);
 
     /**************************** réalisation d'une work ************************************/
-    F19.addProperty(modelF19.createProperty(frbroo + "R3_is_realised_in"), modelF19.createResource(PF24_PublicationExpression.uriF24.toString()));
+    F19.addProperty(FRBROO.R3_is_realised_in, modelF19.createResource(PF24_PublicationExpression.uriF24.toString()));
 
     return modelF19;
   }

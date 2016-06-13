@@ -3,9 +3,11 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,6 +41,7 @@ public class PF30_PublicationEvent {
   public Model getModel() throws URISyntaxException, FileNotFoundException {
 
     Resource F30 = modelF30.createResource(uriF30.toString());
+    F30.addProperty(RDF.type, FRBROO.F30_Publication_Event);
 
     /**************************** création d'une expression de publication *************/
     F30.addProperty(modelF30.createProperty(frbroo + "R24_created"), modelF30.createResource(PF24_PublicationExpression.uriF24.toString()));

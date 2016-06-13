@@ -3,6 +3,8 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,7 +24,6 @@ public class F42_representativeExpressionAssignment {
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
   String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
-  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
   public URI getURIF42() throws URISyntaxException {
@@ -36,6 +37,7 @@ public class F42_representativeExpressionAssignment {
   public Model getModel() throws URISyntaxException {
 
     Resource F42 = modelF42.createResource(uriF42.toString());
+    F42.addProperty(RDF.type, FRBROO.F42_Representative_Expression_Assignment);
 
     /**************************** Responsable de l'attribution **********************************/
     F42.addProperty(modelF42.createProperty(frbroo + "R44_carried_out_by"), modelF42.createResource("http://isni.org/isni/0000000121751303"));

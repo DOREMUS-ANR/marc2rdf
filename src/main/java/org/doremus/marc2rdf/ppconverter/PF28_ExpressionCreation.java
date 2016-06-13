@@ -6,9 +6,11 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,7 +37,6 @@ public class PF28_ExpressionCreation {
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
   String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
-  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
   public URI getURIF28() throws URISyntaxException {
@@ -48,6 +49,7 @@ public class PF28_ExpressionCreation {
   public Model getModel() throws URISyntaxException, FileNotFoundException {
 
     Resource F28 = modelF28.createResource(uriF28.toString());
+    F28.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
     /**************************** Work: created a realisation *******************************/
     F28.addProperty(modelF28.createProperty(frbroo + "R19_created_a_realisation_of"), modelF28.createResource(PF14_IndividualWork.uriF14.toString()));
@@ -59,7 +61,7 @@ public class PF28_ExpressionCreation {
     if (!(getDateMachine(Converter.getFile()).equals(""))) {
       RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(dcterms + "terms-W3CDTF");
       F28.addProperty(modelF28.createProperty(cidoc + "P4_has_time_span"), modelF28.createResource()
-        .addProperty(modelF28.createProperty(rdf + "type"), modelF28.createResource(cidoc + "E52_Time_Span"))
+        .addProperty(RDF.type, modelF28.createResource(cidoc + "E52_Time_Span"))
         .addProperty(modelF28.createProperty(cidoc + "P82_at_some_time_within"), ResourceFactory.createTypedLiteral(getDateMachine(Converter.getFile()), W3CDTF)));
     }
     /**************************** Work: Date of the work (expression représentative) ********/
@@ -69,17 +71,17 @@ public class PF28_ExpressionCreation {
     /**************************** Work: Period of the work **********************************/
     if (!(getPeriod(Converter.getFile()).equals(""))) {
       F28.addProperty(modelF28.createProperty(cidoc + "P10_falls_within"), modelF28.createResource()
-        .addProperty(modelF28.createProperty(rdf + "type"), modelF28.createResource(cidoc + "E4_Period"))
+        .addProperty(RDF.type, modelF28.createResource(cidoc + "E4_Period"))
         .addProperty(modelF28.createProperty(cidoc + "P1_is_identified_by"), getPeriod(Converter.getFile())));
     }
 
     /**************************** Work: is created by ***************************************/
     if (!(getComposer(Converter.getFile()).equals(""))) {
       F28.addProperty(modelF28.createProperty(cidoc + "P9_consists_of"), modelF28.createResource()
-        .addProperty(modelF28.createProperty(rdf + "type"), modelF28.createResource(cidoc + "E7_activity"))
+        .addProperty(RDF.type, modelF28.createResource(cidoc + "E7_activity"))
         .addProperty(modelF28.createProperty(mus + "U31_had_function_of_type"), "compositeur")
         .addProperty(modelF28.createProperty(cidoc + "P14_carried_out_by"), modelF28.createResource()
-          .addProperty(modelF28.createProperty(rdf + "type"), modelF28.createResource(cidoc + "E21_Person"))
+          .addProperty(RDF.type, modelF28.createResource(cidoc + "E21_Person"))
           .addProperty(modelF28.createProperty(cidoc + "P131_is_identified_by"), getComposer(Converter.getFile())
           ))
       );

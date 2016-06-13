@@ -3,6 +3,8 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,6 +36,7 @@ public class F25_AutrePerformancePlan {
   public Model getModel() throws URISyntaxException {
 
     Resource F25 = modelF25.createResource(uriF25.toString());
+    F25.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
 
     /**************************** exécution du plan ******************************************/
     F25.addProperty(modelF25.createProperty(frbroo + "R25i_was_performed_by"), modelF25.createResource(F31_AutrePerformance.uriF31.toString()));

@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -11,6 +12,7 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.DataField;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.ontology.FRBROO;
 
 import java.io.*;
 import java.net.URI;
@@ -38,7 +40,6 @@ public class PF22_SelfContainedExpression {
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
   public URI getURIF22() throws URISyntaxException {
@@ -51,8 +52,7 @@ public class PF22_SelfContainedExpression {
   public Model getModel() throws URISyntaxException, IOException {
 
     Resource F22 = modelF22.createResource(uriF22.toString());
-
-    F22.addProperty(modelF22.createProperty(rdf + "type"), modelF22.createResource(mus + "Self_Contained_Expression"));
+    F22.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
     /**************************** Expression: was created by ********************************/
     F22.addProperty(modelF22.createProperty(frbroo + "R17i_was_created_by"), modelF22.createResource(PF28_ExpressionCreation.uriF28.toString()));

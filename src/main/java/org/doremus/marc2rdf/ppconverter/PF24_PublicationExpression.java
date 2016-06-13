@@ -3,6 +3,8 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,6 +36,7 @@ public class PF24_PublicationExpression {
   public Model getModel() throws URISyntaxException {
 
     Resource F24 = modelF24.createResource(uriF24.toString());
+    F24.addProperty(RDF.type, FRBROO.F24_Publication_Expression);
 
     /*********** création d'une expression de publication incorporant l'expression **********/
     F24.addProperty(modelF24.createProperty(cidoc + "P165_incorporates"), modelF24.createResource(PF22_SelfContainedExpression.uriF22.toString()));

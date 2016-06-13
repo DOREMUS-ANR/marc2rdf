@@ -3,9 +3,11 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,6 +45,7 @@ public class F31_Performance {
   public Model getModel() throws URISyntaxException, IOException {
 
     Resource F31 = modelF31.createResource(uriF31.toString());
+    F31.addProperty(RDF.type, FRBROO.F31_Performance);
 
     /**************************** création d'une expression de plan d'exécution *************/
     modelF31.createResource(F28_ExpressionCreation.uriF28.toString()).addProperty(modelF31.createProperty(frbroo + "R17_created"), modelF31.createResource(getURIF31().toString()));

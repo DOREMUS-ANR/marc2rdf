@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -10,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.ontology.FRBROO;
 
 import java.io.*;
 import java.net.URI;
@@ -42,6 +44,7 @@ public class PF12_Nomen {
   public Model getModel() throws URISyntaxException, IOException {
 
     Resource F12 = modelF12.createResource(uriF12.toString());
+    F12.addProperty(RDF.type, FRBROO.F12_Nomen);
 
     /**************************** Expression: Title *****************************************/
     if (getTypeNotice(Converter.getFile()).equals("UNI:100")) { // Si c'est une notice d'oeuvre

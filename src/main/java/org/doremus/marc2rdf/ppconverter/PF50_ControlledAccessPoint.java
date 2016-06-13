@@ -3,6 +3,8 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -38,6 +40,7 @@ public class PF50_ControlledAccessPoint {
   public Model getModel() throws URISyntaxException, FileNotFoundException {
 
     Resource F50 = modelF50.createResource(uriF50.toString());
+    F50.addProperty(RDF.type, FRBROO.F50_Controlled_Access_Point);
 
     /**************************** Identification de l'œuvre *********************************/
     F50.addProperty(modelF50.createProperty(cidoc + "P1i_identifies"), modelF50.createResource(PF14_IndividualWork.uriF14.toString()));

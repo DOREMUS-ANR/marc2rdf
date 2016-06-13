@@ -214,7 +214,7 @@ public class Converter {
       // System.out.println(fileEntry.getName());
       if (fileEntry.isDirectory()) {
         // FIXME the following result get lost
-        getTUM(fileEntry, idTUM);
+        return getTUM(fileEntry, idTUM);
       } else if (fileEntry.getName().equals(idTUM + ".xml")) {
         return fileEntry;
       }

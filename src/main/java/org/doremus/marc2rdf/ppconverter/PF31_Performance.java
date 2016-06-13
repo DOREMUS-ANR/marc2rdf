@@ -3,9 +3,11 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -41,6 +43,7 @@ public class PF31_Performance {
   public Model getModel() throws URISyntaxException, IOException {
 
     Resource F31 = modelF31.createResource(uriF31.toString());
+    F31.addProperty(RDF.type, FRBROO.F31_Performance);
 
     /**************************** Performance: 1ère exécution *******************************/
     F31.addProperty(modelF31.createProperty(cidoc + "P3_has_note"), getNote(Converter.getFile()));

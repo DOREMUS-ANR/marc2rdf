@@ -3,9 +3,11 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,7 +31,6 @@ public class F31_AutrePerformance {
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
   String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
-  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
   public URI getURIF31() throws URISyntaxException {
@@ -43,6 +44,7 @@ public class F31_AutrePerformance {
   public Model getModel() throws URISyntaxException, IOException {
 
     Resource F31 = modelF31.createResource(uriF31.toString());
+    F31.addProperty(RDF.type, FRBROO.F31_Performance);
 
     /**************************** Performance: 1ère exécution *******************************/
     F31.addProperty(modelF31.createProperty(cidoc + "P3_has_note"), getNote(Converter.getFile()));
