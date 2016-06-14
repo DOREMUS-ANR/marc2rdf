@@ -42,11 +42,11 @@ public class MarcXmlHandler implements ContentHandler {
   private static final HashMap<String, Integer> elementMap; // Hashset for mapping of element strings to constants (Integer)
 
   static {
-    elementMap = new HashMap<String, Integer>();
-    elementMap.put("record", new Integer(RECORD_ID));
-    elementMap.put("controlfield", new Integer(CONTROLFIELD_ID));
-    elementMap.put("datafield", new Integer(DATAFIELD_ID));
-    elementMap.put("subfield", new Integer(SUBFIELD_ID));
+    elementMap = new HashMap<>();
+    elementMap.put("record", RECORD_ID);
+    elementMap.put("controlfield", CONTROLFIELD_ID);
+    elementMap.put("datafield", DATAFIELD_ID);
+    elementMap.put("subfield", SUBFIELD_ID);
   }
 
   boolean bDATA = false;
@@ -61,19 +61,16 @@ public class MarcXmlHandler implements ContentHandler {
   /*********************************************************************************/
   public void startElement(String uri, String name, String qName, Attributes atts) throws SAXException {
 
-    String realname = (name.length() == 0) ? qName : name;
-    Integer elementType = (Integer) elementMap.get(realname);
+    String realName = (name.length() == 0) ? qName : name;
+    Integer elementType = elementMap.get(realName);
 
-    bDATA = false;
-    if ((qName.equalsIgnoreCase("controlfield")) || (qName.equalsIgnoreCase("subfield"))) {
-      bDATA = true;
-    }
+    bDATA = qName.equalsIgnoreCase("controlfield") || qName.equalsIgnoreCase("subfield");
 
 
     if (elementType == null)
       return;
 
-    switch (elementType.intValue()) {
+    switch (elementType) {
       case RECORD_ID:
         typeNotice = atts.getValue(typeAttr);
         idNotice = atts.getValue(idAttr);
@@ -105,31 +102,29 @@ public class MarcXmlHandler implements ContentHandler {
 
   /*********************************************************************************/
   public void characters(char[] ch, int start, int length) throws SAXException {
-    if (bDATA) {
+    if (bDATA)
       buffer.append(new String(ch, start, length)); // Récupérer le contenu de la balise "data"
-      //bDATA = false;
-    }
   }
 
   /*********************************************************************************/
   public void endElement(String uri, String name, String qName) throws SAXException {
 
-    String realname = (name.length() == 0) ? qName : name;
-    Integer elementType = (Integer) elementMap.get(realname);
+    String realName = (name.length() == 0) ? qName : name;
+    Integer elementType = elementMap.get(realName);
     if (elementType == null) return;
-    switch (elementType.intValue()) {
+    switch (elementType) {
       case RECORD_ID:
         list.push(record);
         break;
       case CONTROLFIELD_ID:
-        controlField.setData(buffer.toString());
+        controlField.setData(buffer.toString().trim());
         record.addControlField(controlField);
         break;
       case DATAFIELD_ID:
         record.addDataField(dataField);
         break;
       case SUBFIELD_ID:
-        subfield.setData(buffer.toString());
+        subfield.setData(buffer.toString().trim());
         dataField.addSubfield(subfield);
     }
   }

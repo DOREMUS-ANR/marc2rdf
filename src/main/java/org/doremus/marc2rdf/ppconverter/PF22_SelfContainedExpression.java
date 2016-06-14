@@ -12,6 +12,7 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.DataField;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
@@ -105,15 +106,17 @@ public class PF22_SelfContainedExpression {
     F22.addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getNote(Converter.getFile()));
 
     /**************************** Expression: key *******************************************/
-    if (!(getKey(Converter.getFile()).equals(""))) {
+    String key = getKey(Converter.getFile());
+    if (!key.equals("")) {
       F22.addProperty(MUS.U11_has_key, modelF22.createResource()
-        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(getKey(Converter.getFile()), "fr")) // Le nom du genre est toujours en français
+        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(key, "fr")) // Le nom du genre est toujours en français
       );
     }
     /**************************** Expression: Genre *****************************************/
     List<String> genres = getGenre(Converter.getFile());
     for (String genre: genres) {
       F22.addProperty(MUS.U12_has_genre, modelF22.createResource()
+        .addProperty(RDF.type, MUS.M5_Genre)
         .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
       );
     }
@@ -289,9 +292,9 @@ public class PF22_SelfContainedExpression {
             String[] caracter = catalogNumber.split("");
             boolean t = false;
             catalogNumber = "";
-            for (int x = 0; x < caracter.length; x++) {
-              if ((caracter[x].equals(" ")) || (caracter[x].equals("."))) t = true;
-              else if (t == true) catalogNumber = catalogNumber + caracter[x];
+            for (String aCaracter : caracter) {
+              if ((aCaracter.equals(" ")) || (aCaracter.equals("."))) t = true;
+              else if (t) catalogNumber = catalogNumber + aCaracter;
             }
             buffer.append(catalogNumber);
           }
@@ -367,7 +370,7 @@ public class PF22_SelfContainedExpression {
             opusSubNumber = "";
             for (int x = 0; x < caracter.length; x++) {
               if ((caracter[x].equals(","))) t = true;
-              else if ((t == true) && !(caracter[x].equals("n")) && !(caracter[x].equals("o")) && !(caracter[x].equals(" ")))
+              else if ((t) && !(caracter[x].equals("n")) && !(caracter[x].equals("o")) && !(caracter[x].equals(" ")))
                 opusSubNumber = opusSubNumber + caracter[x];
             }
             buffer.append(opusSubNumber);
@@ -469,7 +472,6 @@ public class PF22_SelfContainedExpression {
 
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
     MarcXmlReader reader = new MarcXmlReader(file);
-
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (DataField field : s.dataFields) {

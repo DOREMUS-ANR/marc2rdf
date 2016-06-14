@@ -27,7 +27,7 @@ public class Vocabulary {
       vocabulary.listStatements(new SimpleSelector(null, RDF.type, vocabulary.getResource(SKOS.ConceptScheme.toString())));
     if (!conceptSchemeIter.hasNext()) {
       System.out.println("Vocabulary constructor | Warning: No ConceptScheme in the reference rdf at " + url + ". Method \"findConcept\" will not work for it.");
-    }else {
+    } else {
       schemePath = conceptSchemeIter.nextStatement().getSubject().toString();
     }
 
@@ -97,7 +97,10 @@ public class Vocabulary {
           model.add(s.getSubject(), s.getPredicate(), value);
         }
 
-        statementsToRemove.add(s);
+
+        StmtIterator subjIter = s.getSubject().listProperties();
+        while (subjIter.hasNext())
+          statementsToRemove.add(subjIter.nextStatement());
       }
     }
     model.remove(statementsToRemove);

@@ -86,9 +86,11 @@ public class F22_SelfContainedExpression {
     F22.addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getNote(Converter.getFile()));
 
     /**************************** Expression: key *******************************************/
-    if (!(getKey(Converter.getFile()).equals(""))) {
+    String key = getKey(Converter.getFile());
+    if (!key.equals("")) {
       F22.addProperty(MUS.U11_has_key, modelF22.createResource()
-        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(getKey(Converter.getFile()), "fr")) // Le nom du genre est toujours en français
+        .addProperty(RDF.type, MUS.M4_Key)
+        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(key, "fr")) // Le nom du genre est toujours en français
       );
     }
     /**************************** Expression: Genre *****************************************/

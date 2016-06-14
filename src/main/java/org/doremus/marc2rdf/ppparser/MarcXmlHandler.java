@@ -38,13 +38,13 @@ public class MarcXmlHandler implements ContentHandler {
   private static final HashMap<String, Integer> elementMap; // Hashset for mapping of element strings to constants (Integer)
 
   static {
-    elementMap = new HashMap<String, Integer>();
-    elementMap.put("NOTICE", new Integer(RECORD_ID));
-    elementMap.put("champs", new Integer(DATAFIELD_ID));
-    elementMap.put("SOUSCHAMP", new Integer(SUBFIELD_ID));
+    elementMap = new HashMap<>();
+    elementMap.put("NOTICE", RECORD_ID);
+    elementMap.put("champs", DATAFIELD_ID);
+    elementMap.put("SOUSCHAMP", SUBFIELD_ID);
   }
 
-  boolean bDATA = false;
+  private boolean bDATA = false;
 
   /*****************************
    * Constructeur
@@ -55,18 +55,15 @@ public class MarcXmlHandler implements ContentHandler {
 
   /*********************************************************************************/
   public void startElement(String uri, String name, String qName, Attributes atts) throws SAXException {
+    String realName = (name.length() == 0) ? qName : name; //Récupérer le nom de la balise
+    Integer elementType = elementMap.get(realName); //A quel "ID" correspond l'élément récupéré
 
-    String realname = (name.length() == 0) ? qName : name; //Récupérer le nom de la balise
-    Integer elementType = (Integer) elementMap.get(realname); //A quel "ID" correspond l'élément récupéré
-
-    if (qName.equalsIgnoreCase("data")) {
-      bDATA = true;
-    }
+    bDATA = (qName.equalsIgnoreCase("data"));
 
     if (elementType == null)
       return;
 
-    switch (elementType.intValue()) {
+    switch (elementType) {
       case RECORD_ID:
         typeNotice = atts.getValue(typeAttr);
         idNotice = atts.getValue(idAttr);
@@ -81,7 +78,7 @@ public class MarcXmlHandler implements ContentHandler {
         String code = atts.getValue(codeAttr); // Exemple : code = "017$a", on doit récupérer que ce qui est après le $
         int index = code.indexOf("$");
         code = code.substring(index + 1, code.length()); //On récupère que ce qui est après le $
-        if (code == null || code.length() == 0) {
+        if (code.length() == 0) {
           code = " ";
         }
         subfield = new Subfield(code.charAt(0));
@@ -90,19 +87,17 @@ public class MarcXmlHandler implements ContentHandler {
 
   /*********************************************************************************/
   public void characters(char[] ch, int start, int length) throws SAXException {
-    if (bDATA) {
+    if (bDATA)
       buffer.append(new String(ch, start, length)); // Récupérer le contenu de la balise "data"
-      bDATA = false;
-    }
+
   }
 
   /*********************************************************************************/
   public void endElement(String uri, String name, String qName) throws SAXException {
-
-    String realname = (name.length() == 0) ? qName : name;
-    Integer elementType = (Integer) elementMap.get(realname);
+    String realName = (name.length() == 0) ? qName : name;
+    Integer elementType = elementMap.get(realName);
     if (elementType == null) return;
-    switch (elementType.intValue()) {
+    switch (elementType) {
       case RECORD_ID:
         list.push(record);
         break;
@@ -110,7 +105,7 @@ public class MarcXmlHandler implements ContentHandler {
         record.addDataField(dataField);
         break;
       case SUBFIELD_ID:
-        subfield.setData(buffer.toString());
+        subfield.setData(buffer.toString().trim());
         dataField.addSubfield(subfield);
     }
   }

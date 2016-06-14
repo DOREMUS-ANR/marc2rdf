@@ -129,7 +129,7 @@ public class Converter {
             for (int i = 0; i < s.dataFields.size(); i++) {
               if (s.dataFields.get(i).getEtiq().equals("500")) {
                 if (s.dataFields.get(i).isCode('3'))
-                  idTUM = s.dataFields.get(i).getSubfield('3').getData();
+                  idTUM = s.dataFields.get(i).getSubfield('3').getData().trim();
               }
             }
           }
@@ -172,7 +172,7 @@ public class Converter {
       fileName.getParentFile().mkdirs();
       FileWriter out = new FileWriter(fileName);
 
-     // m.write(System.out, "TURTLE");
+      // m.write(System.out, "TURTLE");
       m.write(out, "TURTLE");
       out.close();
 
@@ -211,16 +211,15 @@ public class Converter {
 
   private static File getTUM(final File folder, String idTUM) {
     for (File fileEntry : folder.listFiles()) {
-      // System.out.println(fileEntry.getName());
       if (fileEntry.isDirectory()) {
-        // FIXME the following result get lost
-        return getTUM(fileEntry, idTUM);
+        File f = getTUM(fileEntry, idTUM);
+        if (f != null) return f;
       } else if (fileEntry.getName().equals(idTUM + ".xml")) {
         return fileEntry;
       }
 
     }
-    return folder;
+    return null;
   }
 
   private static void loadProperties() {

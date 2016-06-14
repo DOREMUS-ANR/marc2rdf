@@ -58,11 +58,12 @@ public class PF28_ExpressionCreation {
     F28.addProperty(modelF28.createProperty(frbroo + "R17_created"), modelF28.createResource(PF22_SelfContainedExpression.uriF22.toString()));
 
     /**************************** Work: Date of the work (expression représentative) ********/
-    if (!(getDateMachine(Converter.getFile()).equals(""))) {
+    String dateMachine = getDateMachine(Converter.getFile());
+    if (!dateMachine.isEmpty()) {
       RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(dcterms + "terms-W3CDTF");
       F28.addProperty(modelF28.createProperty(cidoc + "P4_has_time_span"), modelF28.createResource()
         .addProperty(RDF.type, modelF28.createResource(cidoc + "E52_Time_Span"))
-        .addProperty(modelF28.createProperty(cidoc + "P82_at_some_time_within"), ResourceFactory.createTypedLiteral(getDateMachine(Converter.getFile()), W3CDTF)));
+        .addProperty(modelF28.createProperty(cidoc + "P82_at_some_time_within"), ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
     }
     /**************************** Work: Date of the work (expression représentative) ********/
     F28.addProperty(modelF28.createProperty(cidoc + "P3_has_note"), getDateText(Converter.getFile()));
