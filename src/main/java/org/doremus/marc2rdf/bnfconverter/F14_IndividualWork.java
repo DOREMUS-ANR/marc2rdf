@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,7 +24,6 @@ public class F14_IndividualWork {
     this.uriF14 = getURIF14();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
@@ -55,10 +55,10 @@ public class F14_IndividualWork {
     F14.addProperty(modelF14.createProperty(frbroo + "R45i_was_assigned_by"), modelF14.createResource(F40_IdentifierAssignment.uriF40.toString()));
 
     /**************************** Work: had princeps publication ****************************/
-    F14.addProperty(modelF14.createProperty(mus + "U4_had_princeps_publication"), modelF14.createResource(F30_PublicationEvent.uriF30.toString()));
+    F14.addProperty(MUS.U4_had_princeps_publication, modelF14.createResource(F30_PublicationEvent.uriF30.toString()));
 
     /**************************** Work: had premiere ****************************************/
-    F14.addProperty(modelF14.createProperty(mus + "U5_had_premiere"), modelF14.createResource(F31_Performance.uriF31.toString()));
+    F14.addProperty(MUS.U5_had_premiere, modelF14.createResource(F31_Performance.uriF31.toString()));
 
     return modelF14;
   }

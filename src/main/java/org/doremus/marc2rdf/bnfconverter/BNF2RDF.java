@@ -36,7 +36,7 @@ public class BNF2RDF {
     /************* Creer un modele vide **************************/
     //Model model = VirtModel.openDatabaseModel("DOREMUS", "jdbc:virtuoso://localhost:1111", "dba", "dba");
     Model model = ModelFactory.createDefaultModel();
-    String mus = "http://data.doremus.org/ontology/";
+    String mus = "http://data.doremus.org/ontology#";
     String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
     String frbroo = "http://erlangen-crm.org/efrbroo/";
     String xsd = "http://www.w3.org/2001/XMLSchema#";

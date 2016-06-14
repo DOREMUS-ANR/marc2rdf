@@ -30,12 +30,9 @@ public class F40_IdentifierAssignment {
     this.uriF40 = getURIF40();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
-  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
   public URI getURIF40() throws URISyntaxException {

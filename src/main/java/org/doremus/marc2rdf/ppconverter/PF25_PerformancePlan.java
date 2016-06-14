@@ -19,7 +19,6 @@ public class PF25_PerformancePlan {
     this.uriF25 = getURIF25();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";

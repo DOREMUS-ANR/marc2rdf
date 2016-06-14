@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,7 +24,6 @@ public class PF14_IndividualWork {
     this.uriF14 = getURIF14();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
@@ -58,7 +58,7 @@ public class PF14_IndividualWork {
     F14.addProperty(modelF14.createProperty(cidoc + "P1_is_identified_by"), modelF14.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
 
     /**************************** Performance: 1ère exécution *************************************/
-    F14.addProperty(modelF14.createProperty(mus + "U5_had_premiere"), modelF14.createResource(PF31_Performance.uriF31.toString()));
+    F14.addProperty(MUS.U5_had_premiere, modelF14.createResource(PF31_Performance.uriF31.toString()));
 
     return modelF14;
   }

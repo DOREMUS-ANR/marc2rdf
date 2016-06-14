@@ -13,6 +13,7 @@ import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
 import java.io.*;
 import java.net.URI;
@@ -36,7 +37,6 @@ public class F22_SelfContainedExpression {
     this.uriF22 = getURIF22();
   }
 
-  private static final String mus = "http://data.doremus.org/ontology/";
   private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   private static final String frbroo = "http://erlangen-crm.org/efrbroo/";
 
@@ -69,14 +69,14 @@ public class F22_SelfContainedExpression {
     F22.addProperty(modelF22.createProperty(cidoc + "P102_has_title"), modelF22.createLiteral(getTitle(Converter.getFile(), "144"), getLang(Converter.getFile(), "144")));
     F22.addProperty(modelF22.createProperty(cidoc + "P102_has_title"), modelF22.createLiteral(getTitle(Converter.getFile(), "444"), getLang(Converter.getFile(), "444")));
     /**************************** Expression: Catalogue *************************************/
-    F22.addProperty(modelF22.createProperty(mus + "U16_has_catalogue_statement"), modelF22.createResource()
+    F22.addProperty(MUS.U16_has_catalogue_statement, modelF22.createResource()
       .addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getCatalog(Converter.getFile()))
       .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getCatalogName(Converter.getFile()))
       .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getCatalogNumber(Converter.getFile()))
     );
 
     /**************************** Expression: Opus ******************************************/
-    F22.addProperty(modelF22.createProperty(mus + "U17_has_opus_statement"), modelF22.createResource()
+    F22.addProperty(MUS.U17_has_opus_statement, modelF22.createResource()
       .addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getOpus(Converter.getFile()))
       .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getOpusNumber(Converter.getFile()))
       .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getOpusSubNumber(Converter.getFile()))
@@ -87,19 +87,19 @@ public class F22_SelfContainedExpression {
 
     /**************************** Expression: key *******************************************/
     if (!(getKey(Converter.getFile()).equals(""))) {
-      F22.addProperty(modelF22.createProperty(mus + "U11_has_key"), modelF22.createResource()
+      F22.addProperty(MUS.U11_has_key, modelF22.createResource()
         .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(getKey(Converter.getFile()), "fr")) // Le nom du genre est toujours en français
       );
     }
     /**************************** Expression: Genre *****************************************/
     List<Resource> genreList = getGenre(Converter.getFile());
-    for (Resource genre : genreList) F22.addProperty(modelF22.createProperty(mus + "U12_has_genre"), genre);
+    for (Resource genre : genreList) F22.addProperty(MUS.U12_has_genre, genre);
 
     /**************************** Expression: Order Number **********************************/
-    F22.addProperty(modelF22.createProperty(mus + "U10_has_order_number"), getOrderNumber(Converter.getFile()));
+    F22.addProperty(MUS.U10_has_order_number, getOrderNumber(Converter.getFile()));
 
     /**************************** Expression: Casting ***************************************/
-    F22.addProperty(modelF22.createProperty(mus + "U13_has_casting"), getCasting(Converter.getFile()));
+    F22.addProperty(MUS.U13_has_intended_casting, getCasting(Converter.getFile()));
 
     /**************************** Expression: Assignation d'identifiant *********************/
     F22.addProperty(modelF22.createProperty(frbroo + "R45i_was_assigned_by"), modelF22.createResource(F40_IdentifierAssignment.uriF40.toString()));

@@ -8,6 +8,7 @@ import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,11 +26,9 @@ public class F30_PublicationEvent {
     this.uriF30 = getURIF30();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
 
   /********************************************************************************************/
   public URI getURIF30() throws URISyntaxException {
@@ -51,7 +50,7 @@ public class F30_PublicationEvent {
     F30.addProperty(modelF30.createProperty(frbroo + "R19_created_a_realisation_of"), modelF30.createResource(F19_PublicationWork.uriF19.toString()));
 
     /**************************** Publication Event: édition princeps ******************/
-    F30.addProperty(modelF30.createProperty(mus + "U4i_is_princeps_publication_of"), modelF30.createResource(F14_IndividualWork.uriF14.toString()));
+    F30.addProperty(MUS.U4i_was_princeps_publication_of, modelF30.createResource(F14_IndividualWork.uriF14.toString()));
 
     /**************************** Expression: 1ère publication *************************/
     F30.addProperty(modelF30.createProperty(cidoc + "P3_has_note"), getNote(Converter.getFile()));

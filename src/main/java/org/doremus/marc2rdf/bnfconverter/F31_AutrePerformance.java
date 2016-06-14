@@ -26,11 +26,9 @@ public class F31_AutrePerformance {
     this.uriF31 = getURIF31();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
 
   /********************************************************************************************/
   public URI getURIF31() throws URISyntaxException {

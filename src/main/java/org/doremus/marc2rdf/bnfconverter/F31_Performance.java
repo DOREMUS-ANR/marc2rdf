@@ -8,6 +8,7 @@ import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
 import org.doremus.marc2rdf.bnfparser.Record;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,11 +27,9 @@ public class F31_Performance {
     this.uriF31 = getURIF31();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
   String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /********************************************************************************************/
@@ -55,10 +54,10 @@ public class F31_Performance {
 
     /**************************** Performance: 1ère exécution *******************************/
     modelF31.createResource(F14_IndividualWork.uriF14.toString())
-    	.addProperty(modelF31.createProperty(mus + "U5_had_premiere"), modelF31.createResource(getURIF31().toString()));
+    	.addProperty(MUS.U5_had_premiere, modelF31.createResource(getURIF31().toString()));
 
     /**************************** Performance: 1ère exécution *******************************/
-    F31.addProperty(modelF31.createProperty(mus + "U5_had_premiere"), getExecution(Converter.getFile()));
+    F31.addProperty(MUS.U5_had_premiere, getExecution(Converter.getFile()));
 
     return modelF31;
   }

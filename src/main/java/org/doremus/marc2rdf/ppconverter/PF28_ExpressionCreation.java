@@ -11,6 +11,7 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.ppparser.MarcXmlReader;
 import org.doremus.marc2rdf.ppparser.Record;
 import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +33,6 @@ public class PF28_ExpressionCreation {
     this.uriF28 = getURIF28();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
@@ -79,7 +79,7 @@ public class PF28_ExpressionCreation {
     if (!(getComposer(Converter.getFile()).equals(""))) {
       F28.addProperty(modelF28.createProperty(cidoc + "P9_consists_of"), modelF28.createResource()
         .addProperty(RDF.type, modelF28.createResource(cidoc + "E7_activity"))
-        .addProperty(modelF28.createProperty(mus + "U31_had_function_of_type"), "compositeur")
+        .addProperty(MUS.U31_had_function_of_type, "compositeur")
         .addProperty(modelF28.createProperty(cidoc + "P14_carried_out_by"), modelF28.createResource()
           .addProperty(RDF.type, modelF28.createResource(cidoc + "E21_Person"))
           .addProperty(modelF28.createProperty(cidoc + "P131_is_identified_by"), getComposer(Converter.getFile())

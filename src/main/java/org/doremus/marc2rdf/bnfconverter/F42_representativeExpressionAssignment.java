@@ -19,11 +19,9 @@ public class F42_representativeExpressionAssignment {
     this.uriF42 = getURIF42();
   }
 
-  String mus = "http://data.doremus.org/ontology/";
   String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   String frbroo = "http://erlangen-crm.org/efrbroo/";
   String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
 
   /********************************************************************************************/
   public URI getURIF42() throws URISyntaxException {
