@@ -53,8 +53,6 @@ public class F22_SelfContainedExpression {
     Resource F22 = modelF22.createResource(uriF22.toString());
     F22.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
-    F22.addProperty(RDF.type, modelF22.createResource(mus + "Self_Contained_Expression"));
-
     /**************************** Expression: was created by ********************************/
     F22.addProperty(modelF22.createProperty(frbroo + "R17i_was_created_by"), modelF22.createResource(F28_ExpressionCreation.uriF28.toString()));
 
