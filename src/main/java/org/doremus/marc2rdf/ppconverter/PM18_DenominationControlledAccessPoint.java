@@ -41,7 +41,7 @@ public class PM18_DenominationControlledAccessPoint {
   public Model getModel() throws URISyntaxException, FileNotFoundException {
 
     Resource M18 = modelM18.createResource(uriM18.toString());
-    M18.addProperty(RDF.type, MUS.M18_Controlled_Access_Point_Denomination);
+    M18.addProperty(RDF.type, modelM18.createResource(mus + "M18_Controlled_Access_Point_Denomination"));
 
     /**************************** Work: was assigned by *************************************/
     M18.addProperty(FRBROO.R46_assigned, modelM18.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
