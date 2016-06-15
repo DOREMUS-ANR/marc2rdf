@@ -117,14 +117,14 @@ public class MarcXmlHandler implements ContentHandler {
         list.push(record);
         break;
       case CONTROLFIELD_ID:
-        controlField.setData(buffer.toString().trim());
+        controlField.setData(buffer.toString());
         record.addControlField(controlField);
         break;
       case DATAFIELD_ID:
         record.addDataField(dataField);
         break;
       case SUBFIELD_ID:
-        subfield.setData(buffer.toString().trim());
+        subfield.setData(buffer.toString());
         dataField.addSubfield(subfield);
     }
   }
