@@ -1,3 +1,5 @@
+import hu.webhejj.gradle.jena.UrlSchemaGen
+
 apply plugin: 'java'
 apply plugin: 'application'
 
@@ -45,24 +47,23 @@ buildscript {
 
 task schemagen(dependsOn: ['schemagenFrbroo', 'schemagenCidoc', 'schemagenDoremus'])
 
-//TODO load from uri
-task schemagenDoremus(type: hu.webhejj.gradle.jena.SchemaGen) {
-    source = file("/Users/pasquale/git/doremus-ontology/Doremus-v0.1.owl")
-    outputDirectory = file("src/main/java/")
-    packageName = "org.doremus.ontology"
-    classNameSuffix = "MUS"
+task schemagenDoremus(type: UrlSchemaGen) {
+    input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/Doremus-v0.1.owl')
+    outputDirectory = file('src/main/java/')
+    packageName = 'org.doremus.ontology'
+    classNameSuffix = 'MUS'
     ontology = true
     inference = true
     nostrict = true
     nocomments = true
-    namespace = 'http://erlangen-crm.org/efrbroo/'
+    namespace = 'http://data.doremus.org/ontology#'
 }
 
-task schemagenFrbroo(type: hu.webhejj.gradle.jena.SchemaGen) {
-    source = file("/Users/pasquale/git/doremus-ontology/FRBRoo-v2.4.owl")
-    outputDirectory = file("src/main/java/")
-    packageName = "org.doremus.ontology"
-    classNameSuffix = "FRBROO"
+task schemagenFrbroo(type: UrlSchemaGen) {
+    input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/FRBRoo-v2.4-Biblissima-2016-04-17.owl')
+    outputDirectory = file('src/main/java/')
+    packageName = 'org.doremus.ontology'
+    classNameSuffix = 'FRBROO'
     ontology = true
     inference = false
     nostrict = true
@@ -70,12 +71,13 @@ task schemagenFrbroo(type: hu.webhejj.gradle.jena.SchemaGen) {
     namespace = 'http://erlangen-crm.org/efrbroo/'
 }
 
-task schemagenCidoc(type: hu.webhejj.gradle.jena.SchemaGen) {
+task schemagenCidoc(type: UrlSchemaGen) {
     // FIXME the namespace is different from what we have in files
-    source = file("/Users/pasquale/git/doremus-ontology/FRBRoo-v2.4.owl")
-    outputDirectory = file("src/main/java/")
-    packageName = "org.doremus.ontology"
-    classNameSuffix = "CIDOC"
+    // see https://github.com/DOREMUS-ANR/doremus-ontology/issues/3
+    input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/FRBRoo-v2.4-Biblissima-2016-04-17.owl')
+    outputDirectory = file('src/main/java/')
+    packageName = 'org.doremus.ontology'
+    classNameSuffix = 'CIDOC'
     ontology = true
     inference = false
     nostrict = true

@@ -1,6 +1,7 @@
-# MARC2RDF
+MARC2RDF
+========
 
-### About
+## About
 MARC2RDF is based on the [DOREMUS model][1] that allows a detailed description of a musical work and the events associated with it (creation, execution, etc.). It takes as input INTERMARC-XML and UNIMARC-XML files and generates as output RDF triples. A display in [MARC (MAchine Readable Cataloging)][2] format is an option of our prototype to view an INTERMARC-XML or an UNIMARC-XML file in MARC format.
 
 The [MARCXML][3] format, developed by the Library of Congress in 2001, consists to structure data to MARC in an XML environment. It was founded initially on the [MARC21][4] format, and then it was extended by applying ISO 25577 (MarcXchange), other variants of the MARC (whose INTERMARCXML format used by BNF).
@@ -18,7 +19,7 @@ And its conversion in RDF triples:
 
 ![RDF triples](img/3.png)
 
-### MARC2RDF description:
+## MARC2RDF description:
 
 This tool consists of 4 components:
 
@@ -30,7 +31,7 @@ This tool consists of 4 components:
 The class **Converter** is the "main" class to start converting MARCXML records in RDF triples.
 
 
-### How to run:
+## How to run:
 
 1. Setup the `config.properties` file as you need.
 2. Run `gradle run` in the project folder.
@@ -42,6 +43,11 @@ The class **Converter** is the "main" class to start converting MARCXML records 
     5. Click on "Graphs"
     6. Click on "DOREMUS" ------> Display of all RDF triples generated from “XMLFile.xml”
 
+
+### Commands
+
+    gradle run              ## start conversion of files
+    gradle schemagen        ## align ontology package to ontologies on `doremus-ontology` github project
 
 ### RDF Store:
 Virtuoso 7.2.1 (http://www.openlinksw.com)
