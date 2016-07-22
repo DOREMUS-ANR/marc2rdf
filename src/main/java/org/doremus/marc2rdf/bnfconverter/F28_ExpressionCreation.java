@@ -7,8 +7,8 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
-import org.doremus.marc2rdf.bnfparser.Record;
+import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
@@ -88,7 +88,7 @@ public class F28_ExpressionCreation {
   public static String getDateMachine(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.controlFields.size(); i++) {
@@ -268,7 +268,7 @@ public class F28_ExpressionCreation {
   public static String getDateText(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -290,7 +290,7 @@ public class F28_ExpressionCreation {
   public static String getComposer(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     String aSubField = "", mSubField = "", dSubField = "", eSubField = "", hSubField = "", uSubField = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();

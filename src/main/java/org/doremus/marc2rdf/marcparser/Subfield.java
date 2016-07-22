@@ -1,4 +1,4 @@
-package org.doremus.marc2rdf.bnfparser;
+package org.doremus.marc2rdf.marcparser;
 
 public class Subfield {
 
@@ -28,7 +28,10 @@ public class Subfield {
   }
 
   public String toString() {
-    return "$" + getCode() + getData();
+    if (getCode() == ' ') {
+      return "";
+    }
+    else return "$" + getCode() + getData();
   }
 
 }

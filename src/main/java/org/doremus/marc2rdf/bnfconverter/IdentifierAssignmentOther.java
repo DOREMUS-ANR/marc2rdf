@@ -5,8 +5,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
-import org.doremus.marc2rdf.bnfparser.Record;
+import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.marcparser.Record;
 
 import java.io.*;
 import java.net.URI;
@@ -21,7 +21,7 @@ public class IdentifierAssignmentOther {
   public static URI getBiblioAgency(String xmlFile) throws FileNotFoundException, URISyntaxException {
     URIBuilder builder = null;
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     String agence = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -46,7 +46,7 @@ public class IdentifierAssignmentOther {
   public static String getCatalog(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -68,7 +68,7 @@ public class IdentifierAssignmentOther {
   public static String getOpus(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -90,7 +90,7 @@ public class IdentifierAssignmentOther {
   public static String getGenre(String xmlFile) throws IOException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     String codeGenre = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -142,7 +142,7 @@ public class IdentifierAssignmentOther {
   public static String getDistribution(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -164,7 +164,7 @@ public class IdentifierAssignmentOther {
   public static String getOrderNumber(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -186,7 +186,7 @@ public class IdentifierAssignmentOther {
   public static String getKey(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -208,7 +208,7 @@ public class IdentifierAssignmentOther {
   public static String getLangue(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -227,7 +227,7 @@ public class IdentifierAssignmentOther {
   public static String getDateYear(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -246,7 +246,7 @@ public class IdentifierAssignmentOther {
   public static String getVersion(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -265,7 +265,7 @@ public class IdentifierAssignmentOther {
   public static String getDerivationType(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {

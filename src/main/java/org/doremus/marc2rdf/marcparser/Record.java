@@ -1,4 +1,4 @@
-package org.doremus.marc2rdf.bnfparser;
+package org.doremus.marc2rdf.marcparser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +11,13 @@ public class Record {
   public String type;
 
   public Record(String type, String id) {
-    controlFields = new ArrayList<ControlField>();
-    dataFields = new ArrayList<DataField>();
+    controlFields = new ArrayList<>();
+    dataFields = new ArrayList<>();
     this.type = type;
     this.id = id;
   }
 
-  public String getIdentifier() {
-    return this.id;
-  }
+  public String getIdentifier() { return this.id; }
 
   public String getType() {
     return this.type;
@@ -34,19 +32,19 @@ public class Record {
   }
 
   public List<Etiq> getControlFields() {
-    List<Etiq> fields = new ArrayList<Etiq>();
+    List<Etiq> fields = new ArrayList<>();
     fields.addAll(controlFields);
     return fields;
   }
 
   public List<Etiq> getDataFields() {
-    List<Etiq> fields = new ArrayList<Etiq>();
+    List<Etiq> fields = new ArrayList<>();
     fields.addAll(dataFields);
     return fields;
   }
 
   public List<Etiq> getAllData() {
-    List<Etiq> fields = new ArrayList<Etiq>();
+    List<Etiq> fields = new ArrayList<>();
     fields.addAll(controlFields);
     fields.addAll(dataFields);
     return fields;
@@ -71,5 +69,4 @@ public class Record {
     }
     return sb.toString();
   }
-  /*****************************************************************************/
 }

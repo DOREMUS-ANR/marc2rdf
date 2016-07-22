@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.update.UpdateAction;
+import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,6 +17,7 @@ import java.net.URISyntaxException;
 /***************************************************/
 
 public class BNF2RDF {
+  public static final MarcXmlHandler.MarcXmlHandlerBuilder bnfXmlHandlerBuilder = new MarcXmlHandler.MarcXmlHandlerBuilder();
 
   static F15_ComplexWork f15;
   static F14_IndividualWork f14;

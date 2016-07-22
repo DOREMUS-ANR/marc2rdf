@@ -1,6 +1,4 @@
-package org.doremus.marc2rdf.bnfparser;
-
-import java.util.Scanner;
+package org.doremus.marc2rdf.marcparser;
 
 public class ControlField extends Etiq {
 
@@ -16,9 +14,7 @@ public class ControlField extends Etiq {
   }
 
   public void setData(String data) {
-    Scanner scanner = new Scanner(data);
-    this.data = scanner.nextLine();
-    scanner.close();
+    this.data = data;
   }
 
   public String getData() {

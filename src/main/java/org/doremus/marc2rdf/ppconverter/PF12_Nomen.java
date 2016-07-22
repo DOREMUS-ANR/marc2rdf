@@ -9,8 +9,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.doremus.marc2rdf.main.Converter;
-import org.doremus.marc2rdf.ppparser.MarcXmlReader;
-import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
 import java.io.*;
@@ -68,7 +68,7 @@ public class PF12_Nomen {
   public static String getTypeNotice(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String typeNotice = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -85,7 +85,7 @@ public class PF12_Nomen {
 
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String title = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -107,7 +107,7 @@ public class PF12_Nomen {
 
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String title_a = "";
     String title_h = "";
     String title_i = "";
@@ -157,7 +157,7 @@ public class PF12_Nomen {
         numColonne++;
       }
     }
-    if ((trouve == false) && ((title_g).equals("")) && ((title_c).equals(""))) { //si 144 ne contient ni la sous-zone $g ni la sous-zone $c
+    if ((!trouve) && ((title_g).equals("")) && ((title_c).equals(""))) { //si 144 ne contient ni la sous-zone $g ni la sous-zone $c
       buffer.append(title_a);
       buffer.append(",");
       buffer.append(title_h);
@@ -172,7 +172,7 @@ public class PF12_Nomen {
   public static String getOrderNumber(String xmlFile, String etiq) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String orderNumber = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();

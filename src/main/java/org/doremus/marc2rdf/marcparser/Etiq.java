@@ -1,4 +1,4 @@
-package org.doremus.marc2rdf.bnfparser;
+package org.doremus.marc2rdf.marcparser;
 
 public abstract class Etiq {
 

@@ -1,4 +1,4 @@
-package org.doremus.marc2rdf.bnfparser;
+package org.doremus.marc2rdf.marcparser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,12 +7,19 @@ public class DataField extends Etiq {
 
   private char ind1;
   private char ind2;
-  private List<Subfield> subfields = new ArrayList<Subfield>();
+  private boolean useInds;
+  private List<Subfield> subfields = new ArrayList<>();
+
+  public DataField(String etiq) {
+    super(etiq);
+    this.useInds = false;
+  }
 
   public DataField(String etiq, char ind1, char ind2) {
-    super(etiq);
+    this(etiq);
     this.ind1 = ind1;
     this.ind2 = ind2;
+    this.useInds = true;
   }
 
   public char getIndicator1() {
@@ -57,12 +64,16 @@ public class DataField extends Etiq {
     StringBuilder sb = new StringBuilder();
     sb.append(super.toString());
     sb.append(' ');
-    sb.append(getIndicator1());
-    sb.append(getIndicator2());
+
+    if (useInds) {
+      sb.append(getIndicator1());
+      sb.append(getIndicator2());
+    }
+
     for (Subfield sf : subfields) {
       sb.append(sf.toString());
     }
+
     return sb.toString();
   }
-  /*********************************************************************/
 }

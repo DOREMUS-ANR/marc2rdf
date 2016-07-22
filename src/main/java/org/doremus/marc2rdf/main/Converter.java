@@ -3,9 +3,10 @@ package org.doremus.marc2rdf.main;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
+import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
-import org.doremus.marc2rdf.ppparser.MarcXmlReader;
-import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.marcparser.Record;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryContents;
 import org.eclipse.egit.github.core.service.ContentsService;
@@ -16,9 +17,11 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class Converter {
+  private static boolean marcOut;
 
   private static ArrayList<Vocabulary> vocabularies;
   public static Vocabulary genreVocabulary;
@@ -31,6 +34,8 @@ public class Converter {
   }
 
   public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
+    marcOut = Arrays.asList(args).indexOf("marc") >-1;
+
     String inputFolderPath;
 
     loadProperties();
@@ -107,16 +112,24 @@ public class Converter {
 
       if (file.getName().length() == 12) {
         // Notice BNF
+        if(marcOut){
+          marcExport(file.getAbsolutePath(), BNF2RDF.bnfXmlHandlerBuilder);
+          continue;
+        }
         m = BNF2RDF.convert(file.getAbsolutePath());
       } else if (file.getName().length() == 11) {
         // Notice PP
+        if(marcOut){
+          marcExport(file.getAbsolutePath(), PP2RDF.ppXmlHandlerBuilder);
+          continue;
+        }
 
         /******
          * Verifier si c'est une notice d'oeuvre ou un TUM
          **********/
         InputStream fileStream = new FileInputStream(file);
         // Charger le fichier MARCXML a parser
-        MarcXmlReader reader = new MarcXmlReader(fileStream);
+        MarcXmlReader reader = new MarcXmlReader(fileStream, PP2RDF.ppXmlHandlerBuilder);
         String typeNotice = null;
         String idTUM = null;
 
@@ -166,7 +179,7 @@ public class Converter {
         fileName = Paths.get(outputFolderPath, file.getName().replaceFirst(".xml", ".ttl")).toFile();
       } else {
         // write in the same folder, in the "RDF" subfolder
-        fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName().replaceFirst(".ttl", ".xml")).toFile();
+        fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName().replaceFirst(".xml", ".ttl")).toFile();
       }
       //noinspection ResultOfMethodCallIgnored
       fileName.getParentFile().mkdirs();
@@ -180,6 +193,41 @@ public class Converter {
     for (File subList : list) {
       if (subList.isDirectory())
         listeRepertoire(subList);
+    }
+  }
+
+  private static void marcExport(String file, MarcXmlHandler.MarcXmlHandlerBuilder handler) {
+    String outputFolderPath = properties.getProperty("defaultOutput");
+
+    try {
+      MarcXmlReader reader = new MarcXmlReader(new FileInputStream(file), handler);
+      StringBuffer marc = new StringBuffer();
+      while (reader.hasNext()) { // Parcourir toutes les notices se trouvant dans le fichier
+        marc.append(reader.next());
+        marc.append("\n");
+      }
+
+      // Write the output file
+      File inputFile = new File(file);
+      File fileName;
+      if (outputFolderPath != null && !outputFolderPath.isEmpty()) {
+        // default folder specified, write there
+        fileName = Paths.get(outputFolderPath, inputFile.getName().replaceFirst(".xml", ".marc")).toFile();
+        System.out.println(fileName);
+      } else {
+        // write in the same folder, in the "RDF" subfolder
+        fileName = Paths.get(inputFile.getParentFile().getAbsolutePath(), "RDF", inputFile.getName().replaceFirst(".xml", ".marc")).toFile();
+      }
+      //noinspection ResultOfMethodCallIgnored
+      fileName.getParentFile().mkdirs();
+      FileWriter out = new FileWriter(fileName);
+
+      //System.out.println(marc);
+      out.write(marc.toString());
+      out.close();
+
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 

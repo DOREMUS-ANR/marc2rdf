@@ -9,9 +9,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.doremus.marc2rdf.main.Converter;
-import org.doremus.marc2rdf.ppparser.DataField;
-import org.doremus.marc2rdf.ppparser.MarcXmlReader;
-import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.marc2rdf.marcparser.DataField;
+import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
@@ -150,7 +150,7 @@ public class PF22_SelfContainedExpression {
   public static String getTypeNotice(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String typeNotice = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -167,7 +167,7 @@ public class PF22_SelfContainedExpression {
 
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String title = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -189,7 +189,7 @@ public class PF22_SelfContainedExpression {
 
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String title = "";
 
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
@@ -235,7 +235,7 @@ public class PF22_SelfContainedExpression {
   public static String getCatalog(String xmlFile, String etiq) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -254,7 +254,7 @@ public class PF22_SelfContainedExpression {
   public static String getCatalogName(String xmlFile, String etiq) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -282,7 +282,7 @@ public class PF22_SelfContainedExpression {
   public static String getCatalogNumber(String xmlFile, String etiq) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -310,7 +310,7 @@ public class PF22_SelfContainedExpression {
   public static String getOpus(String xmlFile, String etiq) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -329,7 +329,7 @@ public class PF22_SelfContainedExpression {
   public static String getOpusNumber(String xmlFile, String etiq) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -358,7 +358,7 @@ public class PF22_SelfContainedExpression {
   public static String getOpusSubNumber(String xmlFile, String etiq) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -387,7 +387,7 @@ public class PF22_SelfContainedExpression {
   public static String getNote(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String note909 = "", note919 = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -423,7 +423,7 @@ public class PF22_SelfContainedExpression {
   public static String getKey(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -442,7 +442,7 @@ public class PF22_SelfContainedExpression {
   public static String getOrderNumber(String xmlFile, String etiq) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String orderNumber = "", orderNumber444 = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -471,7 +471,7 @@ public class PF22_SelfContainedExpression {
     List<String> genres = new ArrayList<>();
 
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (DataField field : s.dataFields) {
@@ -493,7 +493,7 @@ public class PF22_SelfContainedExpression {
   public static String getCasting(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {

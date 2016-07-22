@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.update.UpdateAction;
+import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,6 +17,14 @@ import java.net.URISyntaxException;
 /***************************************************/
 
 public class PP2RDF {
+  public static final MarcXmlHandler.MarcXmlHandlerBuilder ppXmlHandlerBuilder =
+    new MarcXmlHandler.MarcXmlHandlerBuilder()
+      .recordLabel("NOTICE")
+      .datafieldLabel("champs")
+      .subfieldLabel("SOUSCHAMP")
+      .controlfieldLabel(false)
+      .tagLabel("UnimarcTag")
+      .codeLabel("UnimarcSubfield");
 
   static Model model;
   static PF15_ComplexWork f15;
@@ -94,7 +103,7 @@ public class PP2RDF {
 
     /****************************************************************************************/
      /* String query = "WITH GRAPH  <DOREMUS>"+
-	    		       "delete where {?x ?p \"\" }";
+                 "delete where {?x ?p \"\" }";
 	    VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create(query, model);
 	    vur.exec();
 		/****************************************************************************************/

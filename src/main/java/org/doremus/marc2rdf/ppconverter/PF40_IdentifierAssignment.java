@@ -5,8 +5,8 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Converter;
-import org.doremus.marc2rdf.ppparser.MarcXmlReader;
-import org.doremus.marc2rdf.ppparser.Record;
+import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
 import java.io.FileInputStream;
@@ -82,7 +82,7 @@ public class PF40_IdentifierAssignment {
   public static String getIdentifier(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       buffer.append(s.getIdentifier());
@@ -96,7 +96,7 @@ public class PF40_IdentifierAssignment {
   public static String getRule(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String typeNotice = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -125,7 +125,7 @@ public class PF40_IdentifierAssignment {
   public static String getTypeNotice(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     String typeNotice = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -142,7 +142,7 @@ public class PF40_IdentifierAssignment {
     StringBuilder buffer = new StringBuilder();
     if (getTypeNotice(xmlFile).equals("UNI:100")) { //Si c'est une notice d'oeuvre
       InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-      MarcXmlReader reader = new MarcXmlReader(file);
+      MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
       String aSubField = "", bSubField = "", fSubField = "";
       while (reader.hasNext()) { // Parcourir le fichier MARCXML
         Record s = reader.next();
@@ -195,7 +195,7 @@ public class PF40_IdentifierAssignment {
   public static String getCatalog(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -214,7 +214,7 @@ public class PF40_IdentifierAssignment {
   public static String getOpus(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -233,7 +233,7 @@ public class PF40_IdentifierAssignment {
   public static String getDistribution(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -252,7 +252,7 @@ public class PF40_IdentifierAssignment {
   public static String getOrderNumber(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -271,7 +271,7 @@ public class PF40_IdentifierAssignment {
   public static String getKey(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -290,7 +290,7 @@ public class PF40_IdentifierAssignment {
   public static String getLangue(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -309,7 +309,7 @@ public class PF40_IdentifierAssignment {
   public static String getGenre(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -328,7 +328,7 @@ public class PF40_IdentifierAssignment {
   public static String getDateYear(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -347,7 +347,7 @@ public class PF40_IdentifierAssignment {
   public static String getVersion(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -366,7 +366,7 @@ public class PF40_IdentifierAssignment {
   public static String getDocumentation(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {

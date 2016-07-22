@@ -8,9 +8,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.doremus.marc2rdf.bnfparser.ControlField;
-import org.doremus.marc2rdf.bnfparser.MarcXmlReader;
-import org.doremus.marc2rdf.bnfparser.Record;
+import org.doremus.marc2rdf.marcparser.ControlField;
+import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
@@ -93,7 +93,7 @@ public class F22_SelfContainedExpression {
         .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(key, "fr")) // Le nom du genre est toujours en français
       );
     }
-    /**************************** Expression: Genre *****************************************/
+    /*************************** Expression: Genre *****************************************/
     List<Resource> genreList = getGenre(Converter.getFile());
     for (Resource genre : genreList) F22.addProperty(MUS.U12_has_genre, genre);
 
@@ -108,7 +108,6 @@ public class F22_SelfContainedExpression {
 
     return modelF22;
   }
-  /********************************************************************************************/
 
   /***********************************
    * La dedicace
@@ -116,7 +115,7 @@ public class F22_SelfContainedExpression {
   public static String getDedicace(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file , BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -138,7 +137,7 @@ public class F22_SelfContainedExpression {
    ************************************/
   public static String getLang(String xmlFile, String etiq) throws IOException {
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     String langue = "";
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
@@ -162,7 +161,7 @@ public class F22_SelfContainedExpression {
   public static String getTitle(String xmlFile, String etiq) throws IOException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     String title_a = "";
     String title_h = "";
     String title_i = "";
@@ -214,7 +213,7 @@ public class F22_SelfContainedExpression {
   public static String getCatalog(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -233,7 +232,7 @@ public class F22_SelfContainedExpression {
   public static String getCatalogName(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -261,7 +260,7 @@ public class F22_SelfContainedExpression {
   public static String getCatalogNumber(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -289,7 +288,7 @@ public class F22_SelfContainedExpression {
   public static String getOpus(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -308,7 +307,7 @@ public class F22_SelfContainedExpression {
   public static String getOpusNumber(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -337,7 +336,7 @@ public class F22_SelfContainedExpression {
   public static String getOpusSubNumber(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -366,7 +365,7 @@ public class F22_SelfContainedExpression {
   public static String getNote(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -391,7 +390,7 @@ public class F22_SelfContainedExpression {
   public static String getKey(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -410,7 +409,7 @@ public class F22_SelfContainedExpression {
   public static String getOrderNumber(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {
@@ -439,7 +438,7 @@ public class F22_SelfContainedExpression {
 
     // Charger le fichier MARCXML a parser
     InputStream file = new FileInputStream(xmlFile);
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
 
     // search the code of the genre in the file
     // Parcourir le fichier MARCXML
@@ -472,7 +471,7 @@ public class F22_SelfContainedExpression {
   public static String getCasting(String xmlFile) throws FileNotFoundException {
     StringBuilder buffer = new StringBuilder();
     InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file);
+    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
     while (reader.hasNext()) { // Parcourir le fichier MARCXML
       Record s = reader.next();
       for (int i = 0; i < s.dataFields.size(); i++) {

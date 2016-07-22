@@ -1,4 +1,4 @@
-package org.doremus.marc2rdf.bnfparser;
+package org.doremus.marc2rdf.marcparser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ public class RecordList {
    * Constructeur
    **********************************/
   public RecordList() {
-    list = new ArrayList<Record>();
+    list = new ArrayList<>();
   }
 
   /*************
@@ -23,22 +23,19 @@ public class RecordList {
   }
 
   /**************
-   * R�cup�rer l'objet de la pile
+   * Recuperer l'objet de la pile
    ***********************/
   public synchronized Record pop() {
-    Record record = null;
     if (list.size() > 0)
-      record = (Record) list.remove(0);
-    return record;
+      return list.remove(0);
+    return null;
   }
 
   /***********
    * Retourne "true" s'il existe encore des objets dans la pile
    ******/
   public boolean hasNext() {
-    if (!isEmpty() || !eof)
-      return true;
-    return false;
+    return !isEmpty() || !eof;
   }
 
   /**************

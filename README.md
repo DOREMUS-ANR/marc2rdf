@@ -24,9 +24,8 @@ And its conversion in RDF triples:
 This tool consists of 4 components:
 
 1. **BNFConverter**: converts INTERMARC-XML records from BNF (Bibliothèque Nationale de France) in RDF triples.
-2. **BNFParser**: a parser of INTERMARC-XML records from BNF and displays them in MARC format.
-3. **PPConverter**: converts INTERMARC-XML and UNIMARC-XML records from Philharmonie de Paris in RDF triples.
-4. **PPParser**:  a parser of INTERMARC-XML and UNIMARC-XML records from Philharmonie de Paris and displayes them in MARC format.
+2. **PPConverter**: converts INTERMARC-XML and UNIMARC-XML records from Philharmonie de Paris in RDF triples.
+3. **MarcParser**: a parser of INTERMARC-XML and UNIMARC-XML records from BNF and Philarmonie.
 
 The class **Converter** is the "main" class to start converting MARCXML records in RDF triples.
 
@@ -47,6 +46,7 @@ The class **Converter** is the "main" class to start converting MARCXML records 
 ### Commands
 
     gradle run              ## start conversion of files
+    gradle run -Pmarc       ## start conversion of files, with marc as output
     gradle schemagen        ## align ontology package to ontologies on `doremus-ontology` github project
 
 ### RDF Store:

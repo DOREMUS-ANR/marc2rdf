@@ -24,6 +24,9 @@ dependencies {
 }
 
 run {
+    if(project.hasProperty('marc')){
+        args = ['marc']
+    }
     standardOutput = System.out
 }
 // Plugin: 'application'
