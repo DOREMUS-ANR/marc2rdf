@@ -5,7 +5,9 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /*************
  * Met chaque objet en haut de la pile
@@ -19,6 +21,12 @@ public class MarcXmlHandler implements ContentHandler {
   private DataField dataField;
   private ControlField controlField;
   private Record record;
+
+  /******
+   * List for the record currently under parsing
+   * for managing nested records
+   ******/
+  private List<Record> recordInProgress;
 
   /******
    * Constantes representant chaque type de balise
@@ -48,6 +56,7 @@ public class MarcXmlHandler implements ContentHandler {
   public MarcXmlHandler(String recordLabel, String datafieldLabel, String subfieldLabel,
                         String tagLabel, String codeLabel, String typeLabel, String idlabel) {
     this.list = new RecordList();
+    this.recordInProgress = new ArrayList<>();
 
     elementMap = new HashMap<>();
     elementMap.put(recordLabel, RECORD);
@@ -90,6 +99,7 @@ public class MarcXmlHandler implements ContentHandler {
         String typeNotice = attrs.getValue(TYPE);
         String idNotice = attrs.getValue(ID);
         this.record = new Record(typeNotice, idNotice);
+        recordInProgress.add(this.record);
         break;
       case CONTROLFIELD:
         buffer = new StringBuffer();
@@ -98,7 +108,6 @@ public class MarcXmlHandler implements ContentHandler {
         break;
       case DATAFIELD:
         etiqCode = attrs.getValue(ETIQ);
-
         if (useControlField) {
           String ind1 = attrs.getValue(IND1);
           String ind2 = attrs.getValue(IND2);
@@ -143,6 +152,9 @@ public class MarcXmlHandler implements ContentHandler {
     switch (elementType) {
       case RECORD:
         list.push(this.record);
+        recordInProgress.remove(this.record);
+        if(!recordInProgress.isEmpty())
+          this.record = recordInProgress.get(recordInProgress.size()-1);
         break;
       case CONTROLFIELD:
         controlField.setData(buffer.toString());
@@ -156,6 +168,7 @@ public class MarcXmlHandler implements ContentHandler {
         if (subfield == null) return;
         subfield.setData(buffer.toString());
         dataField.addSubfield(subfield);
+        subfield = null;
     }
   }
 
