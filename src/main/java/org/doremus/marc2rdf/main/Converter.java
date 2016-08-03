@@ -2,11 +2,15 @@ package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
-import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryContents;
 import org.eclipse.egit.github.core.service.ContentsService;
@@ -16,9 +20,7 @@ import javax.swing.*;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Properties;
+import java.util.*;
 
 public class Converter {
   private static boolean marcOut;
@@ -27,14 +29,15 @@ public class Converter {
   public static Vocabulary genreVocabulary;
 
   public static Properties properties;
-  private static String fich = "";
+  private static List<String> notSignificativeTitleList = null;
 
-  public static String getFile() {
-    return fich;
+  private enum INSTITUTION {
+    PHILARMONIE,
+    BNF
   }
 
   public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
-    marcOut = Arrays.asList(args).indexOf("marc") >-1;
+    marcOut = Arrays.asList(args).indexOf("marc") > -1;
 
     String inputFolderPath;
 
@@ -91,8 +94,6 @@ public class Converter {
   /*************************************************************************************************/
   private static void listeRepertoire(File repertoire) throws URISyntaxException, IOException {
     String outputFolderPath = properties.getProperty("defaultOutput");
-    File folderTUMs = new File(properties.getProperty("TUMFolder"));
-
 
     if (!repertoire.isDirectory()) {
       System.out.println("Input directory not specified or not existing");
@@ -107,67 +108,35 @@ public class Converter {
 
     for (File file : list) {
       if (!file.isFile() || !file.getName().endsWith(".xml")) continue;
-      fich = file.getAbsolutePath();
-      Model m = ModelFactory.createDefaultModel();
+      String fich = file.getAbsolutePath();
+      Model m;
 
-      if (file.getName().length() == 12) {
-        // Notice BNF
-        if(marcOut){
-          marcExport(file.getAbsolutePath(), BNF2RDF.bnfXmlHandlerBuilder);
+      INSTITUTION institution;
+      MarcXmlHandler.MarcXmlHandlerBuilder handlerBuilder;
+
+      switch (file.getName().length()) {
+        case 12:
+          institution = INSTITUTION.BNF;
+          handlerBuilder = BNF2RDF.bnfXmlHandlerBuilder;
+          break;
+        case 11:
+          institution = INSTITUTION.PHILARMONIE;
+          handlerBuilder = PP2RDF.ppXmlHandlerBuilder;
+          break;
+        default:
+          System.out.println("Skipping not recognized file: " + file.getName());
           continue;
-        }
-        m = BNF2RDF.convert(file.getAbsolutePath());
-      } else if (file.getName().length() == 11) {
-        // Notice PP
-        if(marcOut){
-          marcExport(file.getAbsolutePath(), PP2RDF.ppXmlHandlerBuilder);
-          continue;
-        }
+      }
 
-        /******
-         * Verifier si c'est une notice d'oeuvre ou un TUM
-         **********/
-        InputStream fileStream = new FileInputStream(file);
-        // Charger le fichier MARCXML a parser
-        MarcXmlReader reader = new MarcXmlReader(fileStream, PP2RDF.ppXmlHandlerBuilder);
-        String typeNotice = null;
-        String idTUM = null;
-
-        while (reader.hasNext()) {
-          // Parcourir le fichier MARCXML
-          Record s = reader.next();
-          typeNotice = s.getType();
-          if (typeNotice.equals("UNI:100")) {
-            // Si c'est une notice d'oeuvre
-            for (int i = 0; i < s.dataFields.size(); i++) {
-              if (s.dataFields.get(i).getEtiq().equals("500")) {
-                if (s.dataFields.get(i).isCode('3'))
-                  idTUM = s.dataFields.get(i).getSubfield('3').getData().trim();
-              }
-            }
-          }
-        }
-
-        if ("AIC:14".equals(typeNotice)) {
-          // Si c'est un TUM
-          m = PP2RDF.convert(file.getAbsolutePath());
-        } else if ("UNI:100".equals(typeNotice)) {
-          // Si c'est une notice d'oeuvre
-
-          m = PP2RDF.convert(file.getAbsolutePath());
-          // Convertir la notice d'oeuvre
-          File tum = getTUM(folderTUMs, idTUM);
-          fich = tum.getAbsolutePath();
-          m.add(PP2RDF.convert(tum.getAbsolutePath()));
-          // Convertir le TUM correspondant
-        } else {
-          // TODO other notice types?
-          System.out.println("Skipping not recognized PP notice type " + typeNotice + " for file " + file.getName());
-          continue;
-        }
-      } else {
-        System.out.println("Skipping not recognized file: " + file.getName());
+      if (marcOut) {
+        marcExport(fich, handlerBuilder);
         continue;
+      }
+
+      if (institution == INSTITUTION.BNF) { // Notice BNF
+        m = BNF2RDF.convert(fich);
+      } else {  // Notice PP
+        m = PP2RDF.convert(fich);
       }
 
       for (Vocabulary v : vocabularies) v.buildReferenceIn(m);
@@ -190,6 +159,7 @@ public class Converter {
       out.close();
 
     }
+
     for (File subList : list) {
       if (subList.isDirectory())
         listeRepertoire(subList);
@@ -201,9 +171,9 @@ public class Converter {
 
     try {
       MarcXmlReader reader = new MarcXmlReader(new FileInputStream(file), handler);
-      StringBuffer marc = new StringBuffer();
-      while (reader.hasNext()) { // Parcourir toutes les notices se trouvant dans le fichier
-        marc.append(reader.next());
+      StringBuilder marc = new StringBuilder();
+      for (Record r : reader.getRecords()) {
+        marc.append(r);
         marc.append("\n");
       }
 
@@ -257,19 +227,6 @@ public class Converter {
   }
 
 
-  private static File getTUM(final File folder, String idTUM) {
-    for (File fileEntry : folder.listFiles()) {
-      if (fileEntry.isDirectory()) {
-        File f = getTUM(fileEntry, idTUM);
-        if (f != null) return f;
-      } else if (fileEntry.getName().equals(idTUM + ".xml")) {
-        return fileEntry;
-      }
-
-    }
-    return null;
-  }
-
   private static void loadProperties() {
     properties = new Properties();
     String filename = "config.properties";
@@ -283,5 +240,37 @@ public class Converter {
     }
 
   }
+
+  public static boolean isNotSignificativeTitle(String title) {
+    if (notSignificativeTitleList == null) {
+      // Load it!
+      String fileName = Converter.class.getClass().getResource(properties.getProperty("BNFGenres")).getFile();
+      File fichier = new File(fileName);
+      try {
+        notSignificativeTitleList = new ArrayList<>();
+
+        FileInputStream fis = new FileInputStream(fichier);
+
+        XSSFWorkbook myWorkBook = new XSSFWorkbook(fis); // Trouver l'instance workbook du fichier XLSX
+        XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
+
+        for (Row row : mySheet) { // Traverser chaque ligne du fichier XLSX
+          Iterator<Cell> cellIterator = row.cellIterator();
+          while (cellIterator.hasNext()) { // Pour chaque ligne, iterer chaque colonne
+            Cell cell = cellIterator.next();
+            notSignificativeTitleList.add(cell.getStringCellValue());
+          }
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+        System.err.println("I cannot load not significative title table: " + fileName);
+        return false;
+      }
+    }
+
+    return notSignificativeTitleList.contains(title);
+  }
+
+
 }
 

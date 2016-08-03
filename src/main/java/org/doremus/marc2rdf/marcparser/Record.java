@@ -17,10 +17,16 @@ public class Record {
     this.id = id;
   }
 
-  public String getIdentifier() { return this.id; }
+  public String getIdentifier() {
+    return this.id;
+  }
 
   public String getType() {
     return this.type;
+  }
+
+  public boolean isType(String type) {
+    return this.type.equals(type);
   }
 
   public void addControlField(Etiq field) {
@@ -41,6 +47,44 @@ public class Record {
     List<Etiq> fields = new ArrayList<>();
     fields.addAll(dataFields);
     return fields;
+  }
+
+  public DataField getDatafieldByCode(String code) {
+    for (DataField field : this.dataFields) {
+      if (field.getEtiq().equals(code)) {
+        return field;
+      }
+    }
+    return null;
+  }
+
+  public List<DataField> getDatafieldsByCode(String code) {
+    List<DataField> results = new ArrayList<>();
+    for (DataField field : this.dataFields) {
+      if (field.getEtiq().equals(code)) {
+        results.add(field);
+      }
+    }
+    return results;
+  }
+
+  public ControlField getControlfieldByCode(String code) {
+    for (ControlField field : this.controlFields) {
+      if (field.getEtiq().equals(code)) {
+        return field;
+      }
+    }
+    return null;
+  }
+
+  public List<ControlField> getControlfieldsByCode(String code) {
+    List<ControlField> results = new ArrayList<>();
+    for (ControlField field : this.controlFields) {
+      if (field.getEtiq().equals(code)) {
+        results.add(field);
+      }
+    }
+    return results;
   }
 
   public List<Etiq> getAllData() {

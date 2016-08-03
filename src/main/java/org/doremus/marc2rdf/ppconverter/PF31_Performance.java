@@ -4,100 +4,77 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.Converter;
-import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class PF31_Performance {
+  private static final String noteRegex = "\\. ((Editeur|(Premi|1)\u00e8re \u00e9dition|Publication|(Premi|1)ere publication|Cr\u00e9ation fran\u00e7aise).+)";
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
 
-  static Model modelF31;
-  static URI uriF31;
+  private Model model;
+  private final Record record;
+  private final Resource F31;
+  private URI uriF31;
 
-  public PF31_Performance() throws URISyntaxException {
-    this.modelF31 = ModelFactory.createDefaultModel();
-    this.uriF31 = getURIF31();
-  }
 
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
+  public PF31_Performance(Record record) throws URISyntaxException {
+    this.record = record;
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF31 = ConstructURI.build("Performance", "F31");
 
-  /********************************************************************************************/
-  public URI getURIF31() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF31 = uri.getUUID("Performance", "F31", uuid.get());
-    return uriF31;
-  }
-
-  /********************************************************************************************/
-  public Model getModel() throws URISyntaxException, IOException {
-
-    Resource F31 = modelF31.createResource(uriF31.toString());
+    F31 = model.createResource(uriF31.toString());
     F31.addProperty(RDF.type, FRBROO.F31_Performance);
 
     /**************************** Performance: 1ère exécution *******************************/
-    F31.addProperty(modelF31.createProperty(cidoc + "P3_has_note"), getNote(Converter.getFile()));
+    for (String note : getNote())
+      F31.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
+  }
 
-    return modelF31;
+  public Model getModel() {
+    return model;
   }
 
   /***********************************
-   * L'exécution
+   * La note
    ***********************************/
-  public static String getNote(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String note = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("919")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            note = s.dataFields.get(i).getSubfield('a').getData();
-          }
-        }
-      }
+  private List<String> getNote() {
+    if (!record.isType("UNI:100")) return new ArrayList<>();
+
+    List<String> results = new ArrayList<>();
+    Pattern p = Pattern.compile(noteRegex);
+
+    for (DataField field : record.getDatafieldsByCode("919")) {
+      if (!field.isCode('a')) continue;
+
+      String note = field.getSubfield('a').getData();
+
+      Matcher m = p.matcher(note);
+      if (m.find()) note = note.replaceAll(m.group(1), "").trim();
+
+      if (!note.isEmpty()) results.add(note);
     }
-    if (note.contains(". Editeur")) {
-      int index = note.indexOf(". Editeur");
-      note = note.substring(0, index + 1);
-    }
-    if (note.contains(". Première édition")) {
-      int index = note.indexOf(". Première édition");
-      note = note.substring(0, index + 1);
-    }
-    if (note.contains(". 1ère édition")) {
-      int index = note.indexOf(". 1ère édition");
-      note = note.substring(0, index + 1);
-    }
-    if (note.contains(". Publication")) {
-      int index = note.indexOf(". Publication");
-      note = note.substring(0, index + 1);
-    }
-    if (note.contains(". Première publication")) {
-      int index = note.indexOf(". Première publication");
-      note = note.substring(0, index + 1);
-    }
-    if (note.contains(". 1ere publication")) {
-      int index = note.indexOf(". 1ere publication");
-      note = note.substring(0, index + 1);
-    }
-    if (note.contains(". Création française")) {
-      int index = note.indexOf(". Création française");
-      note = note.substring(0, index + 1);
-    }
-    buffer.append(note);
-    return buffer.toString();
+    return results;
   }
 
+
+  public Resource asResource() {
+    return F31;
+  }
+
+  public PF31_Performance add(PF25_PerformancePlan f25) {
+    /**************************** exécution du plan ******************************************/
+    F31.addProperty(FRBROO.R25_performed, F31);
+//    f25.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);
+    return this;
+  }
 }

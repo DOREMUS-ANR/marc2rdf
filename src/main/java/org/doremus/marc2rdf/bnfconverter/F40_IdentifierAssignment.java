@@ -5,339 +5,97 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.FRBROO;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/***
+ * Correspond à l'attribution d'identifiant pour l'oeuvre
+ ***/
 public class F40_IdentifierAssignment {
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
+  private Model model = ModelFactory.createDefaultModel();
+  private final Record record;
+  private URI uriF40;
+  private Resource F40;
 
-  /***
-   * Correspond à l'attribution d'identifiant pour l'oeuvre
-   ***/
+  public F40_IdentifierAssignment(Record record) throws URISyntaxException {
+    this.record = record;
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF40 = ConstructURI.build("Identifier_Assignment", "F40");
 
-  static Model modelF40 = ModelFactory.createDefaultModel();
-  static URI uriF40 = null;
-
-  public F40_IdentifierAssignment() throws URISyntaxException {
-    this.modelF40 = ModelFactory.createDefaultModel();
-    this.uriF40 = getURIF40();
-  }
-
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-
-  /********************************************************************************************/
-  public URI getURIF40() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF40 = uri.getUUID("Identifier_Assignment", "F40", uuid.get());
-    return uriF40;
-  }
-
-  public Model getModel() throws URISyntaxException, FileNotFoundException {
-
-    Resource F40 = modelF40.createResource(uriF40.toString());
+    F40 = model.createResource(uriF40.toString());
     F40.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);
+  }
 
-    /**************************** Schéma général : Attribution ******************************/
-    F40.addProperty(modelF40.createProperty(frbroo + "R45_assigned_to"), modelF40.createResource(F22_SelfContainedExpression.uriF22.toString()));
-
+  public Model getModel() {
     /**************************** Schéma général : agence ***********************************/
-    F40.addProperty(modelF40.createProperty(cidoc + "P14_carried_out_by"), modelF40.createResource(getBiblioAgency(Converter.getFile()).toString()));
+    URI agency = getBiblioAgency();
+    if (agency != null)
+      F40.addProperty(model.createProperty(cidoc + "P14_carried_out_by"), model.createResource(agency.toString()));
 
     /**************************** Schéma général : règles ***********************************/
-    F40.addProperty(modelF40.createProperty(frbroo + "R52_used_rule"), "NF Z 44-079 (Novembre 1993) - Documentation - Catalogage- Forme et structure des vedettes titres musicaux");
+    F40.addProperty(FRBROO.R52_used_rule, "NF Z 44-079 (Novembre 1993) - Documentation - Catalogage- Forme et structure des vedettes titres musicaux");
 
-    /****************************  Schéma général : type d'identifiant************************/
-    //F40.addProperty(modelF40.createProperty(cidoc+ "P2_has_type"), "NF Z 44-079 (Novembre 1993) - Documentation - Catalogage- Forme et structure des vedettes titres musicaux");
-
-    return modelF40;
+    return model;
   }
-  /********************************************************************************************/
+
+  public F40_IdentifierAssignment add(F22_SelfContainedExpression expression) {
+    /**************************** Schéma général : Attribution ******************************/
+    F40.addProperty(FRBROO.R45_assigned_to, expression.asResource());
+    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
+
+    return this;
+  }
+
+  public F40_IdentifierAssignment add(F14_IndividualWork work) {
+    /**************************** Work: was assigned by *************************************/
+    F40.addProperty(FRBROO.R45_assigned_to, work.asResource());
+    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
+
+    return this;
+  }
+
+  public F40_IdentifierAssignment add(F15_ComplexWork work) {
+    /**************************** Work: was assigned by *************************************/
+    F40.addProperty(FRBROO.R45_assigned_to, work.asResource());
+    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
+
+    return this;
+  }
+
 
   /********
-   * L'agence bibliographique qui a attribué l'identifiant @throws URISyntaxException
+   * L'agence bibliographique qui a attribué l'identifiant
    *****************/
-  public static URI getBiblioAgency(String xmlFile) throws FileNotFoundException, URISyntaxException {
-    URIBuilder builder;
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    String agence = "";
-    lineLoop:
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.controlFields.size(); i++) {
-        if (s.controlFields.get(i).getEtiq().equals("001")) {
-          for (int j = 0; j <= 4; j++) {
-            agence = agence + s.controlFields.get(i).getData().charAt(j);
-          }
-          // FIXME temporary solution (see https://github.com/DOREMUS-ANR/marc2rdf/issues/6)
-          break lineLoop;
+  private URI getBiblioAgency() {
+    try {
+      for (ControlField field : record.getControlfieldsByCode("001")) {
+        String agency = field.getData().substring(0, 5);
+
+        if (agency.equals("FRBNF")) {
+          URIBuilder builder = new URIBuilder().setPath("http://isni.org/isni/0000000121751303");
+          return builder.build();
         }
       }
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
     }
-    if (agence.equals("FRBNF")) {
-      builder = new URIBuilder().setPath("http://isni.org/isni/0000000121751303");
-      return builder.build();
-    }
-    // FIXME returning null crash the program
     return null;
   }
 
   /**************************
    * 4. Work: identifier assignment (Identifier)
    *********************/
-  public static String getIdentifier(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.controlFields.size(); i++) {
-        if (s.controlFields.get(i).getEtiq().equals("003")) {
-          buffer.append(s.controlFields.get(i).getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-  /********************************************************************************************/
-  /***********************
-   * Le créateur de l'identifiant
-   *************************************/
-  public static String getCreator(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("100")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            String aSubField = s.dataFields.get(i).getSubfield('a').getData();
-            buffer.append(aSubField + " ");
-          }
-          if (s.dataFields.get(i).isCode('m')) {
-            String mSubField = s.dataFields.get(i).getSubfield('m').getData();
-            buffer.append(mSubField + " ");
-          }
-          if (s.dataFields.get(i).isCode('d')) {
-            String dSubField = s.dataFields.get(i).getSubfield('d').getData();
-            buffer.append(dSubField + " ");
-          }
-          if (s.dataFields.get(i).isCode('e')) {
-            String eSubField = s.dataFields.get(i).getSubfield('e').getData();
-            buffer.append(eSubField + " ");
-          }
-          if (s.dataFields.get(i).isCode('h')) {
-            String hSubField = s.dataFields.get(i).getSubfield('h').getData();
-            buffer.append(hSubField + " ");
-          }
-          if (s.dataFields.get(i).isCode('u')) {
-            String uSubField = s.dataFields.get(i).getSubfield('u').getData();
-            buffer.append(uSubField + " ");
-          }
-        }
-      }
-    }
-    return buffer.toString();
-  }
+  public String getIdentifier() {
+    //TODO move (maybe to Individual/ComplexWork)
+    ControlField field = record.getControlfieldByCode("003");
+    if (field == null) return null;
 
-  /***********************************
-   * Le catalogue
-   ***********************************/
-  public static String getCatalog(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('k'))
-            buffer.append(s.dataFields.get(i).getSubfield('k').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * L'opus
-   ***********************************/
-  public static String getOpus(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('p'))
-            buffer.append(s.dataFields.get(i).getSubfield('p').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * La distribution
-   ***********************************/
-  public static String getDistribution(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('b'))
-            buffer.append(s.dataFields.get(i).getSubfield('b').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * Le numéro d'ordre
-   ***********************************/
-  public static String getOrderNumber(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('n'))
-            buffer.append(s.dataFields.get(i).getSubfield('n').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * Key (Tonalité)
-   ***********************************/
-  public static String getKey(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('t'))
-            buffer.append(s.dataFields.get(i).getSubfield('t').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * La langue
-   ***********************************/
-  public static String getLangue(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('f'))
-            buffer.append(s.dataFields.get(i).getSubfield('f').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * Le genre
-   **************************************/
-  public static String getGenre(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('a'))
-            buffer.append(s.dataFields.get(i).getSubfield('a').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * La date (année)
-   **************************************/
-  public static String getDateYear(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('j'))
-            buffer.append(s.dataFields.get(i).getSubfield('j').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * La version
-   **************************************/
-  public static String getVersion(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("144")) {
-          if (s.dataFields.get(i).isCode('q'))
-            buffer.append(s.dataFields.get(i).getSubfield('q').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  /***********************************
-   * La documentation
-   **************************************/
-  public static String getDocumentation(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("610")) {
-          if (s.dataFields.get(i).isCode('a'))
-            buffer.append(s.dataFields.get(i).getSubfield('a').getData());
-        }
-      }
-    }
-    return buffer.toString();
+    return field.getData();
   }
 }

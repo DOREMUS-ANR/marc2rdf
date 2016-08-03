@@ -6,242 +6,191 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.Converter;
-import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PF28_ExpressionCreation {
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
+  private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
 
-  /***
-   * Correspond à l'expression représentative de l'oeuvre musicale
-   ***/
+  private Model model;
+  private URI uriF28;
+  private Resource F28;
+  private Record record;
 
-  static Model modelF28;
-  static URI uriF28;
+  public PF28_ExpressionCreation(Record record) throws URISyntaxException {
+    this.record = record;
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF28 = ConstructURI.build("Expression_Creation", "F28");
 
-  public PF28_ExpressionCreation() throws URISyntaxException {
-    this.modelF28 = ModelFactory.createDefaultModel();
-    this.uriF28 = getURIF28();
-  }
-
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
-
-  /********************************************************************************************/
-  public URI getURIF28() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF28 = uri.getUUID("Expression_Creation", "F28", uuid.get());
-    return uriF28;
-  }
-
-  public Model getModel() throws URISyntaxException, FileNotFoundException {
-
-    Resource F28 = modelF28.createResource(uriF28.toString());
+    F28 = model.createResource(uriF28.toString());
     F28.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
-    /**************************** Work: created a realisation *******************************/
-    F28.addProperty(modelF28.createProperty(frbroo + "R19_created_a_realisation_of"), modelF28.createResource(PF14_IndividualWork.uriF14.toString()));
+    compute();
+  }
 
-    /**************************** Expression: created ***************************************/
-    F28.addProperty(modelF28.createProperty(frbroo + "R17_created"), modelF28.createResource(PF22_SelfContainedExpression.uriF22.toString()));
-
+  private void compute() {
     /**************************** Work: Date of the work (expression représentative) ********/
-    String dateMachine = getDateMachine(Converter.getFile());
-    if (!dateMachine.isEmpty()) {
-      RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(dcterms + "terms-W3CDTF");
-      F28.addProperty(modelF28.createProperty(cidoc + "P4_has_time_span"), modelF28.createResource()
-        .addProperty(RDF.type, modelF28.createResource(cidoc + "E52_Time_Span"))
-        .addProperty(modelF28.createProperty(cidoc + "P82_at_some_time_within"), ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
+    String dateMachine = getDateMachine();
+    if (dateMachine != null && !dateMachine.isEmpty()) {
+      F28.addProperty(model.createProperty(cidoc + "P4_has_time_span"), model.createResource()
+        .addProperty(RDF.type, model.createResource(cidoc + "E52_Time_Span"))
+        .addProperty(model.createProperty(cidoc + "P82_at_some_time_within"),
+          ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
     }
     /**************************** Work: Date of the work (expression représentative) ********/
-    F28.addProperty(modelF28.createProperty(cidoc + "P3_has_note"), getDateText(Converter.getFile()));
-    //	F28.addProperty(modelF28.createProperty(cidoc+ "P3_has_note"), modelF28.createLiteral("Manel","fr"));
+    String dateText = getDateText();
+    if (dateText != null && !dateText.isEmpty())
+      // TODO check: too generic?
+      F28.addProperty(model.createProperty(cidoc + "P3_has_note"), dateText);
 
     /**************************** Work: Period of the work **********************************/
-    if (!(getPeriod(Converter.getFile()).equals(""))) {
-      F28.addProperty(modelF28.createProperty(cidoc + "P10_falls_within"), modelF28.createResource()
-        .addProperty(RDF.type, modelF28.createResource(cidoc + "E4_Period"))
-        .addProperty(modelF28.createProperty(cidoc + "P1_is_identified_by"), getPeriod(Converter.getFile())));
+    String period = getPeriod();
+    if (period != null) {
+      F28.addProperty(model.createProperty(cidoc + "P10_falls_within"), model.createResource()
+        .addProperty(RDF.type, model.createResource(cidoc + "E4_Period"))
+        .addProperty(model.createProperty(cidoc + "P1_is_identified_by"), getPeriod()));
     }
 
     /**************************** Work: is created by ***************************************/
-    if (!(getComposer(Converter.getFile()).equals(""))) {
-      F28.addProperty(modelF28.createProperty(cidoc + "P9_consists_of"), modelF28.createResource()
-        .addProperty(RDF.type, modelF28.createResource(cidoc + "E7_activity"))
-        .addProperty(MUS.U31_had_function_of_type, "compositeur")
-        .addProperty(modelF28.createProperty(cidoc + "P14_carried_out_by"), modelF28.createResource()
-          .addProperty(RDF.type, modelF28.createResource(cidoc + "E21_Person"))
-          .addProperty(modelF28.createProperty(cidoc + "P131_is_identified_by"), getComposer(Converter.getFile())
-          ))
-      );
+    for (String composer : getComposer()) {
+      F28.addProperty(model.createProperty(cidoc + "P9_consists_of"), model.createResource()
+        .addProperty(RDF.type, model.createResource(cidoc + "E7_activity"))
+        .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
+        .addProperty(model.createProperty(cidoc + "P14_carried_out_by"), model.createResource()
+          .addProperty(RDF.type, model.createResource(cidoc + "E21_Person"))
+          .addProperty(model.createProperty(cidoc + "P131_is_identified_by"), composer)
+        ));
     }
-
-    /**************************** création d'une expression de plan d'exécution *************/
-    F28.addProperty(modelF28.createProperty(frbroo + "R17_created"), modelF28.createResource(PF25_PerformancePlan.uriF25.toString()));
-
-    /**************************** création d'une expression de plan d'exécution *************/
-    F28.addProperty(modelF28.createProperty(frbroo + "R17_created"), modelF28.createResource(PF25_AutrePerformancePlan.uriF25.toString()));
-    return modelF28;
   }
-  /********************************************************************************************/
+
+  public PF28_ExpressionCreation add(PF25_PerformancePlan plan) {
+    /**************************** création d'une expression de plan d'exécution *************/
+    F28.addProperty(FRBROO.R17_created, plan.asResource());
+    return this;
+  }
+
+  public PF28_ExpressionCreation add(PF25_AutrePerformancePlan plan) {
+    /**************************** création d'une expression de plan d'exécution *************/
+    F28.addProperty(FRBROO.R17_created, plan.asResource());
+    return this;
+  }
+
+  public PF28_ExpressionCreation add(PF22_SelfContainedExpression expression) {
+    /**************************** Expression: created ***************************************/
+    F28.addProperty(FRBROO.R17_created, expression.asResource());
+    // expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
+    return this;
+  }
+
+  public PF28_ExpressionCreation add(PF14_IndividualWork work) {
+    /**************************** Work: created a realisation *******************************/
+    F28.addProperty(FRBROO.R19_created_a_realisation_of, work.asResource());
+//    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
+
+    return this;
+  }
+
+
+  public Model getModel() {
+    return model;
+  }
 
   /*************
    * Date de creation de l'expression (Format machine)
    ***********************/
-  public static String getDateMachine(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String dateG = "", dateH = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("909")) {
-          if (s.dataFields.get(i).isCode('g')) {
-            dateG = s.dataFields.get(i).getSubfield('g').getData();
-          }
-          if (s.dataFields.get(i).isCode('h')) {
-            dateH = s.dataFields.get(i).getSubfield('h').getData();
-          }
-        }
-      }
+  private String getDateMachine() {
+    if (!record.isType("UNI:100")) return null;
+
+    String start = "", end = "";
+
+    for (DataField field : record.getDatafieldsByCode("909")) {
+      if (!field.isCode('g') && !field.isCode('h')) continue;
+
+      if (field.isCode('g')) start = field.getSubfield('g').getData().trim();
+      if (field.isCode('h')) end = field.getSubfield('h').getData().trim();
+
+      if (start.equals(end)) return start;
+      return start + "/" + end;
     }
-    if (dateG.equals(dateH)) {
-      buffer.append(dateG);
-    } else {
-      buffer.append(dateG);
-      buffer.append("/");
-      buffer.append(dateH);
-    }
-    return buffer.toString();
+
+    return null;
   }
 
   /*************
    * Date de création de l'expression (Format texte)
    ***********************/
-  public static String getDateText(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("909")) {
-          if (s.dataFields.get(i).isCode('b')) {
-            String date = s.dataFields.get(i).getSubfield('b').getData();
-            buffer.append(date);
-          }
-        }
-      }
+  private String getDateText() {
+    if (!record.isType("UNI:100")) return null;
+
+    for (DataField field : record.getDatafieldsByCode("909")) {
+      if (!field.isCode('b')) continue;
+      return field.getSubfield('b').getData().trim();
     }
-    return buffer.toString();
+    return null;
   }
 
   /*************
    * Période de création de l'expression
    ********************************/
-  public static String getPeriod(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String period = "", value = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("610")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            period = s.dataFields.get(i).getSubfield('a').getData();
-          }
-          if (s.dataFields.get(i).isCode('b')) {
-            value = s.dataFields.get(i).getSubfield('b').getData();
-          }
-        }
-      }
-    }
-    if (value.equals("02")) buffer.append(period);
-    else buffer.append("");
-    return buffer.toString();
-  }
+  private String getPeriod() {
+    if (!record.isType("UNI:100")) return null;
 
-  /**************************
-   * Type de notice
-   *********************************************/
-  public static String getTypeNotice(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String typeNotice = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      typeNotice = s.getType();
+    for (DataField field : record.getDatafieldsByCode("610")) {
+      String period = "", value = "";
+      if (field.isCode('a')) period = field.getSubfield('a').getData().trim();
+      if (field.isCode('b')) value = field.getSubfield('b').getData().trim();
+
+      if (value.equals("02") && !period.isEmpty()) return period;
     }
-    buffer.append(typeNotice);
-    return buffer.toString();
+
+    return null;
   }
 
   /*****************
    * Le compositeur qui a crée l'oeuvre
    ******************************/
-  public static String getComposer(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    if (getTypeNotice(xmlFile).equals("UNI:100")) { //Si c'est une notice d'oeuvre
-      InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-      MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-      String aSubField = "", bSubField = "", fSubField = "";
-      while (reader.hasNext()) { // Parcourir le fichier MARCXML
-        Record s = reader.next();
-        for (int i = 0; i < s.dataFields.size(); i++) {
-          if (s.dataFields.get(i).getEtiq().equals("700")) {
-            if (s.dataFields.get(i).isCode('a')) {
-              aSubField = s.dataFields.get(i).getSubfield('a').getData();
-            }
-            if (s.dataFields.get(i).isCode('b')) {
-              bSubField = s.dataFields.get(i).getSubfield('b').getData();
-            }
-            if (s.dataFields.get(i).isCode('f')) {
-              fSubField = s.dataFields.get(i).getSubfield('f').getData();
-            }
-          }
-          if (s.dataFields.get(i).getEtiq().equals("701")) {
-            if (s.dataFields.get(i).isCode('4')) { //prendre en compte le 701 que si son $4 a la valeur "230"
-              if ((s.dataFields.get(i).getSubfield('4').getData()).equals("230")) {
-                if (s.dataFields.get(i).isCode('a')) {
-                  aSubField = s.dataFields.get(i).getSubfield('a').getData();
-                }
-                if (s.dataFields.get(i).isCode('b')) {
-                  bSubField = s.dataFields.get(i).getSubfield('b').getData();
-                }
-                if (s.dataFields.get(i).isCode('f')) {
-                  fSubField = s.dataFields.get(i).getSubfield('f').getData();
-                }
-              }
-            }
-          }
-        }
-      }
-      if ((aSubField.equals("")) && (bSubField.equals("")) && (fSubField.equals(""))) buffer.append("");
+  private List<String> getComposer() {
+    if (!record.isType("UNI:100")) return new ArrayList<>();
 
-      else {
-        buffer.append(aSubField);
-        buffer.append(",");
-        buffer.append(bSubField);
-        buffer.append("(");
-        buffer.append(fSubField);
-        buffer.append(")");
+    // TODO Conserver le contenu du $3 qui fait le lien vers la notice d'autorité
+    List<String> composers = new ArrayList<>();
+
+    List<DataField> fields = record.getDatafieldsByCode("700");
+    for (DataField field : record.getDatafieldsByCode("701")) {
+      //prendre en compte aussi le 701 que si son $4 a la valeur "230"
+      if (field.isCode('4') && field.getSubfield('4').getData().equals("230")) {
+        fields.add(field);
       }
     }
-    return buffer.toString();
+
+    for (DataField field : fields) {
+      StringBuilder buffer = new StringBuilder();
+
+      if (field.isCode('a')) { // surname
+        buffer.append(field.getSubfield('a').getData().trim());
+      }
+      if (field.isCode('b')) { // name
+        if (buffer.length() > 0)
+          buffer.append(", ");
+        buffer.append(field.getSubfield('b').getData().trim());
+      }
+      if (field.isCode('f')) { // birth - death dates
+        buffer.append("(").append(field.getSubfield('f').getData().trim()).append(")");
+      }
+
+      if (buffer.length() > 0) composers.add(buffer.toString());
+    }
+    return composers;
   }
 }

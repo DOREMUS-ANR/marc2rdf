@@ -4,53 +4,53 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/***
+ * Correspond à l'oeuvre musicale
+ ***/
 public class PF15_ComplexWork {
+  private Model model;
+  private URI uriF15;
+  private Resource F15;
+  private Record record;
 
-  /***
-   * Correspond à l'oeuvre musicale
-   ***/
+  public PF15_ComplexWork(Record record) throws URISyntaxException {
+    this.record = record;
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF15 = ConstructURI.build("Complex_Work", "F15");
 
-  static Model modelF15;
-  static URI uriF15;
-
-  public PF15_ComplexWork() throws URISyntaxException {
-    this.modelF15 = ModelFactory.createDefaultModel();
-    this.uriF15 = getURIF15();
-  }
-
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-
-  /********************************************************************************************/
-  public URI getURIF15() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF15 = uri.getUUID("Complex_Work", "F15", uuid.get());
-    return uriF15;
-  }
-
-  /********************************************************************************************/
-  public Model getModel() throws URISyntaxException {
-
-    Resource F15 = modelF15.createResource(uriF15.toString());
+    F15 = model.createResource(uriF15.toString());
     F15.addProperty(RDF.type, FRBROO.F15_Complex_Work);
-
-    /**************************** Work: has member  (Work) **********************************/
-    F15.addProperty(modelF15.createProperty(frbroo + "R10_has_member"), modelF15.createResource(PF14_IndividualWork.uriF14.toString()));
-
-    /**************************** Work: has representative Expression ***********************/
-    F15.addProperty(modelF15.createProperty(frbroo + "R40_has_representative_expression"), modelF15.createResource(PF22_SelfContainedExpression.uriF22.toString()));
-
-    /**************************** Work: was assigned by *************************************/
-    F15.addProperty(modelF15.createProperty(frbroo + "R45i_was_assigned_by"), modelF15.createResource(PF40_IdentifierAssignment.uriF40.toString()));
-
-    return modelF15;
   }
-  /********************************************************************************************/
+
+  public Model getModel() throws URISyntaxException {
+    return model;
+  }
+
+  public Resource asResource() {
+    return F15;
+  }
+
+  public PF15_ComplexWork add(PF22_SelfContainedExpression f22) {
+    /**************************** Work: has representative Expression ***********************/
+    if (record.isType("UNI:100")) {
+      F15.addProperty(FRBROO.R40_has_representative_expression, f22.asResource());
+      //f22.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R40i_is_representative_expression_of"), F15);
+    }
+    return this;
+  }
+
+  public PF15_ComplexWork add(PF14_IndividualWork f14) {
+    /**************************** Work: has member  (Work) **********************************/
+    F15.addProperty(FRBROO.R10_has_member, f14.asResource());
+//    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R10i_is_member_of"), F15);
+    return this;
+  }
+
 }

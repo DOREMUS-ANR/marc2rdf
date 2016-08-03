@@ -4,85 +4,73 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.FRBROO;
-import org.doremus.ontology.MUS;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class F31_Performance {
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
 
-  static Model modelF31 = ModelFactory.createDefaultModel();
-  static URI uriF31 = null;
+  private Model model;
+  private final Resource F31;
+  private URI uriF31;
+  private Record record;
 
-  public F31_Performance() throws URISyntaxException {
-    this.modelF31 = ModelFactory.createDefaultModel();
-    this.uriF31 = getURIF31();
-  }
+  public F31_Performance(Record record) throws URISyntaxException {
+    this.record = record;
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF31 = ConstructURI.build("Performance", "F31");
 
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
-  /********************************************************************************************/
-  public URI getURIF31() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF31 = uri.getUUID("Performance", "F31", uuid.get());
-    return uriF31;
-  }
-
-  /********************************************************************************************/
-  public Model getModel() throws URISyntaxException, IOException {
-
-    Resource F31 = modelF31.createResource(uriF31.toString());
+    F31 = model.createResource(uriF31.toString());
     F31.addProperty(RDF.type, FRBROO.F31_Performance);
+    //FIXME create connection between Performance and Expression/Work
+    compute();
+  }
 
-    /**************************** création d'une expression de plan d'exécution *************/
-    modelF31.createResource(F28_ExpressionCreation.uriF28.toString()).addProperty(modelF31.createProperty(frbroo + "R17_created"), modelF31.createResource(getURIF31().toString()));
+  public Resource asResource() {
+    return F31;
+  }
 
-    /**************************** exécution du plan *****************************************/
-    modelF31.createResource(F25_PerformancePlan.uriF25.toString()).addProperty(modelF31.createProperty(frbroo + "R25i_was_performed_by"), modelF31.createResource(getURIF31().toString()));
-
+  private void compute() {
     /**************************** Performance: 1ère exécution *******************************/
-    modelF31.createResource(F14_IndividualWork.uriF14.toString())
-    	.addProperty(MUS.U5_had_premiere, modelF31.createResource(getURIF31().toString()));
+    // FIXME this should create different performances
+    for (String note : getNote())
+      F31.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
+  }
 
-    /**************************** Performance: 1ère exécution *******************************/
-    F31.addProperty(MUS.U5_had_premiere, getExecution(Converter.getFile()));
+  public F31_Performance add(F25_PerformancePlan plan) {
+    /**************************** exécution du plan ******************************************/
+    F31.addProperty(FRBROO.R25_performed, plan.asResource());
+//    plan.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);
+    return this;
+  }
 
-    return modelF31;
+  public Model getModel() {
+    return model;
   }
 
   /***********************************
    * L'exécution
    ***********************************/
-  public static String getExecution(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("600")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            String execution = s.dataFields.get(i).getSubfield('a').getData();
-            if ((execution.contains("exécution : ")) || (execution.contains("éxécution : ")) || (execution.contains("représentation : "))) {
-              buffer.append(execution);
-            }
-          }
-        }
+  private List<String> getNote() {
+    List<String> notes = new ArrayList<>();
+
+    for (DataField field : record.getDatafieldsByCode("600")) {
+      if (!field.isCode('a')) continue;
+
+      String note = field.getSubfield('a').getData();
+      String[] identifiers = {"exécution", "éxécution", "représentation"};
+
+      for (String id : identifiers) {
+        if (note.contains(id + " : ")) notes.add(note);
       }
     }
-    return buffer.toString();
+    return notes;
   }
-
 }

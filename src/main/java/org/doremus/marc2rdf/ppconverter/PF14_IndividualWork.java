@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
@@ -11,56 +12,52 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class PF14_IndividualWork {
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
 
-  /***
-   * Correspond à l'expression représentative de l'oeuvre musicale
-   ***/
-
-  static Model modelF14;
-  static URI uriF14;
+  private Model model;
+  private URI uriF14;
+  private Resource F14;
 
   public PF14_IndividualWork() throws URISyntaxException {
-    this.modelF14 = ModelFactory.createDefaultModel();
-    this.uriF14 = getURIF14();
-  }
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF14 = ConstructURI.build("Individual_Work", "F14");
 
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-
-  /********************************************************************************************/
-  public URI getURIF14() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF14 = uri.getUUID("Individual_Work", "F14", uuid.get());
-    return uriF14;
-  }
-
-  /********************************************************************************************/
-  public Model getModel() throws URISyntaxException {
-
-    Resource F14 = modelF14.createResource(uriF14.toString());
+    F14 = model.createResource(uriF14.toString());
     F14.addProperty(RDF.type, FRBROO.F14_Individual_Work);
-
-    /**************************** Work: is member of (Work) *********************************/
-    F14.addProperty(modelF14.createProperty(frbroo + "R10i_is_member_of"), modelF14.createResource(PF15_ComplexWork.uriF15.toString()));
-
-    /**************************** Work: realised through ************************************/
-    F14.addProperty(modelF14.createProperty(frbroo + "R19i_was_realised_through"), modelF14.createResource(PF28_ExpressionCreation.uriF28.toString()));
-
-    /**************************** Work: is realised through (expression) ********************/
-    F14.addProperty(modelF14.createProperty(frbroo + "R9_is_realised_in"), modelF14.createResource(PF22_SelfContainedExpression.uriF22.toString()));
-
-    /**************************** Work: was assigned by *************************************/
-    F14.addProperty(modelF14.createProperty(frbroo + "R45i_was_assigned_by"), modelF14.createResource(PF40_IdentifierAssignment.uriF40.toString()));
-
-    /**************************** Work: is identified by *************************************/
-    F14.addProperty(modelF14.createProperty(cidoc + "P1_is_identified_by"), modelF14.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
-
-    /**************************** Performance: 1ère exécution *************************************/
-    F14.addProperty(MUS.U5_had_premiere, modelF14.createResource(PF31_Performance.uriF31.toString()));
-
-    return modelF14;
   }
-  /********************************************************************************************/
+
+  public Model getModel() {
+    return model;
+  }
+
+
+  public Resource asResource() {
+    return F14;
+  }
+
+  public PF14_IndividualWork add(PF22_SelfContainedExpression f22) {
+    /**************************** Work: is realised through (expression) ********************/
+    F14.addProperty(FRBROO.R9_is_realised_in, f22.asResource());
+    return this;
+  }
+
+  public PF14_IndividualWork add(PF30_PublicationEvent f30) {
+    /**************************** Publication Event: édition princeps ******************/
+    F14.addProperty(MUS.U4_had_princeps_publication, f30.asResource());
+    return this;
+  }
+
+  public PF14_IndividualWork addPremiere(PF31_Performance f31) {
+    /**************************** Performance: 1ère exécution *************************************/
+    F14.addProperty(MUS.U5_had_premiere, f31.asResource());
+    return this;
+  }
+
+  public PF14_IndividualWork add(PF50_ControlledAccessPoint accessPoint) {
+    /**************************** Identification de l'œuvre *********************************/
+    F14.addProperty(model.createProperty(cidoc + "P1_is_identified_by"), accessPoint.asResource());
+//    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), F14);
+    return this;
+  }
+
 }

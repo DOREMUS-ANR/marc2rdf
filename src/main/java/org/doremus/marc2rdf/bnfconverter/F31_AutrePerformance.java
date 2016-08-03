@@ -4,85 +4,69 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.Converter;
-import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class F31_AutrePerformance {
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
+  private Model model;
+  private final Resource F31;
+  private URI uriF31;
+  private Record record;
 
-  static Model modelF31 = ModelFactory.createDefaultModel();
-  static URI uriF31 = null;
 
-  public F31_AutrePerformance() throws URISyntaxException {
-    this.modelF31 = ModelFactory.createDefaultModel();
-    this.uriF31 = getURIF31();
-  }
+  public F31_AutrePerformance(Record record) throws URISyntaxException {
+    this.record = record;
 
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF31 = ConstructURI.build("Performance", "F31");
 
-  /********************************************************************************************/
-  public URI getURIF31() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF31 = uri.getUUID("Performance", "F31", uuid.get());
-    return uriF31;
-  }
-
-  /********************************************************************************************/
-  public Model getModel() throws URISyntaxException, IOException {
-
-    Resource F31 = modelF31.createResource(uriF31.toString());
+    F31 = model.createResource(uriF31.toString());
     F31.addProperty(RDF.type, FRBROO.F31_Performance);
+  }
 
+  public Model getModel() throws URISyntaxException {
     /**************************** Performance: 1ère exécution *******************************/
-    F31.addProperty(modelF31.createProperty(cidoc + "P3_has_note"), getNote(Converter.getFile()));
+    // FIXME this should create different performances
+    for (String note : getNote())
+      F31.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
 
-    return modelF31;
+    return model;
   }
 
   /***********************************
    * L'exécution
    ***********************************/
-  public static String getNote(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    String note = "";
-    String st;
+  private List<String> getNote() {
+    List<String> notes = new ArrayList<>();
 
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("600")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            note = s.dataFields.get(i).getSubfield('a').getData();
-            if (note.contains("exécution ")) {
-              st = note.substring(note.lastIndexOf("exécution") + 2);
-              if (!(st.contains(":"))) buffer.append(note);
-            }
-            if (note.contains("éxécution ")) {
-              st = note.substring(note.lastIndexOf("éxécution") + 2);
-              if (!(st.contains(":"))) buffer.append(note);
-            }
-            if (note.contains("représentation  ")) {
-              st = note.substring(note.lastIndexOf("représentation") + 2);
-              if (!(st.contains(":"))) buffer.append(note);
-            }
-          }
+    for (DataField field : record.getDatafieldsByCode("600")) {
+      if (!field.isCode('a')) continue;
+
+      String note = field.getSubfield('a').getData();
+      String[] identifiers = {"exécution", "éxécution", "représentation"};
+
+      for (String id : identifiers) {
+        if (note.contains(id)) {
+          String st = note.substring(note.lastIndexOf(id) + id.length());
+          if (!st.startsWith(" :")) notes.add(note);
         }
       }
     }
-    return buffer.toString();
+    return notes;
   }
 
+  public F31_AutrePerformance add(F25_AutrePerformancePlan plan) {
+    /**************************** exécution du plan ******************************************/
+    F31.addProperty(FRBROO.R25_performed, plan.asResource());
+    plan.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);//
+    return this;
+  }
 }

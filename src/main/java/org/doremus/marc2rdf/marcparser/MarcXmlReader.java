@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MarcXmlReader {
 
-  private RecordList list;
+  private List<Record> list;
 
   /********
    * Le constructeur : lui passer le fichier MARCXML a parser
@@ -35,7 +35,7 @@ public class MarcXmlReader {
     try {
       // Mettre toutes les zones du MARC dans une liste
       MarcXmlHandler handler = handlerBuilder.build();
-      this.list = handler.getList();
+      this.list = handler.getRecordList();
 
       parse(handler, input); //Parser le fichier XML
     } catch (Exception e) {
@@ -57,39 +57,33 @@ public class MarcXmlReader {
     }
   }
 
-  /**************************************************************************/
-
-  public boolean hasNext() {
-    return list.hasNext();
+  public List<Record> getRecords() {
+    return list;
   }
 
-  public Record next() {
-    return list.pop();
-  }
+  public DataField getDatafieldByCode(String code) {
+    for (Record s : list) {
+      DataField res = s.getDatafieldByCode(code);
+      if (res != null) return res;
 
-  public DataField getDatafieldByCode(String code){
-    while (this.hasNext()) {
-      Record s = this.next();
-      for (DataField field : s.dataFields) {
-        if (field.getEtiq().equals(code)) {
-          return field;
-        }
-      }
     }
     return null;
   }
 
-  public List<DataField> getDatafieldsByCode (String code){
+  public List<DataField> getDatafieldsByCode(String code) {
     List<DataField> results = new ArrayList<>();
-    while (this.hasNext()) {
-      Record s = this.next();
-
-      for (DataField field : s.dataFields) {
-        if (field.getEtiq().equals(code)) {
-          results.add(field);
-        }
-      }
+    for (Record s : list) {
+      results.addAll(s.getDatafieldsByCode(code));
     }
     return results;
   }
+
+  public List<ControlField> getControlfieldsByCode(String code) {
+    List<ControlField> results = new ArrayList<>();
+    for (Record s : list) {
+      results.addAll(s.getControlfieldsByCode(code));
+    }
+    return results;
+  }
+
 }

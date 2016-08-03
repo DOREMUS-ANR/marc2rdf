@@ -1,20 +1,22 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.update.UpdateAction;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.XSD;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
+import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
-
-/***************************************************/
+import static org.doremus.marc2rdf.main.Converter.properties;
 
 public class PP2RDF {
   public static final MarcXmlHandler.MarcXmlHandlerBuilder ppXmlHandlerBuilder =
@@ -25,77 +27,44 @@ public class PP2RDF {
       .controlfieldLabel(false)
       .tagLabel("UnimarcTag")
       .codeLabel("UnimarcSubfield");
-
-  static Model model;
-  static PF15_ComplexWork f15;
-  static PF14_IndividualWork f14;
-  static PF28_ExpressionCreation f28;
-  static PF22_SelfContainedExpression f22;
-  static PF42_representativeExpressionAssignment f42;
-  static PF25_PerformancePlan f25;
-  static PF31_Performance f31;
-  static PF25_AutrePerformancePlan fa25;
-  static PF31_AutrePerformance fa31;
-  static PF30_PublicationEvent f30;
-  static PF40_IdentifierAssignment f40;
-  static PF50_ControlledAccessPoint f50;
-  static PF24_PublicationExpression f24;
-  static PF19_PublicationWork f19;
-  static PM18_DenominationControlledAccessPoint m18;
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
 
   public static Model convert(String file) throws URISyntaxException, IOException {
-
+    File folderTUMs = new File(properties.getProperty("TUMFolder"));
 
     /************* Creer un modele vide **************************/
     //Model model = VirtModel.openDatabaseModel("DOREMUS", "jdbc:virtuoso://localhost:1111", "dba", "dba");
     Model model = ModelFactory.createDefaultModel();
-    String mus = "http://data.doremus.org/ontology#";
-    String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-    String frbroo = "http://erlangen-crm.org/efrbroo/";
-    String xsd = "http://www.w3.org/2001/XMLSchema#";
-    String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
+    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
 
-    /******************************** F15_ComplexWork ***************************************/
-    f15 = new PF15_ComplexWork();
-    f14 = new PF14_IndividualWork();
-    f28 = new PF28_ExpressionCreation();
-    f22 = new PF22_SelfContainedExpression();
-    f42 = new PF42_representativeExpressionAssignment();
-    f25 = new PF25_PerformancePlan();
-    f31 = new PF31_Performance();
-    fa25 = new PF25_AutrePerformancePlan();
-    fa31 = new PF31_AutrePerformance();
-    f30 = new PF30_PublicationEvent();
-    f40 = new PF40_IdentifierAssignment();
-    f50 = new PF50_ControlledAccessPoint();
-    f24 = new PF24_PublicationExpression();
-    f19 = new PF19_PublicationWork();
-    m18 = new PM18_DenominationControlledAccessPoint();
+    for (Record r : reader.getRecords()) {
+      /******
+       * Verifier si c'est une notice d'oeuvre ou un TUM
+       **********/
+      //noinspection StatementWithEmptyBody
+      if (r.isType("AIC:14")) {
+        // Si c'est un TUM
+        // nothing more required
+      } else if (r.isType("UNI:100")) {
+        // Si c'est une notice d'oeuvre
+        String idTUM = getIdTum(r);
+        // Convertir le TUM correspondant
+        model.add(PP2RDF.convert(getTUM(folderTUMs, idTUM).getAbsolutePath()));
+      } else {
+        // TODO other notice types?
+        System.out.println("Skipping not recognized PP notice type " + r.getType() + " for file " + file);
+        continue;
+      }
+      new RecordConverter(r, model);
+    }
 
-    model.add(f15.getModel());
-    model.add(f14.getModel());
-    model.add(f28.getModel());
-    model.add(f22.getModel());
-    model.add(f42.getModel());
-    model.add(f25.getModel());
-    model.add(f31.getModel());
-    model.add(fa25.getModel());
-    model.add(fa31.getModel());
-    model.add(f30.getModel());
-    model.add(f40.getModel());
-    model.add(f50.getModel());
-    model.add(f24.getModel());
-    model.add(f19.getModel());
-    model.add(m18.getModel());
-
-    /****************************************************************************************/
-
-    model.setNsPrefix("mus", mus);
+    model.setNsPrefix("mus", MUS.getURI());
     model.setNsPrefix("cidoc-crm", cidoc);
-    model.setNsPrefix("frbroo", frbroo);
-    model.setNsPrefix("xsd", xsd);
-    model.setNsPrefix("dcterms", dcterms);
-    /****************************************************************************************/
+    model.setNsPrefix("frbroo", FRBROO.getURI());
+    model.setNsPrefix("xsd", XSD.getURI());
+    model.setNsPrefix("dcterms", DCTerms.getURI());
+
+    // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";
     UpdateAction.parseExecute(query, model);
 
@@ -109,15 +78,25 @@ public class PP2RDF {
 		/****************************************************************************************/
   }
 
-  /**************************************************************************/
-  public static URI getURI(String path) throws URISyntaxException {
-    URIBuilder builder = new URIBuilder().setPath(path);
-    URI uri = builder.build();
-    return uri;
+  private static String getIdTum(Record r) {
+    for (DataField field : r.getDatafieldsByCode("500")) {
+      if (field.isCode('3'))
+        return field.getSubfield('3').getData().trim();
+    }
+    return null;
   }
 
-  /**************************************************************************/
-  private static Literal l(String lexicalform, RDFDatatype datatype) {
-    return ResourceFactory.createTypedLiteral(lexicalform, datatype);
+  private static File getTUM(final File folder, String idTUM) {
+    for (File fileEntry : folder.listFiles()) {
+      if (fileEntry.isDirectory()) {
+        File f = getTUM(fileEntry, idTUM);
+        if (f != null) return f;
+      } else if (fileEntry.getName().equals(idTUM + ".xml")) {
+        return fileEntry;
+      }
+
+    }
+    return null;
   }
+
 }

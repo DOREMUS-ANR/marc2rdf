@@ -4,47 +4,39 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class PF25_AutrePerformancePlan {
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
 
-  static Model modelF25;
-  static URI uriF25;
+  private Model model;
+  private URI uriF25;
+  private Resource F25;
 
   public PF25_AutrePerformancePlan() throws URISyntaxException {
-    this.modelF25 = ModelFactory.createDefaultModel();
-    this.uriF25 = getURIF25();
-  }
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF25 = ConstructURI.build("Performance_Plan", "F25");
 
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-
-  /********************************************************************************************/
-  public URI getURIF25() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF25 = uri.getUUID("Performance_Plan", "F25", uuid.get());
-    return uriF25;
-  }
-
-  /********************************************************************************************/
-  public Model getModel() throws URISyntaxException {
-
-    Resource F25 = modelF25.createResource(uriF25.toString());
+    F25 = model.createResource(uriF25.toString());
     F25.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
-
-    /**************************** exécution du plan ******************************************/
-    F25.addProperty(modelF25.createProperty(frbroo + "R25i_was_performed_by"), modelF25.createResource(PF31_AutrePerformance.uriF31.toString()));
-
-    /**************************** exécution du plan ******************************************/
-    //	PF31_AutrePerformance FA31= new PF31_AutrePerformance();
-    //	F25.addProperty(modelF25.createProperty(frbroo+ "R25i_is_performed_by"), modelF25.createResource(F31.getURIF31().toString()));
-
-    return modelF25;
   }
-  /********************************************************************************************/
+
+  public Model getModel() {
+    return model;
+  }
+
+  public Resource asResource() {
+    return F25;
+  }
+
+  public PF25_AutrePerformancePlan add(PF22_SelfContainedExpression f22) {
+    /**************************** Expression: 1ère exécution********************************/
+    F25.addProperty(model.createProperty(cidoc + "P165_incorporates"), f22.asResource());
+//    f22.asResource().addProperty(model.createProperty(cidoc + "P165i_is_incorporated_in"), F25);
+    return this;
+  }
 }

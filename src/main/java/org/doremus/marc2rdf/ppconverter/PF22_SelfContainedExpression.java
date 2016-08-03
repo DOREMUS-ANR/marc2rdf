@@ -4,507 +4,282 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.marcparser.DataField;
-import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+/***
+ * Correspond à la description développée de l'expression représentative
+ ***/
 public class PF22_SelfContainedExpression {
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
 
-  /***
-   * Correspond à la description développée de l'expression représentative
-   ***/
+  private final Resource F22;
+  private Record record;
+  private Model model;
+  private URI uriF22;
 
-  static Model modelF22;
-  static URI uriF22;
+  public PF22_SelfContainedExpression(Record record) throws URISyntaxException {
+    this.record = record;
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF22 = ConstructURI.build("Self_Contained_Expression", "F22");
 
-  public PF22_SelfContainedExpression() throws URISyntaxException {
-    this.modelF22 = ModelFactory.createDefaultModel();
-    this.uriF22 = getURIF22();
-  }
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-
-  /********************************************************************************************/
-  public URI getURIF22() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF22 = uri.getUUID("Self_Contained_Expression", "F22", uuid.get());
-    return uriF22;
-  }
-
-  public Model getModel() throws URISyntaxException, IOException {
-
-    Resource F22 = modelF22.createResource(uriF22.toString());
+    F22 = model.createResource(uriF22.toString());
     F22.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
-    /**************************** Expression: was created by ********************************/
-    F22.addProperty(modelF22.createProperty(frbroo + "R17i_was_created_by"), modelF22.createResource(PF28_ExpressionCreation.uriF28.toString()));
+    compute();
+  }
 
-    /**************************** Expression: is representative expression of (Work) ********/
-    if (getTypeNotice(Converter.getFile()).equals("UNI:100")) { //Si c'est une notice d'oeuvre
-      PF15_ComplexWork F15 = new PF15_ComplexWork();
-      F22.addProperty(modelF22.createProperty(frbroo + "R40i_is_representative_expression_of"), modelF22.createResource(F15.getURIF15().toString()));
-    }
+  private void compute() {
     /**************************** Expression: Title *****************************************/
-    if (getTypeNotice(Converter.getFile()).equals("UNI:100")) { // Si c'est une notice d'oeuvre
-      F22.addProperty(modelF22.createProperty(cidoc + "P102_has_title"), getTitle200(Converter.getFile()));
+    for (String title : getTitle())
+      F22.addProperty(model.createProperty(cidoc + "P102_has_title"), title);
+
+    /**************************** Expression: Catalogue *************************************/
+    for (String catalog : getCatalog()) {
+      Resource M1CatalogStatement = model.createResource()
+        .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
+        .addProperty(model.createProperty(cidoc + "P3_has_note"), catalog);
+
+      String[] catalogParts = catalog.split(" ");
+
+      M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
+        .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
+
+      F22.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
+
     }
 
-    if (getTypeNotice(Converter.getFile()).equals("AIC:14")) { // Si c'est une notice TUM
-      F22.addProperty(modelF22.createProperty(cidoc + "P102_has_title"), getTitle(Converter.getFile(), "144"));
-      F22.addProperty(modelF22.createProperty(cidoc + "P102_has_title"), getTitle(Converter.getFile(), "444"));
-    }
-    /**************************** Expression: Catalogue *************************************/
-    if (!(getCatalog(Converter.getFile(), "144").equals(""))) {
-      if (getTypeNotice(Converter.getFile()).equals("AIC:14")) { // Si c'est une notice TUM
-        F22.addProperty(MUS.U16_has_catalogue_statement, modelF22.createResource()
-          .addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getCatalog(Converter.getFile(), "144"))
-          .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getCatalogName(Converter.getFile(), "144"))
-          .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getCatalogNumber(Converter.getFile(), "144"))
-        );
-        if (!(getCatalog(Converter.getFile(), "144").equals(getCatalog(Converter.getFile(), "444")))) { //Si le contenu de 144 est différent de 444
-          F22.addProperty(MUS.U16_has_catalogue_statement, modelF22.createResource()
-            .addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getCatalog(Converter.getFile(), "444"))
-            .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getCatalogName(Converter.getFile(), "444"))
-            .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getCatalogNumber(Converter.getFile(), "444"))
-          );
-        }
-      }
-    }
     /**************************** Expression: Opus ******************************************/
-    if (!(getOpus(Converter.getFile(), "144").equals(""))) {
-      F22.addProperty(MUS.U17_has_opus_statement, modelF22.createResource()
-        .addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getOpus(Converter.getFile(), "144"))
-        .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getOpusNumber(Converter.getFile(), "144"))
-        .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getOpusSubNumber(Converter.getFile(), "144"))
-      );
-      if (!(getOpus(Converter.getFile(), "144").equals(getOpus(Converter.getFile(), "444")))) { //Si le contenu de 144 est différent de 444
-        F22.addProperty(MUS.U17_has_opus_statement, modelF22.createResource()
-          .addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getOpus(Converter.getFile(), "444"))
-          .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getOpusNumber(Converter.getFile(), "444"))
-          .addProperty(modelF22.createProperty(cidoc + "P106_is_composed_of"), getOpusSubNumber(Converter.getFile(), "444"))
-        );
+    for (String opus : getOpus()) {
+      Resource M2OpusStatement = model.createResource()
+        .addProperty(RDF.type, MUS.M2_Opus_Statement)
+        .addProperty(model.createProperty(cidoc + "P3_has_note"), opus);
+
+      // Op. 22 no 1
+      // Op. 22, no 1
+      // Op. 22,no 1
+      String[] opusParts = opus.split("[, ] ?no");
+
+      M2OpusStatement.addProperty(MUS.U42_has_opus_number, opusParts[0].replaceAll("Op\\.", "").trim());
+      if (opusParts.length > 1) {
+        M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, opusParts[1].replaceAll("no", "").trim());
       }
+
+      F22.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
     }
+
     /**************************** Expression: ***********************************************/
-    F22.addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getNote(Converter.getFile()));
+    for (String note : getNote())
+      F22.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
 
     /**************************** Expression: key *******************************************/
-    String key = getKey(Converter.getFile());
-    if (!key.equals("")) {
-      F22.addProperty(MUS.U11_has_key, modelF22.createResource()
-        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(key, "fr")) // Le nom du genre est toujours en français
+    for (String key : getKey()) {
+      F22.addProperty(MUS.U11_has_key, model.createResource()
+        .addProperty(RDF.type, MUS.M4_Key)
+        .addProperty(model.createProperty(cidoc + "P1_is_identified_by"), model.createLiteral(key, "fr")) // Le nom du genre est toujours en français
       );
     }
+
     /**************************** Expression: Genre *****************************************/
-    List<String> genres = getGenre(Converter.getFile());
-    for (String genre: genres) {
-      F22.addProperty(MUS.U12_has_genre, modelF22.createResource()
+    List<String> genres = getGenre();
+    for (String genre : genres) {
+      F22.addProperty(MUS.U12_has_genre, model.createResource()
         .addProperty(RDF.type, MUS.M5_Genre)
-        .addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
+        .addProperty(model.createProperty(cidoc + "P1_is_identified_by"), model.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
       );
     }
     /**************************** Expression: Order Number **********************************/
-    F22.addProperty(MUS.U10_has_order_number, getOrderNumber(Converter.getFile(), "144"));
-
-    if (!(getOrderNumber(Converter.getFile(), "144").equals(getOrderNumber(Converter.getFile(), "444")))) { //Si le contenu de 144 est différent de 444
-      F22.addProperty(MUS.U10_has_order_number, getOrderNumber(Converter.getFile(), "444"));
+    for (String orderNumber : getOrderNumber()) {
+      F22.addProperty(MUS.U10_has_order_number, orderNumber);
     }
+
     /**************************** Expression: Casting ***************************************/
-    if (!(getCasting(Converter.getFile()).equals(""))) {
-      F22.addProperty(MUS.U13_has_intended_casting, modelF22.createResource()
-        .addProperty(modelF22.createProperty(cidoc + "P3_has_note"), getCasting(Converter.getFile()))
-      );
-    }
-    /**************************** Expression: Assignation d'identifiant ***********************/
-    F22.addProperty(modelF22.createProperty(frbroo + "R45i_was_assigned_by"), modelF22.createResource(PF40_IdentifierAssignment.uriF40.toString()));
+    for (String castingString : getCasting()) {
+      Resource M6Casting = model.createResource();
+      M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting);
+      M6Casting.addProperty(model.createProperty(cidoc + "P3_has_note"), castingString);
 
+      F22.addProperty(MUS.U13_has_intended_casting, M6Casting);
+    }
+  }
+
+  public PF22_SelfContainedExpression add(PF50_ControlledAccessPoint accessPoint) {
     /**************************** Expression: Point d'Accès ********************************/
-    F22.addProperty(modelF22.createProperty(cidoc + "P1_is_identified_by"), modelF22.createResource(PF50_ControlledAccessPoint.uriF50.toString()));
-
-    /**************************** Expression: 1ère exécution********************************/
-    F22.addProperty(modelF22.createProperty(cidoc + "P165i_is_incorporated_in"), modelF22.createResource(PF25_AutrePerformancePlan.uriF25.toString()));
-
-    return modelF22;
+    F22.addProperty(model.createProperty(cidoc + "P1_is_identified_by"), accessPoint.asResource());
+//    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), F22);
+    return this;
   }
 
-  /**************************
-   * Type du titre
-   ************************************************/
-  public static String getTypeNotice(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String typeNotice = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      typeNotice = s.getType();
-    }
-    buffer.append(typeNotice);
-    return buffer.toString();
+  public Model getModel() {
+    return model;
   }
 
   /***********************************
    * Le titre
    **************************************/
-  public static String getTitle200(String xmlFile) throws IOException {
+  private List<String> getTitle() {
+    List<String> titleList = new ArrayList<>();
+    List<DataField> fields;
 
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String title = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("200")) {
-          if (s.dataFields.get(i).isCode('a'))
-            title = s.dataFields.get(i).getSubfield('a').getData();
-        }
-      }
+    if (record.isType("AIC:14")) {
+      fields = record.getDatafieldsByCode("444");
+      fields.addAll(record.getDatafieldsByCode("144"));
+    } else { // type UNI:100
+      fields = record.getDatafieldsByCode("200");
     }
-    buffer.append(title);
-    return buffer.toString();
+
+    for (DataField field : fields) {
+      if (!field.isCode('a')) continue;
+
+      String title = field.getSubfield('a').getData().trim();
+
+      if (title.isEmpty() || Converter.isNotSignificativeTitle(title))
+        continue;
+
+      titleList.add(title);
+    }
+
+    return titleList;
   }
 
-  /***********************************
-   * Le titre
-   **************************************/
-  public static String getTitle(String xmlFile, String etiq) throws IOException {
-
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String title = "";
-
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals(etiq)) {
-          if (s.dataFields.get(i).isCode('a'))
-            title = s.dataFields.get(i).getSubfield('a').getData();
-        }
-      }
-    }
-
-    /*******************************************************************/
-
-    Boolean trouve = false; // "trouve=true" si "codeGenre" a �t� trouv� dans le fichier
-    String fileName = PF22_SelfContainedExpression.class.getClass().getResource(Converter.properties.getProperty("BNFGenres")).getFile();
-    File fichier = new File(fileName);
-    FileInputStream fis = new FileInputStream(fichier);
-
-    XSSFWorkbook myWorkBook = new XSSFWorkbook(fis); // Trouver l'instance workbook du fichier XLSX
-    XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
-    Iterator<Row> iter = mySheet.iterator(); //It�rateur de toutes les lignes de la feuille courante
-
-    while (iter.hasNext() && !trouve) { // Traverser chaque ligne du fichier XLSX
-      Row row = iter.next();
-      Iterator<Cell> cellIterator = row.cellIterator();
-
-      while ((cellIterator.hasNext()) && !trouve) { // Pour chaque ligne, it�rer chaque colonne
-        Cell cell = cellIterator.next();
-        if (title.equals(cell.getStringCellValue())) trouve = true; //On a trouv� le code du genre dans le fichier
-      }
-    }
-    if (!trouve) {
-      buffer.append(title);
-    } else buffer.append("");
-    /*******************************************************************/
-    return buffer.toString();
-  }
 
   /***********************************
    * Le catalogue
    ***********************************/
-  public static String getCatalog(String xmlFile, String etiq) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals(etiq)) {
-          if (s.dataFields.get(i).isCode('k'))
-            buffer.append(s.dataFields.get(i).getSubfield('k').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
+  private List<String> getCatalog() {
+    if (!record.isType("AIC:14")) return new ArrayList<>();
 
-  /***********************************
-   * Le nom du catalogue
-   ***********************************/
-  public static String getCatalogName(String xmlFile, String etiq) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals(etiq)) {
-          if (s.dataFields.get(i).isCode('k')) {
-            String catalogName = (s.dataFields.get(i).getSubfield('k').getData());
-            String[] character = catalogName.split("");
-            int x = 0;
-            catalogName = "";
-            while (!(character[x].equals(" ")) && !(character[x].equals("."))) {
-              catalogName = catalogName + character[x];
-              x++;
-            }
-            buffer.append(catalogName);
-          }
-        }
-      }
-    }
-    return buffer.toString();
-  }
+    List<String> results = new ArrayList<>();
 
-  /***********************************
-   * Le num du catalogue
-   ***********************************/
-  public static String getCatalogNumber(String xmlFile, String etiq) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals(etiq)) {
-          if (s.dataFields.get(i).isCode('k')) {
-            String catalogNumber = (s.dataFields.get(i).getSubfield('k').getData());
-            String[] caracter = catalogNumber.split("");
-            boolean t = false;
-            catalogNumber = "";
-            for (String aCaracter : caracter) {
-              if ((aCaracter.equals(" ")) || (aCaracter.equals("."))) t = true;
-              else if (t) catalogNumber = catalogNumber + aCaracter;
-            }
-            buffer.append(catalogNumber);
-          }
-        }
-      }
+    List<DataField> catalogFields = record.getDatafieldsByCode("444");
+    catalogFields.addAll(record.getDatafieldsByCode("144"));
+
+    for (DataField field : catalogFields) {
+      if (!field.isCode('k')) continue;
+
+      String catalog = field.getSubfield('k').getData();
+      if (!results.contains(catalog)) results.add(catalog);
     }
-    return buffer.toString();
+    return results;
   }
 
   /***********************************
    * L'opus
    ***********************************/
-  public static String getOpus(String xmlFile, String etiq) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals(etiq)) {
-          if (s.dataFields.get(i).isCode('p'))
-            buffer.append(s.dataFields.get(i).getSubfield('p').getData());
-        }
-      }
-    }
-    return buffer.toString();
-  }
+  private List<String> getOpus() {
+    if (!record.isType("AIC:14")) return new ArrayList<>();
 
-  /***********************************
-   * Le numero d'opus
-   ***********************************/
-  public static String getOpusNumber(String xmlFile, String etiq) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals(etiq)) {
-          if (s.dataFields.get(i).isCode('p')) {
-            String opusNumber = (s.dataFields.get(i).getSubfield('p').getData());
-            String[] caracter = opusNumber.split("");
-            boolean t = false;
-            opusNumber = "";
-            for (int x = 0; x < caracter.length; x++) {
-              if ((caracter[x].equals(","))) t = true;
-              else if ((t == false) && (!(caracter[x].equals("O")) && !(caracter[x].equals("p")) && !(caracter[x].equals(".")) && !(caracter[x].equals(" "))))
-                opusNumber = opusNumber + caracter[x];
-            }
-            buffer.append(opusNumber);
-          }
-        }
-      }
-    }
-    return buffer.toString();
-  }
+    List<String> results = new ArrayList<>();
 
-  /***********************************
-   * Le sous-numero d'opus
-   ***********************************/
-  public static String getOpusSubNumber(String xmlFile, String etiq) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals(etiq)) {
-          if (s.dataFields.get(i).isCode('p')) {
-            String opusSubNumber = (s.dataFields.get(i).getSubfield('p').getData());
-            String[] caracter = opusSubNumber.split("");
-            boolean t = false;
-            opusSubNumber = "";
-            for (int x = 0; x < caracter.length; x++) {
-              if ((caracter[x].equals(","))) t = true;
-              else if ((t) && !(caracter[x].equals("n")) && !(caracter[x].equals("o")) && !(caracter[x].equals(" ")))
-                opusSubNumber = opusSubNumber + caracter[x];
-            }
-            buffer.append(opusSubNumber);
-          }
-        }
-      }
+    List<DataField> opusFields = record.getDatafieldsByCode("444");
+    opusFields.addAll(record.getDatafieldsByCode("144"));
+
+    for (DataField field : opusFields) {
+      if (!field.isCode('p')) continue;
+
+      String opus = field.getSubfield('p').getData();
+      if (!results.contains(opus)) results.add(opus);
     }
-    return buffer.toString();
+    return results;
   }
 
   /***********************************
    * Note Libre
    ***********************************/
-  public static String getNote(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String note909 = "", note919 = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("909")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            note909 = s.dataFields.get(i).getSubfield('a').getData();
-          }
-        }
-        if (s.dataFields.get(i).getEtiq().equals("919")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            note919 = s.dataFields.get(i).getSubfield('a').getData();
-          }
-        }
-      }
+  private List<String> getNote() {
+    if (!record.isType("UNI:100")) return new ArrayList<>();
+
+    List<String> results = new ArrayList<>();
+
+    List<DataField> opusFields = record.getDatafieldsByCode("909");
+    opusFields.addAll(record.getDatafieldsByCode("919"));
+
+    for (DataField field : opusFields) {
+      if (!field.isCode('a')) continue;
+      results.add(field.getSubfield('a').getData().trim());
     }
-    if (note909.endsWith(".")) {
-      buffer.append(note909);
-      buffer.append(" ");
-      buffer.append(note919);
-    } else {
-      buffer.append(note909);
-      buffer.append(".");
-      buffer.append(" ");
-      buffer.append(note919);
-    }
-    return buffer.toString();
+
+    return results;
   }
 
   /***********************************
    * Key (Tonalite)
    ***********************************/
-  public static String getKey(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("909")) {
-          if (s.dataFields.get(i).isCode('d'))
-            buffer.append(s.dataFields.get(i).getSubfield('d').getData());
-        }
-      }
+  private List<String> getKey() {
+    if (!record.isType("UNI:100")) return new ArrayList<>();
+
+    List<String> results = new ArrayList<>();
+
+    for (DataField field : record.getDatafieldsByCode("909")) {
+      if (!field.isCode('d')) continue;
+      results.add(field.getSubfield('d').getData().trim());
     }
-    return buffer.toString();
+
+    return results;
   }
 
   /***********************************
    * Le numero d'ordre
    ***********************************/
-  public static String getOrderNumber(String xmlFile, String etiq) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    String orderNumber = "", orderNumber444 = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals(etiq)) {
-          if (s.dataFields.get(i).isCode('n')) {
-            orderNumber = (s.dataFields.get(i).getSubfield('n').getData());
-            String[] character = orderNumber.split("");
-            orderNumber = "";
-            for (String aCharacter : character) {
-              if (!(aCharacter.equals("N")) && !(aCharacter.equals("o")) && !(aCharacter.equals(" ")))
-                orderNumber = orderNumber + aCharacter;
-            }
-          }
-        }
-      }
+  private List<String> getOrderNumber() {
+    if (!record.isType("AIC:14")) return new ArrayList<>();
+
+    List<String> results = new ArrayList<>();
+
+    List<DataField> fields = record.getDatafieldsByCode("444");
+    fields.addAll(record.getDatafieldsByCode("144"));
+
+    for (DataField field : fields) {
+      if (!field.isCode('n')) continue;
+
+      String orderNumber = field.getSubfield('n').getData().replaceAll("No", "").trim();
+      if (!results.contains(orderNumber)) results.add(orderNumber);
     }
-    buffer.append(orderNumber);
-    return buffer.toString();
+
+    return results;
   }
 
   /*****************************************
    * Les genres
    *************************************/
-  private static List<String> getGenre(String xmlFile) throws IOException {
+  private List<String> getGenre() {
     List<String> genres = new ArrayList<>();
 
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (DataField field : s.dataFields) {
-        if (field.getEtiq().equals("610")) {
-          if (field.isCode('a') && field.isCode('b') && field.getSubfield('b').getData().equals("04")) {
-            //$b=04 veut dire "genre"
-            genres.add(field.getSubfield('a').getData().toLowerCase());
-          }
-        }
+    for (DataField field : record.getDatafieldsByCode("610")) {
+      if (field.isCode('a') && field.isCode('b') && field.getSubfield('b').getData().equals("04")) {
+        //$b=04 veut dire "genre"
+        genres.add(field.getSubfield('a').getData().toLowerCase());
       }
     }
-
     return genres;
   }
 
   /***********************************
    * Casting
    ***********************************/
-  public static String getCasting(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("909")) {
-          if (s.dataFields.get(i).isCode('c')) {
-            String casting = s.dataFields.get(i).getSubfield('c').getData();
-            buffer.append(casting);
-          }
-        }
-      }
+  private List<String> getCasting() {
+    if (!record.isType("UNI:100")) return new ArrayList<>();
+
+    List<String> castings = new ArrayList<>();
+
+    for (DataField field : record.getDatafieldsByCode("909")) {
+      if (!field.isCode('c')) continue;
+      castings.add(field.getSubfield('c').getData().trim());
     }
-    return buffer.toString();
+
+    return castings;
+  }
+
+  public Resource asResource() {
+    return F22;
   }
 }

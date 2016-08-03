@@ -15,7 +15,7 @@ import java.util.List;
 
 public class MarcXmlHandler implements ContentHandler {
 
-  private RecordList list;
+  private List<Record> recordList;
   private StringBuffer buffer;
   private Subfield subfield;
   private DataField dataField;
@@ -55,7 +55,7 @@ public class MarcXmlHandler implements ContentHandler {
    **************************************/
   public MarcXmlHandler(String recordLabel, String datafieldLabel, String subfieldLabel,
                         String tagLabel, String codeLabel, String typeLabel, String idlabel) {
-    this.list = new RecordList();
+    this.recordList = new ArrayList<>();
     this.recordInProgress = new ArrayList<>();
 
     elementMap = new HashMap<>();
@@ -81,8 +81,8 @@ public class MarcXmlHandler implements ContentHandler {
     this.useControlField = true;
   }
 
-  public RecordList getList() {
-    return this.list;
+  public List<Record> getRecordList() {
+    return recordList;
   }
 
   /*********************************************************************************/
@@ -151,17 +151,17 @@ public class MarcXmlHandler implements ContentHandler {
 
     switch (elementType) {
       case RECORD:
-        list.push(this.record);
+        recordList.add(this.record);
         recordInProgress.remove(this.record);
-        if(!recordInProgress.isEmpty())
-          this.record = recordInProgress.get(recordInProgress.size()-1);
+        if (!recordInProgress.isEmpty())
+          this.record = recordInProgress.get(recordInProgress.size() - 1);
         break;
       case CONTROLFIELD:
         controlField.setData(buffer.toString());
         record.addControlField(controlField);
         break;
       case DATAFIELD:
-        if(this.dataField == null) return;
+        if (this.dataField == null) return;
         record.addDataField(dataField);
         break;
       case SUBFIELD:
@@ -172,12 +172,9 @@ public class MarcXmlHandler implements ContentHandler {
     }
   }
 
-  /*********************************************************************************/
   public void endDocument() throws SAXException {
-    list.end();
   }
 
-  /*********************************************************************************/
   private DataField newDataField(String tag, char ind1, char ind2, String... subfieldCodesAndData) {
     DataField df = new DataField(tag, ind1, ind2);
 
@@ -188,7 +185,6 @@ public class MarcXmlHandler implements ContentHandler {
     return (df);
   }
 
-  /*********************************************************************************/
   private DataField newDataField(String tag, String... subfieldCodesAndData) {
     DataField df = new DataField(tag);
 
@@ -200,7 +196,6 @@ public class MarcXmlHandler implements ContentHandler {
   }
 
 
-  /*********************************************************************************/
   public void startDocument() throws SAXException {
   }
 

@@ -6,346 +6,209 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.marcparser.MarcXmlReader;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.marcparser.ControlField;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class F28_ExpressionCreation {
+  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
+  private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
 
-  /***
-   * Correspond à l'expression représentative de l'oeuvre musicale
-   ***/
-
-  static Model modelF28 = ModelFactory.createDefaultModel();
-  static URI uriF28 = null;
+  private Record record;
+  private Model model;
+  private URI uriF28;
+  private Resource F28;
 
   public F28_ExpressionCreation() throws URISyntaxException {
-    this.modelF28 = ModelFactory.createDefaultModel();
-    this.uriF28 = getURIF28();
-  }
+    this.model = ModelFactory.createDefaultModel();
+    this.uriF28 = ConstructURI.build("Expression_Creation", "F28");
 
-  String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-  String frbroo = "http://erlangen-crm.org/efrbroo/";
-  String xsd = "http://www.w3.org/2001/XMLSchema#";
-  String dcterms = "http://dublincore.org/documents/dcmi-terms/#";
-
-  /********************************************************************************************/
-  public URI getURIF28() throws URISyntaxException {
-    ConstructURI uri = new ConstructURI();
-    GenerateUUID uuid = new GenerateUUID();
-    uriF28 = uri.getUUID("Expression_Creation", "F28", uuid.get());
-    return uriF28;
-  }
-
-  public Model getModel() throws URISyntaxException, FileNotFoundException {
-
-    Resource F28 = modelF28.createResource(uriF28.toString());
+    F28 = model.createResource(uriF28.toString());
     F28.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
+  }
 
-    /**************************** Work: created a realisation *******************************/
-    F28.addProperty(modelF28.createProperty(frbroo + "R19_created_a_realisation_of"), modelF28.createResource(F14_IndividualWork.uriF14.toString()));
+  public F28_ExpressionCreation(Record record) throws URISyntaxException {
+    this();
+    this.record = record;
+    this.compute();
+  }
 
-    /**************************** Expression: created ***************************************/
-    F28.addProperty(modelF28.createProperty(frbroo + "R17_created"), modelF28.createResource(F22_SelfContainedExpression.uriF22.toString()));
-
+  private void compute() {
     /**************************** Work: Date of the work (expression représentative) ********/
-    if (!(getDateMachine(Converter.getFile()).equals(""))) {
-      RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(dcterms + "terms-W3CDTF");
-      F28.addProperty(modelF28.createProperty(cidoc + "P4_has_time_span"), modelF28.createResource()
-        .addProperty(RDF.type, modelF28.createResource(cidoc + "E52_Time_Span"))
-        .addProperty(modelF28.createProperty(cidoc + "P82_at_some_time_within"), ResourceFactory.createTypedLiteral(getDateMachine(Converter.getFile()), W3CDTF)));
+    String dateMachine = getDateMachine();
+    if (dateMachine != null) {
+      F28.addProperty(model.createProperty(cidoc + "P4_has_time_span"), model.createResource()
+        .addProperty(RDF.type, model.createResource(cidoc + "E52_Time_Span"))
+        .addProperty(model.createProperty(cidoc + "P82_at_some_time_within"), ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
     }
+
     /**************************** Work: Date of the work (expression représentative) ********/
-    F28.addProperty(modelF28.createProperty(cidoc + "P3_has_note"), getDateText(Converter.getFile()));
+    String dateText = getDateText();
+    // TODO check! maybe this info could be better saved
+    if (dateText != null) F28.addProperty(model.createProperty(cidoc + "P3_has_note"), dateText);
+
     /**************************** Work: is created by ***************************************/
-    if (!(getComposer(Converter.getFile()).equals(""))) {
-      F28.addProperty(modelF28.createProperty(cidoc + "P9_consists_of"), modelF28.createResource()
-        .addProperty(RDF.type, modelF28.createResource(cidoc + "E7_activity"))
-        .addProperty(MUS.U31_had_function_of_type, "compositeur")
-        .addProperty(modelF28.createProperty(cidoc + "P14_carried_out_by"), modelF28.createResource()
-          .addProperty(RDF.type, modelF28.createResource(cidoc + "E21_Person"))
-          .addProperty(modelF28.createProperty(cidoc + "P131_is_identified_by"), getComposer(Converter.getFile())
-          ))
+    for (String composer : getComposer()) {
+      F28.addProperty(model.createProperty(cidoc + "P9_consists_of"), model.createResource()
+        .addProperty(RDF.type, model.createResource(cidoc + "E7_activity"))
+        .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
+        .addProperty(model.createProperty(cidoc + "P14_carried_out_by"), model.createResource()
+          .addProperty(RDF.type, model.createResource(cidoc + "E21_Person"))
+          .addProperty(model.createProperty(cidoc + "P131_is_identified_by"), composer)
+        )
       );
     }
-
-    return modelF28;
   }
-  /********************************************************************************************/
+
+  public Resource asResource() {
+    return F28;
+  }
+
+  public Model getModel() {
+    return model;
+  }
+
+  public F28_ExpressionCreation add(F22_SelfContainedExpression expression) {
+    /**************************** Expression: created ***************************************/
+    F28.addProperty(FRBROO.R17_created, expression.asResource());
+    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
+    return this;
+  }
+
+  public F28_ExpressionCreation add(F14_IndividualWork f14) {
+    /**************************** Work: created a realisation *******************************/
+    F28.addProperty(FRBROO.R19_created_a_realisation_of, f14.asResource());
+    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
+    return this;
+  }
+
 
   /*************
    * Date de creation de l'expression (Format machine)
    ***********************/
-  public static String getDateMachine(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.controlFields.size(); i++) {
-        if (s.controlFields.get(i).getEtiq().equals("008")) {
-          String controlFieldData = s.controlFields.get(i).getData();
-          /***************************** Cas 1 *********************************/
-          if ((controlFieldData.charAt(36) == ' ') &&
-            (controlFieldData.length() == 46 || controlFieldData.charAt(46) == ' ')) {
-            String sy = "";
-            boolean noSy = true;
-            for (int j = 28; j <= 31; j++) {
-              char character = controlFieldData.charAt(j);
-              sy = sy + character;
-              if (!(character == (' '))) {
-                noSy = false;
-              }
-            }
-            String sm = "";
-            boolean noSm = true;
-            for (int j = 32; j <= 33; j++) {
-              char character = controlFieldData.charAt(j);
-              sm = sm + character;
-              if (!(character == (' '))) {
-                noSm = false;
-              }
-            }
-            String sd = "";
-            boolean noSd = true;
-            for (int j = 34; j <= 35; j++) {
-              char character = controlFieldData.charAt(j);
-              sd = sd + character;
-              if (!(character == (' '))) {
-                noSd = false;
-              }
-            }
-            String fy = "";
-            boolean noFy = true;
-            for (int j = 38; j <= 41; j++) {
-              char character = controlFieldData.charAt(j);
-              fy = fy + character;
-              if (!(character == (' '))) {
-                noFy = false;
-              }
-            }
-            String fm = "";
-            boolean noFm = true;
-            for (int j = 42; j <= 43; j++) {
-              char character = controlFieldData.charAt(j);
-              fm = fm + character;
-              if (!(character == (' '))) {
-                noFm = false;
-              }
-            }
-            String fd = "";
-            boolean noFd = true;
-            for (int j = 44; j <= 45; j++) {
-              char character = controlFieldData.charAt(j);
-              fd = fd + character;
-              if (!(character == (' '))) {
-                noFd = false;
-              }
-            }
-            /******************** Sous cas 1.1 ********************************/
-            if (!noSy && noSm && noSd && noFy && noFm && noFd) {
-              sm = "01";
-              sd = "01";
-              fy = sy;
-              fm = "12";
-              fd = "31";
-            }
-            /******************** Sous cas 1.2 ********************************/
-            else if (!noSy && !noSm && noSd && noFy && noFm && noFd) {
-              sd = "01";
-              fy = sy;
-              fm = sm;
-              fd = getLastDay(fm, fy);
-            }
-            /******************** Sous cas 1.3 ********************************/
-            else if (!noSy && !noSm && !noSd && noFy && noFm && noFd) {
-              fy = sy;
-              fm = sm;
-              fd = sd;
-            }
-            /******************** Sous cas 1.4 ********************************/
-            else if (!noSy && !noFy) {
-              // Begin period
-              if (noSm) {
-                sm = "01";
-                sd = "01";
-              } else if (noSd) {
-                sd = "01";
-              }
-              // Finish period
-              if (noFm && fy.equals(sy) && !noSm) {
-                fm = sm;
-                fd = getLastDay(fm, fy);
-              } else if (noFm) {
-                fm = "12";
-                fd = "31";
-              } else if (noFd) {
-                fd = getLastDay(fm, fy);
-              }
+  private String getDateMachine() {
+    for (ControlField field : record.getControlfieldsByCode("008")) {
+      String fieldData = field.getData();
 
-            }
-            /******************** Sous cas 1.5 ********************************/
-            if (noSy && !noFy) {
-              sy = "" + fy.charAt(0) + fy.charAt(1) + "00";
-              sm = "01";
-              sd = "01";
-              if (noFm) {
-                fm = "12";
-                fd = "31";
-              } else if (noFd) {
-                fd = getLastDay(fm, fy);
-              }
-            }
-            buffer.append(sy + sm + sd + "/" + fy + fm + fd);
-          }
-          /***************************** Cas 2 *********************************/
-          else if ((controlFieldData.charAt(36) == '?') ||
-            (controlFieldData.charAt(46) == '?') ||
-            (controlFieldData.charAt(30) == '.') ||
-            (controlFieldData.charAt(31) == '.') ||
-            (controlFieldData.charAt(40) == '.') ||
-            (controlFieldData.charAt(41) == '.')) {
-            /******************** Sous cas 2.1 ********************************/
-            if ((controlFieldData.charAt(30) == '.') &&
-              controlFieldData.charAt(31) == ('.')) {
-              String dt = "";
-              for (int j = 28; j <= 29; j++) {
-                buffer.append(controlFieldData.charAt(j));
-                dt = dt + controlFieldData.charAt(j);
-              }
-              buffer.append("00/" + dt + "99");
-            }
-            /******************** Sous cas 2.2 ********************************/
-            if (!((s.controlFields.get(i).getData().charAt(30)) == ((".").charAt(0))) &&
-              ((s.controlFields.get(i).getData().charAt(31)) == ((".").charAt(0)))) {
-              String dt = "";
-              for (int j = 28; j <= 30; j++) {
-                buffer.append(s.controlFields.get(i).getData().charAt(j));
-                dt = dt + s.controlFields.get(i).getData().charAt(j);
-              }
-              buffer.append("0/" + dt + "9");
-            }
-            /******************** Sous cas 2.3 ********************************/
-            if ((controlFieldData.charAt(40) == '.') &&
-              (controlFieldData.charAt(41) == '.')) {
-              String dt = "";
-              for (int j = 38; j <= 39; j++) {
-                buffer.append(controlFieldData.charAt(j));
-                dt = dt + controlFieldData.charAt(j);
-              }
-              buffer.append("00/" + dt + "99");
-            }
-            /******************** Sous cas 2.4 ********************************/
-            if (!(controlFieldData.charAt(40) == '.') &&
-              (controlFieldData.charAt(41) == '.')) {
-              String dt = "";
-              for (int j = 38; j <= 40; j++) {
-                buffer.append(controlFieldData.charAt(j));
-                dt = dt + controlFieldData.charAt(j);
-              }
-              buffer.append("0/" + dt + "9");
-            }
-          }
-          /******************************************************************************/
+      /***************************** Cas 1 *********************************/
+      if (fieldData.charAt(36) == ' ' &&
+        (fieldData.length() == 46 || fieldData.charAt(46) == ' ')) {
+
+        String startYear = fieldData.substring(28, 32).replaceAll("\\.", "").trim();
+        String startMonth = fieldData.substring(32, 34).replaceAll("\\.", "").trim();
+        String startDay = fieldData.substring(34, 36).replaceAll("\\.", "").trim();
+
+        String endYear = fieldData.substring(38, 42).replaceAll("\\.", "").trim();
+        String endMonth = fieldData.substring(42, 44).replaceAll("\\.", "").trim();
+        String endDay = fieldData.substring(44, 46).replaceAll("\\.", "").trim();
+
+        if (startYear.isEmpty() && endYear.isEmpty()) continue;
+
+        // there is at least one of the two year
+        if (startYear.isEmpty()) startYear = endYear.substring(0, 2) + "00"; //beginning of the century
+        if (endYear.isEmpty()) {
+          endYear = startYear;
+          endMonth = startMonth;
+          endDay = startDay;
         }
+        if (startMonth.isEmpty()) startMonth = "01";
+        if (startDay.isEmpty()) startDay = "01";
+        if (endMonth.isEmpty()) endMonth = "12";
+        if (endDay.isEmpty()) {
+          try {
+            endDay = getLastDay(endMonth, endYear);
+          } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+          }
+        }
+
+        return startYear + startMonth + startDay + "/" + endYear + endMonth + endDay;
+      }
+      /***************************** Cas 2 *********************************/
+      else if (fieldData.charAt(36) == '?' || fieldData.charAt(46) == '?' ||
+        fieldData.substring(30, 32).contains(".") ||
+        fieldData.substring(40, 42).contains("..")) {
+
+        String startString = fieldData.substring(28, 32).trim(); // could be 1723, 172. or 17..
+        String endString = fieldData.substring(38, 42).trim(); // could be 1723, 172. or 17..
+
+        if (startString.isEmpty() && endString.isEmpty()) continue;
+
+        // there is at least one of the two
+        if (startString.isEmpty()) startString = endString;
+        else if (endString.isEmpty()) endString = startString;
+
+        return startString.replaceAll("\\.", "0") + "/" + endString.replaceAll("\\.", "9");
       }
     }
-    return buffer.toString();
+
+    return null;
   }
 
   /*************
    * Date de création de l'expression (Format texte)
    ***********************/
-  public static String getDateText(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("600")) {
-          if (s.dataFields.get(i).isCode('a')) {
-            String date = s.dataFields.get(i).getSubfield('a').getData();
-            if ((date.contains("comp.")) || (date.contains("Date de composition")) || (date.contains("Dates de composition")))
-              buffer.append(date);
-          }
-        }
+  private String getDateText() {
+    for (DataField field : record.getDatafieldsByCode("100")) {
+      if (field.isCode('a')) {
+        String date = field.getSubfield('a').getData();
+        if (date.contains("comp.") || date.contains("Date de composition") || date.contains("Dates de composition"))
+          return date;
       }
     }
-    return buffer.toString();
+    return null;
   }
 
   /*****************
    * Le compositeur qui a crée l'oeuvre
    ******************************/
-  public static String getComposer(String xmlFile) throws FileNotFoundException {
-    StringBuilder buffer = new StringBuilder();
-    InputStream file = new FileInputStream(xmlFile); //Charger le fichier MARCXML a parser
-    MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
-    String aSubField = "", mSubField = "", dSubField = "", eSubField = "", hSubField = "", uSubField = "";
-    while (reader.hasNext()) { // Parcourir le fichier MARCXML
-      Record s = reader.next();
-      for (int i = 0; i < s.dataFields.size(); i++) {
-        if (s.dataFields.get(i).getEtiq().equals("100")) {
-              /* 	 if (s.dataFields.get(i).isCode('w')){
-        			 		 String wSubField = s.dataFields.get(i).getSubfield('w').getData();
-        			 		 buffer.append(wSubField+" ");
-        			 	 } */
-          if (s.dataFields.get(i).isCode('a')) {
-            aSubField = s.dataFields.get(i).getSubfield('a').getData();
-          }
-          if (s.dataFields.get(i).isCode('m')) {
-            mSubField = s.dataFields.get(i).getSubfield('m').getData();
-          }
-          if (s.dataFields.get(i).isCode('d')) {
-            dSubField = s.dataFields.get(i).getSubfield('d').getData();
-          }
-          if (s.dataFields.get(i).isCode('e')) {
-            eSubField = s.dataFields.get(i).getSubfield('e').getData();
-          }
-          if (s.dataFields.get(i).isCode('h')) {
-            hSubField = s.dataFields.get(i).getSubfield('h').getData();
-          }
-          if (s.dataFields.get(i).isCode('u')) {
-            uSubField = s.dataFields.get(i).getSubfield('u').getData();
-          }
-        }
+  private List<String> getComposer() {
+    List<String> composers = new ArrayList<>();
+
+    //TODO Conserver le contenu du $3 qui fait le lien vers la notice d'autorité Personne
+    for (DataField field : record.getDatafieldsByCode("100")) {
+      StringBuilder buffer = new StringBuilder();
+
+      if (field.isCode('a')) { // surname
+        buffer.append(field.getSubfield('a').getData());
       }
+      if (field.isCode('m')) { // name
+        if (buffer.length() > 0)
+          buffer.append(", ");
+        buffer.append(field.getSubfield('m').getData());
+      }
+      if (field.isCode('d')) { // birth - death dates
+        buffer.append("(").append(field.getSubfield('d').getData()).append(")");
+      }
+
+      if (buffer.length() > 0) composers.add(buffer.toString());
     }
-    buffer.append(aSubField);
-    buffer.append(",");
-    buffer.append(mSubField);
-    buffer.append("(");
-    buffer.append(dSubField);
-    buffer.append(")");
-    buffer.append(eSubField);
-    buffer.append(hSubField);
-    buffer.append(uSubField);
-    return buffer.toString();
+
+    return composers;
   }
 
-  public static String getLastDay(String fm, String fy) {
-    String fd;
-    if (fm.equals("04") || fm.equals("06") || fm.equals("09") || fm.equals("11")) {
-      fd = "30";
-    } else if (fm.equals("02")) {
-      if ((Integer.parseInt(fy) % 4 == 0) && ((Integer.parseInt(fy) % 100 != 0) || (Integer.parseInt(fy) % 400 == 0))) {
-        fd = "29";
-      } else {
-        fd = "28";
-      }
-    } else {
-      fd = "31";
-    }
-    return fd;
+  private static String getLastDay(String month, String year) throws ParseException {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+    Date convertedDate = dateFormat.parse(year + month + "01");
+    Calendar c = Calendar.getInstance();
+    c.setTime(convertedDate);
+    c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+    return c.get(Calendar.DAY_OF_MONTH) + "";
   }
+
 }

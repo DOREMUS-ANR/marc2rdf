@@ -78,15 +78,22 @@ public class Vocabulary {
         Statement s = iter.nextStatement();
 
         // System.out.println("FOUND " + key + " --> " + value);
-        if (s.getPredicate().toString().equals("http://www.cidoc-crm.org/cidoc-crm/P1_is_identified_by")) {
+        if (s.getPredicate().toString().equals("http://www.cidoc-crm.org/cidoc-crm/P102_has_title")) {
+          //FIXME this is a workaround!
+          // genres in the title should be manteined
+        } else if (s.getPredicate().toString().equals("http://www.cidoc-crm.org/cidoc-crm/P1_is_identified_by")) {
           // replace the whole node
           StmtIterator parentIter = model.listStatements(new SimpleSelector(null, null, s.getSubject()));
           int howManyIteration = 0;
           while (parentIter.hasNext()) {
             Statement ps = parentIter.nextStatement();
 
-            model.add(ps.getSubject(), ps.getPredicate(), value);
             statementsToRemove.add(ps);
+            StmtIterator subjIter = ps.getObject().asResource().listProperties();
+            while (subjIter.hasNext()) {
+              statementsToRemove.add(subjIter.nextStatement());
+            }
+            model.add(ps.getSubject(), ps.getPredicate(), value);
 
             howManyIteration++;
           }
@@ -94,13 +101,10 @@ public class Vocabulary {
             System.out.println("Converter.link2Vocabulary | Exactly one iteration expected. Please check.");
         } else {
           // replace only the literal
+          statementsToRemove.add(s);
           model.add(s.getSubject(), s.getPredicate(), value);
         }
 
-
-        StmtIterator subjIter = s.getSubject().listProperties();
-        while (subjIter.hasNext())
-          statementsToRemove.add(subjIter.nextStatement());
       }
     }
     model.remove(statementsToRemove);
