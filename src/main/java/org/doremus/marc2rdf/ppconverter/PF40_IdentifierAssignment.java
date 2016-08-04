@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
@@ -15,8 +16,6 @@ import java.net.URISyntaxException;
  * Correspond à l'attribution d'identifiant pour l'oeuvre
  ***/
 public class PF40_IdentifierAssignment {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-
   private Model model;
   private URI uriF40;
   private final Resource F40;
@@ -36,7 +35,7 @@ public class PF40_IdentifierAssignment {
   private void compute() {
     /**************************** Schéma général : agence ***********************************/
     // TODO Create the resource of Philarmonie ?
-    F40.addProperty(model.createProperty(cidoc + "P14_carried_out_by"), model.createResource("http://data.doremus.org/Philharmonie_de_Paris"));
+    F40.addProperty(CIDOC.P14_carried_out_by, model.createResource("http://data.doremus.org/Philharmonie_de_Paris"));
 
     /**************************** Work: identifier assignment (Identifier) ******************/
     F40.addProperty(FRBROO.R46_assigned, getIdentifier()); // L'identifiant de l'oeuvre
@@ -44,12 +43,12 @@ public class PF40_IdentifierAssignment {
 
     //TODO check this (double P2)
     /**************************** Work: identifier assignment (type) ************************/
-    F40.addProperty(model.createProperty(cidoc + "P2_has_Type"), "N° de notice"); // "N° de notice" par défaut pour toutes les notices
+    F40.addProperty(CIDOC.P2_has_type, "N° de notice"); // "N° de notice" par défaut pour toutes les notices
 
     /**************************** Work: was assigned by *************************************/
     String typeTitle = getTypeTitle();
     if (typeTitle != null)
-      F40.addProperty(model.createProperty(cidoc + "P2_has_Type"), model.createLiteral(getTypeTitle(), "fr"));
+      F40.addProperty(CIDOC.P2_has_type, model.createLiteral(getTypeTitle(), "fr"));
 
     /**************************** Schéma général : règles ***********************************/
     String rule = getRule();

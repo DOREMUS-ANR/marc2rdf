@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.main;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SKOS;
+import org.doremus.ontology.CIDOC;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,10 +79,10 @@ public class Vocabulary {
         Statement s = iter.nextStatement();
 
         // System.out.println("FOUND " + key + " --> " + value);
-        if (s.getPredicate().toString().equals("http://www.cidoc-crm.org/cidoc-crm/P102_has_title")) {
+        if (s.getPredicate().equals(CIDOC.P102_has_title)) {
           //FIXME this is a workaround!
           // genres in the title should be manteined
-        } else if (s.getPredicate().toString().equals("http://www.cidoc-crm.org/cidoc-crm/P1_is_identified_by")) {
+        } else if (s.getPredicate().equals(CIDOC.P1_is_identified_by)) {
           // replace the whole node
           StmtIterator parentIter = model.listStatements(new SimpleSelector(null, null, s.getSubject()));
           int howManyIteration = 0;

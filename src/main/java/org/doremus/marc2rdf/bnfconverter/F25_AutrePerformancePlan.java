@@ -11,7 +11,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class F25_AutrePerformancePlan {
-
   private final Resource F25;
   private Model modelF25 = ModelFactory.createDefaultModel();
   private URI uriF25;

@@ -8,6 +8,7 @@ import org.apache.jena.vocabulary.XSD;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
@@ -16,7 +17,6 @@ import java.net.URISyntaxException;
 
 public class BNF2RDF {
   public static final MarcXmlHandler.MarcXmlHandlerBuilder bnfXmlHandlerBuilder = new MarcXmlHandler.MarcXmlHandlerBuilder();
-  public static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
 
 
   public static Model convert(String file) throws URISyntaxException, IOException {
@@ -31,7 +31,7 @@ public class BNF2RDF {
     }
 
     model.setNsPrefix("mus", MUS.getURI());
-    model.setNsPrefix("cidoc-crm", cidoc);
+    model.setNsPrefix("ecrm", CIDOC.getURI());
     model.setNsPrefix("frbroo", FRBROO.getURI());
     model.setNsPrefix("xsd", XSD.getURI());
     model.setNsPrefix("dcterms", DCTerms.getURI());

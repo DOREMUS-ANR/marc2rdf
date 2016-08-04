@@ -7,6 +7,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
@@ -17,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PF31_AutrePerformance {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   private static final String noteRegex = "\\. ((Editeur|(Premi|1)\u00e8re \u00e9dition|Publication|(Premi|1)ere publication).+)";
 
   private Model model;
@@ -36,7 +36,7 @@ public class PF31_AutrePerformance {
 
     /**************************** Performance: 1ère exécution *******************************/
     for (String note : getNote())
-      F31.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
+      F31.addProperty(CIDOC.P3_has_note, note);
   }
 
   public PF31_AutrePerformance add(PF25_AutrePerformancePlan plan) {

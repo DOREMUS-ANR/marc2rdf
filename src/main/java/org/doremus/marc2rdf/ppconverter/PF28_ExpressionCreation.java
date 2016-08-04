@@ -11,6 +11,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PF28_ExpressionCreation {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
 
   private Model model;
@@ -43,33 +43,33 @@ public class PF28_ExpressionCreation {
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateMachine = getDateMachine();
     if (dateMachine != null && !dateMachine.isEmpty()) {
-      F28.addProperty(model.createProperty(cidoc + "P4_has_time_span"), model.createResource()
-        .addProperty(RDF.type, model.createResource(cidoc + "E52_Time_Span"))
-        .addProperty(model.createProperty(cidoc + "P82_at_some_time_within"),
+      F28.addProperty(CIDOC.P4_has_time_span, model.createResource()
+        .addProperty(RDF.type, CIDOC.E52_Time_Span)
+        .addProperty(CIDOC.P82_at_some_time_within,
           ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
     }
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateText = getDateText();
     if (dateText != null && !dateText.isEmpty())
       // TODO check: too generic?
-      F28.addProperty(model.createProperty(cidoc + "P3_has_note"), dateText);
+      F28.addProperty(CIDOC.P3_has_note, dateText);
 
     /**************************** Work: Period of the work **********************************/
     String period = getPeriod();
     if (period != null) {
-      F28.addProperty(model.createProperty(cidoc + "P10_falls_within"), model.createResource()
-        .addProperty(RDF.type, model.createResource(cidoc + "E4_Period"))
-        .addProperty(model.createProperty(cidoc + "P1_is_identified_by"), getPeriod()));
+      F28.addProperty(CIDOC.P10_falls_within, model.createResource()
+        .addProperty(RDF.type, CIDOC.E4_Period)
+        .addProperty(CIDOC.P1_is_identified_by, getPeriod()));
     }
 
     /**************************** Work: is created by ***************************************/
     for (String composer : getComposer()) {
-      F28.addProperty(model.createProperty(cidoc + "P9_consists_of"), model.createResource()
-        .addProperty(RDF.type, model.createResource(cidoc + "E7_activity"))
+      F28.addProperty(CIDOC.P9_consists_of, model.createResource()
+        .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
-        .addProperty(model.createProperty(cidoc + "P14_carried_out_by"), model.createResource()
-          .addProperty(RDF.type, model.createResource(cidoc + "E21_Person"))
-          .addProperty(model.createProperty(cidoc + "P131_is_identified_by"), composer)
+        .addProperty(CIDOC.P14_carried_out_by, model.createResource()
+          .addProperty(RDF.type, CIDOC.E21_Person)
+          .addProperty(CIDOC.P131_is_identified_by, composer)
         ));
     }
   }

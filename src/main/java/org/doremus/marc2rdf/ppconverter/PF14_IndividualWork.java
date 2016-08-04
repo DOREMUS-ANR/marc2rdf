@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
@@ -12,8 +13,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class PF14_IndividualWork {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-
   private Model model;
   private URI uriF14;
   private Resource F14;
@@ -55,7 +54,7 @@ public class PF14_IndividualWork {
 
   public PF14_IndividualWork add(PF50_ControlledAccessPoint accessPoint) {
     /**************************** Identification de l'œuvre *********************************/
-    F14.addProperty(model.createProperty(cidoc + "P1_is_identified_by"), accessPoint.asResource());
+    F14.addProperty(CIDOC.P1_is_identified_by, accessPoint.asResource());
 //    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), F14);
     return this;
   }

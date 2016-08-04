@@ -10,6 +10,7 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
@@ -22,8 +23,6 @@ import java.util.List;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class F22_SelfContainedExpression {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-
   private final Record record;
   private Model model;
   private URI uriF22;
@@ -51,21 +50,20 @@ public class F22_SelfContainedExpression {
 
     /**************************** Expression: Context for the expression ********************/
     for (String dedication : getDedicace()) {
-      F22.addProperty(model.createProperty(cidoc + "P67_refers_to"), model.createResource()
+      F22.addProperty(CIDOC.P67_refers_to, model.createResource()
         .addProperty(RDF.type, MUS.M15_Dedication)
-        .addProperty(model.createProperty(cidoc + "P3_has_note"), dedication));
+        .addProperty(CIDOC.P3_has_note, dedication));
     }
 
     /**************************** Expression: Title *****************************************/
-    for (Literal title : getTitle())
-      F22.addProperty(model.createProperty(cidoc + "P102_has_title"), title);
+    for (Literal title : getTitle()) F22.addProperty(CIDOC.P102_has_title, title);
 
 
     /**************************** Expression: Catalogue *************************************/
     for (String catalog : getCatalog()) {
       Resource M1CatalogStatement = model.createResource()
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
-        .addProperty(model.createProperty(cidoc + "P3_has_note"), catalog);
+        .addProperty(CIDOC.P3_has_note, catalog);
 
       String[] catalogParts = catalog.split(" ");
 
@@ -80,7 +78,7 @@ public class F22_SelfContainedExpression {
     if (opus != null) {
       Resource M2OpusStatement = model.createResource()
         .addProperty(RDF.type, MUS.M2_Opus_Statement)
-        .addProperty(model.createProperty(cidoc + "P3_has_note"), opus);
+        .addProperty(CIDOC.P3_has_note, opus);
 
       String[] opusParts = opus.split(",");
       M2OpusStatement.addProperty(MUS.U42_has_opus_number, opusParts[0].replaceAll("Op\\.", "").trim());
@@ -93,14 +91,13 @@ public class F22_SelfContainedExpression {
     }
 
     /**************************** Expression: ***********************************************/
-    for (String note : getNote())
-      F22.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
+    for (String note : getNote()) F22.addProperty(CIDOC.P3_has_note, note);
 
     /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
       F22.addProperty(MUS.U11_has_key, model.createResource()
         .addProperty(RDF.type, MUS.M4_Key)
-        .addProperty(model.createProperty(cidoc + "P1_is_identified_by"), model.createLiteral(key, "fr"))
+        .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(key, "fr"))
       );
     }
 
@@ -125,7 +122,7 @@ public class F22_SelfContainedExpression {
         M23CastingDetail.addProperty(MUS.U1_has_intended_medium_of_performance,
           model.createResource()
             .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
-            .addProperty(model.createProperty(cidoc + "P1_is_identified_by"), mopLiteral)
+            .addProperty(CIDOC.P1_is_identified_by, mopLiteral)
         );
 
         M6Casting.addProperty(MUS.U23_has_casting_detail, M23CastingDetail);

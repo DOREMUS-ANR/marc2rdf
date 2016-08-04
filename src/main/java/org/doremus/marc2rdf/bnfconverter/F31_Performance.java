@@ -7,6 +7,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
@@ -15,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class F31_Performance {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-
   private Model model;
   private final Resource F31;
   private URI uriF31;
@@ -41,7 +40,7 @@ public class F31_Performance {
     /**************************** Performance: 1ère exécution *******************************/
     // FIXME this should create different performances
     for (String note : getNote())
-      F31.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
+      F31.addProperty(CIDOC.P3_has_note, note);
   }
 
   public F31_Performance add(F25_PerformancePlan plan) {

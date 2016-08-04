@@ -8,6 +8,7 @@ import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
@@ -20,8 +21,6 @@ import java.util.List;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class PF22_SelfContainedExpression {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
-
   private final Resource F22;
   private Record record;
   private Model model;
@@ -41,13 +40,13 @@ public class PF22_SelfContainedExpression {
   private void compute() {
     /**************************** Expression: Title *****************************************/
     for (String title : getTitle())
-      F22.addProperty(model.createProperty(cidoc + "P102_has_title"), title);
+      F22.addProperty(CIDOC.P102_has_title, title);
 
     /**************************** Expression: Catalogue *************************************/
     for (String catalog : getCatalog()) {
       Resource M1CatalogStatement = model.createResource()
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
-        .addProperty(model.createProperty(cidoc + "P3_has_note"), catalog);
+        .addProperty(CIDOC.P3_has_note, catalog);
 
       String[] catalogParts = catalog.split(" ");
 
@@ -62,7 +61,7 @@ public class PF22_SelfContainedExpression {
     for (String opus : getOpus()) {
       Resource M2OpusStatement = model.createResource()
         .addProperty(RDF.type, MUS.M2_Opus_Statement)
-        .addProperty(model.createProperty(cidoc + "P3_has_note"), opus);
+        .addProperty(CIDOC.P3_has_note, opus);
 
       // Op. 22 no 1
       // Op. 22, no 1
@@ -79,13 +78,13 @@ public class PF22_SelfContainedExpression {
 
     /**************************** Expression: ***********************************************/
     for (String note : getNote())
-      F22.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
+      F22.addProperty(CIDOC.P3_has_note, note);
 
     /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
       F22.addProperty(MUS.U11_has_key, model.createResource()
         .addProperty(RDF.type, MUS.M4_Key)
-        .addProperty(model.createProperty(cidoc + "P1_is_identified_by"), model.createLiteral(key, "fr")) // Le nom du genre est toujours en français
+        .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(key, "fr")) // Le nom du genre est toujours en français
       );
     }
 
@@ -94,7 +93,7 @@ public class PF22_SelfContainedExpression {
     for (String genre : genres) {
       F22.addProperty(MUS.U12_has_genre, model.createResource()
         .addProperty(RDF.type, MUS.M5_Genre)
-        .addProperty(model.createProperty(cidoc + "P1_is_identified_by"), model.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
+        .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
       );
     }
     /**************************** Expression: Order Number **********************************/
@@ -106,7 +105,7 @@ public class PF22_SelfContainedExpression {
     for (String castingString : getCasting()) {
       Resource M6Casting = model.createResource();
       M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting);
-      M6Casting.addProperty(model.createProperty(cidoc + "P3_has_note"), castingString);
+      M6Casting.addProperty(CIDOC.P3_has_note, castingString);
 
       F22.addProperty(MUS.U13_has_intended_casting, M6Casting);
     }
@@ -114,7 +113,7 @@ public class PF22_SelfContainedExpression {
 
   public PF22_SelfContainedExpression add(PF50_ControlledAccessPoint accessPoint) {
     /**************************** Expression: Point d'Accès ********************************/
-    F22.addProperty(model.createProperty(cidoc + "P1_is_identified_by"), accessPoint.asResource());
+    F22.addProperty(CIDOC.P1_is_identified_by, accessPoint.asResource());
 //    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), F22);
     return this;
   }

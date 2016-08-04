@@ -11,7 +11,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class PF25_PerformancePlan {
-
   private Model modelF25;
   private URI uriF25;
   private Resource F25;

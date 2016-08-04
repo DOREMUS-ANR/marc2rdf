@@ -7,13 +7,13 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class F30_PublicationEvent {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   private final Record record;
 
   private Model modelF30 = ModelFactory.createDefaultModel();
@@ -33,7 +33,7 @@ public class F30_PublicationEvent {
 
     /**************************** Expression: 1ère publication *************************/
     String edition = getNote();
-    if (edition != null) F30.addProperty(modelF30.createProperty(cidoc + "P3_has_note"), edition);
+    if (edition != null) F30.addProperty(CIDOC.P3_has_note, edition);
 
     return modelF30;
   }

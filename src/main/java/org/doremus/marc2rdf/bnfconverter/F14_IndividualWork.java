@@ -44,8 +44,7 @@ public class F14_IndividualWork {
   public F14_IndividualWork add(F30_PublicationEvent publication) {
     /**************************** Work: had princeps publication ****************************/
     F14.addProperty(MUS.U4_had_princeps_publication, publication.asResource());
-    publication.asResource().addProperty(MUS.U4i_was_princeps_publication_of, F14);
-
+//    publication.asResource().addProperty(MUS.U4i_was_princeps_publication_of, F14);
     return this;
   }
 

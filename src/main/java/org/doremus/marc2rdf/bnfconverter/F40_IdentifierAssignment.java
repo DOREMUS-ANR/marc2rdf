@@ -8,6 +8,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
@@ -17,7 +18,6 @@ import java.net.URISyntaxException;
  * Correspond à l'attribution d'identifiant pour l'oeuvre
  ***/
 public class F40_IdentifierAssignment {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   private Model model = ModelFactory.createDefaultModel();
   private final Record record;
   private URI uriF40;
@@ -36,7 +36,7 @@ public class F40_IdentifierAssignment {
     /**************************** Schéma général : agence ***********************************/
     URI agency = getBiblioAgency();
     if (agency != null)
-      F40.addProperty(model.createProperty(cidoc + "P14_carried_out_by"), model.createResource(agency.toString()));
+      F40.addProperty(CIDOC.P14_carried_out_by, model.createResource(agency.toString()));
 
     /**************************** Schéma général : règles ***********************************/
     F40.addProperty(FRBROO.R52_used_rule, "NF Z 44-079 (Novembre 1993) - Documentation - Catalogage- Forme et structure des vedettes titres musicaux");
@@ -47,24 +47,21 @@ public class F40_IdentifierAssignment {
   public F40_IdentifierAssignment add(F22_SelfContainedExpression expression) {
     /**************************** Schéma général : Attribution ******************************/
     F40.addProperty(FRBROO.R45_assigned_to, expression.asResource());
-    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
-
+//    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }
 
   public F40_IdentifierAssignment add(F14_IndividualWork work) {
     /**************************** Work: was assigned by *************************************/
     F40.addProperty(FRBROO.R45_assigned_to, work.asResource());
-    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
-
+//    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }
 
   public F40_IdentifierAssignment add(F15_ComplexWork work) {
     /**************************** Work: was assigned by *************************************/
     F40.addProperty(FRBROO.R45_assigned_to, work.asResource());
-    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
-
+//    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }
 

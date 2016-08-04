@@ -37,16 +37,14 @@ public class F15_ComplexWork {
   public F15_ComplexWork add(F22_SelfContainedExpression f22) {
     /**************************** Work: has representative Expression ***********************/
     F15.addProperty(FRBROO.R40_has_representative_expression, f22.asResource());
-    f22.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R40i_is_representative_expression_of"), F15);
-
+//    f22.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R40i_is_representative_expression_of"), F15);
     return this;
   }
 
   public F15_ComplexWork add(F14_IndividualWork f14) {
     /**************************** Work: has member  (Work) **********************************/
     F15.addProperty(FRBROO.R10_has_member, f14.toString());
-    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R10i_is_member_of"), F15);
-
+//    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R10i_is_member_of"), F15);
     return this;
   }
 }

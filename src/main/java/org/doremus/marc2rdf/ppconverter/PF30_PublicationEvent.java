@@ -7,6 +7,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
@@ -17,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PF30_PublicationEvent {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   private static final String noteRegex = "\\. ((Editeur|(Premi|1)\u00e8re \u00e9dition|Publication|(Premi|1)ere publication).+)";
 
   private Model modelF30;
@@ -35,7 +35,7 @@ public class PF30_PublicationEvent {
 
     /**************************** Expression: 1ère publication *************************/
     for (String note : getNote()) {
-      F30.addProperty(modelF30.createProperty(cidoc + "P3_has_note"), note);
+      F30.addProperty(CIDOC.P3_has_note, note);
     }
   }
 

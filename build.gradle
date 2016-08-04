@@ -75,9 +75,7 @@ task schemagenFrbroo(type: UrlSchemaGen) {
 }
 
 task schemagenCidoc(type: UrlSchemaGen) {
-    // FIXME the namespace is different from what we have in files
-    // see https://github.com/DOREMUS-ANR/doremus-ontology/issues/3
-    input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/FRBRoo-v2.4-Biblissima-2016-04-17.owl')
+    input = uri('http://erlangen-crm.org/current/')
     outputDirectory = file('src/main/java/')
     packageName = 'org.doremus.ontology'
     classNameSuffix = 'CIDOC'

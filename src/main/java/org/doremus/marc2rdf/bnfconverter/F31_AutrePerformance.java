@@ -7,6 +7,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class F31_AutrePerformance {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   private Model model;
   private final Resource F31;
   private URI uriF31;
@@ -36,7 +36,7 @@ public class F31_AutrePerformance {
     /**************************** Performance: 1ère exécution *******************************/
     // FIXME this should create different performances
     for (String note : getNote())
-      F31.addProperty(model.createProperty(cidoc + "P3_has_note"), note);
+      F31.addProperty(CIDOC.P3_has_note, note);
 
     return model;
   }
@@ -66,7 +66,7 @@ public class F31_AutrePerformance {
   public F31_AutrePerformance add(F25_AutrePerformancePlan plan) {
     /**************************** exécution du plan ******************************************/
     F31.addProperty(FRBROO.R25_performed, plan.asResource());
-    plan.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);//
+//    plan.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);//
     return this;
   }
 }

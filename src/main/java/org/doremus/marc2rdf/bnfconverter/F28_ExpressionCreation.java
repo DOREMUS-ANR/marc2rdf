@@ -12,6 +12,7 @@ import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
@@ -25,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 public class F28_ExpressionCreation {
-  private static final String cidoc = "http://www.cidoc-crm.org/cidoc-crm/";
   private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
 
   private Record record;
@@ -51,24 +51,24 @@ public class F28_ExpressionCreation {
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateMachine = getDateMachine();
     if (dateMachine != null) {
-      F28.addProperty(model.createProperty(cidoc + "P4_has_time_span"), model.createResource()
-        .addProperty(RDF.type, model.createResource(cidoc + "E52_Time_Span"))
-        .addProperty(model.createProperty(cidoc + "P82_at_some_time_within"), ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
+      F28.addProperty(CIDOC.P4_has_time_span, model.createResource()
+        .addProperty(RDF.type, model.createResource(CIDOC.E52_Time_Span))
+        .addProperty(CIDOC.P82_at_some_time_within, ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
     }
 
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateText = getDateText();
     // TODO check! maybe this info could be better saved
-    if (dateText != null) F28.addProperty(model.createProperty(cidoc + "P3_has_note"), dateText);
+    if (dateText != null) F28.addProperty(CIDOC.P3_has_note, dateText);
 
     /**************************** Work: is created by ***************************************/
     for (String composer : getComposer()) {
-      F28.addProperty(model.createProperty(cidoc + "P9_consists_of"), model.createResource()
-        .addProperty(RDF.type, model.createResource(cidoc + "E7_activity"))
+      F28.addProperty(CIDOC.P9_consists_of, model.createResource()
+        .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
-        .addProperty(model.createProperty(cidoc + "P14_carried_out_by"), model.createResource()
-          .addProperty(RDF.type, model.createResource(cidoc + "E21_Person"))
-          .addProperty(model.createProperty(cidoc + "P131_is_identified_by"), composer)
+        .addProperty(CIDOC.P14_carried_out_by, model.createResource()
+          .addProperty(RDF.type, CIDOC.E21_Person)
+          .addProperty(CIDOC.P131_is_identified_by, composer)
         )
       );
     }
@@ -85,14 +85,14 @@ public class F28_ExpressionCreation {
   public F28_ExpressionCreation add(F22_SelfContainedExpression expression) {
     /**************************** Expression: created ***************************************/
     F28.addProperty(FRBROO.R17_created, expression.asResource());
-    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
+//    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
     return this;
   }
 
   public F28_ExpressionCreation add(F14_IndividualWork f14) {
     /**************************** Work: created a realisation *******************************/
     F28.addProperty(FRBROO.R19_created_a_realisation_of, f14.asResource());
-    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
+//    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
     return this;
   }
 
