@@ -68,7 +68,7 @@ public class F28_ExpressionCreation {
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, model.createResource()
           .addProperty(RDF.type, CIDOC.E21_Person)
-          .addProperty(CIDOC.P131_is_identified_by, composer)
+          .addProperty(CIDOC.P1_is_identified_by, composer)
         )
       );
     }

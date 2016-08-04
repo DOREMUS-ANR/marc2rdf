@@ -69,7 +69,7 @@ public class PF28_ExpressionCreation {
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, model.createResource()
           .addProperty(RDF.type, CIDOC.E21_Person)
-          .addProperty(CIDOC.P131_is_identified_by, composer)
+          .addProperty(CIDOC.P1_is_identified_by, composer)
         ));
     }
   }
@@ -169,7 +169,9 @@ public class PF28_ExpressionCreation {
     List<DataField> fields = record.getDatafieldsByCode("700");
     for (DataField field : record.getDatafieldsByCode("701")) {
       //prendre en compte aussi le 701 que si son $4 a la valeur "230"
+      if(!"230".equals(field.getSubfield('4').getData()))System.out.println(field.getSubfield('4').getData());
       if (field.isCode('4') && field.getSubfield('4').getData().equals("230")) {
+        //230 is the composer
         fields.add(field);
       }
     }
