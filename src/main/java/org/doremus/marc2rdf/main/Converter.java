@@ -183,7 +183,6 @@ public class Converter {
       if (outputFolderPath != null && !outputFolderPath.isEmpty()) {
         // default folder specified, write there
         fileName = Paths.get(outputFolderPath, inputFile.getName().replaceFirst(".xml", ".marc")).toFile();
-        System.out.println(fileName);
       } else {
         // write in the same folder, in the "RDF" subfolder
         fileName = Paths.get(inputFile.getParentFile().getAbsolutePath(), "RDF", inputFile.getName().replaceFirst(".xml", ".marc")).toFile();

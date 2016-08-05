@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
@@ -30,4 +31,11 @@ public class PF25_PerformancePlan {
   public Resource asResource() {
     return F25;
   }
+
+  public PF25_PerformancePlan add(PF22_SelfContainedExpression f22) {
+    F25.addProperty(CIDOC.P165_incorporates, f22.asResource());
+//    f22.asResource().addProperty(model.createProperty(cidoc + "P165i_is_incorporated_in"), F25);
+    return this;
+  }
+
 }

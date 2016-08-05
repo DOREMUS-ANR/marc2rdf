@@ -14,33 +14,34 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class F31_Performance {
+  private static final String performanceRegex = "([eé]xécution|représentation) (.+)?:";
+
   private Model model;
   private final Resource F31;
   private URI uriF31;
-  private Record record;
+  private boolean isPremiere;
 
-  public F31_Performance(Record record) throws URISyntaxException {
-    this.record = record;
+  public F31_Performance(String note) throws URISyntaxException {
     this.model = ModelFactory.createDefaultModel();
     this.uriF31 = ConstructURI.build("Performance", "F31");
 
+    //check if it is a Premiere
+    Pattern p = Pattern.compile(performanceRegex);
+    Matcher m = p.matcher(note);
+    m.find();
+    isPremiere = m.group(2) == null;
+
     F31 = model.createResource(uriF31.toString());
     F31.addProperty(RDF.type, FRBROO.F31_Performance);
-    //FIXME create connection between Performance and Expression/Work
-    compute();
+    F31.addProperty(CIDOC.P3_has_note, note);
   }
 
   public Resource asResource() {
     return F31;
-  }
-
-  private void compute() {
-    /**************************** Performance: 1ère exécution *******************************/
-    // FIXME this should create different performances
-    for (String note : getNote())
-      F31.addProperty(CIDOC.P3_has_note, note);
   }
 
   public F31_Performance add(F25_PerformancePlan plan) {
@@ -54,22 +55,23 @@ public class F31_Performance {
     return model;
   }
 
-  /***********************************
-   * L'exécution
-   ***********************************/
-  private List<String> getNote() {
+  public static List<String> getPerformances(Record record) {
     List<String> notes = new ArrayList<>();
+    Pattern p = Pattern.compile(performanceRegex);
+
 
     for (DataField field : record.getDatafieldsByCode("600")) {
       if (!field.isCode('a')) continue;
 
       String note = field.getSubfield('a').getData();
-      String[] identifiers = {"exécution", "éxécution", "représentation"};
+      Matcher m = p.matcher(note);
 
-      for (String id : identifiers) {
-        if (note.contains(id + " : ")) notes.add(note);
-      }
+      if (m.find())  notes.add(note);
     }
     return notes;
+  }
+
+  public boolean isPremiere() {
+    return isPremiere;
   }
 }

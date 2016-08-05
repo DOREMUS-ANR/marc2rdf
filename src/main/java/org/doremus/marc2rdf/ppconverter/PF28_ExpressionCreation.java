@@ -80,13 +80,7 @@ public class PF28_ExpressionCreation {
     return this;
   }
 
-  public PF28_ExpressionCreation add(PF25_AutrePerformancePlan plan) {
-    /**************************** création d'une expression de plan d'exécution *************/
-    F28.addProperty(FRBROO.R17_created, plan.asResource());
-    return this;
-  }
-
-  public PF28_ExpressionCreation add(PF22_SelfContainedExpression expression) {
+   public PF28_ExpressionCreation add(PF22_SelfContainedExpression expression) {
     /**************************** Expression: created ***************************************/
     F28.addProperty(FRBROO.R17_created, expression.asResource());
     // expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
@@ -169,7 +163,6 @@ public class PF28_ExpressionCreation {
     List<DataField> fields = record.getDatafieldsByCode("700");
     for (DataField field : record.getDatafieldsByCode("701")) {
       //prendre en compte aussi le 701 que si son $4 a la valeur "230"
-      if(!"230".equals(field.getSubfield('4').getData()))System.out.println(field.getSubfield('4').getData());
       if (field.isCode('4') && field.getSubfield('4').getData().equals("230")) {
         //230 is the composer
         fields.add(field);

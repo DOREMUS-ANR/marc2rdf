@@ -23,20 +23,14 @@ public class PF30_PublicationEvent {
   private Model modelF30;
   private final Resource F30;
   private URI uriF30;
-  private final Record record;
 
-  public PF30_PublicationEvent(Record record) throws URISyntaxException {
-    this.record = record;
+  public PF30_PublicationEvent(String note) throws URISyntaxException {
     this.modelF30 = ModelFactory.createDefaultModel();
     this.uriF30 = ConstructURI.build("Publication_Event", "F30");
 
     F30 = modelF30.createResource(uriF30.toString());
     F30.addProperty(RDF.type, FRBROO.F30_Publication_Event);
-
-    /**************************** Expression: 1ère publication *************************/
-    for (String note : getNote()) {
-      F30.addProperty(CIDOC.P3_has_note, note);
-    }
+    F30.addProperty(CIDOC.P3_has_note, note);
   }
 
   public Model getModel() throws URISyntaxException {
@@ -55,26 +49,22 @@ public class PF30_PublicationEvent {
     return this;
   }
 
-  /***********************************
-   * La note
-   ***********************************/
-  private List<String> getNote() {
-    if (!record.isType("UNI:100")) return new ArrayList<>();
-
-    List<String> results = new ArrayList<>();
-    Pattern p = Pattern.compile(noteRegex);
-
-    for (DataField field : record.getDatafieldsByCode("919")) {
-      if (!field.isCode('a')) continue;
-
-      String note = field.getSubfield('a').getData();
-      Matcher m = p.matcher(note);
-      if (m.find()) results.add(m.group(1));
-    }
-    return results;
-  }
-
   public Resource asResource() {
     return F30;
+  }
+
+  public static String getEditionPrinceps(Record record) {
+    if (!record.isType("UNI:100")) return null;
+
+    // TODO Check if this info is also on 909
+    DataField field = record.getDatafieldByCode("919");
+    if (field == null || !field.isCode('a')) return null;
+
+    String note = field.getSubfield('a').getData();
+    Pattern p = Pattern.compile(noteRegex);
+    Matcher m = p.matcher(note);
+
+    if (m.find()) return m.group(1);
+    else return null;
   }
 }

@@ -200,6 +200,7 @@ public class PF22_SelfContainedExpression {
     List<String> results = new ArrayList<>();
 
     List<DataField> opusFields = record.getDatafieldsByCode("909");
+    // TODO code 919 has contents used also elsewhere
     opusFields.addAll(record.getDatafieldsByCode("919"));
 
     for (DataField field : opusFields) {
