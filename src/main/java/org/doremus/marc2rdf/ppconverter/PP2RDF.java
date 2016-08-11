@@ -50,8 +50,10 @@ public class PP2RDF {
       } else if (r.isType("UNI:100")) {
         // Si c'est une notice d'oeuvre
         String idTUM = getIdTum(r);
+
         // Convertir le TUM correspondant
-        model.add(PP2RDF.convert(getTUM(folderTUMs, idTUM).getAbsolutePath()));
+        MarcXmlReader tumReader = new MarcXmlReader(getTUM(folderTUMs, idTUM).getAbsolutePath(), PP2RDF.ppXmlHandlerBuilder);
+        new RecordConverter(tumReader.getRecords().get(0), model, r.getIdentifier());
       } else {
         // TODO other notice types?
         System.out.println("Skipping not recognized PP notice type " + r.getType() + " for file " + file);

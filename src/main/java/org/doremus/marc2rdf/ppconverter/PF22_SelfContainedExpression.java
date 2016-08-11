@@ -21,10 +21,10 @@ import java.util.List;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class PF22_SelfContainedExpression extends DoremusResource {
-  public PF22_SelfContainedExpression(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    super(record);
+  public PF22_SelfContainedExpression(Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record, identifier);
 
-    this.uri = ConstructURI.build("philharmonie", "F22", "Self_Contained_Expression", record.getIdentifier());
+    this.uri = ConstructURI.build("philharmonie", "F22", "Self_Contained_Expression", identifier);
 
     this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);

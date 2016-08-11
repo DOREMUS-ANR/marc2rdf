@@ -23,8 +23,8 @@ public class PF31_Performance extends DoremusResource {
 
   private boolean isPremiere;
 
-  public PF31_Performance(String note, Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    super(record);
+  public PF31_Performance(String note, Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record, identifier);
 
     //check if it is a Premiere
     Pattern p = Pattern.compile(frenchCreationRegex);
@@ -32,7 +32,7 @@ public class PF31_Performance extends DoremusResource {
     isPremiere = !m.find();
     char flag = isPremiere ? 'p' : 'f';
 
-    this.identifier = record.getIdentifier() + flag;
+    this.identifier += flag;
     this.uri = ConstructURI.build("philharmonie", "F31", "Performance", this.identifier);
 
     this.resource = model.createResource(this.uri.toString());

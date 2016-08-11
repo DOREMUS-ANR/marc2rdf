@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 /***
  * Correspond à l'attribution d'identifiant pour l'oeuvre
  ***/
-public class PF40_IdentifierAssignment extends DoremusResource{
+public class PF40_IdentifierAssignment extends DoremusResource {
   public PF40_IdentifierAssignment(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
     super(record);
 
@@ -31,13 +31,12 @@ public class PF40_IdentifierAssignment extends DoremusResource{
     // TODO Create the resource of Philarmonie ?
     this.resource.addProperty(CIDOC.P14_carried_out_by, model.createResource("http://data.doremus.org/Philharmonie_de_Paris"));
 
-    /**************************** Work: identifier assignment (Identifier) ******************/
-    this.resource.addProperty(FRBROO.R46_assigned, getIdentifier()); // L'identifiant de l'oeuvre
-
-
-    //TODO check this (double P2)
-    /**************************** Work: identifier assignment (type) ************************/
-    this.resource.addProperty(CIDOC.P2_has_type, "N° de notice"); // "N° de notice" par défaut pour toutes les notices
+//    /**************************** Work: identifier assignment (Identifier) ******************/
+//    this.resource.addProperty(FRBROO.R46_assigned, record.getIdentifier()); // L'identifiant de l'oeuvre
+//
+//    //TODO check this (double P2)
+//    /**************************** Work: identifier assignment (type) ************************/
+//    this.resource.addProperty(CIDOC.P2_has_type, "N° de notice"); // "N° de notice" par défaut pour toutes les notices
 
     /**************************** Work: was assigned by *************************************/
     String typeTitle = getTypeTitle();

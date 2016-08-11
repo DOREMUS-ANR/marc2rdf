@@ -15,10 +15,10 @@ import java.security.NoSuchAlgorithmException;
  ***/
 public class PF15_ComplexWork extends DoremusResource{
 
-  public PF15_ComplexWork(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    super(record);
+  public PF15_ComplexWork(Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record, identifier);
 
-    this.uri = ConstructURI.build("philharmonie", "F15", "Complex_Work", record.getIdentifier());
+    this.uri = ConstructURI.build("philharmonie", "F15", "Complex_Work", identifier);
 
     this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);

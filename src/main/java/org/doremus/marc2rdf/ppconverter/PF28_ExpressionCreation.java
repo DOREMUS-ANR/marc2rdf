@@ -26,10 +26,10 @@ import java.util.List;
 public class PF28_ExpressionCreation  extends DoremusResource{
   private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
 
-  public PF28_ExpressionCreation(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    super(record);
+  public PF28_ExpressionCreation(Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record, identifier);
 
-    this.uri = ConstructURI.build("philharmonie", "F28", "Expression_Creation", record.getIdentifier());
+    this.uri = ConstructURI.build("philharmonie", "F28", "Expression_Creation", identifier);
 
     this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);

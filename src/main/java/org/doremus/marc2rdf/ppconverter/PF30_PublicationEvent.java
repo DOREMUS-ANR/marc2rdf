@@ -17,8 +17,8 @@ import java.util.regex.Pattern;
 public class PF30_PublicationEvent extends DoremusResource {
   private static final String noteRegex = "\\. ((Editeur|(Premi|1)\u00e8re \u00e9dition|Publication|(Premi|1)ere publication).+)";
 
-  public PF30_PublicationEvent(String note, Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    super(record);
+  public PF30_PublicationEvent(String note, Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record, identifier);
 
     this.uri = ConstructURI.build("philharmonie", "F30", "Publication_Event", this.identifier);
 

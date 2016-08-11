@@ -26,6 +26,11 @@ public abstract class DoremusResource {
     this.record = record;
   }
 
+  public DoremusResource(Record record, String identifier) {
+    this(identifier);
+    this.record = record;
+  }
+
 
   public Resource asResource() {
     return this.resource;

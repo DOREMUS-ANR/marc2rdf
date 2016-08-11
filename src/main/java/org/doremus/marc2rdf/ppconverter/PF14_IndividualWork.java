@@ -13,10 +13,10 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 
 public class PF14_IndividualWork extends DoremusResource {
-  public PF14_IndividualWork(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    super(record);
+  public PF14_IndividualWork(Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record, identifier);
 
-    this.uri = ConstructURI.build("philharmonie", "F14", "Individual_Work", record.getIdentifier());
+    this.uri = ConstructURI.build("philharmonie", "F14", "Individual_Work", identifier);
 
     this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F14_Individual_Work);

@@ -12,8 +12,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class PF42_RepresentativeExpressionAssignment  extends DoremusResource{
 
-  public PF42_RepresentativeExpressionAssignment(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    super(record);
+  public PF42_RepresentativeExpressionAssignment(Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record, identifier);
 
     this.uri = ConstructURI.build("philharmonie", "F42", "Representative_Expression_Assignment", this.identifier);
 

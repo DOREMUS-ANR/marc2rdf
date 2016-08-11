@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 public class RecordConverter {
   private Record record;
   private Model model;
+  private String identifier;
 
   PF22_SelfContainedExpression f22;
   PF28_ExpressionCreation f28;
@@ -17,14 +18,19 @@ public class RecordConverter {
   PF15_ComplexWork f15;
 
   public RecordConverter(Record record, Model model) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    this(record, model, record.getIdentifier());
+  }
+
+  public RecordConverter(Record record, Model model, String identifier) throws UnsupportedEncodingException, NoSuchAlgorithmException, URISyntaxException {
     this.record = record;
     this.model = model;
+    this.identifier = identifier;
 
-    f22 = new PF22_SelfContainedExpression(record);
-    f28 = new PF28_ExpressionCreation(record);
-    f14 = new PF14_IndividualWork(record);
-    f15 = new PF15_ComplexWork(record);
-    PF42_RepresentativeExpressionAssignment f42 = new PF42_RepresentativeExpressionAssignment(record);
+    f22 = new PF22_SelfContainedExpression(record, identifier);
+    f28 = new PF28_ExpressionCreation(record, identifier);
+    f14 = new PF14_IndividualWork(record, identifier);
+    f15 = new PF15_ComplexWork(record, identifier);
+    PF42_RepresentativeExpressionAssignment f42 = new PF42_RepresentativeExpressionAssignment(record, identifier);
     PF40_IdentifierAssignment f40 = new PF40_IdentifierAssignment(record);
     PF50_ControlledAccessPoint f50 = new PF50_ControlledAccessPoint(record);
 
@@ -53,7 +59,7 @@ public class RecordConverter {
     // F28 Expression Creation R19 created a realisation of F20 Performance Work R12 is realised in F25 Performance Plan
 
     for (String performance : PF31_Performance.getPerformances(record)) {
-      PF31_Performance f31 = new PF31_Performance(performance, record);
+      PF31_Performance f31 = new PF31_Performance(performance, record, identifier);
       PF25_PerformancePlan f25 = new PF25_PerformancePlan(f31.getIdentifier());
 
       f31.add(f25);
@@ -73,7 +79,7 @@ public class RecordConverter {
     String edition = PF30_PublicationEvent.getEditionPrinceps(record);
     if (edition == null) return;
 
-    PF30_PublicationEvent f30 = new PF30_PublicationEvent(edition, record);
+    PF30_PublicationEvent f30 = new PF30_PublicationEvent(edition, record, identifier);
     PF24_PublicationExpression f24 = new PF24_PublicationExpression(f30.getIdentifier());
     PF19_PublicationWork f19 = new PF19_PublicationWork(f30.getIdentifier());
 
