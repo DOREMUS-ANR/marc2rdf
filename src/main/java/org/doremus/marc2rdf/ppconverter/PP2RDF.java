@@ -16,6 +16,7 @@ import org.doremus.ontology.MUS;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 
 import static org.doremus.marc2rdf.main.Converter.properties;
 
@@ -29,7 +30,7 @@ public class PP2RDF {
       .tagLabel("UnimarcTag")
       .codeLabel("UnimarcSubfield");
 
-  public static Model convert(String file) throws URISyntaxException, IOException {
+  public static Model convert(String file) throws URISyntaxException, IOException, NoSuchAlgorithmException {
     File folderTUMs = new File(properties.getProperty("TUMFolder"));
 
     /************* Creer un modele vide **************************/
@@ -37,6 +38,7 @@ public class PP2RDF {
     Model model = ModelFactory.createDefaultModel();
     MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
 
+    boolean found = false;
     for (Record r : reader.getRecords()) {
       /******
        * Verifier si c'est une notice d'oeuvre ou un TUM
@@ -55,8 +57,10 @@ public class PP2RDF {
         System.out.println("Skipping not recognized PP notice type " + r.getType() + " for file " + file);
         continue;
       }
+      found = true;
       new RecordConverter(r, model);
     }
+    if(!found) return null;
 
     model.setNsPrefix("mus", MUS.getURI());
     model.setNsPrefix("ecrm", CIDOC.getURI());

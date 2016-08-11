@@ -3,7 +3,9 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.doremus.marc2rdf.marcparser.Record;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 
 
 public class RecordConverter {
@@ -16,17 +18,17 @@ public class RecordConverter {
   private F15_ComplexWork f15;
 
 
-  public RecordConverter(Record record, Model model) throws URISyntaxException {
+  public RecordConverter(Record record, Model model) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
     this.record = record;
     this.model = model;
 
     // Instantiate work and expression
     f22 = new F22_SelfContainedExpression(record);
     f28 = new F28_ExpressionCreation(record);
-    f14 = new F14_IndividualWork();
-    f15 = new F15_ComplexWork();
+    f14 = new F14_IndividualWork(record);
+    f15 = new F15_ComplexWork(record);
     F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
-    F42_RepresentativeExpressionAssignment f42 = new F42_RepresentativeExpressionAssignment();
+    F42_RepresentativeExpressionAssignment f42 = new F42_RepresentativeExpressionAssignment(record);
 
     addPrincepsPublication();
     addPerformances();
@@ -45,14 +47,14 @@ public class RecordConverter {
     model.add(f42.getModel());
   }
 
-  private void addPerformances() throws URISyntaxException {
+  private void addPerformances() throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
     // TODO missing F20_PerformanceWork: check mapping rules
     // F28 Expression Creation R19 created a realisation of F20 Performance Work R12 is realised in F25 Performance Plan
 
     for(String performance: F31_Performance.getPerformances(record)) {
       System.out.println(performance);
-      F31_Performance f31 = new F31_Performance(performance);
-      F25_PerformancePlan f25 = new F25_PerformancePlan();
+      F31_Performance f31 = new F31_Performance(performance, record);
+      F25_PerformancePlan f25 = new F25_PerformancePlan(f31.getIdentifier());
 
       f31.add(f25);
       f25.add(f22);
@@ -63,13 +65,13 @@ public class RecordConverter {
     }
   }
 
-  private void addPrincepsPublication() throws URISyntaxException {
+  private void addPrincepsPublication() throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
     String edition = F30_PublicationEvent.getEditionPrinceps(record);
     if (edition == null) return;
 
-    F30_PublicationEvent f30 = new F30_PublicationEvent(edition);
-    F24_PublicationExpression f24 = new F24_PublicationExpression();
-    F19_PublicationWork f19 = new F19_PublicationWork();
+    F30_PublicationEvent f30 = new F30_PublicationEvent(edition, record);
+    F24_PublicationExpression f24 = new F24_PublicationExpression(f30.getIdentifier());
+    F19_PublicationWork f19 = new F19_PublicationWork(f30.getIdentifier());
 
     f30.add(f24).add(f19);
     f19.add(f24);

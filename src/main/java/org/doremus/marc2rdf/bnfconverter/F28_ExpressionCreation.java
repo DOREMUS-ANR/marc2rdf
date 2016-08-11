@@ -2,13 +2,11 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -16,8 +14,9 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URI;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,24 +24,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class F28_ExpressionCreation {
+public class F28_ExpressionCreation extends DoremusResource {
   private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
 
-  private Record record;
-  private Model model;
-  private URI uriF28;
-  private Resource F28;
+  public F28_ExpressionCreation(String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(identifier);
 
-  public F28_ExpressionCreation() throws URISyntaxException {
-    this.model = ModelFactory.createDefaultModel();
-    this.uriF28 = ConstructURI.build("Expression_Creation", "F28");
+    this.uri = ConstructURI.build("bnf", "F28", "Expression_Creation", identifier);
 
-    F28 = model.createResource(uriF28.toString());
-    F28.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
+    this.resource = model.createResource(this.uri.toString());
+    this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
   }
 
-  public F28_ExpressionCreation(Record record) throws URISyntaxException {
-    this();
+  public F28_ExpressionCreation(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    this(record.getIdentifier());
     this.record = record;
     this.compute();
   }
@@ -51,7 +46,7 @@ public class F28_ExpressionCreation {
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateMachine = getDateMachine();
     if (dateMachine != null) {
-      F28.addProperty(CIDOC.P4_has_time_span, model.createResource()
+      this.resource.addProperty(CIDOC.P4_has_time_span, model.createResource()
         .addProperty(RDF.type, model.createResource(CIDOC.E52_Time_Span))
         .addProperty(CIDOC.P82_at_some_time_within, ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
     }
@@ -59,11 +54,11 @@ public class F28_ExpressionCreation {
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateText = getDateText();
     // TODO check! maybe this info could be better saved
-    if (dateText != null) F28.addProperty(CIDOC.P3_has_note, dateText);
+    if (dateText != null) this.resource.addProperty(CIDOC.P3_has_note, dateText);
 
     /**************************** Work: is created by ***************************************/
     for (String composer : getComposer()) {
-      F28.addProperty(CIDOC.P9_consists_of, model.createResource()
+      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource()
         .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, model.createResource()
@@ -74,24 +69,17 @@ public class F28_ExpressionCreation {
     }
   }
 
-  public Resource asResource() {
-    return F28;
-  }
-
-  public Model getModel() {
-    return model;
-  }
 
   public F28_ExpressionCreation add(F22_SelfContainedExpression expression) {
     /**************************** Expression: created ***************************************/
-    F28.addProperty(FRBROO.R17_created, expression.asResource());
+    this.resource.addProperty(FRBROO.R17_created, expression.asResource());
 //    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
     return this;
   }
 
   public F28_ExpressionCreation add(F14_IndividualWork f14) {
     /**************************** Work: created a realisation *******************************/
-    F28.addProperty(FRBROO.R19_created_a_realisation_of, f14.asResource());
+    this.resource.addProperty(FRBROO.R19_created_a_realisation_of, f14.asResource());
 //    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
     return this;
   }

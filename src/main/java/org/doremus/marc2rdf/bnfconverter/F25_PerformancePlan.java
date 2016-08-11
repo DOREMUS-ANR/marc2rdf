@@ -1,44 +1,33 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URI;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 
-public class F25_PerformancePlan {
-  private final Resource F25;
-  private Model model;
-  private URI uriF25 = null;
+public class F25_PerformancePlan extends DoremusResource {
 
-  public F25_PerformancePlan() throws URISyntaxException {
-    this.model = ModelFactory.createDefaultModel();
-    this.uriF25 = ConstructURI.build("Performance_Plan", "F25");
+  public F25_PerformancePlan(String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(identifier);
 
-    F25 = model.createResource(uriF25.toString());
-    F25.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
+    this.uri = ConstructURI.build("bnf", "F25", "Performance_Plan", identifier);
+
+    this.resource = model.createResource(this.uri.toString());
+    this.resource.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
 
     /**************************** création d'une expression de plan d'exécution *************/
-    F28_ExpressionCreation planCreation = new F28_ExpressionCreation();
-    planCreation.asResource().addProperty(FRBROO.R17_created, F25);
+    F28_ExpressionCreation planCreation = new F28_ExpressionCreation(identifier);
+    planCreation.asResource().addProperty(FRBROO.R17_created, this.resource);
     model.add(planCreation.getModel());
   }
 
-  public Resource asResource() {
-    return F25;
-  }
-
-  public Model getModel() {
-    return model;
-  }
-
   public F25_PerformancePlan add(F22_SelfContainedExpression f22) {
-    F25.addProperty(CIDOC.P165_incorporates, f22.asResource());
+    this.resource.addProperty(CIDOC.P165_incorporates, f22.asResource());
     return this;
   }
 }

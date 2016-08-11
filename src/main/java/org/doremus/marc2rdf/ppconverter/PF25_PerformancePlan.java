@@ -1,39 +1,27 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URI;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 
-public class PF25_PerformancePlan {
-  private Model modelF25;
-  private URI uriF25;
-  private Resource F25;
+public class PF25_PerformancePlan extends DoremusResource {
+  public PF25_PerformancePlan(String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(identifier);
 
-  public PF25_PerformancePlan() throws URISyntaxException {
-    this.modelF25 = ModelFactory.createDefaultModel();
-    this.uriF25 = ConstructURI.build("Performance_Plan", "F25");
+    this.uri = ConstructURI.build("philharmonie", "F25", "Performance_Plan", this.identifier);
 
-    F25 = modelF25.createResource(uriF25.toString());
-    F25.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
-  }
-
-  public Model getModel() {
-    return modelF25;
-  }
-
-  public Resource asResource() {
-    return F25;
+    this.resource = this.model.createResource(this.uri.toString());
+    this.resource.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
   }
 
   public PF25_PerformancePlan add(PF22_SelfContainedExpression f22) {
-    F25.addProperty(CIDOC.P165_incorporates, f22.asResource());
+    this.resource.addProperty(CIDOC.P165_incorporates, f22.asResource());
 //    f22.asResource().addProperty(model.createProperty(cidoc + "P165i_is_incorporated_in"), F25);
     return this;
   }

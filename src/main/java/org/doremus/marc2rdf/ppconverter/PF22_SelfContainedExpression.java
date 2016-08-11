@@ -1,38 +1,33 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.Converter;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URI;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 /***
  * Correspond à la description développée de l'expression représentative
  ***/
-public class PF22_SelfContainedExpression {
-  private final Resource F22;
-  private Record record;
-  private Model model;
-  private URI uriF22;
+public class PF22_SelfContainedExpression extends DoremusResource {
+  public PF22_SelfContainedExpression(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record);
 
-  public PF22_SelfContainedExpression(Record record) throws URISyntaxException {
-    this.record = record;
-    this.model = ModelFactory.createDefaultModel();
-    this.uriF22 = ConstructURI.build("Self_Contained_Expression", "F22");
+    this.uri = ConstructURI.build("philharmonie", "F22", "Self_Contained_Expression", record.getIdentifier());
 
-    F22 = model.createResource(uriF22.toString());
-    F22.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
+    this.resource = model.createResource(this.uri.toString());
+    this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
     compute();
   }
@@ -40,7 +35,7 @@ public class PF22_SelfContainedExpression {
   private void compute() {
     /**************************** Expression: Title *****************************************/
     for (String title : getTitle())
-      F22.addProperty(CIDOC.P102_has_title, title);
+      this.resource.addProperty(CIDOC.P102_has_title, title);
 
     /**************************** Expression: Catalogue *************************************/
     for (String catalog : getCatalog()) {
@@ -53,7 +48,7 @@ public class PF22_SelfContainedExpression {
       M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
         .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
 
-      F22.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
+      this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
 
     }
 
@@ -73,16 +68,16 @@ public class PF22_SelfContainedExpression {
         M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, opusParts[1].replaceAll("no", "").trim());
       }
 
-      F22.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
+      this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
     }
 
     /**************************** Expression: ***********************************************/
     for (String note : getNote())
-      F22.addProperty(CIDOC.P3_has_note, note);
+      this.resource.addProperty(CIDOC.P3_has_note, note);
 
     /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
-      F22.addProperty(MUS.U11_has_key, model.createResource()
+      this.resource.addProperty(MUS.U11_has_key, model.createResource()
         .addProperty(RDF.type, MUS.M4_Key)
         .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(key, "fr")) // Le nom du genre est toujours en français
       );
@@ -91,14 +86,14 @@ public class PF22_SelfContainedExpression {
     /**************************** Expression: Genre *****************************************/
     List<String> genres = getGenre();
     for (String genre : genres) {
-      F22.addProperty(MUS.U12_has_genre, model.createResource()
+      this.resource.addProperty(MUS.U12_has_genre, model.createResource()
         .addProperty(RDF.type, MUS.M5_Genre)
         .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
       );
     }
     /**************************** Expression: Order Number **********************************/
     for (String orderNumber : getOrderNumber()) {
-      F22.addProperty(MUS.U10_has_order_number, orderNumber);
+      this.resource.addProperty(MUS.U10_has_order_number, orderNumber);
     }
 
     /**************************** Expression: Casting ***************************************/
@@ -107,20 +102,17 @@ public class PF22_SelfContainedExpression {
       M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting);
       M6Casting.addProperty(CIDOC.P3_has_note, castingString);
 
-      F22.addProperty(MUS.U13_has_intended_casting, M6Casting);
+      this.resource.addProperty(MUS.U13_has_intended_casting, M6Casting);
     }
   }
 
   public PF22_SelfContainedExpression add(PF50_ControlledAccessPoint accessPoint) {
     /**************************** Expression: Point d'Accès ********************************/
-    F22.addProperty(CIDOC.P1_is_identified_by, accessPoint.asResource());
-//    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), F22);
+    this.resource.addProperty(CIDOC.P1_is_identified_by, accessPoint.asResource());
+//    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), this.resource);
     return this;
   }
 
-  public Model getModel() {
-    return model;
-  }
 
   /***********************************
    * Le titre
@@ -279,7 +271,4 @@ public class PF22_SelfContainedExpression {
     return castings;
   }
 
-  public Resource asResource() {
-    return F22;
-  }
 }

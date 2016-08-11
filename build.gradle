@@ -51,7 +51,7 @@ buildscript {
 task schemagen(dependsOn: ['schemagenFrbroo', 'schemagenCidoc', 'schemagenDoremus'])
 
 task schemagenDoremus(type: UrlSchemaGen) {
-    input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/Doremus-v0.1.owl')
+    input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/doremus.ttl')
     outputDirectory = file('src/main/java/')
     packageName = 'org.doremus.ontology'
     classNameSuffix = 'MUS'
@@ -63,7 +63,7 @@ task schemagenDoremus(type: UrlSchemaGen) {
 }
 
 task schemagenFrbroo(type: UrlSchemaGen) {
-    input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/FRBRoo-v2.4-Biblissima-2016-04-17.owl')
+    input = uri('http://erlangen-crm.org/efrbroo/')
     outputDirectory = file('src/main/java/')
     packageName = 'org.doremus.ontology'
     classNameSuffix = 'FRBROO'

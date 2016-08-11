@@ -1,66 +1,57 @@
 package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 
 /***
  * Correspond à l'attribution d'identifiant pour l'oeuvre
  ***/
-public class F40_IdentifierAssignment {
-  private Model model = ModelFactory.createDefaultModel();
-  private final Record record;
-  private URI uriF40;
-  private Resource F40;
+public class F40_IdentifierAssignment extends DoremusResource {
+  public F40_IdentifierAssignment(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record);
 
-  public F40_IdentifierAssignment(Record record) throws URISyntaxException {
-    this.record = record;
-    this.model = ModelFactory.createDefaultModel();
-    this.uriF40 = ConstructURI.build("Identifier_Assignment", "F40");
+    this.uri = ConstructURI.build("bnf", "F40", "Identifier_Assignment", this.identifier);
 
-    F40 = model.createResource(uriF40.toString());
-    F40.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);
-  }
+    this.resource = model.createResource(this.uri.toString());
+    this.resource.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);
 
-  public Model getModel() {
     /**************************** Schéma général : agence ***********************************/
     URI agency = getBiblioAgency();
     if (agency != null)
-      F40.addProperty(CIDOC.P14_carried_out_by, model.createResource(agency.toString()));
+      this.resource.addProperty(CIDOC.P14_carried_out_by, model.createResource(agency.toString()));
 
     /**************************** Schéma général : règles ***********************************/
-    F40.addProperty(FRBROO.R52_used_rule, "NF Z 44-079 (Novembre 1993) - Documentation - Catalogage- Forme et structure des vedettes titres musicaux");
-
-    return model;
+    this.resource.addProperty(FRBROO.R52_used_rule, "NF Z 44-079 (Novembre 1993) - Documentation - Catalogage- Forme et structure des vedettes titres musicaux");
   }
 
   public F40_IdentifierAssignment add(F22_SelfContainedExpression expression) {
     /**************************** Schéma général : Attribution ******************************/
-    F40.addProperty(FRBROO.R45_assigned_to, expression.asResource());
+    this.resource.addProperty(FRBROO.R45_assigned_to, expression.asResource());
 //    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }
 
   public F40_IdentifierAssignment add(F14_IndividualWork work) {
     /**************************** Work: was assigned by *************************************/
-    F40.addProperty(FRBROO.R45_assigned_to, work.asResource());
+    this.resource.addProperty(FRBROO.R45_assigned_to, work.asResource());
 //    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }
 
   public F40_IdentifierAssignment add(F15_ComplexWork work) {
     /**************************** Work: was assigned by *************************************/
-    F40.addProperty(FRBROO.R45_assigned_to, work.asResource());
+    this.resource.addProperty(FRBROO.R45_assigned_to, work.asResource());
 //    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }

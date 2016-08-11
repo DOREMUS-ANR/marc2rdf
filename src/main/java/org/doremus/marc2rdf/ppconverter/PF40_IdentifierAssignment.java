@@ -1,33 +1,27 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URI;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 
 /***
  * Correspond à l'attribution d'identifiant pour l'oeuvre
  ***/
-public class PF40_IdentifierAssignment {
-  private Model model;
-  private URI uriF40;
-  private final Resource F40;
-  private final Record record;
+public class PF40_IdentifierAssignment extends DoremusResource{
+  public PF40_IdentifierAssignment(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    super(record);
 
-  public PF40_IdentifierAssignment(Record record) throws URISyntaxException {
-    this.record = record;
-    this.model = ModelFactory.createDefaultModel();
-    this.uriF40 = ConstructURI.build("Identifier_Assignment", "F40");
+    this.uri = ConstructURI.build("philharmonie", "F40", "Identifier_Assignment", this.identifier);
 
-    F40 = model.createResource(uriF40.toString());
-    F40.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);
+    this.resource = model.createResource(this.uri.toString());
+    this.resource.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);
 
     compute();
   }
@@ -35,67 +29,54 @@ public class PF40_IdentifierAssignment {
   private void compute() {
     /**************************** Schéma général : agence ***********************************/
     // TODO Create the resource of Philarmonie ?
-    F40.addProperty(CIDOC.P14_carried_out_by, model.createResource("http://data.doremus.org/Philharmonie_de_Paris"));
+    this.resource.addProperty(CIDOC.P14_carried_out_by, model.createResource("http://data.doremus.org/Philharmonie_de_Paris"));
 
     /**************************** Work: identifier assignment (Identifier) ******************/
-    F40.addProperty(FRBROO.R46_assigned, getIdentifier()); // L'identifiant de l'oeuvre
+    this.resource.addProperty(FRBROO.R46_assigned, getIdentifier()); // L'identifiant de l'oeuvre
 
 
     //TODO check this (double P2)
     /**************************** Work: identifier assignment (type) ************************/
-    F40.addProperty(CIDOC.P2_has_type, "N° de notice"); // "N° de notice" par défaut pour toutes les notices
+    this.resource.addProperty(CIDOC.P2_has_type, "N° de notice"); // "N° de notice" par défaut pour toutes les notices
 
     /**************************** Work: was assigned by *************************************/
     String typeTitle = getTypeTitle();
     if (typeTitle != null)
-      F40.addProperty(CIDOC.P2_has_type, model.createLiteral(getTypeTitle(), "fr"));
+      this.resource.addProperty(CIDOC.P2_has_type, model.createLiteral(getTypeTitle(), "fr"));
 
     /**************************** Schéma général : règles ***********************************/
     String rule = getRule();
-    if (rule != null) F40.addProperty(FRBROO.R52_used_rule, rule);
+    if (rule != null) this.resource.addProperty(FRBROO.R52_used_rule, rule);
 
-  }
-
-  public Model getModel() throws URISyntaxException {
-    return model;
   }
 
   public PF40_IdentifierAssignment add(PF22_SelfContainedExpression f22) {
     /**************************** Schéma général : Attribution ******************************/
-    F40.addProperty(FRBROO.R45_assigned_to, f22.asResource());
+    this.resource.addProperty(FRBROO.R45_assigned_to, f22.asResource());
 //    f22.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }
 
   public PF40_IdentifierAssignment add(PF14_IndividualWork f14) {
     /**************************** Work: was assigned by *************************************/
-    F40.addProperty(FRBROO.R45_assigned_to, f14.asResource());
+    this.resource.addProperty(FRBROO.R45_assigned_to, f14.asResource());
 //   f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }
 
   public PF40_IdentifierAssignment add(PF15_ComplexWork f15) {
     /**************************** Work: was assigned by *************************************/
-    F40.addProperty(FRBROO.R45_assigned_to, f15.asResource());
+    this.resource.addProperty(FRBROO.R45_assigned_to, f15.asResource());
 //    f15.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R45i_was_assigned_by"), F40);
     return this;
   }
 
   public PF40_IdentifierAssignment add(PF50_ControlledAccessPoint accessPoint) {
     /**************************** Work: was assigned by *************************************/
-    F40.addProperty(FRBROO.R46_assigned, accessPoint.asResource());
+    this.resource.addProperty(FRBROO.R46_assigned, accessPoint.asResource());
     return this;
   }
 
-
-  /**************************
-   * 4. Work: identifier assignment (Identifier)
-   *********************/
-  private String getIdentifier() {
-    //TODO move (maybe to Individual/ComplexWork)
-
-    return record.getIdentifier();
-  }
 
   /**************************
    * Schéma général : règles

@@ -20,6 +20,7 @@ import javax.swing.*;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class Converter {
@@ -36,7 +37,7 @@ public class Converter {
     BNF
   }
 
-  public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
+  public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException, NoSuchAlgorithmException {
     marcOut = Arrays.asList(args).indexOf("marc") > -1;
 
     String inputFolderPath;
@@ -92,7 +93,7 @@ public class Converter {
   }
 
   /*************************************************************************************************/
-  private static void listeRepertoire(File repertoire) throws URISyntaxException, IOException {
+  private static void listeRepertoire(File repertoire) throws URISyntaxException, IOException, NoSuchAlgorithmException {
     String outputFolderPath = properties.getProperty("defaultOutput");
 
     if (!repertoire.isDirectory()) {
@@ -138,6 +139,8 @@ public class Converter {
       } else {  // Notice PP
         m = PP2RDF.convert(fich);
       }
+
+      if (m == null) continue;
 
       for (Vocabulary v : vocabularies) v.buildReferenceIn(m);
 
