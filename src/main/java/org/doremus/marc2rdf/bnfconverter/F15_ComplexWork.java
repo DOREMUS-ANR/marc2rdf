@@ -33,7 +33,7 @@ public class F15_ComplexWork extends DoremusResource {
 
   public F15_ComplexWork add(F14_IndividualWork f14) {
     /**************************** Work: has member  (Work) **********************************/
-    this.resource.addProperty(FRBROO.R10_has_member, f14.toString());
+    this.resource.addProperty(FRBROO.R10_has_member, f14.asResource());
 //    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R10i_is_member_of"), F15);
     return this;
   }

@@ -47,7 +47,7 @@ public class F28_ExpressionCreation extends DoremusResource {
     String dateMachine = getDateMachine();
     if (dateMachine != null) {
       this.resource.addProperty(CIDOC.P4_has_time_span, model.createResource()
-        .addProperty(RDF.type, model.createResource(CIDOC.E52_Time_Span))
+        .addProperty(RDF.type, CIDOC.E52_Time_Span)
         .addProperty(CIDOC.P82_at_some_time_within, ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
     }
 

@@ -38,7 +38,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     for (String dedication : getDedicace()) {
       this.resource.addProperty(CIDOC.P67_refers_to, model.createResource()
         .addProperty(RDF.type, MUS.M15_Dedication)
-        .addProperty(CIDOC.P3_has_note, dedication));
+        .addProperty(CIDOC.P3_has_note, this.model.createLiteral(dedication, "fr")));
     }
 
     /**************************** Expression: Title *****************************************/
@@ -98,7 +98,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
     /**************************** Expression: Casting ***************************************/
     for (String castingString : getCasting()) {
       Resource M6Casting = model.createResource();
-      M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting);
+      M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting)
+        .addProperty(CIDOC.P3_has_note, castingString);
 
       String[] mopList = castingString.split(",");
       for (String mop : mopList) {
@@ -125,12 +126,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
     List<String> results = new ArrayList<>();
 
     for (DataField field : record.getDatafieldsByCode("600")) {
-      if (field.isCode('a')) {
-        String dedicace = field.getSubfield('a').getData();
-        if (dedicace.startsWith("Dédicace")) {
-          results.add(dedicace);
-        }
-      }
+      if (!field.isCode('a')) continue;
+      String dedicace = field.getSubfield('a').getData();
+
+      if (dedicace.startsWith("Dédicace")) results.add(dedicace);
     }
     return results;
   }

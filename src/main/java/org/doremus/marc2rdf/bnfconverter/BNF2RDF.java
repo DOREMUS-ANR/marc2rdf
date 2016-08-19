@@ -33,7 +33,7 @@ public class BNF2RDF {
 
     model.setNsPrefix("mus", MUS.getURI());
     model.setNsPrefix("ecrm", CIDOC.getURI());
-    model.setNsPrefix("frbroo", FRBROO.getURI());
+    model.setNsPrefix("efrbroo", FRBROO.getURI());
     model.setNsPrefix("xsd", XSD.getURI());
     model.setNsPrefix("dcterms", DCTerms.getURI());
 
