@@ -79,7 +79,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     for (String key : getKey()) {
       this.resource.addProperty(MUS.U11_has_key, model.createResource()
         .addProperty(RDF.type, MUS.M4_Key)
-        .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(key, "fr")) // Le nom du genre est toujours en français
+        .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(key.trim(), "fr")) // Le nom du genre est toujours en français
       );
     }
 
@@ -100,7 +100,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     for (String castingString : getCasting()) {
       Resource M6Casting = model.createResource();
       M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting);
-      M6Casting.addProperty(CIDOC.P3_has_note, castingString);
+      M6Casting.addProperty(CIDOC.P3_has_note, castingString.trim());
 
       this.resource.addProperty(MUS.U13_has_intended_casting, M6Casting);
     }
@@ -151,13 +151,10 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     List<String> results = new ArrayList<>();
 
-    List<DataField> catalogFields = record.getDatafieldsByCode("444");
-    catalogFields.addAll(record.getDatafieldsByCode("144"));
+    List<String> catalogFields = record.getDatafieldsByCode("444", 'k');
+    catalogFields.addAll(record.getDatafieldsByCode("144", 'k'));
 
-    for (DataField field : catalogFields) {
-      if (!field.isCode('k')) continue;
-
-      String catalog = field.getSubfield('k').getData();
+    for (String catalog : catalogFields) {
       if (!results.contains(catalog)) results.add(catalog);
     }
     return results;
@@ -171,13 +168,10 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     List<String> results = new ArrayList<>();
 
-    List<DataField> opusFields = record.getDatafieldsByCode("444");
-    opusFields.addAll(record.getDatafieldsByCode("144"));
+    List<String> opusFields = record.getDatafieldsByCode("444", 'p');
+    opusFields.addAll(record.getDatafieldsByCode("144", 'p'));
 
-    for (DataField field : opusFields) {
-      if (!field.isCode('p')) continue;
-
-      String opus = field.getSubfield('p').getData();
+    for (String opus : opusFields) {
       if (!results.contains(opus)) results.add(opus);
     }
     return results;
@@ -191,14 +185,12 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     List<String> results = new ArrayList<>();
 
-    List<DataField> opusFields = record.getDatafieldsByCode("909");
+    List<String> opusFields = record.getDatafieldsByCode("909", 'a');
     // TODO code 919 has contents used also elsewhere
-    opusFields.addAll(record.getDatafieldsByCode("919"));
+    opusFields.addAll(record.getDatafieldsByCode("919", 'a'));
 
-    for (DataField field : opusFields) {
-      if (!field.isCode('a')) continue;
-      results.add(field.getSubfield('a').getData().trim());
-    }
+    for (String opus : opusFields)
+      results.add(opus.trim());
 
     return results;
   }
@@ -208,15 +200,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
    ***********************************/
   private List<String> getKey() {
     if (!record.isType("UNI:100")) return new ArrayList<>();
-
-    List<String> results = new ArrayList<>();
-
-    for (DataField field : record.getDatafieldsByCode("909")) {
-      if (!field.isCode('d')) continue;
-      results.add(field.getSubfield('d').getData().trim());
-    }
-
-    return results;
+    return record.getDatafieldsByCode("909", 'd');
   }
 
   /***********************************
@@ -227,13 +211,11 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     List<String> results = new ArrayList<>();
 
-    List<DataField> fields = record.getDatafieldsByCode("444");
-    fields.addAll(record.getDatafieldsByCode("144"));
+    List<String> fields = record.getDatafieldsByCode("444", 'n');
+    fields.addAll(record.getDatafieldsByCode("144", 'n'));
 
-    for (DataField field : fields) {
-      if (!field.isCode('n')) continue;
-
-      String orderNumber = field.getSubfield('n').getData().replaceAll("No", "").trim();
+    for (String orderNumber : fields) {
+      orderNumber = orderNumber.replaceAll("(?i)No", "").trim();
       if (!results.contains(orderNumber)) results.add(orderNumber);
     }
 
@@ -260,15 +242,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
    ***********************************/
   private List<String> getCasting() {
     if (!record.isType("UNI:100")) return new ArrayList<>();
-
-    List<String> castings = new ArrayList<>();
-
-    for (DataField field : record.getDatafieldsByCode("909")) {
-      if (!field.isCode('c')) continue;
-      castings.add(field.getSubfield('c').getData().trim());
-    }
-
-    return castings;
+    return record.getDatafieldsByCode("909", 'c');
   }
 
 }

@@ -13,7 +13,7 @@ public class F19_PublicationWork extends DoremusResource {
   public F19_PublicationWork(String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
     super(identifier);
 
-    this.uri = ConstructURI.build("bnf", "F19", "Publication_Work", record.getIdentifier());
+    this.uri = ConstructURI.build("bnf", "F19", "Publication_Work", identifier);
 
     this.resource = this.model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F19_Publication_Work);

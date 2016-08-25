@@ -178,12 +178,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
    * Le catalogue
    ***********************************/
   private List<String> getCatalog() {
-    List<String> results = new ArrayList<>();
-
-    for (DataField field : record.getDatafieldsByCode("144")) {
-      if (field.isCode('k')) results.add(field.getSubfield('k').getData());
-    }
-    return results;
+    return record.getDatafieldsByCode("144", 'k');
   }
 
   /***********************************
@@ -202,17 +197,13 @@ public class F22_SelfContainedExpression extends DoremusResource {
   private List<String> getNote() {
     List<String> notes = new ArrayList<>();
 
-    for (DataField field : record.getDatafieldsByCode("600")) {
-      if (!field.isCode('a')) continue;
-
-      String note = field.getSubfield('a').getData();
+    for (String note : record.getDatafieldsByCode("600", 'a')) {
       if (!(note.contains("Date de composition")) && !(note.contains("Dates de composition")) && !(note.contains("comp."))
         && !(note.contains("1re éd.")) && !(note.contains("éd.")) && !(note.contains("édition"))
         && !(note.contains("1re exécution")) && !(note.contains("1re représentation")) && !(note.startsWith("Dédicace"))) {
 
         notes.add(note.trim());
       }
-
     }
     return notes;
   }
@@ -221,15 +212,9 @@ public class F22_SelfContainedExpression extends DoremusResource {
    * Key (Tonalite)
    ***********************************/
   private List<String> getKey() {
-    List<String> keys = new ArrayList<>();
+    List<String> keys = record.getDatafieldsByCode("444", 't');
+    keys.addAll(record.getDatafieldsByCode("144", 't'));
 
-    List<DataField> titleFields1 = record.getDatafieldsByCode("444");
-    titleFields1.addAll(record.getDatafieldsByCode("144"));
-
-    for (DataField field : titleFields1) {
-      if (field.isCode('t'))
-        keys.add(field.getSubfield('t').getData());
-    }
     return keys;
   }
 
@@ -237,15 +222,12 @@ public class F22_SelfContainedExpression extends DoremusResource {
    * Le numero d'ordre
    ***********************************/
   private String getOrderNumber() {
-    List<DataField> fields = record.getDatafieldsByCode("444");
-    fields.addAll(record.getDatafieldsByCode("144"));
+    List<String> fields = record.getDatafieldsByCode("444", 'n');
+    fields.addAll(record.getDatafieldsByCode("144", 'n'));
 
-    for (DataField field : fields) {
-      if (!field.isCode('n')) continue;
+    if (fields.isEmpty()) return null;
 
-      return field.getSubfield('n').getData().replaceFirst("No", "").trim();
-    }
-    return null;
+    return fields.get(0).replaceFirst("No", "").trim();
   }
 
   /*****************************************
@@ -277,14 +259,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
    * Casting
    ***********************************/
   private List<String> getCasting() {
-    List<String> castings = new ArrayList<>();
-
-    for (DataField field : record.getDatafieldsByCode("144")) {
-      if (!field.isCode('b')) continue;
-      castings.add(field.getSubfield('b').getData());
-    }
-
-    return castings;
+    return record.getDatafieldsByCode("144", 'b');
   }
 
 }

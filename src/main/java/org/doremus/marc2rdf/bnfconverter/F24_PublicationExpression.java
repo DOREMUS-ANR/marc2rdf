@@ -14,7 +14,7 @@ public class F24_PublicationExpression extends DoremusResource {
   public F24_PublicationExpression(String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
     super(identifier);
 
-    this.uri = ConstructURI.build("bnf", "F24", "Publication_Expression", record.getIdentifier());
+    this.uri = ConstructURI.build("bnf", "F24", "Publication_Expression", identifier);
 
     this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F24_Publication_Expression);

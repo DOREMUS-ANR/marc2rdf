@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -39,10 +38,7 @@ public class F30_PublicationEvent extends DoremusResource {
 
   public static String getEditionPrinceps(Record record) {
     // search edition priceps in the record
-    for (DataField field : record.getDatafieldsByCode("600")) {
-      if (!field.isCode('a')) continue;
-
-      String edition = field.getSubfield('a').getData();
+    for (String edition : record.getDatafieldsByCode("600", 'a')) {
       if ((edition.contains("éd.")) || (edition.contains("édition"))) return edition;
     }
     return null;

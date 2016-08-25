@@ -152,12 +152,9 @@ public class F28_ExpressionCreation extends DoremusResource {
    * Date de création de l'expression (Format texte)
    ***********************/
   private String getDateText() {
-    for (DataField field : record.getDatafieldsByCode("100")) {
-      if (field.isCode('a')) {
-        String date = field.getSubfield('a').getData();
-        if (date.contains("comp.") || date.contains("Date de composition") || date.contains("Dates de composition"))
-          return date;
-      }
+    for (String date : record.getDatafieldsByCode("100", 'a')) {
+      if (date.contains("comp.") || date.contains("Date de composition") || date.contains("Dates de composition"))
+        return date;
     }
     return null;
   }

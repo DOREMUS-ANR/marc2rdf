@@ -68,6 +68,15 @@ public class Record {
     return results;
   }
 
+  public List<String> getDatafieldsByCode(String code, char subFieldCode) {
+    List<String> results = new ArrayList<>();
+    for (DataField field : this.getDatafieldsByCode(code)) {
+      for (Subfield sf : field.getSubfields(subFieldCode))
+        results.add(sf.getData());
+    }
+    return results;
+  }
+
   public ControlField getControlfieldByCode(String code) {
     for (ControlField field : this.controlFields) {
       if (field.getEtiq().equals(code)) {

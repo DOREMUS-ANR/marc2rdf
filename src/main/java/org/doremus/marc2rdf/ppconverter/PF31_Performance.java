@@ -3,7 +3,6 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -54,11 +53,8 @@ public class PF31_Performance extends DoremusResource {
     Pattern p = Pattern.compile(noteRegex);
     Pattern p2 = Pattern.compile(frenchCreationRegex);
 
-    for (DataField field : record.getDatafieldsByCode("919")) {
-      if (!field.isCode('a')) continue;
-
-      String note = field.getSubfield('a').getData().trim();
-
+    for (String note : record.getDatafieldsByCode("919", 'a')) {
+      note = note.trim();
       Matcher m = p.matcher(note);
       if (m.find()) note = note.replaceAll(m.group(1), "").trim();
 

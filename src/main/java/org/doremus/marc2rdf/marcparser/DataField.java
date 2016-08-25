@@ -50,11 +50,19 @@ public class DataField extends Etiq {
    * Recuperer une sous-zone d'une certaine zone
    *************/
   public Subfield getSubfield(char code) {
-    for (Subfield subfield : subfields) {
+    for (Subfield subfield : this.subfields) {
       if (subfield.getCode() == code)
         return subfield;
     }
     return null;
+  }
+
+  public List<Subfield> getSubfields(char code) {
+    List<Subfield> results = new ArrayList<>();
+    for (Subfield subfield : this.subfields) {
+      if (subfield.getCode() == code) results.add(subfield);
+    }
+    return results;
   }
 
   /***************
