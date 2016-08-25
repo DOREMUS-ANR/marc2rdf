@@ -11,13 +11,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public class ConstructURI {
+  private static URIBuilder builder = new URIBuilder().setScheme("http").setHost("data.doremus.org");
+
   public static URI build(String db, String classCode, String className, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
     String seed = db + classCode + identifier;
+   return builder.setPath("/" + className + "/" + classCode + "/" + generateUUID(seed)).build();
+  }
 
-    URIBuilder builder = new URIBuilder().setScheme("http").setHost("data.doremus.org")
-      .setPath("/" + className + "/" + classCode + "/" + generateUUID(seed));
-
-    return builder.build();
+  public static URI build(String db, String classCode, String className, String identifier, String suffix) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+    String seed = db + classCode + identifier;
+    return builder.setPath("/" + className + "/" + classCode + "/" + generateUUID(seed) + '/' + suffix).build();
   }
 
   private static String generateUUID(String seed) throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -26,6 +29,4 @@ public class ConstructURI {
     UUID uuid = UUID.nameUUIDFromBytes(hash.getBytes());
     return uuid.toString();
   }
-
-
 }

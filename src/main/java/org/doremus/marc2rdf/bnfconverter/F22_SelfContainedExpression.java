@@ -30,13 +30,14 @@ public class F22_SelfContainedExpression extends DoremusResource {
     this.compute();
   }
 
-  private void compute() {
+  private void compute() throws UnsupportedEncodingException, NoSuchAlgorithmException, URISyntaxException {
     this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
     /**************************** Expression: Context for the expression ********************/
-    for (String dedication : getDedicace()) {
-      this.resource.addProperty(CIDOC.P67_refers_to, model.createResource()
+    String dedication = getDedicace();
+    if(dedication != null){
+      this.resource.addProperty(CIDOC.P67_refers_to, model.createResource(ConstructURI.build("bnf", "F22", "Self_Contained_Expression", record.getIdentifier(), "dedication").toString())
         .addProperty(RDF.type, MUS.M15_Dedication)
         .addProperty(CIDOC.P3_has_note, this.model.createLiteral(dedication, "fr")));
     }
@@ -122,16 +123,11 @@ public class F22_SelfContainedExpression extends DoremusResource {
   /***********************************
    * La dedicace
    ***********************************/
-  private List<String> getDedicace() {
-    List<String> results = new ArrayList<>();
-
-    for (DataField field : record.getDatafieldsByCode("600")) {
-      if (!field.isCode('a')) continue;
-      String dedicace = field.getSubfield('a').getData();
-
-      if (dedicace.startsWith("Dédicace")) results.add(dedicace);
+  private String getDedicace() {
+    for (String dedicace : record.getDatafieldsByCode("600" ,'a')) {
+      if (dedicace.startsWith("Dédicace")) return dedicace;
     }
-    return results;
+    return null;
   }
 
   /***********************************
