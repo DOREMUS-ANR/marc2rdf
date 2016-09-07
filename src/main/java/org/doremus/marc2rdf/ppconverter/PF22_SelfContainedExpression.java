@@ -86,11 +86,13 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     }
 
     /**************************** Expression: Casting ***************************************/
+    int castingNum = 0;
     for (String castingString : getCasting()) {
-      Resource M6Casting = model.createResource();
+      Resource M6Casting = model.createResource(this.uri.toString() + "/casting/" + (++castingNum));
       M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting);
       M6Casting.addProperty(CIDOC.P3_has_note, castingString.trim());
 
+      System.out.println(castingString.trim());
       this.resource.addProperty(MUS.U13_has_intended_casting, M6Casting);
     }
   }

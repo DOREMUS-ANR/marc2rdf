@@ -55,7 +55,7 @@ public class PP2RDF {
         new RecordConverter(tumReader.getRecords().get(0), model, r.getIdentifier());
       } else {
         // TODO other notice types?
-        System.out.println("Skipping not recognized PP notice type " + r.getType() + " for file " + file);
+        // System.out.println("Skipping not recognized PP notice type " + r.getType() + " for file " + file);
         continue;
       }
       found = true;
