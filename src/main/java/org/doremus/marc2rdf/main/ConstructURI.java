@@ -32,10 +32,10 @@ public class ConstructURI {
     switch (className) {
       case "F22_SelfContainedExpression":
       case "F25_PerformancePlan":
-      case "F42_RepresentativeExpressionAssignment":
         return "expression";
       case "F28_ExpressionCreation":
       case "F30_PublicationEvent":
+      case "F42_RepresentativeExpressionAssignment":
         return "event";
       case "F14_IndividualWork":
       case "F15_ComplexWork":
