@@ -27,7 +27,7 @@ public class RecordConverter {
     f28 = new F28_ExpressionCreation(record);
     f14 = new F14_IndividualWork(record);
     f15 = new F15_ComplexWork(record);
-    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
+//    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
     F42_RepresentativeExpressionAssignment f42 = new F42_RepresentativeExpressionAssignment(record);
 
     addPrincepsPublication();
@@ -36,14 +36,14 @@ public class RecordConverter {
     f28.add(f22).add(f14);
     f15.add(f22).add(f14);
     f14.add(f22);
-    f40.add(f22).add(f14).add(f15);
+//    f40.add(f22).add(f14).add(f15);
     f42.add(f22).add(f15);
 
     model.add(f22.getModel());
     model.add(f28.getModel());
     model.add(f14.getModel());
     model.add(f15.getModel());
-    model.add(f40.getModel());
+//    model.add(f40.getModel());
     model.add(f42.getModel());
   }
 

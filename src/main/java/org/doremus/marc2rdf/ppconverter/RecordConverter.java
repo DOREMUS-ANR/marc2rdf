@@ -31,17 +31,18 @@ public class RecordConverter {
     f14 = new PF14_IndividualWork(record, identifier);
     f15 = new PF15_ComplexWork(record, identifier);
     PF42_RepresentativeExpressionAssignment f42 = new PF42_RepresentativeExpressionAssignment(record, identifier);
-    PF40_IdentifierAssignment f40 = new PF40_IdentifierAssignment(record);
-    PF50_ControlledAccessPoint f50 = new PF50_ControlledAccessPoint(record);
+//    PF40_IdentifierAssignment f40 = new PF40_IdentifierAssignment(record);
+//    PF50_ControlledAccessPoint f50 = new PF50_ControlledAccessPoint(record);
 
     addPrincepsPublication();
     addPerformances();
 
     f28.add(f22).add(f14);
     f15.add(f22).add(f14);
-    f14.add(f22).add(f50);
-    f40.add(f22).add(f14).add(f15).add(f50);
-    f22.add(f50);
+    f14.add(f22);
+//      f14.add(f50);
+//    f40.add(f22).add(f14).add(f15).add(f50);
+//    f22.add(f50);
     f42.add(f22).add(f15);
 
 
@@ -50,8 +51,8 @@ public class RecordConverter {
     model.add(f15.getModel());
     model.add(f14.getModel());
     model.add(f42.getModel());
-    model.add(f40.getModel());
-    model.add(f50.getModel());
+//    model.add(f40.getModel());
+//    model.add(f50.getModel());
   }
 
   private void addPerformances() throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {

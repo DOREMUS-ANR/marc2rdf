@@ -32,6 +32,9 @@ public class Vocabulary {
       schemePath = conceptSchemeIter.nextStatement().getSubject().toString();
     }
 
+    if (schemePath != null && !schemePath.endsWith("/") && !schemePath.endsWith("#"))
+      schemePath += "/";
+
     // Build a map
     substitutionMap = new HashMap<>();
 
@@ -116,7 +119,7 @@ public class Vocabulary {
   public Resource findConcept(String code) {
     if (schemePath == null) return null;
 
-    Resource concept = vocabulary.getResource(schemePath + "/" + code);
+    Resource concept = vocabulary.getResource(schemePath + code);
 
     if (vocabulary.contains(concept, null, (RDFNode) null)) {
       return concept;
