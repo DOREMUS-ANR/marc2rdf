@@ -28,9 +28,9 @@ public class F22_SelfContainedExpression extends DoremusResource {
     /**************************** Expression: Context for the expression ********************/
     String dedication = getDedicace();
     if (dedication != null) {
-      this.resource.addProperty(CIDOC.P67_refers_to, model.createResource(this.uri.toString()+"/dedication")
+      this.resource.addProperty(CIDOC.P67_refers_to, model.createResource(this.uri.toString() + "/dedication")
         .addProperty(RDF.type, MUS.M15_Dedication)
-        .addProperty(CIDOC.P3_has_note, this.model.createLiteral(dedication, "fr")));
+        .addProperty(MUS.U44_has_dedication_statement, this.model.createLiteral(dedication, "fr")));
     }
 
     /**************************** Expression: Title *****************************************/
@@ -88,8 +88,9 @@ public class F22_SelfContainedExpression extends DoremusResource {
     if (orderNumber != null) this.resource.addProperty(MUS.U10_has_order_number, orderNumber);
 
     /**************************** Expression: Casting ***************************************/
+    int castingNum = 0;
     for (String castingString : getCasting()) {
-      Resource M6Casting = model.createResource();
+      Resource M6Casting = model.createResource(this.uri.toString() + "/casting/" + (++castingNum));
       M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting)
         .addProperty(CIDOC.P3_has_note, castingString);
 
@@ -139,15 +140,12 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (title.isEmpty() || Converter.isNotSignificativeTitle(title))
         continue;
 
-      if (field.isCode('h'))
-        title += field.getSubfield('h').getData();
-      if (field.isCode('i'))
-        title += field.getSubfield('i').getData();
+      if (field.isCode('h')) title += field.getSubfield('h').getData();
+      if (field.isCode('i')) title += field.getSubfield('i').getData();
 
-
-      if (field.isCode('w')) {
+      if (field.isCode('w'))
         language = field.getSubfield('w').getData().substring(6, 8);
-      }
+
 
       Literal titleLiteral;
       if (language == null)
