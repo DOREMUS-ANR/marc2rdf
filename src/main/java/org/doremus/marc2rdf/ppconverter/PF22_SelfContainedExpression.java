@@ -2,7 +2,6 @@ package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -11,9 +10,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,18 +18,10 @@ import java.util.List;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class PF22_SelfContainedExpression extends DoremusResource {
-  public PF22_SelfContainedExpression(Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public PF22_SelfContainedExpression(Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
-
-    this.uri = ConstructURI.build("philharmonie", "F22", "Self_Contained_Expression", identifier);
-
-    this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
-    compute();
-  }
-
-  private void compute() {
     /**************************** Expression: Title *****************************************/
     for (String title : getTitle())
       this.resource.addProperty(CIDOC.P102_has_title, title);

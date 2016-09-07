@@ -7,9 +7,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -20,7 +18,7 @@ public class F31_Performance extends DoremusResource {
 
   private boolean isPremiere;
 
-  public F31_Performance(String note, Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public F31_Performance(String note, Record record) throws URISyntaxException {
     super(record);
 
     //check if it is a Premiere
@@ -31,7 +29,7 @@ public class F31_Performance extends DoremusResource {
     char flag = isPremiere? 'p':'f';
 
     this.identifier = record.getIdentifier() + flag;
-    this.uri = ConstructURI.build("bnf", "F31", "Performance", this.identifier);
+    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
 
     this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F31_Performance);

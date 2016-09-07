@@ -1,22 +1,16 @@
 package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 public class F24_PublicationExpression extends DoremusResource {
-  public F24_PublicationExpression(String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public F24_PublicationExpression(String identifier) throws URISyntaxException {
     super(identifier);
 
-    this.uri = ConstructURI.build("bnf", "F24", "Publication_Expression", identifier);
-
-    this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F24_Publication_Expression);
   }
 

@@ -1,22 +1,15 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 public class PF25_PerformancePlan extends DoremusResource {
-  public PF25_PerformancePlan(String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public PF25_PerformancePlan(String identifier) throws URISyntaxException {
     super(identifier);
-
-    this.uri = ConstructURI.build("philharmonie", "F25", "Performance_Plan", this.identifier);
-
-    this.resource = this.model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
   }
 

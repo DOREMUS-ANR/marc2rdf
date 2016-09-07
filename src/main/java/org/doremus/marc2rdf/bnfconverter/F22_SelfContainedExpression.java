@@ -3,7 +3,6 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.ControlField;
@@ -13,9 +12,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,21 +20,15 @@ import java.util.List;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class F22_SelfContainedExpression extends DoremusResource {
-  public F22_SelfContainedExpression(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public F22_SelfContainedExpression(Record record) throws URISyntaxException {
     super(record);
 
-    this.uri = ConstructURI.build("bnf", "F22", "Self_Contained_Expression", record.getIdentifier());
-    this.compute();
-  }
-
-  private void compute() throws UnsupportedEncodingException, NoSuchAlgorithmException, URISyntaxException {
-    this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
     /**************************** Expression: Context for the expression ********************/
     String dedication = getDedicace();
-    if(dedication != null){
-      this.resource.addProperty(CIDOC.P67_refers_to, model.createResource(ConstructURI.build("bnf", "F22", "Self_Contained_Expression", record.getIdentifier(), "dedication").toString())
+    if (dedication != null) {
+      this.resource.addProperty(CIDOC.P67_refers_to, model.createResource(this.uri.toString()+"/dedication")
         .addProperty(RDF.type, MUS.M15_Dedication)
         .addProperty(CIDOC.P3_has_note, this.model.createLiteral(dedication, "fr")));
     }
@@ -124,7 +115,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
    * La dedicace
    ***********************************/
   private String getDedicace() {
-    for (String dedicace : record.getDatafieldsByCode("600" ,'a')) {
+    for (String dedicace : record.getDatafieldsByCode("600", 'a')) {
       if (dedicace.startsWith("Dédicace")) return dedicace;
     }
     return null;

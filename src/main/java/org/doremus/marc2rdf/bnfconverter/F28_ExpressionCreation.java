@@ -5,7 +5,6 @@ import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -14,9 +13,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,22 +24,15 @@ import java.util.List;
 public class F28_ExpressionCreation extends DoremusResource {
   private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
 
-  public F28_ExpressionCreation(String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public F28_ExpressionCreation(String identifier) throws URISyntaxException {
     super(identifier);
-
-    this.uri = ConstructURI.build("bnf", "F28", "Expression_Creation", identifier);
-
-    this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
   }
 
-  public F28_ExpressionCreation(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    this(record.getIdentifier());
-    this.record = record;
-    this.compute();
-  }
+  public F28_ExpressionCreation(Record record) throws URISyntaxException {
+    super(record);
+    this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
-  private void compute() {
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateMachine = getDateMachine();
     if (dateMachine != null) {

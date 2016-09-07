@@ -1,25 +1,17 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 public class F30_PublicationEvent extends DoremusResource {
-  public F30_PublicationEvent(String edition, Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public F30_PublicationEvent(String edition, Record record) throws URISyntaxException {
     super(record);
-    this.model = ModelFactory.createDefaultModel();
 
-    this.uri = ConstructURI.build("bnf", "F30", "Publication_Event", this.identifier);
-
-    this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);
     this.resource.addProperty(CIDOC.P3_has_note, edition);
   }

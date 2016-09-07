@@ -3,25 +3,23 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.rdf.model.Model;
 import org.doremus.marc2rdf.marcparser.Record;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 public class RecordConverter {
   private Record record;
   private Model model;
   private String identifier;
 
-  PF22_SelfContainedExpression f22;
-  PF28_ExpressionCreation f28;
-  PF14_IndividualWork f14;
-  PF15_ComplexWork f15;
+  private PF22_SelfContainedExpression f22;
+  private PF28_ExpressionCreation f28;
+  private PF14_IndividualWork f14;
+  private PF15_ComplexWork f15;
 
-  public RecordConverter(Record record, Model model) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public RecordConverter(Record record, Model model) throws URISyntaxException {
     this(record, model, record.getIdentifier());
   }
 
-  public RecordConverter(Record record, Model model, String identifier) throws UnsupportedEncodingException, NoSuchAlgorithmException, URISyntaxException {
+  public RecordConverter(Record record, Model model, String identifier) throws URISyntaxException {
     this.record = record;
     this.model = model;
     this.identifier = identifier;
@@ -55,7 +53,7 @@ public class RecordConverter {
 //    model.add(f50.getModel());
   }
 
-  private void addPerformances() throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  private void addPerformances() throws URISyntaxException {
     // TODO missing F20_PerformanceWork: check mapping rules
     // F28 Expression Creation R19 created a realisation of F20 Performance Work R12 is realised in F25 Performance Plan
 
@@ -76,7 +74,7 @@ public class RecordConverter {
 
   }
 
-  private void addPrincepsPublication() throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  private void addPrincepsPublication() throws URISyntaxException {
     String edition = PF30_PublicationEvent.getEditionPrinceps(record);
     if (edition == null) return;
 

@@ -12,15 +12,14 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 public class BNF2RDF {
   public static final MarcXmlHandler.MarcXmlHandlerBuilder bnfXmlHandlerBuilder = new MarcXmlHandler.MarcXmlHandlerBuilder();
 
 
-  public static Model convert(String file) throws URISyntaxException, IOException, NoSuchAlgorithmException {
+  public static Model convert(String file) throws URISyntaxException, FileNotFoundException {
 
     /************* Creer un modele vide **************************/
     //Model model = VirtModel.openDatabaseModel("DOREMUS", "jdbc:virtuoso://localhost:1111", "dba", "dba");

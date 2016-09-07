@@ -3,9 +3,7 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.doremus.marc2rdf.marcparser.Record;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 
 public class RecordConverter {
@@ -18,7 +16,7 @@ public class RecordConverter {
   private F15_ComplexWork f15;
 
 
-  public RecordConverter(Record record, Model model) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public RecordConverter(Record record, Model model) throws URISyntaxException {
     this.record = record;
     this.model = model;
 
@@ -47,12 +45,11 @@ public class RecordConverter {
     model.add(f42.getModel());
   }
 
-  private void addPerformances() throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  private void addPerformances() throws URISyntaxException {
     // TODO missing F20_PerformanceWork: check mapping rules
     // F28 Expression Creation R19 created a realisation of F20 Performance Work R12 is realised in F25 Performance Plan
 
     for(String performance: F31_Performance.getPerformances(record)) {
-      System.out.println(performance);
       F31_Performance f31 = new F31_Performance(performance, record);
       F25_PerformancePlan f25 = new F25_PerformancePlan(f31.getIdentifier());
 
@@ -65,7 +62,7 @@ public class RecordConverter {
     }
   }
 
-  private void addPrincepsPublication() throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  private void addPrincepsPublication() throws URISyntaxException {
     String edition = F30_PublicationEvent.getEditionPrinceps(record);
     if (edition == null) return;
 

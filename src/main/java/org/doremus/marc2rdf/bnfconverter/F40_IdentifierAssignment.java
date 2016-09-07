@@ -2,28 +2,22 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 /***
  * Correspond à l'attribution d'identifiant pour l'oeuvre
  ***/
 public class F40_IdentifierAssignment extends DoremusResource {
-  public F40_IdentifierAssignment(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public F40_IdentifierAssignment(Record record) throws URISyntaxException {
     super(record);
 
-    this.uri = ConstructURI.build("bnf", "F40", "Identifier_Assignment", this.identifier);
-
-    this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);
 
     /**************************** Schéma général : agence ***********************************/

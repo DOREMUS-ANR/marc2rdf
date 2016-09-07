@@ -1,28 +1,22 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PF30_PublicationEvent extends DoremusResource {
   private static final String noteRegex = "\\. ((Editeur|(Premi|1)\u00e8re \u00e9dition|Publication|(Premi|1)ere publication).+)";
 
-  public PF30_PublicationEvent(String note, Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public PF30_PublicationEvent(String note, Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
 
-    this.uri = ConstructURI.build("philharmonie", "F30", "Publication_Event", this.identifier);
-
-    this.resource = this.model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);
     this.resource.addProperty(CIDOC.P3_has_note, note);
   }

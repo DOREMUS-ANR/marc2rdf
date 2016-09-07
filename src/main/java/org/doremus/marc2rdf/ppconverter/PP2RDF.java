@@ -14,9 +14,8 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 import static org.doremus.marc2rdf.main.Converter.properties;
 
@@ -30,7 +29,7 @@ public class PP2RDF {
       .tagLabel("UnimarcTag")
       .codeLabel("UnimarcSubfield");
 
-  public static Model convert(String file) throws URISyntaxException, IOException, NoSuchAlgorithmException {
+  public static Model convert(String file) throws FileNotFoundException, URISyntaxException {
     File folderTUMs = new File(properties.getProperty("TUMFolder"));
 
     /************* Creer un modele vide **************************/

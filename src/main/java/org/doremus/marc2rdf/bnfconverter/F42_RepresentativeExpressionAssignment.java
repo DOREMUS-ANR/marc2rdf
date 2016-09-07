@@ -1,22 +1,16 @@
 package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 public class F42_RepresentativeExpressionAssignment extends DoremusResource {
-  public F42_RepresentativeExpressionAssignment(Record record) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public F42_RepresentativeExpressionAssignment(Record record) throws URISyntaxException {
     super(record);
 
-    this.uri = ConstructURI.build("bnf", "F42", "Representative_Expression_Assignment", this.identifier);
-
-    this.resource = this.model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F42_Representative_Expression_Assignment);
 
     /**************************** Responsable de l'attribution **********************************/

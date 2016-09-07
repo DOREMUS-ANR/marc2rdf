@@ -1,26 +1,19 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 
 /***
  * Correspond à l'oeuvre musicale
  ***/
 public class PF15_ComplexWork extends DoremusResource{
 
-  public PF15_ComplexWork(Record record, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
+  public PF15_ComplexWork(Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
-
-    this.uri = ConstructURI.build("philharmonie", "F15", "Complex_Work", identifier);
-
-    this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);
   }
 

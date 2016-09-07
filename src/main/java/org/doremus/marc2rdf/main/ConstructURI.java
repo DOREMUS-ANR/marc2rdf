@@ -3,30 +3,50 @@ package org.doremus.marc2rdf.main;
 import org.apache.http.client.utils.URIBuilder;
 
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public class ConstructURI {
   private static URIBuilder builder = new URIBuilder().setScheme("http").setHost("data.doremus.org");
 
-  public static URI build(String db, String classCode, String className, String identifier) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    String seed = db + classCode + identifier;
-   return builder.setPath("/" + className + "/" + classCode + "/" + generateUUID(seed)).build();
+  public static URI build(String db, String className, String identifier) throws URISyntaxException {
+    String seed = db + className + identifier;
+    return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
   }
 
-  public static URI build(String db, String classCode, String className, String identifier, String suffix) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException {
-    String seed = db + classCode + identifier;
-    return builder.setPath("/" + className + "/" + classCode + "/" + generateUUID(seed) + '/' + suffix).build();
-  }
-
-  private static String generateUUID(String seed) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+  private static String generateUUID(String seed) {
     // source: https://gist.github.com/giusepperizzo/630d32cc473069497ac1
-    String hash = DatatypeConverter.printHexBinary(MessageDigest.getInstance("SHA-1").digest(seed.getBytes("UTF-8")));
-    UUID uuid = UUID.nameUUIDFromBytes(hash.getBytes());
-    return uuid.toString();
+    try {
+      String hash = DatatypeConverter.printHexBinary(MessageDigest.getInstance("SHA-1").digest(seed.getBytes("UTF-8")));
+      UUID uuid = UUID.nameUUIDFromBytes(hash.getBytes());
+      return uuid.toString();
+    } catch (Exception e) {
+      System.err.println("[ConstructURI.java]" + e.getLocalizedMessage());
+      return "";
+    }
+  }
+
+  private static String getCollectionName(String className) {
+    switch (className) {
+      case "F22_SelfContainedExpression":
+      case "F25_PerformancePlan":
+      case "F42_RepresentativeExpressionAssignment":
+        return "expression";
+      case "F28_ExpressionCreation":
+      case "F30_PublicationEvent":
+        return "event";
+      case "F14_IndividualWork":
+      case "F15_ComplexWork":
+      case "F19_PublicationWork":
+        return "work";
+      case "F24_PublicationExpression":
+        return "publication";
+      case "F31_Performance":
+        return "performance";
+      default:
+        throw new RuntimeException("[ConstructURI.java] Class not assigned to a collection: " + className);
+    }
   }
 }
