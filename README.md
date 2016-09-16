@@ -47,7 +47,7 @@ The class **Converter** is the "main" class to start converting MARCXML records 
 
     gradle run              ## start conversion of files
     gradle run -Pmarc       ## start conversion of files, with marc as output
-    gradle schemagen        ## align ontology package to ontologies on `doremus-ontology` github project
+    gradle schemagen        ## align ontology package to ontologies in `doremus-ontology` github project
 
 ### RDF Store:
 Virtuoso 7.2.1 (http://www.openlinksw.com)

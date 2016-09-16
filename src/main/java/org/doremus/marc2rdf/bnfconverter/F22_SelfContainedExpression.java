@@ -91,7 +91,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     int castingNum = 0;
     for (String castingString : getCasting()) {
       Resource M6Casting = model.createResource(this.uri.toString() + "/casting/" + (++castingNum));
-      M6Casting.addProperty(RDF.type, MUS.M6_Intended_Casting)
+      M6Casting.addProperty(RDF.type, MUS.M6_Casting)
         .addProperty(CIDOC.P3_has_note, castingString);
 
       String[] mopList = castingString.split(",");
@@ -99,7 +99,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
         Resource M23CastingDetail = model.createResource();
         M23CastingDetail.addProperty(RDF.type, MUS.M23_Casting_Detail);
         Literal mopLiteral = model.createLiteral(mop.toLowerCase().trim(), "fr");
-        M23CastingDetail.addProperty(MUS.U1_has_intended_medium_of_performance,
+        M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type,
           model.createResource()
             .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
             .addProperty(CIDOC.P1_is_identified_by, mopLiteral)
@@ -108,7 +108,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
         M6Casting.addProperty(MUS.U23_has_casting_detail, M23CastingDetail);
       }
 
-      this.resource.addProperty(MUS.U13_has_intended_casting, M6Casting);
+      this.resource.addProperty(MUS.U13_has_casting, M6Casting);
     }
   }
 
