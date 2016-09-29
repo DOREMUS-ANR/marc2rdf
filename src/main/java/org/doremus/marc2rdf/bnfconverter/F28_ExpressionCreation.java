@@ -86,11 +86,11 @@ public class F28_ExpressionCreation extends DoremusResource {
       if (fieldData.charAt(36) == ' ' &&
         (fieldData.length() == 46 || fieldData.charAt(46) == ' ')) {
 
-        String startYear = fieldData.substring(28, 32).replaceAll("\\.", "").trim();
+        String startYear = fieldData.substring(28, 32).replaceAll("\\.", "0").trim();
         String startMonth = fieldData.substring(32, 34).replaceAll("\\.", "").trim();
         String startDay = fieldData.substring(34, 36).replaceAll("\\.", "").trim();
 
-        String endYear = fieldData.substring(38, 42).replaceAll("\\.", "").trim();
+        String endYear = fieldData.substring(38, 42).replaceAll("\\.", "9").trim();
         String endMonth = fieldData.substring(42, 44).replaceAll("\\.", "").trim();
         String endDay = fieldData.substring(44, 46).replaceAll("\\.", "").trim();
 
@@ -103,6 +103,7 @@ public class F28_ExpressionCreation extends DoremusResource {
           endMonth = startMonth;
           endDay = startDay;
         }
+
         if (startMonth.isEmpty()) startMonth = "01";
         if (startDay.isEmpty()) startDay = "01";
         if (endMonth.isEmpty()) endMonth = "12";

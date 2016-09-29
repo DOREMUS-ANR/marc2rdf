@@ -32,7 +32,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
         .addProperty(CIDOC.P3_has_note, catalog);
 
-      String[] catalogParts = catalog.split(" ");
+      String[] catalogParts = catalog.replaceAll("\\."," ").split(" ");
 
       M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
         .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
