@@ -27,7 +27,9 @@ public class PP2RDF {
       .subfieldLabel("SOUSCHAMP")
       .controlfieldLabel(false)
       .tagLabel("UnimarcTag")
-      .codeLabel("UnimarcSubfield");
+      .codeLabel("UnimarcSubfield")
+      .typeLabel("type")
+      .idlabel("id");
 
   public static Model convert(String file) throws FileNotFoundException, URISyntaxException {
     File folderTUMs = new File(properties.getProperty("TUMFolder"));

@@ -235,7 +235,7 @@ public class MarcXmlHandler implements ContentHandler {
       this.tagLabel = "tag";
       this.codeLabel = "code";
       this.typeLabel = "type";
-      this.idlabel = "id";
+      this.idlabel = "Numero";
     }
 
     public MarcXmlHandler build() {
