@@ -15,11 +15,15 @@ import org.doremus.ontology.MUS;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /***
  * Correspond à la description développée de l'expression représentative
  ***/
 public class F22_SelfContainedExpression extends DoremusResource {
+  private final String catalogFallbackRegex = "([a-z]+) ?(\\d+)";
+
   public F22_SelfContainedExpression(Record record) throws URISyntaxException {
     super(record);
 
@@ -44,6 +48,16 @@ public class F22_SelfContainedExpression extends DoremusResource {
         .addProperty(CIDOC.P3_has_note, catalog);
 
       String[] catalogParts = catalog.split(" ");
+
+      //fix: sometimes the catalog is written as "C172" instead of "C 172"
+      // I try to separate letters and numbers
+      if(catalogParts.length < 2) {
+        Pattern pattern = Pattern.compile(catalogFallbackRegex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(catalog);
+        if (matcher.find()) {
+          catalogParts = new String[]{matcher.group(1), matcher.group(2)};
+        }
+      }
 
       M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
         .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
