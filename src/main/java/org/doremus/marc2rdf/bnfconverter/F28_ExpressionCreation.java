@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
@@ -34,11 +35,9 @@ public class F28_ExpressionCreation extends DoremusResource {
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
     /**************************** Work: Date of the work (expression représentative) ********/
-    String dateMachine = getDateMachine();
+    Resource dateMachine = getDateMachine();
     if (dateMachine != null) {
-      this.resource.addProperty(CIDOC.P4_has_time_span, model.createResource()
-        .addProperty(RDF.type, CIDOC.E52_Time_Span)
-        .addProperty(CIDOC.P82_at_some_time_within, ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
+      this.resource.addProperty(CIDOC.P4_has_time_span, dateMachine);
     }
 
     /**************************** Work: Date of the work (expression représentative) ********/
@@ -78,7 +77,7 @@ public class F28_ExpressionCreation extends DoremusResource {
   /*************
    * Date de creation de l'expression (Format machine)
    ***********************/
-  private String getDateMachine() {
+  private Resource getDateMachine() {
     for (ControlField field : record.getControlfieldsByCode("008")) {
       String fieldData = field.getData();
 
@@ -96,7 +95,11 @@ public class F28_ExpressionCreation extends DoremusResource {
         if (startString.isEmpty()) startString = endString;
         else if (endString.isEmpty()) endString = startString;
 
-        return startString.replaceAll("\\.", "0") + "/" + endString.replaceAll("\\.", "9");
+        String date = startString.replaceAll("\\.", "0") + "/" + endString.replaceAll("\\.", "9");
+
+        return model.createResource()
+          .addProperty(RDF.type, CIDOC.E52_Time_Span)
+          .addProperty(CIDOC.P81_ongoing_throughout, ResourceFactory.createTypedLiteral(date, W3CDTF));
       }
       // known date
       else {
@@ -130,7 +133,11 @@ public class F28_ExpressionCreation extends DoremusResource {
           }
         }
 
-        return startYear + startMonth + startDay + "/" + endYear + endMonth + endDay;
+        String date = startYear + startMonth + startDay + "/" + endYear + endMonth + endDay;
+        return model.createResource()
+          .addProperty(RDF.type, CIDOC.E52_Time_Span)
+          .addProperty(CIDOC.P82_at_some_time_within, ResourceFactory.createTypedLiteral(date, W3CDTF));
+
       }
     }
 
