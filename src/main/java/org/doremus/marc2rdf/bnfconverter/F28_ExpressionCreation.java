@@ -82,15 +82,31 @@ public class F28_ExpressionCreation extends DoremusResource {
     for (ControlField field : record.getControlfieldsByCode("008")) {
       String fieldData = field.getData();
 
-      /***************************** Cas 1 *********************************/
-      if (fieldData.charAt(36) == ' ' &&
+      //approximate date
+      if (fieldData.charAt(36) == '?' || fieldData.charAt(46) == '?' ||
+        fieldData.substring(30, 32).contains(".") ||
+        fieldData.substring(40, 42).contains(".")) {
+
+        String startString = fieldData.substring(28, 32).trim(); // could be 1723, 172. or 17..
+        String endString = fieldData.substring(38, 42).trim(); // could be 1723, 172. or 17..
+
+        if (startString.isEmpty() && endString.isEmpty()) continue;
+
+        // there is at least one of the two
+        if (startString.isEmpty()) startString = endString;
+        else if (endString.isEmpty()) endString = startString;
+
+        return startString.replaceAll("\\.", "0") + "/" + endString.replaceAll("\\.", "9");
+      }
+      // known date
+      else if (fieldData.charAt(36) == ' ' &&
         (fieldData.length() == 46 || fieldData.charAt(46) == ' ')) {
 
-        String startYear = fieldData.substring(28, 32).replaceAll("\\.", "0").trim();
+        String startYear = fieldData.substring(28, 32).replaceAll("\\.", "").trim();
         String startMonth = fieldData.substring(32, 34).replaceAll("\\.", "").trim();
         String startDay = fieldData.substring(34, 36).replaceAll("\\.", "").trim();
 
-        String endYear = fieldData.substring(38, 42).replaceAll("\\.", "9").trim();
+        String endYear = fieldData.substring(38, 42).replaceAll("\\.", "").trim();
         String endMonth = fieldData.substring(42, 44).replaceAll("\\.", "").trim();
         String endDay = fieldData.substring(44, 46).replaceAll("\\.", "").trim();
 
@@ -117,22 +133,6 @@ public class F28_ExpressionCreation extends DoremusResource {
         }
 
         return startYear + startMonth + startDay + "/" + endYear + endMonth + endDay;
-      }
-      /***************************** Cas 2 *********************************/
-      else if (fieldData.charAt(36) == '?' || fieldData.charAt(46) == '?' ||
-        fieldData.substring(30, 32).contains(".") ||
-        fieldData.substring(40, 42).contains("..")) {
-
-        String startString = fieldData.substring(28, 32).trim(); // could be 1723, 172. or 17..
-        String endString = fieldData.substring(38, 42).trim(); // could be 1723, 172. or 17..
-
-        if (startString.isEmpty() && endString.isEmpty()) continue;
-
-        // there is at least one of the two
-        if (startString.isEmpty()) startString = endString;
-        else if (endString.isEmpty()) endString = startString;
-
-        return startString.replaceAll("\\.", "0") + "/" + endString.replaceAll("\\.", "9");
       }
     }
 
