@@ -144,7 +144,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (field.isCode('i')) title += field.getSubfield('i').getData();
 
       if (field.isCode('w'))
-        language = field.getSubfield('w').getData().substring(6, 8);
+        language = field.getSubfield('w').getData().substring(6, 8).replaceAll(".", "");
 
 
       Literal titleLiteral;
