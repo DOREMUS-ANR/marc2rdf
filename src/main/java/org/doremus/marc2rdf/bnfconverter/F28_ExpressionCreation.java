@@ -99,9 +99,7 @@ public class F28_ExpressionCreation extends DoremusResource {
         return startString.replaceAll("\\.", "0") + "/" + endString.replaceAll("\\.", "9");
       }
       // known date
-      else if (fieldData.charAt(36) == ' ' &&
-        (fieldData.length() == 46 || fieldData.charAt(46) == ' ')) {
-
+      else {
         String startYear = fieldData.substring(28, 32).replaceAll("\\.", "").trim();
         String startMonth = fieldData.substring(32, 34).replaceAll("\\.", "").trim();
         String startDay = fieldData.substring(34, 36).replaceAll("\\.", "").trim();
