@@ -16,6 +16,7 @@ import java.util.List;
 public class MarcXmlHandler implements ContentHandler {
 
   private String idNotice;
+  private String typeNotice;
   private List<Record> recordList;
   private StringBuffer buffer;
   private Subfield subfield;
@@ -70,6 +71,8 @@ public class MarcXmlHandler implements ContentHandler {
     this.ID = idlabel;
 
     this.useControlField = false;
+    this.idNotice = null;
+    this.typeNotice = null;
   }
 
   public MarcXmlHandler(String recordLabel, String datafieldLabel, String subfieldLabel, String controlfieldLabel,
@@ -80,7 +83,6 @@ public class MarcXmlHandler implements ContentHandler {
     this.IND1 = "ind1";
     this.IND2 = "ind2";
     this.useControlField = true;
-    this.idNotice = null;
   }
 
   public List<Record> getRecordList() {
@@ -98,19 +100,21 @@ public class MarcXmlHandler implements ContentHandler {
 
     switch (elementType) {
       case RECORD:
-        String typeNotice = attrs.getValue(TYPE);
+        String type = attrs.getValue(TYPE);
         String id = attrs.getValue(ID);
 
-        if(idNotice == null) {
+        if (idNotice == null) {
           //main record id
           idNotice = id;
+          typeNotice = type;
         } else {
           //sub records id
           //it should depend from the main one
           id = idNotice + '-' + id;
+          type = typeNotice;
         }
 
-        this.record = new Record(typeNotice, id);
+        this.record = new Record(type, id);
         recordInProgress.add(this.record);
         break;
       case CONTROLFIELD:

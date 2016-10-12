@@ -26,9 +26,11 @@ public class BNF2RDF {
     Model model = ModelFactory.createDefaultModel();
     MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
 
-    for (Record r : reader.getRecords()) {
-      new RecordConverter(r, model);
-    }
+      for (Record r : reader.getRecords()) {
+        // TODO implement mapping for notice of type BIB
+        if (r.type == null || !r.isType("Authority")) return null;
+        new RecordConverter(r, model);
+      }
 
     model.setNsPrefix("mus", MUS.getURI());
     model.setNsPrefix("ecrm", CIDOC.getURI());
