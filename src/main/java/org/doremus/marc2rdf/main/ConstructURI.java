@@ -12,7 +12,7 @@ public class ConstructURI {
   private static URIBuilder builder = new URIBuilder().setScheme("http").setHost("data.doremus.org");
 
   public static URI build(String db, String className, String identifier) throws URISyntaxException {
-    String seed = db + className + identifier;
+    String seed = db + identifier + className;
     return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
   }
 

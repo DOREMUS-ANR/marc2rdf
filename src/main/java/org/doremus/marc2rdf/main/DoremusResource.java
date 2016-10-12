@@ -28,7 +28,7 @@ public abstract class DoremusResource {
     this.className = this.getClass().getSimpleName();
     this.sourceDb = "bnf";
     if (this.className.startsWith("P")) {
-      this.sourceDb = "philharmonie";
+      this.sourceDb = "pp";
       this.className = this.className.substring(1);
     }
     this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
