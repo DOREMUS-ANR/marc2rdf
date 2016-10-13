@@ -237,7 +237,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     // search the code of the genre in the file
     for (ControlField field : record.getControlfieldsByCode("008")) {
-      String codeGenre = field.getData().substring(18, 21).replace(".", "").trim();
+      String codeGenre = field.getData().substring(18, 21).replace(".", "").replace("#", "").trim();
 
       // special case
       if (codeGenre.isEmpty()) continue;
@@ -247,7 +247,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (Converter.genreVocabulary != null)
         res = Converter.genreVocabulary.findConcept(codeGenre);
 
-      if (res == null) System.out.println("Code genre not found: " + codeGenre);
+      if (res == null) System.out.println("Code genre not found: " + codeGenre + " in record " + record.getIdentifier());
       else genres.add(res);
     }
 
