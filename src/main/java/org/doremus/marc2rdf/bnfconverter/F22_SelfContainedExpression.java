@@ -51,16 +51,19 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       //fix: sometimes the catalog is written as "C172" instead of "C 172"
       // I try to separate letters and numbers
-      if(catalogParts.length < 2) {
+      if (catalogParts.length < 2) {
         Pattern pattern = Pattern.compile(catalogFallbackRegex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(catalog);
         if (matcher.find()) {
           catalogParts = new String[]{matcher.group(1), matcher.group(2)};
         }
       }
-
-      M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
-        .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
+      if (catalogParts.length > 1) { //if still
+        M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
+          .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
+      } else
+        System.out.println("Not parsable catalog: " + catalog);
+      // TODO what to do with not parsable catalogs?
 
       this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
     }
@@ -157,7 +160,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (field.isCode('h')) title += field.getSubfield('h').getData();
       if (field.isCode('i')) title += field.getSubfield('i').getData();
 
-      if (field.isCode('w'))
+      if (field.isCode('w') && field.getSubfield('w').getData().length()>=8)
         language = field.getSubfield('w').getData().substring(6, 8).replaceAll(".", "");
 
 
@@ -247,7 +250,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (Converter.genreVocabulary != null)
         res = Converter.genreVocabulary.findConcept(codeGenre);
 
-      if (res == null) System.out.println("Code genre not found: " + codeGenre + " in record " + record.getIdentifier());
+      if (res == null)
+        System.out.println("Code genre not found: " + codeGenre + " in record " + record.getIdentifier());
       else genres.add(res);
     }
 

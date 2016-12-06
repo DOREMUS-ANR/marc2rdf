@@ -52,8 +52,18 @@ public class PP2RDF {
         // Si c'est une notice d'oeuvre
         String idTUM = getIdTum(r);
 
+        if (idTUM == null) {
+          System.out.println("Notice without TUM specified: " + file);
+          continue;
+        }
+
         // Convertir le TUM correspondant
-        MarcXmlReader tumReader = new MarcXmlReader(getTUM(folderTUMs, idTUM).getAbsolutePath(), PP2RDF.ppXmlHandlerBuilder);
+        File tum = getTUM(folderTUMs, idTUM);
+        if(tum == null){
+          System.out.println("TUM specified but not found: notice " + file + ", tum " + idTUM);
+          continue;
+        }
+        MarcXmlReader tumReader = new MarcXmlReader(tum.getAbsolutePath(), PP2RDF.ppXmlHandlerBuilder);
         new RecordConverter(tumReader.getRecords().get(0), model, r.getIdentifier());
       } else {
         // TODO other notice types?
@@ -63,7 +73,7 @@ public class PP2RDF {
       found = true;
       new RecordConverter(r, model);
     }
-    if(!found) return null;
+    if (!found) return null;
 
     model.setNsPrefix("mus", MUS.getURI());
     model.setNsPrefix("ecrm", CIDOC.getURI());

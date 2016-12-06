@@ -21,9 +21,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class F28_ExpressionCreation extends DoremusResource {
   private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
+//  private static final String textDateRegex = "(1er|[\\d]{1,2}) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (\\d{4})";
 
   public F28_ExpressionCreation(String identifier) throws URISyntaxException {
     super(identifier);
@@ -103,7 +106,16 @@ public class F28_ExpressionCreation extends DoremusResource {
       }
       // known date
       else {
-        String startYear = fieldData.substring(28, 32).replaceAll("\\.", "").trim();
+        String startYear = fieldData.substring(28, 32);
+
+        Pattern numberPat = Pattern.compile("\\d+");
+        Matcher numberMatcher = numberPat.matcher(startYear);
+
+        if (numberMatcher.find()) { // at least a digit is specified
+          startYear = startYear.replaceAll("\\.|\\?", "0").trim();
+        } else {
+          startYear = "";
+        }
         String startMonth = fieldData.substring(32, 34).replaceAll("\\.", "").trim();
         String startDay = fieldData.substring(34, 36).replaceAll("\\.", "").trim();
 
@@ -128,6 +140,8 @@ public class F28_ExpressionCreation extends DoremusResource {
           try {
             endDay = getLastDay(endMonth, endYear);
           } catch (ParseException e) {
+            System.out.println("File: "+ record.getIdentifier());
+            System.out.println("Date: "+ fieldData);
             e.printStackTrace();
             return null;
           }
@@ -137,7 +151,6 @@ public class F28_ExpressionCreation extends DoremusResource {
         return model.createResource()
           .addProperty(RDF.type, CIDOC.E52_Time_Span)
           .addProperty(CIDOC.P82_at_some_time_within, ResourceFactory.createTypedLiteral(date, W3CDTF));
-
       }
     }
 

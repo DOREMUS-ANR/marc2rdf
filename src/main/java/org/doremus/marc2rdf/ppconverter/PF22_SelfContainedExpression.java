@@ -32,10 +32,14 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
         .addProperty(CIDOC.P3_has_note, catalog);
 
-      String[] catalogParts = catalog.replaceAll("\\."," ").split(" ");
+      String[] catalogParts = catalog.replaceAll("\\.", " ").split(" ");
 
-      M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
-        .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
+      if (catalogParts.length > 1) {
+        M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
+          .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
+      } else
+        System.out.println("Not parsable catalog: " + catalog);
+      // TODO what to do with not parsable catalogs?
 
       this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
 
@@ -92,7 +96,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       M6Casting.addProperty(RDF.type, MUS.M6_Casting);
       M6Casting.addProperty(CIDOC.P3_has_note, castingString.trim());
 
-      System.out.println(castingString.trim());
+//      System.out.println(castingString.trim());
       this.resource.addProperty(MUS.U13_has_casting, M6Casting);
     }
   }
