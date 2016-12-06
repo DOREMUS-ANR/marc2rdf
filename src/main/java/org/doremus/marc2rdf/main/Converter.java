@@ -1,6 +1,7 @@
 package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.poi.ss.formula.eval.StringEval;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -30,6 +31,7 @@ public class Converter {
 
   public static Properties properties;
   private static List<String> notSignificativeTitleList = null;
+  private static String inputFolderPath;
 
   private enum INSTITUTION {
     PHILARMONIE,
@@ -38,8 +40,6 @@ public class Converter {
 
   public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException, NoSuchAlgorithmException {
     marcOut = Arrays.asList(args).indexOf("marc") > -1;
-
-    String inputFolderPath;
 
     loadProperties();
     System.out.println("Running with the following properties: " + properties);
@@ -145,12 +145,15 @@ public class Converter {
 
       // Write the output file
       File fileName;
+      String newFileName = file.getName().replaceFirst(".xml", ".ttl");
+      String parentFolder = file.getParentFile().getAbsolutePath();
       if (outputFolderPath != null && !outputFolderPath.isEmpty()) {
         // default folder specified, write there
-        fileName = Paths.get(outputFolderPath, file.getName().replaceFirst(".xml", ".ttl")).toFile();
+        String subfolder = parentFolder.replace(inputFolderPath, "");
+        fileName = Paths.get(outputFolderPath, subfolder, newFileName).toFile();
       } else {
         // write in the same folder, in the "RDF" subfolder
-        fileName = Paths.get(file.getParentFile().getAbsolutePath(), "RDF", file.getName().replaceFirst(".xml", ".ttl")).toFile();
+        fileName = Paths.get(parentFolder, "RDF", newFileName).toFile();
       }
       //noinspection ResultOfMethodCallIgnored
       fileName.getParentFile().mkdirs();
@@ -216,12 +219,14 @@ public class Converter {
     Repository repo = service.getRepository("DOREMUS-ANR", "knowledge-base");
 
     ContentsService contentsService = new ContentsService();
-    for (RepositoryContents contents : contentsService.getContents(repo, "/vocabularies/")) {
-      String url = vocabularyRoot + contents.getName();
+    for (RepositoryContents content : contentsService.getContents(repo, "/vocabularies/")) {
+      if(!content.getName().endsWith(".ttl")) continue;
+
+      String url = vocabularyRoot + content.getName();
       Vocabulary vocabulary = new Vocabulary(url);
       vocabularies.add(vocabulary);
       System.out.println("Loaded vocabulary at " + url);
-      if (contents.getName().equals("genre.ttl")) {
+      if (content.getName().equals("genre.ttl")) {
         genreVocabulary = vocabulary;
       }
     }
