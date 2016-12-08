@@ -1,7 +1,6 @@
 package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.poi.ss.formula.eval.StringEval;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -226,7 +225,7 @@ public class Converter {
       Vocabulary vocabulary = new Vocabulary(url);
       vocabularies.add(vocabulary);
       System.out.println("Loaded vocabulary at " + url);
-      if (content.getName().equals("genre.ttl")) {
+      if (content.getName().equals("genre-iaml.ttl")) {
         genreVocabulary = vocabulary;
       }
     }

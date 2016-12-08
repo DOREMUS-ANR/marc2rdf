@@ -24,7 +24,10 @@ public class BNF2RDF {
     /************* Creer un modele vide **************************/
     //Model model = VirtModel.openDatabaseModel("DOREMUS", "jdbc:virtuoso://localhost:1111", "dba", "dba");
     Model model = ModelFactory.createDefaultModel();
+
     MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
+    if (reader.getRecords() == null || reader.getRecords().size() == 0)
+      System.out.println("Exception occurred parsing file " + file);
 
     for (Record r : reader.getRecords()) {
       // TODO implement mapping for notice of type BIB

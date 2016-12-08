@@ -240,7 +240,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     // search the code of the genre in the file
     for (ControlField field : record.getControlfieldsByCode("008")) {
-      String codeGenre = field.getData().substring(18, 21).replace(".", "").replace("#", "").trim();
+      String codeGenre = field.getData().substring(18, 21).replace(".", "").replace("#", "").trim().toLowerCase();
 
       // special case
       if (codeGenre.isEmpty()) continue;

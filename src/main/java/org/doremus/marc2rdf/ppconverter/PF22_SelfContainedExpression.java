@@ -150,7 +150,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     catalogFields.addAll(record.getDatafieldsByCode("144", 'k'));
 
     for (String catalog : catalogFields) {
-      if (!results.contains(catalog)) results.add(catalog);
+      if (!results.contains(catalog)) results.add(catalog.trim());
     }
     return results;
   }
@@ -167,7 +167,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     opusFields.addAll(record.getDatafieldsByCode("144", 'p'));
 
     for (String opus : opusFields) {
-      if (!results.contains(opus)) results.add(opus);
+      String o = opus.trim();
+      if (!results.contains(o)) results.add(o);
     }
     return results;
   }
@@ -224,9 +225,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     List<String> genres = new ArrayList<>();
 
     for (DataField field : record.getDatafieldsByCode("610")) {
-      if (field.isCode('a') && field.isCode('b') && field.getSubfield('b').getData().equals("04")) {
+      if (field.isCode('a') && field.isCode('b') && field.getSubfield('b').getData().trim().equals("04")) {
         //$b=04 veut dire "genre"
-        genres.add(field.getSubfield('a').getData().toLowerCase());
+        genres.add(field.getSubfield('a').getData().toLowerCase().trim());
       }
     }
     return genres;
