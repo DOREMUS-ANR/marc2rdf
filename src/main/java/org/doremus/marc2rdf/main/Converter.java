@@ -31,6 +31,7 @@ public class Converter {
   public static Properties properties;
   private static List<String> notSignificativeTitleList = null;
   private static String inputFolderPath;
+  private static int maxFilesInFolder, filesInCurrentFolder, currentFolder;
 
   private enum INSTITUTION {
     PHILARMONIE,
@@ -51,6 +52,9 @@ public class Converter {
     }
 
     inputFolderPath = properties.getProperty("defaultInput");
+    maxFilesInFolder = Integer.parseInt(properties.getProperty("maxFilesInAFolder"));
+    filesInCurrentFolder = 0;
+    currentFolder = 0;
 
     if (inputFolderPath == null || inputFolderPath.isEmpty())
       inputFolderPath = getDirFromFileChooser();
@@ -148,8 +152,13 @@ public class Converter {
       String parentFolder = file.getParentFile().getAbsolutePath();
       if (outputFolderPath != null && !outputFolderPath.isEmpty()) {
         // default folder specified, write there
-        String subfolder = parentFolder.replace(inputFolderPath, "");
-        fileName = Paths.get(outputFolderPath, subfolder, newFileName).toFile();
+        if (filesInCurrentFolder > maxFilesInFolder) {
+          ++currentFolder;
+          filesInCurrentFolder = 0;
+        }
+        fileName = Paths.get(outputFolderPath, currentFolder + "", newFileName).toFile();
+        ++filesInCurrentFolder;
+
       } else {
         // write in the same folder, in the "RDF" subfolder
         fileName = Paths.get(parentFolder, "RDF", newFileName).toFile();
@@ -219,7 +228,7 @@ public class Converter {
 
     ContentsService contentsService = new ContentsService();
     for (RepositoryContents content : contentsService.getContents(repo, "/vocabularies/")) {
-      if(!content.getName().endsWith(".ttl")) continue;
+      if (!content.getName().endsWith(".ttl")) continue;
 
       String url = vocabularyRoot + content.getName();
       Vocabulary vocabulary = new Vocabulary(url);
