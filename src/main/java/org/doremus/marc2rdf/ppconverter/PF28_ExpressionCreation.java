@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
+import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -13,6 +14,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +49,13 @@ public class PF28_ExpressionCreation  extends DoremusResource{
     }
 
     /**************************** Work: is created by ***************************************/
-    for (String composer : getComposer()) {
+    for (URI composer : getComposer()) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource()
         .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, model.createResource()
           .addProperty(RDF.type, CIDOC.E21_Person)
-          .addProperty(CIDOC.P1_is_identified_by, composer)
+          .addProperty(CIDOC.P1_is_identified_by, model.createResource(composer.toString()))
         ));
     }
   }
@@ -135,14 +137,11 @@ public class PF28_ExpressionCreation  extends DoremusResource{
     return null;
   }
 
-  /*****************
-   * Le compositeur qui a crée l'oeuvre
-   ******************************/
-  private List<String> getComposer() {
+  private List<URI> getComposer() throws URISyntaxException {
     if (!record.isType("UNI:100")) return new ArrayList<>();
 
     // TODO Conserver le contenu du $3 qui fait le lien vers la notice d'autorité
-    List<String> composers = new ArrayList<>();
+    List<URI> composers = new ArrayList<>();
 
     List<DataField> fields = record.getDatafieldsByCode("700");
     for (DataField field : record.getDatafieldsByCode("701")) {
@@ -154,21 +153,18 @@ public class PF28_ExpressionCreation  extends DoremusResource{
     }
 
     for (DataField field : fields) {
-      StringBuilder buffer = new StringBuilder();
-
+      String firstName = null, lastName = null, birthDate = null;
       if (field.isCode('a')) { // surname
-        buffer.append(field.getSubfield('a').getData().trim());
+    	  firstName = field.getSubfield('a').getData().trim();
       }
       if (field.isCode('b')) { // name
-        if (buffer.length() > 0)
-          buffer.append(", ");
-        buffer.append(field.getSubfield('b').getData().trim());
+    	  lastName = field.getSubfield('b').getData().trim();
       }
       if (field.isCode('f')) { // birth - death dates
-        buffer.append("(").append(field.getSubfield('f').getData().trim()).append(")");
+        birthDate = field.getSubfield('f').getData().trim().substring(0, field.getSubfield('f').getData().trim().indexOf("-"));
       }
-
-      if (buffer.length() > 0) composers.add(buffer.toString());
+      if ((firstName != null)&&(lastName != null)&&(birthDate != null))
+    	  composers.add(ConstructURI.build("artist", firstName, lastName, birthDate));
     }
     return composers;
   }
