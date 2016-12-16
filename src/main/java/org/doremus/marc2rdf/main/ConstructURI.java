@@ -15,6 +15,11 @@ public class ConstructURI {
     String seed = db + identifier + className;
     return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
   }
+  
+  public static URI build(String className, String firstName, String lastName, String birthDate) throws URISyntaxException {
+	    String seed = firstName + lastName + birthDate;
+	    return builder.setPath("/" + className + "/" + generateUUID(seed)).build();
+	  }
 
   private static String generateUUID(String seed) {
     // source: https://gist.github.com/giusepperizzo/630d32cc473069497ac1

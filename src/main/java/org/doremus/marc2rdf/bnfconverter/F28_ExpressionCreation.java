@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
+import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -14,6 +15,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,13 +51,13 @@ public class F28_ExpressionCreation extends DoremusResource {
     if (dateText != null) this.resource.addProperty(CIDOC.P3_has_note, dateText);
 
     /**************************** Work: is created by ***************************************/
-    for (String composer : getComposer()) {
+    for (URI composer : getComposer()) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource()
         .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
-        .addProperty(CIDOC.P14_carried_out_by, model.createResource()
+        .addProperty(CIDOC.P14_carried_out_by, model.createResource(composer.toString())
           .addProperty(RDF.type, CIDOC.E21_Person)
-          .addProperty(CIDOC.P1_is_identified_by, composer)
+        //  .addProperty(CIDOC.P1_is_identified_by, model.createResource(composer.toString()))
         )
       );
     }
@@ -168,29 +170,24 @@ public class F28_ExpressionCreation extends DoremusResource {
     return null;
   }
 
-  /*****************
-   * Le compositeur qui a crée l'oeuvre
-   ******************************/
-  private List<String> getComposer() {
-    List<String> composers = new ArrayList<>();
+  private List<URI> getComposer() throws URISyntaxException {
+    List<URI> composers = new ArrayList<>();
 
     //TODO Conserver le contenu du $3 qui fait le lien vers la notice d'autorité Personne
     for (DataField field : record.getDatafieldsByCode("100")) {
-      StringBuilder buffer = new StringBuilder();
-
+      String firstName = null, lastName = null, birthDate = null;
       if (field.isCode('a')) { // surname
-        buffer.append(field.getSubfield('a').getData());
+    	  firstName =field.getSubfield('a').getData();
       }
       if (field.isCode('m')) { // name
-        if (buffer.length() > 0)
-          buffer.append(", ");
-        buffer.append(field.getSubfield('m').getData());
+    	  lastName =field.getSubfield('m').getData();
       }
       if (field.isCode('d')) { // birth - death dates
-        buffer.append("(").append(field.getSubfield('d').getData()).append(")");
+    	  birthDate =field.getSubfield('d').getData().substring(0, field.getSubfield('d').getData().indexOf("-"));
       }
 
-      if (buffer.length() > 0) composers.add(buffer.toString());
+      if ((firstName != null)&&(lastName != null)&&(birthDate != null))
+    	  composers.add(ConstructURI.build("artist", firstName, lastName, birthDate));
     }
 
     return composers;

@@ -46,6 +46,11 @@ public abstract class DoremusResource {
     this(identifier);
     this.record = record;
   }
+  
+  public URI DoremusResource(String firstName, String lastName, String birthDate) throws URISyntaxException {
+	    URI uri = ConstructURI.build(firstName, lastName, birthDate);
+	    return uri;
+	  }
 
   public Resource asResource() {
     return this.resource;
