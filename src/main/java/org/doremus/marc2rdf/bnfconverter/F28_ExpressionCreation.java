@@ -57,7 +57,11 @@ public class F28_ExpressionCreation extends DoremusResource {
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, model.createResource(composer.toString())
           .addProperty(RDF.type, CIDOC.E21_Person)
+<<<<<<< HEAD
         //  .addProperty(CIDOC.P1_is_identified_by, model.createResource(composer.toString()))
+=======
+          .addProperty(CIDOC.P1_is_identified_by, model.createResource(composer.toString()))
+>>>>>>> origin/master
         )
       );
     }
