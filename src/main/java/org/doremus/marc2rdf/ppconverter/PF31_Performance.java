@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 
 public class PF31_Performance extends DoremusResource {
-  private static final String noteRegex = "\\. ((Editeur|(Premi|1)\u00e8re \u00e9dition|Publication|(Premi|1)ere publication).+)";
+  private static final String noteRegex = "(?:\\. )?(Editeur|(?:Premi|1)[èe]re (?:édition|[Pp]ublication).+)";
   private static final String frenchCreationRegex = "(Cr\u00e9ation fran\u00e7aise.+)";
 
   private boolean isPremiere;
@@ -54,7 +54,7 @@ public class PF31_Performance extends DoremusResource {
     for (String note : record.getDatafieldsByCode("919", 'a')) {
       note = note.trim();
       Matcher m = p.matcher(note);
-      if (m.find()) note = note.replaceAll(m.group(1), "").trim();
+      if (m.find()) note = note.replaceAll(m.group(0), "").trim();
 
       m = p2.matcher(note);
       if (m.find()) { // Creation francaise

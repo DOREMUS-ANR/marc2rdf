@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.StanfordLemmatizer;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -18,10 +19,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /***
  * Correspond à la description développée de l'expression représentative
  ***/
 public class PF22_SelfContainedExpression extends DoremusResource {
+  private final StanfordLemmatizer slem;
+
   public PF22_SelfContainedExpression(Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
@@ -48,6 +52,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
       this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
     }
+
+    slem = Converter.stanfordLemmatizer;
+
 
     /**************************** Expression: Opus ******************************************/
     for (String opus : getOpus()) {
@@ -95,6 +102,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     /**************************** Expression: Casting ***************************************/
     int castingNum = 0;
+
     for (String castingString : getCasting()) {
       castingString = castingString.trim();
 
@@ -102,7 +110,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       M6Casting.addProperty(RDF.type, MUS.M6_Casting);
       M6Casting.addProperty(CIDOC.P3_has_note, castingString);
 
-      if (castingString.startsWith("Rôles :")) {
+      if (castingString.equals("Instrumental")) {
+        // do nothing
+      } else if (castingString.startsWith("Rôles :")) {
         // TODO Opera roles
         // Rôles : Nymphe de la Seine, La Gloire, Nymphe des Tuileries, Nymphe de la Marne, Alceste, Céphise, Thétis, Proserpine, Esprit repoussé, Diane (sopranos) ; Admète, Lychas, Apollon, Alecton (haute-contre) ; Cléante, Phérès (ténors) ; Alcide, Charon, Eole (barytons) ; Straton, Pluton (basse). Choeurs, orchestre symphonique.
       } else if (castingString.contains(":") || castingString.contains(".")) {
@@ -131,15 +141,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         }
         castingString = tempString;
 
-        // replace french numeral with number
-        castingString = castingString.replaceAll("(?i)^une? ", "1 ")
-          .replaceAll("(?i)^deux ", "2 ")
-          .replaceAll("(?i)^trois ", "3 ")
-          .replaceAll("(?i)^quatre ", "4 ")
-          .replaceAll("(?i)^cinq ", "5 ")
-          .replaceAll("(?i)^six ", "6 ");
-
-
         for (String match : castingString.split(partSplitterRegex)) {
           match = match.trim();
 
@@ -148,6 +149,14 @@ public class PF22_SelfContainedExpression extends DoremusResource {
           String part = match.replaceAll(soloRegex1, "")
             .replaceAll(soloRegex2, "").trim();
           boolean isSolo = !part.equals(match);
+
+          // replace french numeral with number
+          part = part.replaceAll("(?i)^une? ", "1 ")
+            .replaceAll("(?i)^deux ", "2 ")
+            .replaceAll("(?i)^trois ", "3 ")
+            .replaceAll("(?i)^quatre ", "4 ")
+            .replaceAll("(?i)^cinq ", "5 ")
+            .replaceAll("(?i)^six ", "6 ");
 
           int quantity = -1;
 
@@ -173,7 +182,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
             part = part.replace(matcher.group(1), "").trim();
             if (part.endsWith(",")) part = part.substring(0, part.length() - 1).trim();
-            // TODO singularize part
 
             String subParts = matcher.group(2).trim();
             for (String subMatch : subParts.split("\\+")) {
@@ -182,6 +190,14 @@ public class PF22_SelfContainedExpression extends DoremusResource {
               boolean isSubSolo = !subPart.equals(match);
 
               int subQuantity;
+              // replace french numeral with number
+              subPart = subPart.replaceAll("(?i)^une? ", "1 ")
+                .replaceAll("(?i)^deux ", "2 ")
+                .replaceAll("(?i)^trois ", "3 ")
+                .replaceAll("(?i)^quatre ", "4 ")
+                .replaceAll("(?i)^cinq ", "5 ")
+                .replaceAll("(?i)^six ", "6 ");
+
               Matcher subMatcher = numRegex2.matcher(subPart);
               if (subMatcher.find()) {
                 subPart = subMatcher.group(2).trim();
@@ -212,6 +228,16 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   }
 
   public Resource makeCastingDetail(String name, int quantity, boolean solo) {
+    name = name.replaceAll("non spécifiée", "");
+
+    // punctual fix
+    if(name.equals("flûtes")) name = "flûte";
+    if(name.equals("contrebasses")) name = "contrebasse";
+//    System.out.println(name + " --> " + slem.lemmatize(name));
+    // singularize
+    name = String.join(" ", slem.lemmatize(name));
+
+
     Resource M23CastingDetail = model.createResource();
 
     if (solo)

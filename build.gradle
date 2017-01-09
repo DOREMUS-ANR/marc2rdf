@@ -3,6 +3,12 @@ import hu.webhejj.gradle.jena.UrlSchemaGen
 apply plugin: 'java'
 apply plugin: 'application'
 
+configurations.all {
+    resolutionStrategy {
+        force 'xml-apis:xml-apis:1.4.01'
+    }
+}
+
 // In this section you declare where to find the dependencies of your project
 repositories {
     jcenter()
@@ -20,8 +26,12 @@ dependencies {
             'org.apache.poi:poi-ooxml:3.14',
             'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5',
             'com.openlinksw:virtjdbc4@jar',
-            'virtuoso.jena.driver:virt_jena3@jar'
+            'xml-apis:xml-apis:1.4.01',
+            'virtuoso.jena.driver:virt_jena3@jar',
+            'edu.stanford.nlp:stanford-corenlp:3.6.0',
+            "edu.stanford.nlp:stanford-corenlp:3.6.0:models"
 }
+
 
 run {
     if(project.hasProperty('marc')){

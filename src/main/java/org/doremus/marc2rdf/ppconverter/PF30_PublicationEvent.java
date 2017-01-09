@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PF30_PublicationEvent extends DoremusResource {
-  private static final String noteRegex = "\\. ((Editeur|(Premi|1)\u00e8re \u00e9dition|Publication|(Premi|1)ere publication).+)";
+  private static final String noteRegex = "(?:\\. )?(Editeur|(?:Premi|1)[èe]re (?:édition|[Pp]ublication).+)";
 
   public PF30_PublicationEvent(String note, Record record, String identifier) throws URISyntaxException {
     super(record, identifier);

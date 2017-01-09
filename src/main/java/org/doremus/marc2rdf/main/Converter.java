@@ -32,6 +32,7 @@ public class Converter {
   private static List<String> notSignificativeTitleList = null;
   private static String inputFolderPath;
   private static int maxFilesInFolder, filesInCurrentFolder, currentFolder;
+  public static StanfordLemmatizer stanfordLemmatizer;
 
   private enum INSTITUTION {
     PHILARMONIE,
@@ -39,6 +40,8 @@ public class Converter {
   }
 
   public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException, NoSuchAlgorithmException {
+    stanfordLemmatizer = new StanfordLemmatizer();
+
     marcOut = Arrays.asList(args).indexOf("marc") > -1;
 
     loadProperties();
@@ -109,7 +112,11 @@ public class Converter {
       return;
     }
 
+//    int i = 100;
     for (File file : list) {
+//      if(i < 0) break;
+//      --i;
+
       if (!file.isFile() || !file.getName().endsWith(".xml")) continue;
       String fich = file.getAbsolutePath();
       Model m;
@@ -144,7 +151,9 @@ public class Converter {
 
       if (m == null) continue;
 
-      for (Vocabulary v : vocabularies) v.buildReferenceIn(m);
+      for (Vocabulary v : vocabularies) {
+        v.buildReferenceIn(m);
+      }
 
       // Write the output file
       File fileName;
@@ -238,6 +247,8 @@ public class Converter {
         genreVocabulary = vocabulary;
       }
     }
+
+    Collections.sort(vocabularies);
   }
 
 

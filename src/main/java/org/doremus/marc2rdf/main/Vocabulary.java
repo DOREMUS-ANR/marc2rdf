@@ -1,6 +1,7 @@
 package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.impl.StatementImpl;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SKOS;
 import org.doremus.ontology.CIDOC;
@@ -14,7 +15,7 @@ import java.util.Map;
  * Utility for Vocabulary referencing.
  */
 
-public class Vocabulary {
+public class Vocabulary implements Comparable<Vocabulary> {
   private Model vocabulary;
   private HashMap<String, Resource> substitutionMap;
   private String schemePath;
@@ -25,7 +26,7 @@ public class Vocabulary {
 
     // Save default path
     StmtIterator conceptSchemeIter =
-      vocabulary.listStatements(new SimpleSelector(null, RDF.type, vocabulary.getResource(SKOS.ConceptScheme.toString())));
+      vocabulary.listStatements(new SimpleSelector(null, RDF.type, SKOS.ConceptScheme));
     if (!conceptSchemeIter.hasNext()) {
       System.out.println("Vocabulary constructor | Warning: No ConceptScheme in the reference rdf at " + url + ". Method \"findConcept\" will not work for it.");
     } else {
@@ -71,20 +72,27 @@ public class Vocabulary {
   }
 
   public Model buildReferenceIn(Model model) {
-    List<Statement> statementsToRemove = new ArrayList<>();
+    List<Statement> statementsToRemove = new ArrayList<>(),
+      statementsToAdd = new ArrayList<>();
 
     for (Map.Entry<String, Resource> entry : substitutionMap.entrySet()) {
       String key = entry.getKey();
+      String keyPlain = key.replaceAll("@[a-z]{2,3}$", "");
       Resource value = entry.getValue();
+      StmtIterator iter = model.listStatements(new SimpleSelector(null, null, (RDFNode) null) {
+        public boolean selects(Statement s) {
+          String obj = s.getObject().toString();
+          return obj.equalsIgnoreCase(key) || obj.replaceAll("@[a-z]{2,3}$", "").equalsIgnoreCase(keyPlain);
+        }
+      });
 
-      StmtIterator iter = model.listStatements(new SimpleSelector(null, null, key));
       while (iter.hasNext()) {
         Statement s = iter.nextStatement();
 
         // System.out.println("FOUND " + key + " --> " + value);
-        if (s.getPredicate().equals(CIDOC.P102_has_title)) {
-          //FIXME this is a workaround!
-          // genres in the title should be manteined
+        Property pred = s.getPredicate();
+        if (pred.equals(CIDOC.P102_has_title) || pred.equals(CIDOC.P3_has_note)) {
+          // genres in title and notes should be maintained
         } else if (s.getPredicate().equals(CIDOC.P1_is_identified_by)) {
           // replace the whole node
           StmtIterator parentIter = model.listStatements(new SimpleSelector(null, null, s.getSubject()));
@@ -97,7 +105,7 @@ public class Vocabulary {
             while (subjIter.hasNext()) {
               statementsToRemove.add(subjIter.nextStatement());
             }
-            model.add(ps.getSubject(), ps.getPredicate(), value);
+            statementsToAdd.add(new StatementImpl(ps.getSubject(), ps.getPredicate(), value));
 
             howManyIteration++;
           }
@@ -106,12 +114,13 @@ public class Vocabulary {
         } else {
           // replace only the literal
           statementsToRemove.add(s);
-          model.add(s.getSubject(), s.getPredicate(), value);
+          statementsToAdd.add(new StatementImpl(s.getSubject(), s.getPredicate(), value));
         }
 
       }
     }
     model.remove(statementsToRemove);
+    model.add(statementsToAdd);
 
     return model;
   }
@@ -124,5 +133,20 @@ public class Vocabulary {
     if (vocabulary.contains(concept, null, (RDFNode) null)) {
       return concept;
     } else return null;
+  }
+
+  @Override
+  public int compareTo(Vocabulary v) {
+    if (this.schemePath == null) return 1;
+    if (v.schemePath == null) return -1;
+
+    // give priority to iaml
+    boolean thisIaml = this.schemePath.contains("/iaml");
+    boolean thatIaml = v.schemePath.contains("/iaml");
+
+    if (thisIaml == thatIaml) return this.schemePath.compareTo(v.schemePath);
+
+    if (thisIaml) return -1;
+    return 1;
   }
 }
