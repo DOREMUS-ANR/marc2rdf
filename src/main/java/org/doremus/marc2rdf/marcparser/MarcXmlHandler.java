@@ -37,6 +37,7 @@ public class MarcXmlHandler implements ContentHandler {
   private static final int CONTROLFIELD = 2;
   private static final int DATAFIELD = 3;
   private static final int SUBFIELD = 4;
+  private static final int LEADER = 5;
 
   private String ETIQ;
   private String CODE;
@@ -76,10 +77,11 @@ public class MarcXmlHandler implements ContentHandler {
   }
 
   public MarcXmlHandler(String recordLabel, String datafieldLabel, String subfieldLabel, String controlfieldLabel,
-                        String tagLabel, String codeLabel, String typeLabel, String idlabel) {
+                        String tagLabel, String codeLabel, String typeLabel, String idlabel, String leaderLabel) {
     this(recordLabel, datafieldLabel, subfieldLabel, tagLabel, codeLabel, typeLabel, idlabel);
 
     elementMap.put(controlfieldLabel, CONTROLFIELD);
+    elementMap.put(leaderLabel, LEADER);
     this.IND1 = "ind1";
     this.IND2 = "ind2";
     this.useControlField = true;
@@ -96,7 +98,7 @@ public class MarcXmlHandler implements ContentHandler {
     Integer elementType = elementMap.get(realName);
 
     if (elementType == null) return;
-    bDATA = CONTROLFIELD == elementType || SUBFIELD == elementType;
+    bDATA = CONTROLFIELD == elementType || SUBFIELD == elementType || LEADER  == elementType;
 
     switch (elementType) {
       case RECORD:
@@ -150,6 +152,10 @@ public class MarcXmlHandler implements ContentHandler {
           subfield = null;
         else
           subfield = new Subfield(code.charAt(0));
+        break;
+      case LEADER:
+        buffer = new StringBuffer();
+        controlField = new ControlField("leader");
     }
   }
 
@@ -173,6 +179,7 @@ public class MarcXmlHandler implements ContentHandler {
           this.record = recordInProgress.get(recordInProgress.size() - 1);
         break;
       case CONTROLFIELD:
+      case LEADER:
         controlField.setData(buffer.toString());
         record.addControlField(controlField);
         break;
@@ -242,6 +249,7 @@ public class MarcXmlHandler implements ContentHandler {
     private String codeLabel;
     private String typeLabel;
     private String idlabel;
+    private String leaderLabel;
 
     public MarcXmlHandlerBuilder() {
       this.recordLabel = "record";
@@ -252,12 +260,13 @@ public class MarcXmlHandler implements ContentHandler {
       this.codeLabel = "code";
       this.typeLabel = "type";
       this.idlabel = "Numero";
+      this.leaderLabel = "leader";
     }
 
     public MarcXmlHandler build() {
       if (controlfieldLabel != null)
         return new MarcXmlHandler(recordLabel, datafieldLabel, subfieldLabel, controlfieldLabel,
-          tagLabel, codeLabel, typeLabel, idlabel);
+          tagLabel, codeLabel, typeLabel, idlabel, leaderLabel);
 
       return new MarcXmlHandler(recordLabel, datafieldLabel, subfieldLabel, tagLabel, codeLabel, typeLabel, idlabel);
     }
