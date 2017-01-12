@@ -112,10 +112,10 @@ public class Converter {
       return;
     }
 
-//    int i = 100;
+    int i = 100;
     for (File file : list) {
-//      if(i < 0) break;
-//      --i;
+      if(i < 0) break;
+      --i;
 
       if (!file.isFile() || !file.getName().endsWith(".xml")) continue;
       String fich = file.getAbsolutePath();

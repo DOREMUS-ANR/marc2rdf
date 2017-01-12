@@ -15,10 +15,10 @@ public class ConstructURI {
     String seed = db + identifier + className;
     return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
   }
-  
+
   public static URI build(String className, String firstName, String lastName, String birthDate) throws URISyntaxException {
 	    String seed = firstName + lastName + birthDate;
-	    return builder.setPath("/" + className + "/" + generateUUID(seed)).build();
+	    return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
 	  }
 
   private static String generateUUID(String seed) {
@@ -50,6 +50,8 @@ public class ConstructURI {
         return "publication";
       case "F31_Performance":
         return "performance";
+      case "E21_Person":
+          return "artist";
       default:
         throw new RuntimeException("[ConstructURI.java] Class not assigned to a collection: " + className);
     }

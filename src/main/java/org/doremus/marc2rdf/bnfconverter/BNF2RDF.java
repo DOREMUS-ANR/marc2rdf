@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.XSD;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
@@ -24,6 +25,7 @@ public class BNF2RDF {
    ******/
   private static final char TUM = 'u';
   private static final char PERSON = 'p';
+  private static final char ORGANIZATION = 'c'; //collectivité
 
   public static Model convert(String file) throws URISyntaxException, FileNotFoundException {
 
@@ -50,8 +52,11 @@ public class BNF2RDF {
           new RecordConverter(r, model);
           break;
         case PERSON:
-          // TODO
-          return null; 
+          new  ArtistConverter(r, model);
+          break;
+        case ORGANIZATION:
+          //TODO
+          break;
         default:
           System.out.println("Not recognized kind of Authority record: " + code);
       }
@@ -63,6 +68,7 @@ public class BNF2RDF {
     model.setNsPrefix("efrbroo", FRBROO.getURI());
     model.setNsPrefix("xsd", XSD.getURI());
     model.setNsPrefix("dcterms", DCTerms.getURI());
+    model.setNsPrefix("owl", OWL.getURI());
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";
