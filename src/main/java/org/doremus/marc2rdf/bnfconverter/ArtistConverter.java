@@ -4,11 +4,12 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,18 +59,23 @@ public class ArtistConverter {
       if (artist.getBirthDate() != null) {
         resource.addProperty(CIDOC.P98i_was_born, artist.getBirthDate());
       }
-
-      for(String sa: artist.getSameAs()){
-        resource.addProperty(OWL.sameAs, model.createResource(sa));
-      }
     }
+
+    // sameAs links
+
+    for (String isni : record.getDatafieldsByCode("031", 'a')) {
+      resource.addProperty(OWL.sameAs, model.createResource("http://isni.org/isni/" + isni));
+    }
+
+    String ark = record.getAttrByName("IDPerenne").getData();
+    resource.addProperty(OWL.sameAs, model.createResource("http://catalogue.bnf.fr/" + ark));
+
   }
 
 
-  private List<Person> getArtistsInfo(Record record) throws URISyntaxException {
+  static List<Person> getArtistsInfo(Record record) throws URISyntaxException {
     List<Person> artists = new ArrayList<>();
 
-    //TODO Conserver le contenu du $3 qui fait le lien vers la notice d'autorité Personne
     for (DataField field : record.getDatafieldsByCode("100")) {
       String firstName = null, lastName = null, birthDate = null, lang = null;
 
@@ -90,15 +96,7 @@ public class ArtistConverter {
         if (lang.length() == 0) lang = null;
       }
 
-//      if ((firstName != null) && (lastName != null) && (birthDate != null))
-//        composers.add(ConstructURI.build("artist", firstName, lastName, birthDate));
-      Person artist = new Person(firstName, lastName, birthDate, lang);
-
-      for(String isni : record.getDatafieldsByCode("031", 'a')){
-        artist.sameAs("http://isni.org/isni/"+isni);
-      }
-
-      artists.add(artist);
+      artists.add(new Person(firstName, lastName, birthDate, lang));
     }
     return artists;
   }

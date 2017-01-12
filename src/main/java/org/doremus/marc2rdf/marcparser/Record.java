@@ -5,14 +5,16 @@ import java.util.List;
 
 public class Record {
 
-  public List<DataField> dataFields;
-  public List<ControlField> controlFields;
-  public String id;
+  private List<DataField> dataFields;
+  private List<ControlField> controlFields;
+  private List<Attr> attrList;
+  private String id;
   public String type;
 
   public Record(String type, String id) {
     controlFields = new ArrayList<>();
     dataFields = new ArrayList<>();
+    attrList = new ArrayList<>();
     this.type = type;
     this.id = id;
   }
@@ -29,13 +31,15 @@ public class Record {
     return this.type.equals(type);
   }
 
-  public void addControlField(Etiq field) {
+  void addControlField(Etiq field) {
     controlFields.add((ControlField) field);
   }
 
-  public void addDataField(Etiq field) {
+  void addDataField(Etiq field) {
     dataFields.add((DataField) field);
   }
+
+  void addAttr(Attr attr) { attrList.add(attr);}
 
   public List<Etiq> getControlFields() {
     List<Etiq> fields = new ArrayList<>();
@@ -94,6 +98,15 @@ public class Record {
       }
     }
     return results;
+  }
+
+  public Attr getAttrByName(String name){
+    for (Attr at : this.attrList) {
+      if (at.getName().equals(name)) {
+        return at;
+      }
+    }
+    return null;
   }
 
   public List<Etiq> getAllData() {

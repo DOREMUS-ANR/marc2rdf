@@ -1,22 +1,16 @@
-package org.doremus.marc2rdf.bnfconverter;
-
-import org.doremus.marc2rdf.main.ConstructURI;
+package org.doremus.marc2rdf.main;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Person {
   private URI uri;
   private String firstName, lastName, birthDate, lang;
-  private List<String> sameAs;
 
   public Person(String firstName, String lastName, String birthDate) throws RuntimeException, URISyntaxException {
     this.firstName = firstName;
     this.lastName = lastName;
     this.birthDate = birthDate;
-    this.sameAs = new ArrayList<>();
 
     if (lastName == null) {
       throw new RuntimeException("Missing artist value: null | " + lastName + " | " + birthDate);
@@ -50,11 +44,4 @@ public class Person {
     return lang;
   }
 
-  public void sameAs(String s) {
-    sameAs.add(s);
-  }
-
-  public List<String> getSameAs() {
-    return sameAs;
-  }
 }

@@ -22,7 +22,9 @@ public class MarcXmlHandler implements ContentHandler {
   private Subfield subfield;
   private DataField dataField;
   private ControlField controlField;
+  private Attr attr;
   private Record record;
+
 
   /******
    * List for the record currently under parsing
@@ -38,6 +40,7 @@ public class MarcXmlHandler implements ContentHandler {
   private static final int DATAFIELD = 3;
   private static final int SUBFIELD = 4;
   private static final int LEADER = 5;
+  private static final int ATTR = 6;
 
   private String ETIQ;
   private String CODE;
@@ -77,11 +80,12 @@ public class MarcXmlHandler implements ContentHandler {
   }
 
   public MarcXmlHandler(String recordLabel, String datafieldLabel, String subfieldLabel, String controlfieldLabel,
-                        String tagLabel, String codeLabel, String typeLabel, String idlabel, String leaderLabel) {
+                        String tagLabel, String codeLabel, String typeLabel, String idlabel, String leaderLabel, String attrLabel) {
     this(recordLabel, datafieldLabel, subfieldLabel, tagLabel, codeLabel, typeLabel, idlabel);
 
     elementMap.put(controlfieldLabel, CONTROLFIELD);
     elementMap.put(leaderLabel, LEADER);
+    elementMap.put(attrLabel, ATTR);
     this.IND1 = "ind1";
     this.IND2 = "ind2";
     this.useControlField = true;
@@ -98,10 +102,10 @@ public class MarcXmlHandler implements ContentHandler {
     Integer elementType = elementMap.get(realName);
 
     if (elementType == null) return;
-    bDATA = CONTROLFIELD == elementType || SUBFIELD == elementType || LEADER  == elementType;
 
     switch (elementType) {
       case RECORD:
+        bDATA = false;
         String type = attrs.getValue(TYPE);
         String id = attrs.getValue(ID);
 
@@ -120,11 +124,13 @@ public class MarcXmlHandler implements ContentHandler {
         recordInProgress.add(this.record);
         break;
       case CONTROLFIELD:
+        bDATA = true;
         buffer = new StringBuffer();
         String etiqCode = attrs.getValue(ETIQ);
         controlField = new ControlField(etiqCode);
         break;
       case DATAFIELD:
+        bDATA = false;
         etiqCode = attrs.getValue(ETIQ);
         if (useControlField) {
           String ind1 = attrs.getValue(IND1);
@@ -139,6 +145,7 @@ public class MarcXmlHandler implements ContentHandler {
 
         break;
       case SUBFIELD:
+        bDATA = true;
         buffer = new StringBuffer();
         String code = attrs.getValue(CODE);
 
@@ -154,8 +161,15 @@ public class MarcXmlHandler implements ContentHandler {
           subfield = new Subfield(code.charAt(0));
         break;
       case LEADER:
+        bDATA = true;
         buffer = new StringBuffer();
         controlField = new ControlField("leader");
+        break;
+      case ATTR:
+        bDATA = true;
+        buffer = new StringBuffer();
+        String nm = attrs.getValue("Nom");
+        attr =  new Attr(nm);
     }
   }
 
@@ -192,6 +206,10 @@ public class MarcXmlHandler implements ContentHandler {
         subfield.setData(buffer.toString());
         dataField.addSubfield(subfield);
         subfield = null;
+        break;
+      case ATTR:
+        attr.setData(buffer.toString());
+         record.addAttr(attr);
     }
   }
 
@@ -250,6 +268,7 @@ public class MarcXmlHandler implements ContentHandler {
     private String typeLabel;
     private String idlabel;
     private String leaderLabel;
+    private String attrLabel;
 
     public MarcXmlHandlerBuilder() {
       this.recordLabel = "record";
@@ -261,12 +280,13 @@ public class MarcXmlHandler implements ContentHandler {
       this.typeLabel = "type";
       this.idlabel = "Numero";
       this.leaderLabel = "leader";
+      this.attrLabel = "Attr";
     }
 
     public MarcXmlHandler build() {
       if (controlfieldLabel != null)
         return new MarcXmlHandler(recordLabel, datafieldLabel, subfieldLabel, controlfieldLabel,
-          tagLabel, codeLabel, typeLabel, idlabel, leaderLabel);
+          tagLabel, codeLabel, typeLabel, idlabel, leaderLabel, attrLabel);
 
       return new MarcXmlHandler(recordLabel, datafieldLabel, subfieldLabel, tagLabel, codeLabel, typeLabel, idlabel);
     }

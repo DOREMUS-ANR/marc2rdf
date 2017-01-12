@@ -6,20 +6,19 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PF28_ExpressionCreation  extends DoremusResource{
+public class PF28_ExpressionCreation extends DoremusResource {
   private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
 
   public PF28_ExpressionCreation(Record record, String identifier) throws URISyntaxException {
@@ -49,14 +48,11 @@ public class PF28_ExpressionCreation  extends DoremusResource{
     }
 
     /**************************** Work: is created by ***************************************/
-    for (URI composer : getComposer()) {
+    for (Person composer : getComposer()) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource()
         .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
-        .addProperty(CIDOC.P14_carried_out_by, model.createResource(composer.toString())
-        	.addProperty(RDF.type, CIDOC.E21_Person)
-     //     .addProperty(CIDOC.P1_is_identified_by, model.createResource(composer.toString()))
-        ));
+        .addProperty(CIDOC.P14_carried_out_by, model.createResource(composer.getUri().toString())));
     }
   }
 
@@ -66,7 +62,7 @@ public class PF28_ExpressionCreation  extends DoremusResource{
     return this;
   }
 
-   public PF28_ExpressionCreation add(PF22_SelfContainedExpression expression) {
+  public PF28_ExpressionCreation add(PF22_SelfContainedExpression expression) {
     /**************************** Expression: created ***************************************/
     this.resource.addProperty(FRBROO.R17_created, expression.asResource());
     // expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
@@ -137,11 +133,10 @@ public class PF28_ExpressionCreation  extends DoremusResource{
     return null;
   }
 
-  private List<URI> getComposer() throws URISyntaxException {
+  private List<Person> getComposer() throws URISyntaxException {
     if (!record.isType("UNI:100")) return new ArrayList<>();
 
-    // TODO Conserver le contenu du $3 qui fait le lien vers la notice d'autorité
-    List<URI> composers = new ArrayList<>();
+    List<Person> composers = new ArrayList<>();
 
     List<DataField> fields = record.getDatafieldsByCode("700");
     for (DataField field : record.getDatafieldsByCode("701")) {
@@ -155,16 +150,16 @@ public class PF28_ExpressionCreation  extends DoremusResource{
     for (DataField field : fields) {
       String firstName = null, lastName = null, birthDate = null;
       if (field.isCode('a')) { // surname
-    	  firstName = field.getSubfield('a').getData().trim();
+        lastName = field.getSubfield('a').getData().trim();
       }
       if (field.isCode('b')) { // name
-    	  lastName = field.getSubfield('b').getData().trim();
+        firstName = field.getSubfield('b').getData().trim();
       }
       if (field.isCode('f')) { // birth - death dates
         birthDate = field.getSubfield('f').getData().trim().substring(0, field.getSubfield('f').getData().trim().indexOf("-"));
       }
-      if ((firstName != null)&&(lastName != null)&&(birthDate != null))
-    	  composers.add(ConstructURI.build("artist", firstName, lastName, birthDate));
+
+      composers.add(new Person(firstName, lastName, birthDate));
     }
     return composers;
   }
