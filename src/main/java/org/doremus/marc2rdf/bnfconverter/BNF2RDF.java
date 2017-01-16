@@ -38,6 +38,8 @@ public class BNF2RDF {
     if (reader.getRecords() == null || reader.getRecords().size() == 0)
       System.out.println("Exception occurred parsing file " + file);
 
+    boolean somethingHasBeenConverted = false;
+
     for (Record r : reader.getRecords()) {
       // TODO implement mapping for notice of type BIB
       if (r.type == null || !r.isType("Authority")) return null;
@@ -49,9 +51,11 @@ public class BNF2RDF {
 
       switch (code) {
         case TUM:
+          somethingHasBeenConverted = true;
           new RecordConverter(r, model);
           break;
         case PERSON:
+          somethingHasBeenConverted = true;
           new  ArtistConverter(r, model);
           break;
         case ORGANIZATION:
@@ -62,6 +66,8 @@ public class BNF2RDF {
       }
 
     }
+
+    if(!somethingHasBeenConverted) return null;
 
     model.setNsPrefix("mus", MUS.getURI());
     model.setNsPrefix("ecrm", CIDOC.getURI());
