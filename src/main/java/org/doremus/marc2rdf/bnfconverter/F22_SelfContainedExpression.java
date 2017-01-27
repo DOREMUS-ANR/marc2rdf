@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -24,7 +25,7 @@ import java.util.regex.Pattern;
 public class F22_SelfContainedExpression extends DoremusResource {
   private final String catalogFallbackRegex = "([a-z]+) ?(\\d+)";
 
-  public F22_SelfContainedExpression(Record record) throws URISyntaxException {
+  public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) throws URISyntaxException {
     super(record);
 
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
@@ -33,7 +34,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     String dedication = getDedicace();
     if (dedication != null) {
       this.resource.addProperty(CIDOC.P67_refers_to, model.createResource(this.uri.toString() + "/dedication")
-        .addProperty(RDF.type, MUS.M15_Dedication)
+        .addProperty(RDF.type, MUS.M15_Dedication_Statement)
         .addProperty(MUS.U44_has_dedication_statement, this.model.createLiteral(dedication, "fr")));
     }
 
@@ -42,8 +43,9 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
 
     /**************************** Expression: Catalogue *************************************/
+    int catalogProgressive = 0;
     for (String catalog : getCatalog()) {
-      Resource M1CatalogStatement = model.createResource()
+      Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + (++catalogProgressive))
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
         .addProperty(CIDOC.P3_has_note, catalog);
 
@@ -58,9 +60,14 @@ public class F22_SelfContainedExpression extends DoremusResource {
           catalogParts = new String[]{matcher.group(1), matcher.group(2)};
         }
       }
-      if (catalogParts.length > 1) { //if still
-        M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
-          .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
+      if (catalogParts.length > 1) {
+        Resource match = Converter.catalogVocabulary.findModsResource(catalogParts[0], toIdentifications(f28.getComposers()));
+
+        if (match == null)
+          M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0]);
+        else M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, match);
+
+        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
       } else
         System.out.println("Not parsable catalog: " + catalog);
       // TODO what to do with not parsable catalogs?
@@ -129,6 +136,14 @@ public class F22_SelfContainedExpression extends DoremusResource {
     }
   }
 
+  private List<String> toIdentifications(List<Person> composers) {
+    List<String> identification = new ArrayList<>();
+    if(composers==null) return identification;
+    for(Person composer : composers) identification.add(composer.getIdentification());
+    return identification;
+  }
+
+
   /***********************************
    * La dedicace
    ***********************************/
@@ -160,7 +175,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (field.isCode('h')) title += field.getSubfield('h').getData();
       if (field.isCode('i')) title += field.getSubfield('i').getData();
 
-      if (field.isCode('w') && field.getSubfield('w').getData().length()>=8)
+      if (field.isCode('w') && field.getSubfield('w').getData().length() >= 8)
         language = field.getSubfield('w').getData().substring(6, 8).replaceAll(".", "");
 
 

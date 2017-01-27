@@ -1,10 +1,12 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.impl.StatementImpl;
+import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.XSD;
+import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
@@ -16,7 +18,10 @@ import org.doremus.ontology.MUS;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.doremus.marc2rdf.main.Converter.catalogVocabulary;
 import static org.doremus.marc2rdf.main.Converter.properties;
 
 public class PP2RDF {
@@ -59,7 +64,7 @@ public class PP2RDF {
 
         // Convertir le TUM correspondant
         File tum = getTUM(folderTUMs, idTUM);
-        if(tum == null){
+        if (tum == null) {
           System.out.println("TUM specified but not found: notice " + file + ", tum " + idTUM);
           continue;
         }
@@ -71,15 +76,18 @@ public class PP2RDF {
         continue;
       }
       found = true;
-      new RecordConverter(r, model);
+      RecordConverter mainRecord = new RecordConverter(r, model);
+      catalogToUri(model, toIdentifications(mainRecord.f28.getComposers()));
     }
     if (!found) return null;
+
 
     model.setNsPrefix("mus", MUS.getURI());
     model.setNsPrefix("ecrm", CIDOC.getURI());
     model.setNsPrefix("efrbroo", FRBROO.getURI());
     model.setNsPrefix("xsd", XSD.getURI());
     model.setNsPrefix("dcterms", DCTerms.getURI());
+    model.setNsPrefix("foaf", FOAF.getURI());
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";
@@ -114,6 +122,32 @@ public class PP2RDF {
 
     }
     return null;
+  }
+
+  private static void catalogToUri(Model model, List<String> composers) {
+    List<Statement> statementsToRemove = new ArrayList<>(),
+      statementsToAdd = new ArrayList<>();
+
+    StmtIterator iter = model.listStatements(new SimpleSelector(null, MUS.U40_has_catalogue_name, (RDFNode) null));
+
+    while (iter.hasNext()) {
+      Statement s = iter.nextStatement();
+
+      Resource match = catalogVocabulary.findModsResource(s.getObject().toString(), composers);
+      if (match == null) continue;
+
+      statementsToRemove.add(s);
+      statementsToAdd.add(new StatementImpl(s.getSubject(), s.getPredicate(), match));
+    }
+    model.remove(statementsToRemove);
+    model.add(statementsToAdd);
+  }
+
+  private static List<String> toIdentifications(List<Person> composers) {
+    List<String> identification = new ArrayList<>();
+    if (composers == null) return identification;
+    for (Person composer : composers) identification.add(composer.getIdentification());
+    return identification;
   }
 
 }

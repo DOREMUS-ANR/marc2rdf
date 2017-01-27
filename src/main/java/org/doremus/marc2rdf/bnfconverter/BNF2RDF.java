@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
@@ -14,7 +15,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.net.URISyntaxException;
 
 public class BNF2RDF {
@@ -56,7 +57,7 @@ public class BNF2RDF {
           break;
         case PERSON:
           somethingHasBeenConverted = true;
-          new  ArtistConverter(r, model);
+          new ArtistConverter(r, model);
           break;
         case ORGANIZATION:
           //TODO
@@ -64,10 +65,22 @@ public class BNF2RDF {
         default:
           System.out.println("Not recognized kind of Authority record: " + code);
       }
-
     }
 
-    if(!somethingHasBeenConverted) return null;
+    // bnf organiz folder
+//    Record r = reader.getRecords().get(0);
+//    String type = r.getType();
+//    String subType = "other";
+//    ControlField leader = r.getControlfieldByCode("leader");
+//    if (leader != null)
+//      subType = leader.getData().charAt(9) + "";
+//    try {
+//      move(file, "/Users/pasquale/Doremus/src_bnf/"+ type + "/" + subType + "/");
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+
+    if (!somethingHasBeenConverted) return null;
 
     model.setNsPrefix("mus", MUS.getURI());
     model.setNsPrefix("ecrm", CIDOC.getURI());
@@ -75,6 +88,7 @@ public class BNF2RDF {
     model.setNsPrefix("xsd", XSD.getURI());
     model.setNsPrefix("dcterms", DCTerms.getURI());
     model.setNsPrefix("owl", OWL.getURI());
+    model.setNsPrefix("foaf", FOAF.getURI());
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";
@@ -89,4 +103,27 @@ public class BNF2RDF {
 	    vur.exec();
 		/****************************************************************************************/
   }
+
+  private static void move(String src, String dst) throws IOException {
+    InputStream in = null;
+    OutputStream out = null;
+    try {
+      in = new FileInputStream(src);
+      out = new FileOutputStream(dst);
+      byte[] buffer = new byte[1024];
+      int length;
+      while ((length = in.read(buffer)) > 0) {
+        out.write(buffer, 0, length);
+      }
+    } catch(Exception e){
+      e.printStackTrace();
+    }
+    finally {
+      in.close();
+      out.close();
+    }
+
+  }
+
 }
+

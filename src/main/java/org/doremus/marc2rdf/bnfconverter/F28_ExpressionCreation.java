@@ -6,21 +6,17 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.ControlField;
-import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +25,7 @@ import java.util.regex.Pattern;
 
 public class F28_ExpressionCreation extends DoremusResource {
   private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
+  private List<Person> composers;
 //  private static final String textDateRegex = "(1er|[\\d]{1,2}) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (\\d{4})";
 
   public F28_ExpressionCreation(String identifier) throws URISyntaxException {
@@ -52,12 +49,14 @@ public class F28_ExpressionCreation extends DoremusResource {
     if (dateText != null) this.resource.addProperty(CIDOC.P3_has_note, dateText);
 
     /**************************** Work: is created by ***************************************/
-    for (Person composer : ArtistConverter.getArtistsInfo(record)) {
+    this.composers = ArtistConverter.getArtistsInfo(record);
+    for (Person composer : composers) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource()
         .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
-        .addProperty(CIDOC.P14_carried_out_by, model.createResource(composer.getUri().toString()))
+        .addProperty(CIDOC.P14_carried_out_by, composer.asResource())
       );
+      model.add(composer.getModel());
     }
   }
 
@@ -177,4 +176,7 @@ public class F28_ExpressionCreation extends DoremusResource {
     return c.get(Calendar.DAY_OF_MONTH) + "";
   }
 
+  public List<Person> getComposers() {
+    return this.composers;
+  }
 }

@@ -54,7 +54,7 @@ public class PF31_Performance extends DoremusResource {
     for (String note : record.getDatafieldsByCode("919", 'a')) {
       note = note.trim();
       Matcher m = p.matcher(note);
-      if (m.find()) note = note.replaceAll(m.group(0), "").trim();
+      if (m.find()) note = note.replace(m.group(0), "").trim();
 
       m = p2.matcher(note);
       if (m.find()) { // Creation francaise

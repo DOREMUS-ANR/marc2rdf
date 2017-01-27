@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Person;
@@ -15,14 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistConverter {
-  private Model model;
-  private Record record;
-
 
   public ArtistConverter(Record record, Model model) throws URISyntaxException {
-    this.record = record;
-    this.model = model;
-
     List<Person> artists = getArtistsInfo(record);
 
     if (artists.size() == 0) {
@@ -44,31 +39,23 @@ public class ArtistConverter {
       }
     }
 
-    Resource resource = model.createResource(base.getUri().toString());
-    resource.addProperty(RDF.type, CIDOC.E21_Person);
 
     for (Person artist : artists) {
+      if (artist == base) continue;
 
-      String fullName = artist.getLastName();
-      if (artist.getFirstName() != null) fullName = artist.getFirstName() + " " + artist.getLastName();
-      if (artist.getLang() != null)
-        resource.addProperty(CIDOC.P131_is_identified_by, model.createLiteral(fullName, artist.getLang()));
-      else
-        resource.addProperty(CIDOC.P131_is_identified_by, fullName);
-
-      if (artist.getBirthDate() != null) {
-        resource.addProperty(CIDOC.P98i_was_born, artist.getBirthDate());
-      }
+      base.addProperty(FOAF.firstName, artist.getFirstName(), artist.getLang());
+      base.addProperty(FOAF.surname, artist.getLastName(), artist.getLang());
+      base.addProperty(FOAF.name, artist.getFullName(), artist.getLang());
+      base.addProperty(CIDOC.P131_is_identified_by, artist.getIdentification(), artist.getLang());
     }
 
     // sameAs links
 
-    for (String isni : record.getDatafieldsByCode("031", 'a')) {
-      resource.addProperty(OWL.sameAs, model.createResource("http://isni.org/isni/" + isni));
-    }
+    for (String isni : record.getDatafieldsByCode("031", 'a'))
+      base.asResource().addProperty(OWL.sameAs, model.createResource("http://isni.org/isni/" + isni));
 
     String ark = record.getAttrByName("IDPerenne").getData();
-    resource.addProperty(OWL.sameAs, model.createResource("http://catalogue.bnf.fr/" + ark));
+    base.asResource().addProperty(OWL.sameAs, model.createResource("http://catalogue.bnf.fr/" + ark));
 
   }
 
@@ -77,7 +64,7 @@ public class ArtistConverter {
     List<Person> artists = new ArrayList<>();
 
     for (DataField field : record.getDatafieldsByCode("100")) {
-      String firstName = null, lastName = null, birthDate = null, lang = null;
+      String firstName = null, lastName = null, birthDate = null, deathDate = null, lang = null;
 
       if (field.isCode('m')) { // name
         firstName = field.getSubfield('m').getData().trim();
@@ -87,16 +74,18 @@ public class ArtistConverter {
       }
       if (field.isCode('d')) { // birth - death dates
         String d = field.getSubfield('d').getData();
-        int split = d.indexOf("-");
-        birthDate = (split > 0 ? d.substring(0, split) : d).trim();
+        String[] dates = d.split("-");
+        birthDate = dates[0].trim();
+        if (dates.length > 1) deathDate = dates[1].trim();
       }
       if (field.isCode('w')) { // lang
         String w = field.getSubfield('w').getData();
-        lang = w.substring(6, 9).replaceAll("\\.", "").trim();
-        if (lang.length() == 0) lang = null;
+        if (w.length() > 9)
+          lang = w.substring(6, 9).replaceAll("\\.", "").trim();
+        if (lang != null && lang.length() == 0) lang = null;
       }
 
-      artists.add(new Person(firstName, lastName, birthDate, lang));
+      artists.add(new Person(firstName, lastName, birthDate, deathDate, lang));
     }
     return artists;
   }

@@ -11,7 +11,7 @@ public class RecordConverter {
   private String identifier;
 
   private PF22_SelfContainedExpression f22;
-  private PF28_ExpressionCreation f28;
+  public PF28_ExpressionCreation f28;
   private PF14_IndividualWork f14;
   private PF15_ComplexWork f15;
 
@@ -24,8 +24,8 @@ public class RecordConverter {
     this.model = model;
     this.identifier = identifier;
 
-    f22 = new PF22_SelfContainedExpression(record, identifier);
     f28 = new PF28_ExpressionCreation(record, identifier);
+    f22 = new PF22_SelfContainedExpression(record, identifier);
     f14 = new PF14_IndividualWork(record, identifier);
     f15 = new PF15_ComplexWork(record, identifier);
     PF42_RepresentativeExpressionAssignment f42 = new PF42_RepresentativeExpressionAssignment(record, identifier);

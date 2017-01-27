@@ -6,10 +6,9 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SKOS;
 import org.doremus.ontology.CIDOC;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static edu.stanford.nlp.util.StringUtils.containsIgnoreCase;
 
 /**
  * Utility for Vocabulary referencing.
@@ -19,6 +18,7 @@ public class Vocabulary implements Comparable<Vocabulary> {
   private Model vocabulary;
   private HashMap<String, Resource> substitutionMap;
   private String schemePath;
+  private final String MODS = "http://www.loc.gov/standards/mods/rdf/v1/#";
 
   public Vocabulary(String url) {
     vocabulary = ModelFactory.createDefaultModel();
@@ -41,7 +41,7 @@ public class Vocabulary implements Comparable<Vocabulary> {
 
     // for each concept
     StmtIterator conceptIter =
-      vocabulary.listStatements(new SimpleSelector(null, RDF.type, vocabulary.getResource(SKOS.Concept.toString())));
+      vocabulary.listStatements(new SimpleSelector(null, RDF.type, SKOS.Concept));
 
     if (!conceptIter.hasNext()) {
       System.out.println("Vocabulary constructor | Warning: No concepts in the reference rdf at " + url);
@@ -134,6 +134,47 @@ public class Vocabulary implements Comparable<Vocabulary> {
       return concept;
     } else return null;
   }
+
+  public Resource findModsResource(String identifier) {
+    return findModsResource(identifier, null);
+  }
+
+  public Resource findModsResource(String identifier, List<String> composers) {
+    if (identifier == null || identifier.isEmpty()) return null;
+
+    List<Resource> candidateCatalogs = new ArrayList<>();
+
+    // search all catalogs with that identifier
+    StmtIterator iter = vocabulary.listStatements(new SimpleSelector(null, vocabulary.getProperty(MODS, "identifier"), (RDFNode) null) {
+      public boolean selects(Statement s) {
+        String obj = s.getObject().toString();
+        return obj.equalsIgnoreCase(identifier);
+      }
+    });
+
+    while (iter.hasNext()) {
+      Resource resource = iter.nextStatement().getSubject();
+      candidateCatalogs.add(resource);
+    }
+
+    if (candidateCatalogs.size() == 0) return null;
+    else if (candidateCatalogs.size() > 1) {
+      if (composers != null) {
+        // load related artists
+        for (Resource res : candidateCatalogs) {
+          Object subjectName = res.getProperty(vocabulary.getProperty(MODS, "subjectName")).getObject();
+          System.out.println(subjectName.toString());
+          if (containsIgnoreCase(composers, subjectName.toString())) {
+            // found!
+            return res;
+          }
+        }
+      }
+      System.out.println("Too many results for catalog " + identifier + " and composers " + composers + ". It will be not linked.");
+      return null;
+    } else return candidateCatalogs.get(0);
+  }
+
 
   @Override
   public int compareTo(Vocabulary v) {

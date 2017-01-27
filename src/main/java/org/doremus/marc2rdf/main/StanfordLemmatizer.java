@@ -46,6 +46,8 @@ public class StanfordLemmatizer {
 
   public List<String> lemmatize(String documentText) {
     List<String> lemmas = new LinkedList<>();
+    if(documentText.length() < 1 ) return lemmas;
+
     // Create an empty Annotation just with the given text
     Annotation document = new Annotation(documentText);
     // run all Annotators on this text

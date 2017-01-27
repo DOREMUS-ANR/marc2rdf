@@ -4,9 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.Converter;
-import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.StanfordLemmatizer;
+import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -35,8 +33,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       this.resource.addProperty(CIDOC.P102_has_title, title);
 
     /**************************** Expression: Catalogue *************************************/
+    int catalogProgressive = 0;
     for (String catalog : getCatalog()) {
-      Resource M1CatalogStatement = model.createResource()
+      Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + (++catalogProgressive))
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
         .addProperty(CIDOC.P3_has_note, catalog);
 
@@ -91,7 +90,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     List<String> genres = getGenre();
     for (String genre : genres) {
       this.resource.addProperty(MUS.U12_has_genre, model.createResource()
-        .addProperty(RDF.type, MUS.M5_Genre)
+        .addProperty(RDF.type, MUS.M5_Genre_or_Form)
         .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
       );
     }
@@ -231,8 +230,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     name = name.replaceAll("non spécifiée", "");
 
     // punctual fix
-    if(name.equals("flûtes")) name = "flûte";
-    if(name.equals("contrebasses")) name = "contrebasse";
+    if (name.equals("flûtes")) name = "flûte";
+    if (name.equals("contrebasses")) name = "contrebasse";
 //    System.out.println(name + " --> " + slem.lemmatize(name));
     // singularize
     name = String.join(" ", slem.lemmatize(name));
@@ -306,7 +305,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     catalogFields.addAll(record.getDatafieldsByCode("144", 'k'));
 
     for (String catalog : catalogFields) {
-      if (!results.contains(catalog)) results.add(catalog.trim());
+      if (!results.contains(catalog.trim())) results.add(catalog.trim());
     }
     return results;
   }

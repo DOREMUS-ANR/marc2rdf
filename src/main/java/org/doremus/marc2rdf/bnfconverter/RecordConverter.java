@@ -21,8 +21,8 @@ public class RecordConverter {
     this.model = model;
 
     // Instantiate work and expression
-    f22 = new F22_SelfContainedExpression(record);
     f28 = new F28_ExpressionCreation(record);
+    f22 = new F22_SelfContainedExpression(record, f28);
     f14 = new F14_IndividualWork(record);
     f15 = new F15_ComplexWork(record);
 //    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
