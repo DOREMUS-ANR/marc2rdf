@@ -26,7 +26,7 @@ public class Converter {
   private static boolean marcOut;
 
   private static ArrayList<Vocabulary> vocabularies;
-  public static Vocabulary genreVocabulary, catalogVocabulary;
+  public static Vocabulary genreVocabulary, mopVocabulary, catalogVocabulary;
 
   public static Properties properties;
   private static List<String> notSignificativeTitleList = null;
@@ -245,6 +245,9 @@ public class Converter {
       System.out.println("Loaded vocabulary at " + url);
       if (content.getName().equals("genre-iaml.ttl")) {
         genreVocabulary = vocabulary;
+      }
+      if (content.getName().equals("mop-iaml.ttl")) {
+        mopVocabulary = vocabulary;
       }
       if (content.getName().equals("catalog.ttl")) {
         catalogVocabulary = vocabulary;

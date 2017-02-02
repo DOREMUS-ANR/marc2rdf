@@ -13,8 +13,11 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +26,7 @@ import java.util.regex.Pattern;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class F22_SelfContainedExpression extends DoremusResource {
+  private static HashMap<String, String> intermarcMap;
   private final String catalogFallbackRegex = "([a-z]+) ?(\\d+)";
 
   public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) throws URISyntaxException {
@@ -112,24 +116,46 @@ public class F22_SelfContainedExpression extends DoremusResource {
     if (orderNumber != null) this.resource.addProperty(MUS.U10_has_order_number, orderNumber);
 
     /**************************** Expression: Casting ***************************************/
-    int castingNum = 0;
-    for (String castingString : getCasting()) {
-      Resource M6Casting = model.createResource(this.uri.toString() + "/casting/" + (++castingNum));
-      M6Casting.addProperty(RDF.type, MUS.M6_Casting)
-        .addProperty(CIDOC.P3_has_note, castingString);
+    List<M23_Casting_Detail> castDetails = new ArrayList<>();
+    for (String castingDetail : getCastMembers()) {
+      String mopCode = castingDetail.substring(0, 2);
+      String mopNum = castingDetail.substring(2, 4);
+      String iamlCode = itermarc2iaml(mopCode);
 
-      String[] mopList = castingString.split(",");
-      for (String mop : mopList) {
-        Resource M23CastingDetail = model.createResource();
-        M23CastingDetail.addProperty(RDF.type, MUS.M23_Casting_Detail);
-        Literal mopLiteral = model.createLiteral(mop.toLowerCase().trim(), "fr");
-        M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type,
-          model.createResource()
-            .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
-            .addProperty(CIDOC.P1_is_identified_by, mopLiteral)
-        );
+      if (iamlCode == null)
+        System.out.println("Iaml code not found for mop: " + mopCode);
+      else
+        castDetails.add(new M23_Casting_Detail(iamlCode, mopNum));
+    }
+    for (String castingDetail : getSoloists()) {
+      String mopCode = castingDetail.substring(0, 2);
+      String mopNum = castingDetail.substring(2, 4);
+      String iamlCode = itermarc2iaml(mopCode);
 
+      if (iamlCode == null)
+        System.out.println("Iaml code not found for mop: " + mopCode);
+      else
+        castDetails.add(new M23_Casting_Detail(iamlCode, mopNum, true));
+    }
+
+    List<String> castingNotes = getCasting();
+
+    // if I have the info about casting
+    if (castingNotes.size() > 0 || castDetails.size() > 0) {
+      String castingUri = this.uri.toString() + "/casting/1";
+      Resource M6Casting = model.createResource(castingUri);
+      M6Casting.addProperty(RDF.type, MUS.M6_Casting);
+
+      // casting notes
+      for (String castingString : castingNotes)
+        M6Casting.addProperty(CIDOC.P3_has_note, castingString);
+
+      // casting details
+      int detailNum = 0;
+      for (M23_Casting_Detail detail : castDetails) {
+        Resource M23CastingDetail = detail.asResource(castingUri + "/detail/" + ++detailNum);
         M6Casting.addProperty(MUS.U23_has_casting_detail, M23CastingDetail);
+        model.add(M23CastingDetail.getModel());
       }
 
       this.resource.addProperty(MUS.U13_has_casting, M6Casting);
@@ -138,8 +164,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
   private List<String> toIdentifications(List<Person> composers) {
     List<String> identification = new ArrayList<>();
-    if(composers==null) return identification;
-    for(Person composer : composers) identification.add(composer.getIdentification());
+    if (composers == null) return identification;
+    for (Person composer : composers) identification.add(composer.getIdentification());
     return identification;
   }
 
@@ -278,6 +304,47 @@ public class F22_SelfContainedExpression extends DoremusResource {
    ***********************************/
   private List<String> getCasting() {
     return record.getDatafieldsByCode("144", 'b');
+  }
+
+  private List<String> getCastMembers() {
+    return record.getDatafieldsByCode("048", 'a');
+  }
+  private List<String> getSoloists() {
+    return record.getDatafieldsByCode("048", 'b');
+  }
+
+
+  public static String itermarc2iaml(String intermarcInput) {
+    if (intermarcMap == null) {
+      String csvFile = F22_SelfContainedExpression.class.getClass().getResource("/intermarc2iaml.csv").getFile();
+      intermarcMap = new HashMap<>();
+
+      try {
+
+        BufferedReader br = new BufferedReader(new FileReader(csvFile));
+
+        String line = br.readLine();
+        boolean firstLine = true;
+
+        while (line != null) {
+          if (firstLine) firstLine = false; // header
+          else {
+            String str[] = line.split(";");
+
+            String intermarc = str[3];
+            String iaml = str[0];
+
+            if (!intermarc.isEmpty()) intermarcMap.put(intermarc, iaml);
+          }
+          line = br.readLine();
+        }
+
+
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return intermarcMap.get(intermarcInput);
   }
 
 }
