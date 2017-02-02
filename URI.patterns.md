@@ -57,3 +57,4 @@ The `<suffix>` is taken from this table:
 | M6_Casting | casting |
 | M15_Dedication | dedication |
 | M1_Catalogue_Statement | catalog |
+| E52_Time-Span | time |

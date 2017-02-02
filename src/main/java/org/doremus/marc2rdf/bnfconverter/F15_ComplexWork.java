@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -16,6 +17,9 @@ public class F15_ComplexWork extends DoremusResource {
     super(record);
 
     this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);
+
+    String ark = record.getAttrByName("IDPerenne").getData();
+    if(ark != null) this.resource.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/"+ark));
   }
 
   public F15_ComplexWork add(F22_SelfContainedExpression f22) {

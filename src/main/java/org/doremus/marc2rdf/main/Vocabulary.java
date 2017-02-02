@@ -163,7 +163,6 @@ public class Vocabulary implements Comparable<Vocabulary> {
         // load related artists
         for (Resource res : candidateCatalogs) {
           Object subjectName = res.getProperty(vocabulary.getProperty(MODS, "subjectName")).getObject();
-          System.out.println(subjectName.toString());
           if (containsIgnoreCase(composers, subjectName.toString())) {
             // found!
             return res;

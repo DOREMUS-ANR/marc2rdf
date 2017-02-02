@@ -11,7 +11,7 @@ public class RecordConverter {
   private Record record;
 
   private F22_SelfContainedExpression f22;
-  private F28_ExpressionCreation f28;
+  public F28_ExpressionCreation f28;
   private F14_IndividualWork f14;
   private F15_ComplexWork f15;
 
@@ -66,7 +66,7 @@ public class RecordConverter {
     String edition = F30_PublicationEvent.getEditionPrinceps(record);
     if (edition == null) return;
 
-    F30_PublicationEvent f30 = new F30_PublicationEvent(edition, record);
+    F30_PublicationEvent f30 = new F30_PublicationEvent(edition, record, f28);
     F24_PublicationExpression f24 = new F24_PublicationExpression(f30.getIdentifier());
     F19_PublicationWork f19 = new F19_PublicationWork(f30.getIdentifier());
 
