@@ -20,7 +20,7 @@ import java.net.URISyntaxException;
 
 public class BNF2RDF {
   public static final MarcXmlHandler.MarcXmlHandlerBuilder bnfXmlHandlerBuilder = new MarcXmlHandler.MarcXmlHandlerBuilder();
-
+  public static final String organizationURI = "http://data.doremus.org/organization/BnF";
   /******
    * Constants that represents the kind of record
    ******/
@@ -90,6 +90,7 @@ public class BNF2RDF {
     model.setNsPrefix("owl", OWL.getURI());
     model.setNsPrefix("foaf", FOAF.getURI());
 
+
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";
     UpdateAction.parseExecute(query, model);
@@ -115,10 +116,9 @@ public class BNF2RDF {
       while ((length = in.read(buffer)) > 0) {
         out.write(buffer, 0, length);
       }
-    } catch(Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
-    }
-    finally {
+    } finally {
       in.close();
       out.close();
     }

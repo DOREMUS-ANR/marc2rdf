@@ -35,6 +35,7 @@ public class PP2RDF {
       .codeLabel("UnimarcSubfield")
       .typeLabel("type")
       .idlabel("id");
+  public static final String organizationURI = "http://data.doremus.org/organization/Philharmonie_de_Paris";
 
   public static Model convert(String file) throws FileNotFoundException, URISyntaxException {
     File folderTUMs = new File(properties.getProperty("TUMFolder"));

@@ -14,7 +14,7 @@ public class F42_RepresentativeExpressionAssignment extends DoremusResource {
     this.resource.addProperty(RDF.type, FRBROO.F42_Representative_Expression_Assignment);
 
     /**************************** Responsable de l'attribution **********************************/
-    this.resource.addProperty(FRBROO.R44_carried_out_by, this.model.createResource("http://isni.org/isni/0000000121751303"));
+    this.resource.addProperty(FRBROO.R44_carried_out_by, this.model.createResource(BNF2RDF.organizationURI));
   }
 
   public F42_RepresentativeExpressionAssignment add(F22_SelfContainedExpression expression) {

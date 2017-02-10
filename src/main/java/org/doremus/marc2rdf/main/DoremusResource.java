@@ -4,7 +4,10 @@ package org.doremus.marc2rdf.main;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.DCTerms;
+import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.marc2rdf.ppconverter.PP2RDF;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,17 +27,23 @@ public abstract class DoremusResource {
     this.identifier = identifier;
     this.model = ModelFactory.createDefaultModel();
 
+    Resource publisher;
+
     /* generate URI */
     this.className = this.getClass().getSimpleName();
     this.sourceDb = "bnf";
     if (this.className.startsWith("P")) {
       this.sourceDb = "pp";
       this.className = this.className.substring(1);
-    }
+      publisher = model.createResource(PP2RDF.organizationURI);
+    } else
+      publisher = model.createResource(BNF2RDF.organizationURI);
+
     this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
 
     /* create RDF resource */
     this.resource = model.createResource(this.uri.toString());
+    this.resource.addProperty(DCTerms.publisher, publisher);
   }
 
   public DoremusResource(Record record) throws URISyntaxException {
