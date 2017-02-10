@@ -91,7 +91,7 @@ public class F30_PublicationEvent extends DoremusResource {
       addPublisher(publisher);
 
     } else if (m3.find()) {
-      String city = m2.group(1), year = m2.group(2);
+      String city = m3.group(1), year = m3.group(2);
       if (city != null) this.resource.addProperty(CIDOC.P7_took_place_at, city);
       parseTime(year);
     }
