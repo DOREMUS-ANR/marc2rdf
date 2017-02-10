@@ -104,9 +104,8 @@ public class PP2RDF {
   }
 
   private static String getIdTum(Record r) {
-    for (DataField field : r.getDatafieldsByCode("500")) {
-      if (field.isCode('3'))
-        return field.getSubfield('3').getData().trim();
+    for (String tum : r.getDatafieldsByCode("500", '3')) {
+      return tum.trim();
     }
     return null;
   }

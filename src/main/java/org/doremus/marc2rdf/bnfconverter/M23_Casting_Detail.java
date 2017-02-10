@@ -20,18 +20,22 @@ public class M23_Casting_Detail {
   }
 
   public M23_Casting_Detail(String code, String num, boolean isSoloist) {
-    this.num = Integer.parseInt(num);
-    this.mop = Converter.mopVocabulary.findConcept(code);
+    if (num != null && !num.trim().isEmpty())
+      this.num = Integer.parseInt(num);
+    else this.num = -1;
+
+    this.mop = Converter.mopVocabulary.getConcept(code);
     this.solo = isSoloist;
 
     this.model = ModelFactory.createDefaultModel();
   }
 
   public Resource asResource(String uri) {
-    Resource M23CastingDetail = model.createResource(uri);
-    M23CastingDetail.addProperty(RDF.type, MUS.M23_Casting_Detail)
-      .addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, mop)
-      .addProperty(MUS.U9_has_quantity, model.createTypedLiteral(num));
+    Resource M23CastingDetail = model.createResource(uri)
+      .addProperty(RDF.type, MUS.M23_Casting_Detail)
+      .addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, mop);
+
+    if (num != -1) M23CastingDetail.addProperty(MUS.U9_has_quantity, model.createTypedLiteral(num));
 
     if (solo)
       M23CastingDetail.addProperty(

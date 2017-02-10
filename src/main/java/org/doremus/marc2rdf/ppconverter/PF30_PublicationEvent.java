@@ -12,14 +12,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PF30_PublicationEvent extends DoremusResource {
-  private static final String noteRegex = "(?:\\. )?(Editeur|(?:Premi|1)[èe]re (?:édition|[Pp]ublication).+)";
+  private static final String noteHeaderRegex = "([EÉ]diteur|(?:Premi|1)[èe]re (?:[eéEÉ]dition|[Pp]ublication))";
+  private static final String noteRegex = "(?:\\. )?(" + noteHeaderRegex + ".+)";
 
   public PF30_PublicationEvent(String note, Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
 
     this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);
     this.resource.addProperty(CIDOC.P3_has_note, note);
+
+    parseNote(note);
   }
+
+  private void parseNote(String note) {
+    note = note.replaceFirst(noteHeaderRegex, "");
+    System.out.println(note);
+  }
+
 
   public PF30_PublicationEvent add(PF24_PublicationExpression f24) {
     /**************************** création d'une expression de publication *************/

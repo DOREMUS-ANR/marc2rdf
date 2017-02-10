@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import net.sf.junidecode.Junidecode;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -10,6 +11,8 @@ import org.doremus.ontology.CIDOC;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Person {
   private final Model model;
@@ -60,6 +63,8 @@ public class Person {
   }
 
   public String getDeathDate() {
+    if (deathDate == null || deathDate.replaceAll("\\.", "").isEmpty())
+      return null;
     return deathDate;
   }
 
@@ -116,6 +121,14 @@ public class Person {
 
   public void addProperty(Property property, String object) {
     addProperty(property, object, null);
+  }
+
+
+  public static List<String> toIdentifications(List<Person> composers) {
+    List<String> identification = new ArrayList<>();
+    if (composers == null) return identification;
+    for (Person composer : composers) identification.add(Junidecode.unidecode(composer.getIdentification()));
+    return identification;
   }
 
 }

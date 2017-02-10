@@ -4,7 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.*;
+import org.doremus.marc2rdf.main.Converter;
+import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.Person;
+import org.doremus.marc2rdf.main.StanfordLemmatizer;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -23,55 +26,52 @@ import java.util.regex.Pattern;
  ***/
 public class PF22_SelfContainedExpression extends DoremusResource {
   private final StanfordLemmatizer slem;
+  private static final String opusHeaderRegex = "(?i)^(?:op(?:\\.|us| )|Oeuvre|Werk nr\\.?) ?(?:post(?:hume|h?\\.|h))?";
+  private static final String opusSubnumberRegex = "(?i)(?:,? n(?:[o°.]| °)s?)";
+  private final PF28_ExpressionCreation f28;
 
-  public PF22_SelfContainedExpression(Record record, String identifier) throws URISyntaxException {
+  private List<String> opusMemory;
+
+  public PF22_SelfContainedExpression(Record record, String identifier, PF28_ExpressionCreation f28) throws URISyntaxException {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
+    this.f28 = f28;
+    this.slem = Converter.stanfordLemmatizer;
+    this.opusMemory = new ArrayList<>();
 
     /**************************** Expression: Title *****************************************/
     for (String title : getTitle())
       this.resource.addProperty(CIDOC.P102_has_title, title);
 
     /**************************** Expression: Catalogue *************************************/
-    int catalogProgressive = 0;
     for (String catalog : getCatalog()) {
-      Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + (++catalogProgressive))
-        .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
-        .addProperty(CIDOC.P3_has_note, catalog);
-
-      String[] catalogParts = catalog.replaceAll("\\.", " ").split(" ");
-
-      if (catalogParts.length > 1) {
-        M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0])
-          .addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
-      } else {
-        System.out.println("Not parsable catalog: " + catalog);
-        // TODO what to do with not parsable catalogs?
+      // sometimes there is the opus number inside here!
+      if (catalog.matches(opusHeaderRegex + ".*")) {
+        System.out.println("opus in catalog found " + catalog);
+        parseOpus(catalog);
+        continue;
       }
-
-      this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
+      parseCatalog(catalog);
     }
-
-    slem = Converter.stanfordLemmatizer;
 
 
     /**************************** Expression: Opus ******************************************/
     for (String opus : getOpus()) {
-      Resource M2OpusStatement = model.createResource()
-        .addProperty(RDF.type, MUS.M2_Opus_Statement)
-        .addProperty(CIDOC.P3_has_note, opus);
+      // is it for real an opus information?
 
-      // Op. 22 no 1
-      // Op. 22, no 1
-      // Op. 22,no 1
-      String[] opusParts = opus.split("[, ] ?no");
-
-      M2OpusStatement.addProperty(MUS.U42_has_opus_number, opusParts[0].replaceAll("Op\\.", "").trim());
-      if (opusParts.length > 1) {
-        M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, opusParts[1].replaceAll("no", "").trim());
+      // completely numeric: it is
+      if (StringUtils.isNumeric(opus)) {
+        addOpus(opus, opus);
+        continue;
+      }
+      // if does not contain "Op." or "opus" etc., it is a catalog!
+      if (!opus.matches(opusHeaderRegex + ".*")) {
+        System.out.println("catalog in opus found " + opus);
+        parseCatalog(opus);
+        continue;
       }
 
-      this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
+      parseOpus(opus);
     }
 
     /**************************** Expression: ***********************************************/
@@ -96,7 +96,11 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     }
     /**************************** Expression: Order Number **********************************/
     for (String orderNumber : getOrderNumber()) {
-      this.resource.addProperty(MUS.U10_has_order_number, orderNumber);
+      List<Integer> range = toRange(orderNumber);
+      if (range == null) this.resource.addProperty(MUS.U10_has_order_number, orderNumber);
+      else {
+        for (int i : range) this.resource.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
+      }
     }
 
     /**************************** Expression: Casting ***************************************/
@@ -105,9 +109,11 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     for (String castingString : getCasting()) {
       castingString = castingString.trim();
 
-      Resource M6Casting = model.createResource(this.uri.toString() + "/casting/" + (++castingNum));
+      String castingUri = this.uri.toString() + "/casting/" + (++castingNum);
+      Resource M6Casting = model.createResource(castingUri);
       M6Casting.addProperty(RDF.type, MUS.M6_Casting);
       M6Casting.addProperty(CIDOC.P3_has_note, castingString);
+      int detailNum = 0;
 
       if (castingString.equals("Instrumental")) {
         // do nothing
@@ -210,13 +216,13 @@ public class PF22_SelfContainedExpression extends DoremusResource {
                 subPart = part + " " + subPart;
               }
 
-              M6Casting.addProperty(MUS.U23_has_casting_detail, makeCastingDetail(subPart.trim(), subQuantity, isSubSolo));
+              M6Casting.addProperty(MUS.U23_has_casting_detail, makeCastingDetail(subPart.trim(), subQuantity, isSubSolo, castingUri + "/detail/" + ++detailNum));
               quantity -= subQuantity;
             }
           }
 
 
-          M6Casting.addProperty(MUS.U23_has_casting_detail, makeCastingDetail(part, quantity, isSolo));
+          M6Casting.addProperty(MUS.U23_has_casting_detail, makeCastingDetail(part, quantity, isSolo, castingUri + "/detail/" + ++detailNum));
 
         }
 
@@ -226,7 +232,162 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     }
   }
 
-  public Resource makeCastingDetail(String name, int quantity, boolean solo) {
+  private void parseCatalog(String catalog) {
+    String[] catalogParts = catalog.replaceAll("\\.", " ").split(" ", 2);
+    String catalogName = null, catalogNum = null;
+
+    if (catalogParts.length > 1) {
+      catalogName = catalogParts[0].trim();
+      catalogNum = catalogParts[1].trim();
+    } else {
+      System.out.println("Not parsable catalog: " + catalog);
+      // TODO what to do with not parsable catalogs?
+    }
+
+    String catalogId = (catalogName != null) ? (catalogName + catalogNum) : catalog;
+    // System.out.println(catalog + " --> " + catalogName + catalogNum);
+
+    Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + catalogId.replaceAll("[ /]", "_"))
+      .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
+      .addProperty(CIDOC.P3_has_note, catalog);
+
+    this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
+
+    if (catalogName != null) {
+      Resource match = Converter.catalogVocabulary.findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
+      if (match == null)
+        M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogName);
+      else M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, match);
+
+    }
+    if (catalogNum == null) return;
+
+    if (catalogNum.contains("-")) {
+      // i.e. "SWV 369-397"
+
+      catalogParts = catalogNum.split("-");
+
+      // strip repeated catalog name (i.e. "H 457-H 458-H 459")
+      for (int i = 0; i < catalogParts.length; i++) {
+        String part = catalogParts[i];
+        System.out.println(part);
+        part = part.replaceFirst("^" + catalogName + " ", "");
+        System.out.println(" > " + part);
+        catalogParts[i] = part;
+      }
+
+      if (catalogParts.length == 2) {
+        try {
+          int start = Integer.parseInt(catalogParts[0]),
+            end = Integer.parseInt(catalogParts[1]);
+
+          // put the internal number also
+          for (int j = start + 1; j < end; j++) {
+            M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(j));
+          }
+        } catch (NumberFormatException e) {
+          System.out.println("not parsed as range " + catalogNum);
+          // DO NOTHING
+        }
+      }
+
+      for (String part : catalogParts) {
+        if (part.matches("\\d+"))
+          M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(Integer.parseInt(part)));
+        else
+          M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, part);
+      }
+
+    } else {
+      if (catalogNum.matches("\\d+"))
+        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(catalogNum));
+      else
+        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogNum);
+    }
+
+  }
+
+
+  private void parseOpus(String opus) {
+    String opusData = opus.replaceFirst(opusHeaderRegex, "").replaceFirst("\\.$", "").trim();
+    if (opusData.isEmpty()) {
+      // it means that it is only written "op. posthume" or similar
+      // add it as a note to F22
+      this.resource.addProperty(CIDOC.P3_has_note, opus);
+      return;
+    }
+
+    if (opusData.matches(".*" + opusSubnumberRegex + ".*")) {
+      String[] opusParts = opusData.split(opusSubnumberRegex);
+
+      addOpus(opus, opusParts[0].trim(), opusParts[1].trim());
+    } else addOpus(opus, opusData);
+  }
+
+  private void addOpus(String note) {
+    addOpus(note, null, null);
+  }
+
+  private void addOpus(String note, String number) {
+    addOpus(note, number, null);
+  }
+
+  private void addOpus(String note, String number, String subnumber) {
+    String memoryObj = number;
+    if (subnumber != null) memoryObj += "-" + subnumber;
+//    System.out.println(note + " --> " + memoryObj);
+
+    if (opusMemory.contains(memoryObj)) return;
+    opusMemory.add(memoryObj);
+
+    Resource M2OpusStatement = model.createResource(this.uri + "/opus/" + memoryObj.replaceAll(" ", "_"))
+      .addProperty(RDF.type, MUS.M2_Opus_Statement)
+      .addProperty(CIDOC.P3_has_note, note.trim());
+
+    if (number != null) {
+      if (number.contains(" et ")) {
+        for (String singleNum : number.split(" et ")) {
+          M2OpusStatement.addProperty(MUS.U42_has_opus_number, singleNum.trim());
+        }
+      } else M2OpusStatement.addProperty(MUS.U42_has_opus_number, number);
+    }
+    if (subnumber != null) {
+      List<Integer> range = toRange(subnumber);
+
+      if (range == null) M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, subnumber);
+      else {
+        for (int i : range)
+          M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, model.createTypedLiteral(i));
+
+      }
+    }
+
+    this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
+  }
+
+  private List<Integer> toRange(String rangeString) {
+    if (!rangeString.contains(" à ")) return null;
+
+    String[] singleNum = rangeString.split(" à ", 2);
+    List<Integer> range = new ArrayList<>();
+    try {
+      int start = Integer.parseInt(singleNum[0]);
+      int end = Integer.parseInt(singleNum[1]);
+
+      for (int i = start; i <= end; i++) {
+        range.add(i);
+      }
+
+    } catch (Exception e) {
+      System.out.println("Not able to parse range in " + rangeString);
+      System.out.println(e.getMessage());
+      return null;
+    }
+
+    return range;
+  }
+
+  public Resource makeCastingDetail(String name, int quantity, boolean solo, String uri) {
     name = name.replaceAll("non spécifiée", "");
 
     // punctual fix
@@ -237,21 +398,23 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     name = String.join(" ", slem.lemmatize(name));
 
 
-    Resource M23CastingDetail = model.createResource();
+    Resource M23CastingDetail = model.createResource(uri)
+      .addProperty(RDF.type, MUS.M23_Casting_Detail);
 
     if (solo)
       M23CastingDetail.addProperty(MUS.U36_foresees_responsibility_of_type, model.createLiteral("soloist", "fr"));
-    if (quantity > -1) M23CastingDetail.addProperty(MUS.U9_has_quantity, model.createTypedLiteral(quantity));
 
-    M23CastingDetail.addProperty(RDF.type, MUS.M23_Casting_Detail);
+    if (quantity > -1)
+      M23CastingDetail.addProperty(MUS.U9_has_quantity, model.createTypedLiteral(quantity));
+
     Literal mopLiteral = model.createLiteral(name, "fr");
 
-
-    M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type,
-      model.createResource()
-        .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
-        .addProperty(CIDOC.P1_is_identified_by, mopLiteral)
-    );
+    Resource match = Converter.searchConceptInCategory(name, "fr", "mop");
+    if (match != null)
+      M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, match);
+    else M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, model.createResource()
+      .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
+      .addProperty(CIDOC.P1_is_identified_by, mopLiteral));
 
     return M23CastingDetail;
   }
@@ -366,7 +529,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     fields.addAll(record.getDatafieldsByCode("144", 'n'));
 
     for (String orderNumber : fields) {
-      orderNumber = orderNumber.replaceAll("(?i)No", "").trim();
+      orderNumber = orderNumber.replaceAll("(?i)n[o°]s?", "").trim();
       if (!results.contains(orderNumber)) results.add(orderNumber);
     }
 

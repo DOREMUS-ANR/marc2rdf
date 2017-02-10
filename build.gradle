@@ -29,7 +29,8 @@ dependencies {
             'xml-apis:xml-apis:1.4.01',
             'virtuoso.jena.driver:virt_jena3@jar',
             'edu.stanford.nlp:stanford-corenlp:3.6.0',
-            "edu.stanford.nlp:stanford-corenlp:3.6.0:models"
+            'edu.stanford.nlp:stanford-corenlp:3.6.0:models',
+            'com.moparisthebest:junidecode:0.1.1'
 }
 
 

@@ -28,7 +28,7 @@ public class Vocabulary implements Comparable<Vocabulary> {
     StmtIterator conceptSchemeIter =
       vocabulary.listStatements(new SimpleSelector(null, RDF.type, SKOS.ConceptScheme));
     if (!conceptSchemeIter.hasNext()) {
-      System.out.println("Vocabulary constructor | Warning: No ConceptScheme in the reference rdf at " + url + ". Method \"findConcept\" will not work for it.");
+      System.out.println("Vocabulary constructor | Warning: No ConceptScheme in the reference rdf at " + url + ". Method \"getConcept\" will not work for it.");
     } else {
       schemePath = conceptSchemeIter.nextStatement().getSubject().toString();
     }
@@ -125,7 +125,7 @@ public class Vocabulary implements Comparable<Vocabulary> {
     return model;
   }
 
-  public Resource findConcept(String code) {
+  public Resource getConcept(String code) {
     if (schemePath == null) return null;
 
     Resource concept = vocabulary.getResource(schemePath + code);
@@ -134,6 +134,20 @@ public class Vocabulary implements Comparable<Vocabulary> {
       return concept;
     } else return null;
   }
+
+  public Resource findConcept(String text, boolean strict) {
+    for (Map.Entry<String, Resource> entry : substitutionMap.entrySet()) {
+      String key = entry.getKey();
+      String keyPlain = key.replaceAll("@[a-z]{2,3}$", "");
+
+      boolean textLangMatch = text.equalsIgnoreCase(key);
+      boolean textOnlyMatch = !strict && text.replaceAll("@[a-z]{2,3}$", "").equalsIgnoreCase(keyPlain);
+
+      if (textLangMatch || textOnlyMatch) return entry.getValue();
+    }
+    return null;
+  }
+
 
   public Resource findModsResource(String identifier) {
     return findModsResource(identifier, null);
@@ -162,8 +176,8 @@ public class Vocabulary implements Comparable<Vocabulary> {
       if (composers != null) {
         // load related artists
         for (Resource res : candidateCatalogs) {
-          Object subjectName = res.getProperty(vocabulary.getProperty(MODS, "subjectName")).getObject();
-          if (containsIgnoreCase(composers, subjectName.toString())) {
+          String subjectName = res.getProperty(vocabulary.getProperty(MODS, "subjectName")).getObject().toString();
+          if (containsIgnoreCase(composers, subjectName) || containsIgnoreCase(composers, subjectName.replaceAll("-", " "))) {
             // found!
             return res;
           }

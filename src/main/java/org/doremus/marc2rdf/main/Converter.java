@@ -1,6 +1,7 @@
 package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -26,6 +27,7 @@ public class Converter {
   private static boolean marcOut;
 
   private static ArrayList<Vocabulary> vocabularies;
+  private static Map<String, List<Vocabulary>> vocabularyMap;
   public static Vocabulary genreVocabulary, mopVocabulary, catalogVocabulary;
 
   public static Properties properties;
@@ -225,6 +227,7 @@ public class Converter {
   private static void loadVocabularies() throws IOException {
     final String vocabularyRoot = properties.getProperty("vocabularyRoot");
     vocabularies = new ArrayList<>();
+    vocabularyMap = new HashMap<>();
 
     String token = properties.getProperty("githubToken");
 
@@ -239,24 +242,48 @@ public class Converter {
     for (RepositoryContents content : contentsService.getContents(repo, "/vocabularies/")) {
       if (!content.getName().endsWith(".ttl")) continue;
 
-      String url = vocabularyRoot + content.getName();
+      String vName = content.getName();
+      String url = vocabularyRoot + vName;
       Vocabulary vocabulary = new Vocabulary(url);
       vocabularies.add(vocabulary);
       System.out.println("Loaded vocabulary at " + url);
-      if (content.getName().equals("genre-iaml.ttl")) {
+      if (vName.equals("genre-iaml.ttl")) {
         genreVocabulary = vocabulary;
       }
-      if (content.getName().equals("mop-iaml.ttl")) {
+      if (vName.equals("mop-iaml.ttl")) {
         mopVocabulary = vocabulary;
       }
-      if (content.getName().equals("catalog.ttl")) {
+      if (vName.equals("catalog.ttl")) {
         catalogVocabulary = vocabulary;
       }
+
+      String category = vName;
+      if (vName.contains("-")) category = vName.split("-", 2)[0];
+
+      List<Vocabulary> thisCategory = vocabularyMap.computeIfAbsent(category, k -> new ArrayList<>());
+      thisCategory.add(vocabulary);
+      Collections.sort(thisCategory);
     }
 
     Collections.sort(vocabularies);
   }
 
+  public static Resource searchConceptInCategory(String label, String lang, String category) {
+    String langLabel = lang != null ? label + "@" + lang: label;
+    List<Vocabulary> vList = vocabularyMap.get(category);
+    Resource concept;
+    // first check: text + language
+    for (Vocabulary v : vList) {
+      concept = v.findConcept(langLabel, true);
+      if (concept != null) return concept;
+    }
+    // second check: text without caring about the language
+    for (Vocabulary v : vList) {
+      concept = v.findConcept(label, false);
+      if (concept != null) return concept;
+    }
+    return null;
+  }
 
   private static void loadProperties() {
     properties = new Properties();

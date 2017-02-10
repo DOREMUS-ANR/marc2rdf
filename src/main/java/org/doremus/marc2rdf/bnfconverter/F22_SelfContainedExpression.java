@@ -49,11 +49,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
     /**************************** Expression: Catalogue *************************************/
     int catalogProgressive = 0;
     for (String catalog : getCatalog()) {
-      Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + (++catalogProgressive))
-        .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
-        .addProperty(CIDOC.P3_has_note, catalog);
-
       String[] catalogParts = catalog.split(" ");
+      String catalogName = null, catalogNum = null;
 
       //fix: sometimes the catalog is written as "C172" instead of "C 172"
       // I try to separate letters and numbers
@@ -65,13 +62,25 @@ public class F22_SelfContainedExpression extends DoremusResource {
         }
       }
       if (catalogParts.length > 1) {
-        Resource match = Converter.catalogVocabulary.findModsResource(catalogParts[0], toIdentifications(f28.getComposers()));
+        catalogName = catalogParts[0].trim();
+        catalogNum = catalogParts[1].trim();
+      }
+
+      String catalogId = (catalogName != null) ? (catalogName + catalogNum) : catalog;
+
+      Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + catalogId.replaceAll("[ /]", "_"))
+        .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
+        .addProperty(CIDOC.P3_has_note, catalog.trim());
+
+
+      if (catalogNum != null) {
+        Resource match = Converter.catalogVocabulary.findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
 
         if (match == null)
-          M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogParts[0]);
+          M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogName);
         else M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, match);
 
-        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogParts[1]);
+        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogNum);
       } else
         System.out.println("Not parsable catalog: " + catalog);
       // TODO what to do with not parsable catalogs?
@@ -160,13 +169,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       this.resource.addProperty(MUS.U13_has_casting, M6Casting);
     }
-  }
-
-  private List<String> toIdentifications(List<Person> composers) {
-    List<String> identification = new ArrayList<>();
-    if (composers == null) return identification;
-    for (Person composer : composers) identification.add(composer.getIdentification());
-    return identification;
   }
 
 
@@ -289,7 +291,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       Resource res = null;
       if (Converter.genreVocabulary != null)
-        res = Converter.genreVocabulary.findConcept(codeGenre);
+        res = Converter.genreVocabulary.getConcept(codeGenre);
 
       if (res == null)
         System.out.println("Code genre not found: " + codeGenre + " in record " + record.getIdentifier());
@@ -309,6 +311,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
   private List<String> getCastMembers() {
     return record.getDatafieldsByCode("048", 'a');
   }
+
   private List<String> getSoloists() {
     return record.getDatafieldsByCode("048", 'b');
   }

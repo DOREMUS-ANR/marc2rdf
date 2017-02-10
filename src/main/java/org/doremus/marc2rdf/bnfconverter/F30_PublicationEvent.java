@@ -23,7 +23,7 @@ public class F30_PublicationEvent extends DoremusResource {
   // "1re éd. : Paris : Revue et gazette musicale [1er janvier 1848]"
   // "1re éd. : Paris : Choudens, ca 1886"
   // "1re édition : Paris : Durand, 1891"
-  // https://regex101.com/r/3n2YHU/1
+  // https://regex101.com/r/3n2YHU/2
   private static final String regex1 = "1re éd(?:ition|\\.)?(?: (?:dans|in) (?:: )?.+\")?(?: \\(.+\\))?(?: :|,|.) (?:(.+)(?:, | \\[))?(?:\\[?([\\p{L}\\s\\d]+)?(\\d{4})(?:-(\\d{4}))?\\]?)";
   // "1re éd. : Paris : Enoch"
   // "1re éd. : Roma"
@@ -70,7 +70,10 @@ public class F30_PublicationEvent extends DoremusResource {
 
         String[] parts = descr.split("[,:]");
         if (parts.length == 1) {
-          if (!parts[0].contains("\"")) city = parts[0].trim();
+          // I cannot know if it is a city or the publisher
+          // i.e. "1re éd. : Barcelone, 1912", "1re éd. : Universal edition"
+          // TODO try to disambiguate the city
+          // if (!parts[0].contains("\"")) city = parts[0].trim();
         } else {
           publisher = parts[parts.length - 1].trim();
           if (publisher.contains("in")) publisher = null;
