@@ -1,11 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.datatypes.TypeMapper;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.TimeSpan;
@@ -19,8 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class F30_PublicationEvent extends DoremusResource {
-  private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
-
   // "1re éd. : Paris : Revue et gazette musicale [1er janvier 1848]"
   // "1re éd. : Paris : Choudens, ca 1886"
   // "1re édition : Paris : Durand, 1891"
@@ -126,95 +119,26 @@ public class F30_PublicationEvent extends DoremusResource {
     if (dateModifier == null) dateModifier = "";
     else dateModifier = dateModifier.trim();
 
-    Property timeSpanProp = CIDOC.P82_at_some_time_within;
-
-    String startDate = year + "0101", endDate = year + "1231", fullDate = null;
-    // whole year as default
-    if (endYear != null) {
-      endDate = endYear + "1231";
-    }
-    if (dateModifier.equals("ca")) {
-      timeSpanProp = CIDOC.P81_ongoing_throughout;
+    TimeSpan timeSpan = new TimeSpan(year, endYear);
+    if (dateModifier.isEmpty() || dateModifier.equals("ca")) {
+      // nothing to do
     } else if (dateModifier.equalsIgnoreCase("Noël")) {
-      startDate = year + "1201"; // whole december
+      timeSpan.setStartMonth("12"); // whole december
     } else {
-      fullDate = parseTextualDate(dateModifier, year);
+      Pattern p = Pattern.compile(textDateRegex);
+      Matcher m = p.matcher(dateModifier.toLowerCase());
+      if (m.find()) {
+        String day = m.group(1);
+        String month = m.group(2);
+
+        timeSpan.setStartMonth(month);
+        timeSpan.setStartDay(day);
+      }
     }
 
-    if (fullDate == null) fullDate = startDate + "/" + endDate;
-
-    Resource timeSpan = model.createResource(this.uri + "/time")
-      .addProperty(RDF.type, CIDOC.E52_Time_Span)
-      .addProperty(timeSpanProp,
-        ResourceFactory.createTypedLiteral(fullDate, W3CDTF));
-
-    if (timeSpan != null)
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan);
-
-  }
-
-
-  private String parseTextualDate(String text, String YYYY) {
-    if (text.isEmpty()) return null;
-
-    Pattern p = Pattern.compile(textDateRegex);
-    Matcher m = p.matcher(text.toLowerCase());
-    if (!m.find()) {
-      System.out.println("date complement not parsed: " + text);
-      return null;
-    }
-
-    String day = m.group(1);
-    String month = m.group(2);
-    String MM = null;
-    switch (month) {
-      case "janvier":
-        MM = "01";
-        break;
-      case "février":
-        MM = "02";
-        break;
-      case "mars":
-        MM = "03";
-        break;
-      case "avril":
-        MM = "04";
-        break;
-      case "mai":
-        MM = "05";
-        break;
-      case "juin":
-        MM = "06";
-        break;
-      case "juillet":
-        MM = "07";
-        break;
-      case "août":
-        MM = "08";
-        break;
-      case "septembre":
-        MM = "09";
-        break;
-      case "octobre":
-        MM = "10";
-        break;
-      case "novembre":
-        MM = "11";
-        break;
-      case "décembre":
-        MM = "12";
-    }
-
-    if (day == null) {
-      // whole month
-      return YYYY + MM + "01/" + YYYY + MM + TimeSpan.getLastDay(MM, YYYY);
-    }
-    day = day.trim();
-    if (day.equals("1er")) day = "01";
-    else if (day.length() < 2) day = "0" + day;
-
-    String singleDay = YYYY + MM + day;
-    return singleDay + "/" + singleDay;
+    timeSpan.setUri(this.uri + "/time");
+    this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+    this.model.add(timeSpan.getModel());
   }
 
 

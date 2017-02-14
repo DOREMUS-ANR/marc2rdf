@@ -8,6 +8,7 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
+import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -27,13 +28,14 @@ public class PF28_ExpressionCreation extends DoremusResource {
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
     /**************************** Work: Date of the work (expression représentative) ********/
-    String dateMachine = getDateMachine();
-    if (dateMachine != null && !dateMachine.isEmpty()) {
-      this.resource.addProperty(CIDOC.P4_has_time_span, model.createResource()
-        .addProperty(RDF.type, CIDOC.E52_Time_Span)
-        .addProperty(CIDOC.P82_at_some_time_within,
-          ResourceFactory.createTypedLiteral(dateMachine, W3CDTF)));
+    String[] dateMachine = getDateMachine();
+    if (dateMachine != null) {
+      TimeSpan timeSpan = new TimeSpan(dateMachine[0], dateMachine[1]);
+      timeSpan.setUri(this.uri + "/time");
+      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+      this.model.add(timeSpan.getModel());
     }
+
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateText = getDateText();
     if (dateText != null && !dateText.isEmpty())
@@ -43,15 +45,16 @@ public class PF28_ExpressionCreation extends DoremusResource {
     /**************************** Work: Period of the work **********************************/
     String period = getPeriod();
     if (period != null) {
-      this.resource.addProperty(CIDOC.P10_falls_within, model.createResource()
+      this.resource.addProperty(CIDOC.P10_falls_within, model.createResource(this.uri + "/period")
         .addProperty(RDF.type, CIDOC.E4_Period)
         .addProperty(CIDOC.P1_is_identified_by, getPeriod()));
     }
 
     /**************************** Work: is created by ***************************************/
     this.composers = getComposer();
+    int composersCount = 0;
     for (Person composer : this.composers) {
-      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource()
+      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
         .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, composer.asResource())
@@ -94,7 +97,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
   /*************
    * Date de creation de l'expression (Format machine)
    ***********************/
-  private String getDateMachine() {
+  private String[] getDateMachine() {
     if (!record.isType("UNI:100")) return null;
 
     String start = "", end = "";
@@ -105,8 +108,8 @@ public class PF28_ExpressionCreation extends DoremusResource {
       if (field.isCode('g')) start = field.getSubfield('g').getData().trim();
       if (field.isCode('h')) end = field.getSubfield('h').getData().trim();
 
-      if (start.equals(end)) return start;
-      return start + "/" + end;
+      if (start.isEmpty() && end.isEmpty()) return null;
+      return new String[]{start, end};
     }
 
     return null;

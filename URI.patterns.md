@@ -58,6 +58,6 @@ The `<suffix>` is taken from this table:
 | M15_Dedication | dedication |
 | M1_Catalogue_Statement | catalog |
 | E52_Time-Span | time |
-| E52_Time-Span | time |
+| E4_Period | period |
 | M2_Opus_Statement | opus |
 | E7_Activity | activity |
