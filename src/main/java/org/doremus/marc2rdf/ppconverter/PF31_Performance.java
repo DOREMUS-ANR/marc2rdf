@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 
 public class PF31_Performance extends DoremusResource {
-  private static final String noteRegex = "(?:\\. )?(Editeur|(?:Premi|1)[èe]re (?:édition|[Pp]ublication).+)";
+  private static final String noteRegex = "(?:\\. )?(" + PF30_PublicationEvent.publicationHeaderRegex + ".+)";
   private static final String frenchCreationRegex = "(Cr\u00e9ation fran\u00e7aise.+)";
 
   private boolean isPremiere;

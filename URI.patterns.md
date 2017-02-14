@@ -60,3 +60,4 @@ The `<suffix>` is taken from this table:
 | E52_Time-Span | time |
 | E52_Time-Span | time |
 | M2_Opus_Statement | opus |
+| E7_Activity | activity |

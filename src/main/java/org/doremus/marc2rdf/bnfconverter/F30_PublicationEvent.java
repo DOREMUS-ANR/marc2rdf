@@ -8,6 +8,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -24,7 +25,7 @@ public class F30_PublicationEvent extends DoremusResource {
   // "1re éd. : Paris : Choudens, ca 1886"
   // "1re édition : Paris : Durand, 1891"
   // https://regex101.com/r/3n2YHU/2
-  private static final String regex1 = "1re éd(?:ition|\\.)?(?: (?:dans|in) (?:: )?.+\")?(?: \\(.+\\))?(?: :|,|.) (?:(.+)(?:, | \\[))?(?:\\[?([\\p{L}\\s\\d]+)?(\\d{4})(?:-(\\d{4}))?\\]?)";
+  private static final String regex1 = "1res? éd(?:ition|\\.)?(?: (?:dans|in) (?:: )?.+\")?(?: \\(.+\\))?(?: :|,|.) (?:(.+)(?:, | \\[))?(?:\\[?([\\p{L}\\s\\d]+)?(\\d{4})(?:-(\\d{4}))?\\]?)";
   // "1re éd. : Paris : Enoch"
   // "1re éd. : Roma"
   private static final String regex2 = "1re éd(?:ition|\\.)? : ([\\p{L}\\s.'-]+)(?:: ([\\p{L}\\s.'\\-&]+))?";
@@ -101,7 +102,7 @@ public class F30_PublicationEvent extends DoremusResource {
   private void addPublisher(String publisher) {
     if (publisher == null) return;
 
-    Resource activity = model.createResource()
+    Resource activity = model.createResource(this.uri + "/activity")
       .addProperty(RDF.type, CIDOC.E7_Activity)
       .addProperty(MUS.U35_foresees_function_of_type, model.createLiteral("editeur", "fr"));
 
@@ -206,7 +207,7 @@ public class F30_PublicationEvent extends DoremusResource {
 
     if (day == null) {
       // whole month
-      return YYYY + MM + "01/" + YYYY + MM + F28_ExpressionCreation.getLastDay(MM, YYYY);
+      return YYYY + MM + "01/" + YYYY + MM + TimeSpan.getLastDay(MM, YYYY);
     }
     day = day.trim();
     if (day.equals("1er")) day = "01";

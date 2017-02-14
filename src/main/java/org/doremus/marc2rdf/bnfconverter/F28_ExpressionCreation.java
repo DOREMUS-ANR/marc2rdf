@@ -8,6 +8,7 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
+import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -136,7 +137,7 @@ public class F28_ExpressionCreation extends DoremusResource {
         if (startDay.isEmpty()) startDay = "01";
         if (endMonth.isEmpty()) endMonth = "12";
         if (endDay.isEmpty()) {
-          endDay = getLastDay(endMonth, endYear);
+          endDay = TimeSpan.getLastDay(endMonth, endYear);
           if (endDay == null) {
             System.out.println("File: " + record.getIdentifier());
             System.out.println("Date: " + fieldData);
@@ -163,21 +164,6 @@ public class F28_ExpressionCreation extends DoremusResource {
         return date;
     }
     return null;
-  }
-
-  public static String getLastDay(String month, String year) {
-    try {
-
-      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-      Date convertedDate = dateFormat.parse(year + month + "01");
-      Calendar c = Calendar.getInstance();
-      c.setTime(convertedDate);
-      c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
-      return c.get(Calendar.DAY_OF_MONTH) + "";
-    } catch (ParseException pe) {
-      pe.printStackTrace();
-      return null;
-    }
   }
 
   public List<Person> getComposers() {
