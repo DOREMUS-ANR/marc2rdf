@@ -15,7 +15,6 @@ import java.util.List;
 
 public class F28_ExpressionCreation extends DoremusResource {
   private List<Person> composers;
-//  private static final String textDateRegex = "(1er|[\\d]{1,2}) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (\\d{4})";
 
   public F28_ExpressionCreation(String identifier) throws URISyntaxException {
     super(identifier);

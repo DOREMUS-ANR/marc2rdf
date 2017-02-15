@@ -1,10 +1,6 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
@@ -20,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PF28_ExpressionCreation extends DoremusResource {
-  private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
   private List<Person> composers;
 
   public PF28_ExpressionCreation(Record record, String identifier) throws URISyntaxException {
@@ -109,7 +104,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
       if (field.isCode('h')) end = field.getSubfield('h').getData().trim();
 
       if (start.isEmpty() && end.isEmpty()) return null;
-      return new String[]{start, end};
+      return new String[]{start.replaceFirst("\\.$", ""), end.replaceFirst("\\.$", "")};
     }
 
     return null;

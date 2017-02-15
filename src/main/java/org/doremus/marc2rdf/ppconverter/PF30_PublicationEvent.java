@@ -19,11 +19,11 @@ public class PF30_PublicationEvent extends DoremusResource {
   private static final String noteRegex = "(?:\\. )?(" + publicationHeaderRegex + ".+)";
 
   private static final String noteRegex1 = "[EÉ]diteur(?: \\(.+\\))? ?: ?([^,\\n]+)(?:, ([^\\n\\d]+))?(?:, (\\d+))?$";
+  private static final String noteRegex2 = "(?i)(?:Premi|1)[èe]re (?:[eé]dition|[p]ublication)s?[,.]?";
 
   public PF30_PublicationEvent(String note, Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
 
-    System.out.println(note);
     this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);
     this.resource.addProperty(CIDOC.P3_has_note, note);
 
@@ -31,16 +31,24 @@ public class PF30_PublicationEvent extends DoremusResource {
   }
 
   private void parseNote(String note) {
+    // remove eventual other info
+    note = note.replaceFirst("(?i)cr[ée]{1,3}(ation)? .+", "").trim();
     // remove the dot in the end
     note = note.replaceFirst("\\.$", "");
 
-    String publisher = null, city = null, year = null;
+    String publisher = null, city = null,
+      year = null, month = null, day = null,
+      endYear = null, endMonth = null, endDay = null;
+
+    Pattern p1 = Pattern.compile(noteRegex1);
+    Matcher m1 = p1.matcher(note);
+
+    Pattern p2 = Pattern.compile(noteRegex2);
+    Matcher m2 = p2.matcher(note);
 
     // case 1: "Editeur : Ricordi"
     // "Editeur : Boosey & Hawkes, Londres, 1958",
     // "Editeur : Rouart-Lerolle (1952), puis Salabert"
-    Pattern p1 = Pattern.compile(noteRegex1);
-    Matcher m1 = p1.matcher(note);
     if (m1.find()) {
       publisher = m1.group(1);
       city = m1.group(2);
@@ -61,8 +69,70 @@ public class PF30_PublicationEvent extends DoremusResource {
         city = null;
       }
 
-      System.out.println(publisher + " | " + city + " | " + year);
+      // Case 2: "Première edition : Paris, Choudens, 1875."
+      // "Première édition : Choudens, Paris, 1875."
+      // "Première édition à Paris, Choudens en 1875."
+    } else if (m2.find()) {
+      boolean found = true;
+      int iteration = 0;
+
+      while (found) {
+        ++iteration;
+        if (iteration > 1) {
+          break;
+          // PRINT SOMETHING
+          // TODO
+        }
+
+        String data = note.substring(m2.end());
+//        System.out.println(data);
+
+        if (data.contains(";")) {
+          // multiple first publications!
+          String[] parts = data.split(" ?; ?");
+          data = parts[0];
+          // TODO the others
+        }
+
+        if (data.trim().matches("\\d{4}")) {
+          year = data.trim();
+          continue;
+        }
+
+        String dateRegex = "(?:[,:]| en )(?: vers)? ?[\\(\\[]? ?" + TimeSpan.frenchDateRegex + " ?[\\)\\]]?";
+        Pattern pD = Pattern.compile(dateRegex);
+        Matcher mD = pD.matcher(data);
+
+        if (mD.find()) {
+          day = mD.group(1);
+          month = mD.group(2);
+          year = mD.group(3);
+        }
+
+        Pattern pDR = Pattern.compile(TimeSpan.frenchDateRangeRegex);
+        Matcher mDR = pDR.matcher(data);
+        if (mDR.find()) {
+          day = mDR.group(1);
+          month = mDR.group(2);
+          year = mDR.group(3);
+
+          endDay = mDR.group(4);
+          endMonth = mDR.group(5);
+          endYear = mDR.group(6);
+
+          if(year == null) year = endYear;
+        }
+
+        // TODO I can not distinguish between city and publisher from here
+        // need to disambiguate cities before
+
+        found = m2.find();
+      }
+
+    } else {
+      System.out.println(note);
     }
+//    System.out.println(publisher + " | " + city + " | " + year);
 
 
     if (publisher != null) {
@@ -79,7 +149,9 @@ public class PF30_PublicationEvent extends DoremusResource {
     if (city != null) this.resource.addProperty(CIDOC.P7_took_place_at, city);
 
     if (year != null) {
-      TimeSpan timeSpan = new TimeSpan(year);
+      TimeSpan timeSpan = (endYear == null) ?
+        new TimeSpan(year, month, day) :
+        new TimeSpan(year, month, day, endYear, endMonth, endDay);
       timeSpan.setUri(this.uri + "/time");
 
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());

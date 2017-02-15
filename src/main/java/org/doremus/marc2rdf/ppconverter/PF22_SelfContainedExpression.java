@@ -270,9 +270,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       // strip repeated catalog name (i.e. "H 457-H 458-H 459")
       for (int i = 0; i < catalogParts.length; i++) {
         String part = catalogParts[i];
-        System.out.println(part);
         part = part.replaceFirst("^" + catalogName + " ", "");
-        System.out.println(" > " + part);
         catalogParts[i] = part;
       }
 
@@ -306,7 +304,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     }
 
   }
-
 
   private void parseOpus(String opus) {
     String opusData = opus.replaceFirst(opusHeaderRegex, "").replaceFirst("\\.$", "").trim();

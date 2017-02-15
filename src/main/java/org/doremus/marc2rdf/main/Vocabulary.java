@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.impl.StatementImpl;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SKOS;
 import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.MUS;
 
 import java.util.*;
 
@@ -91,7 +92,7 @@ public class Vocabulary implements Comparable<Vocabulary> {
 
         // System.out.println("FOUND " + key + " --> " + value);
         Property pred = s.getPredicate();
-        if (pred.equals(CIDOC.P102_has_title) || pred.equals(CIDOC.P3_has_note)) {
+        if (pred.equals(CIDOC.P102_has_title) || pred.equals(CIDOC.P3_has_note) || pred.equals(MUS.U40_has_catalogue_name)) {
           // genres in title and notes should be maintained
         } else if (s.getPredicate().equals(CIDOC.P1_is_identified_by)) {
           // replace the whole node

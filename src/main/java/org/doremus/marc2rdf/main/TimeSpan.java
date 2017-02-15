@@ -14,6 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class TimeSpan {
+  public static final String frenchDateRegex = "(?:le )?(1er|[\\d]{1,2})? ?(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)? ?(\\d{4})";
+  public static final String frenchDateRangeRegex = "(?:" + frenchDateRegex + "?-)" + frenchDateRegex;
 
   private final Model model;
   private Resource resource;
@@ -31,20 +33,32 @@ public class TimeSpan {
     this(startYear, null, null, endYear, null, null);
   }
 
+  public TimeSpan(String year, String month, String day) {
+    this(year, month, day, null, null, null);
+  }
+
   public TimeSpan(String startYear, String startMonth, String startDay, String endYear, String endMonth, String endDay) {
     this.startYear = safeString(startYear);
-    this.startMonth = safeString(startMonth);
+    this.startMonth = safeString(frenchMonthToNumber(startMonth));
     this.startDay = safeString(startDay);
 
     this.endYear = safeString(endYear);
-    this.endMonth = safeString(endMonth);
+    this.endMonth = safeString(frenchMonthToNumber(endMonth));
     this.endDay = safeString(endDay);
+
+    // range: "de 1848 à 1854"
+    if((this.endYear == null || this.endYear.equals(this.startYear)) &&
+      this.startYear.matches("de \\d{4} à \\d{4}")){
+      this.endYear = this.startYear.substring(3,7);
+      this.startYear = this.startYear.substring(10,14);
+    }
 
     this.model = ModelFactory.createDefaultModel();
     this.resource = null;
     this.uri = null;
     this.label = null;
   }
+
 
   public void setUri(String uri) {
     this.uri = uri;
@@ -70,9 +84,11 @@ public class TimeSpan {
   }
 
   private void computeLabel() {
-    String label;
     if (startYear.isEmpty()) label = endYear.substring(0, 2) + "00"; //beginning of the century
     else label = startYear;
+
+    // avoid "1915/1915" ==> "1915"
+    if (startMonth.isEmpty() && endMonth.isEmpty() && startYear.equals(endYear)) return;
 
     if (!startMonth.isEmpty()) label += "-" + startMonth;
     if (!startDay.isEmpty()) label += "-" + startDay;
@@ -82,8 +98,6 @@ public class TimeSpan {
     if (!endYear.isEmpty()) label += endYear;
     if (!endMonth.isEmpty()) label += "-" + endMonth;
     if (!endDay.isEmpty()) label += "-" + endDay;
-
-    this.label = label;
   }
 
   private void initResource() {
@@ -127,7 +141,9 @@ public class TimeSpan {
 
   private String safeString(String input) {
     if (input == null) return "";
-    return input.trim();
+    input = input.trim();
+    if(input.length()==1) input = "0" + input;
+    return input;
   }
 
   private static String getLastDay(String month, String year) {
@@ -148,8 +164,10 @@ public class TimeSpan {
     return model;
   }
 
+  @SuppressWarnings("SpellCheckingInspection")
   private static String frenchMonthToNumber(String month) {
     if (month == null || month.isEmpty()) return null;
+    if (month.length() == 2) return month;
 
     String mm = month.toLowerCase();
     switch (mm) {
