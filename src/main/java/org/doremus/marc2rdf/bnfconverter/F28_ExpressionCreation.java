@@ -1,10 +1,5 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.datatypes.TypeMapper;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
@@ -16,16 +11,9 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
 import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class F28_ExpressionCreation extends DoremusResource {
-  private static final RDFDatatype W3CDTF = TypeMapper.getInstance().getSafeTypeByName(DCTerms.getURI() + "W3CDTF");
   private List<Person> composers;
 //  private static final String textDateRegex = "(1er|[\\d]{1,2}) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (\\d{4})";
 
@@ -39,9 +27,11 @@ public class F28_ExpressionCreation extends DoremusResource {
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
     /**************************** Work: Date of the work (expression représentative) ********/
-    Resource dateMachine = getDateMachine();
+    TimeSpan dateMachine = getDateMachine();
     if (dateMachine != null) {
-      this.resource.addProperty(CIDOC.P4_has_time_span, dateMachine);
+      dateMachine.setUri(this.uri + "/time");
+      this.resource.addProperty(CIDOC.P4_has_time_span, dateMachine.asResource());
+      this.model.add(dateMachine.getModel());
     }
 
     /**************************** Work: Date of the work (expression représentative) ********/
@@ -51,8 +41,9 @@ public class F28_ExpressionCreation extends DoremusResource {
 
     /**************************** Work: is created by ***************************************/
     this.composers = ArtistConverter.getArtistsInfo(record);
+    int composerCount = 0;
     for (Person composer : composers) {
-      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource()
+      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composerCount)
         .addProperty(RDF.type, CIDOC.E7_Activity)
         .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, composer.asResource())
@@ -80,7 +71,7 @@ public class F28_ExpressionCreation extends DoremusResource {
   /*************
    * Date de creation de l'expression (Format machine)
    ***********************/
-  private Resource getDateMachine() {
+  private TimeSpan getDateMachine() {
     for (ControlField field : record.getControlfieldsByCode("008")) {
       String fieldData = field.getData();
 
@@ -98,24 +89,19 @@ public class F28_ExpressionCreation extends DoremusResource {
         if (startString.isEmpty()) startString = endString;
         else if (endString.isEmpty()) endString = startString;
 
-        String date = startString.replaceAll("\\.", "0") + "/" + endString.replaceAll("\\.", "9");
+        startString = startString.replaceAll("\\.", "0");
+        endString = endString.replaceAll("\\.", "9");
 
-        return model.createResource()
-          .addProperty(RDF.type, CIDOC.E52_Time_Span)
-          .addProperty(CIDOC.P81_ongoing_throughout, ResourceFactory.createTypedLiteral(date, W3CDTF));
+        return new TimeSpan(startString, endString);
       }
       // known date
       else {
         String startYear = fieldData.substring(28, 32);
 
-        Pattern numberPat = Pattern.compile("\\d+");
-        Matcher numberMatcher = numberPat.matcher(startYear);
-
-        if (numberMatcher.find()) { // at least a digit is specified
+        if (startYear.matches("\\d+.+")) // at least a digit is specified
           startYear = startYear.replaceAll("\\.|\\?", "0").trim();
-        } else {
-          startYear = "";
-        }
+        else startYear = "";
+
         String startMonth = fieldData.substring(32, 34).replaceAll("\\.", "").trim();
         String startDay = fieldData.substring(34, 36).replaceAll("\\.", "").trim();
 
@@ -125,30 +111,7 @@ public class F28_ExpressionCreation extends DoremusResource {
 
         if (startYear.isEmpty() && endYear.isEmpty()) continue;
 
-        // there is at least one of the two year
-        if (startYear.isEmpty()) startYear = endYear.substring(0, 2) + "00"; //beginning of the century
-        if (endYear.isEmpty()) {
-          endYear = startYear;
-          endMonth = startMonth;
-          endDay = startDay;
-        }
-
-        if (startMonth.isEmpty()) startMonth = "01";
-        if (startDay.isEmpty()) startDay = "01";
-        if (endMonth.isEmpty()) endMonth = "12";
-        if (endDay.isEmpty()) {
-          endDay = TimeSpan.getLastDay(endMonth, endYear);
-          if (endDay == null) {
-            System.out.println("File: " + record.getIdentifier());
-            System.out.println("Date: " + fieldData);
-            return null;
-          }
-        }
-
-        String date = startYear + startMonth + startDay + "/" + endYear + endMonth + endDay;
-        return model.createResource()
-          .addProperty(RDF.type, CIDOC.E52_Time_Span)
-          .addProperty(CIDOC.P82_at_some_time_within, ResourceFactory.createTypedLiteral(date, W3CDTF));
+        return new TimeSpan(startYear, startMonth, startDay, endYear, endMonth, endDay);
       }
     }
 

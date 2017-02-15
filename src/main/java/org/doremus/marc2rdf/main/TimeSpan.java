@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.ontology.CIDOC;
 
 import java.text.ParseException;
@@ -20,6 +21,7 @@ public class TimeSpan {
 
   private String startYear, startMonth, startDay;
   private String endYear, endMonth, endDay;
+  private String label;
 
   public TimeSpan(String startYear) {
     this(startYear, null, null, null, null, null);
@@ -41,6 +43,7 @@ public class TimeSpan {
     this.model = ModelFactory.createDefaultModel();
     this.resource = null;
     this.uri = null;
+    this.label = null;
   }
 
   public void setUri(String uri) {
@@ -66,8 +69,26 @@ public class TimeSpan {
     this.startDay = day;
   }
 
+  private void computeLabel() {
+    String label;
+    if (startYear.isEmpty()) label = endYear.substring(0, 2) + "00"; //beginning of the century
+    else label = startYear;
+
+    if (!startMonth.isEmpty()) label += "-" + startMonth;
+    if (!startDay.isEmpty()) label += "-" + startDay;
+
+    if (!endYear.isEmpty() || !endMonth.isEmpty() || !endDay.isEmpty())
+      label += "/";
+    if (!endYear.isEmpty()) label += endYear;
+    if (!endMonth.isEmpty()) label += "-" + endMonth;
+    if (!endDay.isEmpty()) label += "-" + endDay;
+
+    this.label = label;
+  }
+
   private void initResource() {
     if (startYear.isEmpty() && endYear.isEmpty()) return;
+    if (this.label == null) computeLabel();
 
     // there is at least one of the two year
     if (startYear.isEmpty()) startYear = endYear.substring(0, 2) + "00"; //beginning of the century
@@ -93,6 +114,7 @@ public class TimeSpan {
 
     this.resource = this.model.createResource(this.uri)
       .addProperty(RDF.type, CIDOC.E52_Time_Span)
+      .addProperty(RDFS.label, this.label)
       .addProperty(CIDOC.P79_beginning_is_qualified_by, this.model.createTypedLiteral(startDate, XSDDateType.XSDdate))
       .addProperty(CIDOC.P80_end_is_qualified_by, this.model.createTypedLiteral(endDate, XSDDateType.XSDdate));
   }
@@ -108,7 +130,7 @@ public class TimeSpan {
     return input.trim();
   }
 
-  public static String getLastDay(String month, String year) {
+  private static String getLastDay(String month, String year) {
     try {
       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
       Date convertedDate = dateFormat.parse(year + month + "01");
@@ -126,7 +148,7 @@ public class TimeSpan {
     return model;
   }
 
-  public static String frenchMonthToNumber(String month) {
+  private static String frenchMonthToNumber(String month) {
     if (month == null || month.isEmpty()) return null;
 
     String mm = month.toLowerCase();

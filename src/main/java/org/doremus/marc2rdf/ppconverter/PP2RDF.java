@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.impl.StatementImpl;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -89,6 +90,7 @@ public class PP2RDF {
     model.setNsPrefix("xsd", XSD.getURI());
     model.setNsPrefix("dcterms", DCTerms.getURI());
     model.setNsPrefix("foaf", FOAF.getURI());
+    model.setNsPrefix("rdfs", RDFS.getURI());
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";
