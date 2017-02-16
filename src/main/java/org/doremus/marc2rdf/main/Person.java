@@ -1,6 +1,8 @@
 package org.doremus.marc2rdf.main;
 
 import net.sf.junidecode.Junidecode;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.datatypes.xsd.impl.XSDDateType;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -105,9 +107,18 @@ public class Person {
     addProperty(FOAF.surname, this.getLastName(), lang);
     addProperty(FOAF.name, this.getFullName(), lang);
     addProperty(CIDOC.P131_is_identified_by, this.getIdentification(), lang);
-    addProperty(CIDOC.P98i_was_born, this.getBirthDate());
-    addProperty(CIDOC.P100i_died_in, this.getDeathDate());
+    addProperty(CIDOC.P98i_was_born, this.getBirthDate(), XSDDateType.XSDgYear);
+    addProperty(CIDOC.P100i_died_in, this.getDeathDate(), XSDDateType.XSDgYear);
     return resource;
+  }
+
+  public void addProperty(Property property, String object, XSDDatatype type) {
+    if (property == null || object == null || object.isEmpty()) return;
+
+    if (type != null)
+      resource.addProperty(property, model.createTypedLiteral(object, type));
+    else
+      resource.addProperty(property, object);
   }
 
   public void addProperty(Property property, String object, String lang) {
@@ -120,7 +131,7 @@ public class Person {
   }
 
   public void addProperty(Property property, String object) {
-    addProperty(property, object, null);
+    addProperty(property, object, (String) null);
   }
 
 
