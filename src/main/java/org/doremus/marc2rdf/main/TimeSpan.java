@@ -14,7 +14,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class TimeSpan {
-  public static final String frenchDateRegex = "(?:le )?(1er|[\\d]{1,2})? ?(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)? ?(\\d{4})";
+  public static final String frenchDayRegex = "(1er|[\\d]{1,2})";
+  public static final String frenchMonthRegex = "(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)";
+  public static final String frenchDateRegex = "(?:le )?" + frenchDayRegex + "? ?"+frenchMonthRegex+"? ?(\\d{4})";
   public static final String frenchDateRangeRegex = "(?:" + frenchDateRegex + "?-)" + frenchDateRegex;
 
   private final Model model;
@@ -47,10 +49,10 @@ public class TimeSpan {
     this.endDay = safeString(endDay);
 
     // range: "de 1848 à 1854"
-    if((this.endYear == null || this.endYear.equals(this.startYear)) &&
-      this.startYear.matches("de \\d{4} à \\d{4}")){
-      this.endYear = this.startYear.substring(3,7);
-      this.startYear = this.startYear.substring(10,14);
+    if ((this.endYear == null || this.endYear.equals(this.startYear)) &&
+      this.startYear.matches("de \\d{4} à \\d{4}")) {
+      this.endYear = this.startYear.substring(3, 7);
+      this.startYear = this.startYear.substring(10, 14);
     }
 
     this.model = ModelFactory.createDefaultModel();
@@ -142,7 +144,7 @@ public class TimeSpan {
   private String safeString(String input) {
     if (input == null) return "";
     input = input.trim();
-    if(input.length()==1) input = "0" + input;
+    if (input.length() == 1) input = "0" + input;
     return input;
   }
 

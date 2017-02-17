@@ -21,7 +21,7 @@ public class M23_Casting_Detail {
 
   public M23_Casting_Detail(String code, String num, boolean isSoloist) {
     if (num != null && !num.trim().isEmpty())
-      this.num = Integer.parseInt(num);
+      this.num = Integer.parseInt(num.trim());
     else this.num = -1;
 
     this.mop = Converter.mopVocabulary.getConcept(code);

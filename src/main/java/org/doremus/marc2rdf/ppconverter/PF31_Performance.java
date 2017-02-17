@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -21,6 +22,10 @@ public class PF31_Performance extends DoremusResource {
   private boolean isPremiere;
 
   public PF31_Performance(String note, Record record, String identifier) throws URISyntaxException {
+    this(note, record, identifier, -1);
+  }
+
+  public PF31_Performance(String note, Record record, String identifier, int i) throws URISyntaxException {
     super(record, identifier);
 
     //check if it is a Premiere
@@ -30,18 +35,15 @@ public class PF31_Performance extends DoremusResource {
     char flag = isPremiere ? 'p' : 'f';
 
     this.identifier += flag;
+    if (i >= 0)
+      this.identifier += i;
+
     this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
 
-    this.resource = model.createResource(this.uri.toString());
-    this.resource.addProperty(RDF.type, FRBROO.F31_Performance);
-    this.resource.addProperty(CIDOC.P3_has_note, note);
-  }
+    this.resource = model.createResource(this.uri.toString())
+      .addProperty(RDF.type, FRBROO.F31_Performance)
+      .addProperty(CIDOC.P3_has_note, note);
 
-  public PF31_Performance add(PF25_PerformancePlan f25) {
-    /**************************** exécution du plan ******************************************/
-    this.resource.addProperty(FRBROO.R25_performed, f25.asResource());
-//    f25.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);
-    return this;
   }
 
   public static List<String> getPerformances(Record record) {
@@ -67,6 +69,13 @@ public class PF31_Performance extends DoremusResource {
     }
     return results;
 
+  }
+
+  public PF31_Performance add(PF25_PerformancePlan f25) {
+    /**************************** exécution du plan ******************************************/
+    this.resource.addProperty(FRBROO.R25_performed, f25.asResource());
+//    f25.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);
+    return this;
   }
 
   public boolean isPremiere() {

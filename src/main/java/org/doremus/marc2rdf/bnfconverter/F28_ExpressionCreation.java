@@ -82,6 +82,9 @@ public class F28_ExpressionCreation extends DoremusResource {
         String startString = fieldData.substring(28, 32).trim(); // could be 1723, 172. or 17..
         String endString = fieldData.substring(38, 42).trim(); // could be 1723, 172. or 17..
 
+        if (!startString.matches("\\d.+")) startString = "";
+        if (!endString.matches("\\d.+")) endString = "";
+
         if (startString.isEmpty() && endString.isEmpty()) continue;
 
         // there is at least one of the two
@@ -104,7 +107,7 @@ public class F28_ExpressionCreation extends DoremusResource {
         String startMonth = fieldData.substring(32, 34).replaceAll("\\.", "").trim();
         String startDay = fieldData.substring(34, 36).replaceAll("\\.", "").trim();
 
-        String endYear = fieldData.substring(38, 42).replaceAll("\\.", "").trim();
+        String endYear = fieldData.substring(38, 42).replaceAll("[.?]", "").trim();
         String endMonth = fieldData.substring(42, 44).replaceAll("\\.", "").trim();
         String endDay = fieldData.substring(44, 46).replaceAll("\\.", "").trim();
 

@@ -184,7 +184,7 @@ public class Vocabulary implements Comparable<Vocabulary> {
           }
         }
       }
-      System.out.println("Too many results for catalog " + identifier + " and composers " + composers + ". It will be not linked.");
+//      System.out.println("Too many results for catalog " + identifier + " and composers " + composers + ". It will be not linked.");
       return null;
     } else return candidateCatalogs.get(0);
   }

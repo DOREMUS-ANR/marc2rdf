@@ -49,8 +49,9 @@ public class RecordConverter {
     // TODO missing F20_PerformanceWork: check mapping rules
     // F28 Expression Creation R19 created a realisation of F20 Performance Work R12 is realised in F25 Performance Plan
 
+    int performanceCounter = 0;
     for(String performance: F31_Performance.getPerformances(record)) {
-      F31_Performance f31 = new F31_Performance(performance, record);
+      F31_Performance f31 = new F31_Performance(performance, record, f28, ++performanceCounter);
       F25_PerformancePlan f25 = new F25_PerformancePlan(f31.getIdentifier());
 
       f31.add(f25);
