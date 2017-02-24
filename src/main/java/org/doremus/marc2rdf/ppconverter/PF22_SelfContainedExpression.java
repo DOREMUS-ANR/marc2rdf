@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
@@ -47,7 +48,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     for (String catalog : getCatalog()) {
       // sometimes there is the opus number inside here!
       if (catalog.matches(opusHeaderRegex + ".*")) {
-        System.out.println("opus in catalog found " + catalog);
+        // System.out.println("opus in catalog found " + catalog);
         parseOpus(catalog);
         continue;
       }
@@ -66,7 +67,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       }
       // if does not contain "Op." or "opus" etc., it is a catalog!
       if (!opus.matches(opusHeaderRegex + ".*")) {
-        System.out.println("catalog in opus found " + opus);
+        // System.out.println("catalog in opus found " + opus);
         parseCatalog(opus);
         continue;
       }
@@ -233,7 +234,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   }
 
   private void parseCatalog(String catalog) {
-    String[] catalogParts = catalog.replaceAll("\\.", " ").split(" ", 2);
+    String[] catalogParts = catalog.split("[ .]", 2);
     String catalogName = null, catalogNum = null;
 
     if (catalogParts.length > 1) {
@@ -244,22 +245,24 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       // TODO what to do with not parsable catalogs?
     }
 
-    String catalogId = (catalogName != null) ? (catalogName + catalogNum) : catalog;
-    // System.out.println(catalog + " --> " + catalogName + catalogNum);
+    Resource match = Converter.catalogVocabulary.findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
+    if (match != null)
+      catalogName = match.getProperty(model.createProperty("http://www.loc.gov/standards/mods/rdf/v1/#identifier")).getObject().toString();
 
-    Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + catalogId.replaceAll("[ /]", "_"))
+    String label = (catalogName != null) ? (catalogName + " " + catalogNum) : catalog;
+
+    Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + label.replaceAll("[ /]", "_"))
       .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
+      .addProperty(RDFS.label, label)
       .addProperty(CIDOC.P3_has_note, catalog);
+
+    if (match != null)
+      M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, match);
+    else if (catalogName != null)
+      M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogName);
 
     this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
 
-    if (catalogName != null) {
-      Resource match = Converter.catalogVocabulary.findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
-      if (match == null)
-        M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogName);
-      else M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, match);
-
-    }
     if (catalogNum == null) return;
 
     if (catalogNum.contains("-")) {
@@ -298,7 +301,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     } else {
       if (catalogNum.matches("\\d+"))
-        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(catalogNum));
+        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(Integer.parseInt(catalogNum)));
       else
         M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogNum);
     }

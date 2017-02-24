@@ -253,7 +253,7 @@ public class Converter {
       if (vName.equals("mop-iaml.ttl")) {
         mopVocabulary = vocabulary;
       }
-      if (vName.equals("catalog.ttl")) {
+      if (vName.equals("catalogue.ttl")) {
         catalogVocabulary = vocabulary;
       }
 
