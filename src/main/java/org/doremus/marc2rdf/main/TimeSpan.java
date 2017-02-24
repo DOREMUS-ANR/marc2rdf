@@ -15,8 +15,8 @@ import java.util.Date;
 
 public class TimeSpan {
   public static final String frenchDayRegex = "(1er|[\\d]{1,2})";
-  public static final String frenchMonthRegex = "(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)";
-  public static final String frenchDateRegex = "(?:le )?" + frenchDayRegex + "? ?"+frenchMonthRegex+"? ?(\\d{4})";
+  public static final String frenchMonthRegex = "(janvier|février|mars|avril|mai|juin|juillet|ao[ûu]t|septembre|octobre|novembre|décembre)";
+  public static final String frenchDateRegex = "(?:le )?(?:" + frenchDayRegex + "? ?" + frenchMonthRegex + "? ?)?(\\d{4})";
   public static final String frenchDateRangeRegex = "(?:" + frenchDateRegex + "?-)" + frenchDateRegex;
 
   private final Model model;
@@ -43,6 +43,7 @@ public class TimeSpan {
     this.startYear = safeString(startYear);
     this.startMonth = safeString(frenchMonthToNumber(startMonth));
     this.startDay = safeString(startDay);
+    if (this.startDay.equals("1er")) this.startDay = "01";
 
     this.endYear = safeString(endYear);
     this.endMonth = safeString(frenchMonthToNumber(endMonth));
@@ -67,20 +68,20 @@ public class TimeSpan {
   }
 
   public void setStartMonth(String month) {
-    if (month == null) return;
+    if (month == null) month = "";
     month = month.trim();
     if (month.length() > 2) month = frenchMonthToNumber(month);
-    else if (month.length() < 2) month = "0" + month;
+    else if (month.length() == 1) month = "0" + month;
 
     this.startMonth = month;
   }
 
   public void setStartDay(String day) {
-    if (day == null) return;
+    if (day == null) day = "";
     day = day.trim();
 
     if (day.equals("1er")) day = "01";
-    else if (day.length() < 2) day = "0" + day;
+    else if (day.length() == 1) day = "0" + day;
 
     this.startDay = day;
   }
@@ -200,5 +201,9 @@ public class TimeSpan {
       default:
         return null;
     }
+  }
+
+  public String getLabel() {
+    return label;
   }
 }

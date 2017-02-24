@@ -59,7 +59,7 @@ public class RecordConverter {
 
     int performanceCounter = 0;
     for (String performance : PF31_Performance.getPerformances(record)) {
-      PF31_Performance f31 = new PF31_Performance(performance, record, identifier, ++performanceCounter);
+      PF31_Performance f31 = new PF31_Performance(performance, record, identifier, ++performanceCounter, f28);
       PF25_PerformancePlan f25 = new PF25_PerformancePlan(f31.getIdentifier());
 
       f31.add(f25);

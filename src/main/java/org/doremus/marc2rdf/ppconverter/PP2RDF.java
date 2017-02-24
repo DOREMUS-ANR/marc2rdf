@@ -82,7 +82,7 @@ public class PP2RDF {
       }
       found = true;
       RecordConverter mainRecord = new RecordConverter(r, model);
-      catalogToUri(model, toIdentifications(mainRecord.f28.getComposers()));
+      catalogToUri(model, Person.toIdentifications(mainRecord.f28.getComposers()));
     }
     if (!found) return null;
 
@@ -156,13 +156,6 @@ public class PP2RDF {
 
     for (Map.Entry<Resource, String> entry : renamingMap.entrySet())
       ResourceUtils.renameResource(entry.getKey(), entry.getValue());
-  }
-
-  private static List<String> toIdentifications(List<Person> composers) {
-    List<String> identification = new ArrayList<>();
-    if (composers == null) return identification;
-    for (Person composer : composers) identification.add(composer.getIdentification());
-    return identification;
   }
 
 }
