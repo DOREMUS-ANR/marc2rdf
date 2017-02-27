@@ -1,5 +1,9 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.StatementImpl;
 import org.apache.jena.vocabulary.RDF;
@@ -20,6 +24,16 @@ public class Vocabulary implements Comparable<Vocabulary> {
   private HashMap<String, Resource> substitutionMap;
   private String schemePath;
   private final String MODS = "http://www.loc.gov/standards/mods/rdf/v1/#";
+  private final ParameterizedSparqlString modsSearch = new ParameterizedSparqlString(
+    "prefix modsrdf: <http://www.loc.gov/standards/mods/rdf/v1/#>\n"+
+    "select distinct ?cat where {\n" +
+    "  { ?cat modsrdf:identifier ?id}\n" +
+    "  UNION {\n" +
+    "    ?cat modsrdf:identifierGroup ?ig .\n" +
+    "    ?ig modsrdf:identifierGroupValue ?id\n" +
+    "  }\n" +
+    "}");
+
 
   public Vocabulary(String url) {
     vocabulary = ModelFactory.createDefaultModel();
@@ -157,18 +171,15 @@ public class Vocabulary implements Comparable<Vocabulary> {
   public Resource findModsResource(String identifier, List<String> composers) {
     if (identifier == null || identifier.isEmpty()) return null;
 
+    // search all catalogs with that identifier
+    modsSearch.setLiteral("id", identifier);
+    QueryExecution qexec = QueryExecutionFactory.create(modsSearch.asQuery(), vocabulary);
+    ResultSet result = qexec.execSelect();
     List<Resource> candidateCatalogs = new ArrayList<>();
 
-    // search all catalogs with that identifier
-    StmtIterator iter = vocabulary.listStatements(new SimpleSelector(null, vocabulary.getProperty(MODS, "identifier"), (RDFNode) null) {
-      public boolean selects(Statement s) {
-        String obj = s.getObject().toString();
-        return obj.equalsIgnoreCase(identifier);
-      }
-    });
-
-    while (iter.hasNext()) {
-      Resource resource = iter.nextStatement().getSubject();
+    // add them to the canditates list
+    while (result.hasNext()) {
+      Resource resource = result.next().get("cat").asResource();
       candidateCatalogs.add(resource);
     }
 
