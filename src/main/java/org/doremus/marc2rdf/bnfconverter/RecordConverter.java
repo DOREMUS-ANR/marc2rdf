@@ -30,6 +30,7 @@ public class RecordConverter {
 
     addPrincepsPublication();
     addPerformances();
+    linkToMovements();
 
     f28.add(f22).add(f14);
     f15.add(f22).add(f14);
@@ -80,6 +81,15 @@ public class RecordConverter {
     model.add(f24.getModel());
     model.add(f30.getModel());
     model.add(f19.getModel());
+  }
+
+  private void linkToMovements() {
+    for (String code : record.getDatafieldsByCode("302", '3'))
+      try {
+        f14.addMovement(new F14_IndividualWork( code));
+      } catch (URISyntaxException e) {
+        e.printStackTrace();
+      }
   }
 
   public Model getModel() {

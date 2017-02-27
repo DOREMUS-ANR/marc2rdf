@@ -40,7 +40,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     /**************************** Expression: Title *****************************************/
     for (String title : getTitle())
-      this.resource.addProperty(CIDOC.P102_has_title, title);
+      this.resource.addProperty(MUS.U70_has_title, title).addProperty(RDFS.label, title);
 
     /**************************** Expression: Catalogue *************************************/
     for (String catalog : getCatalog()) {
@@ -376,7 +376,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       M23CastingDetail.addProperty(MUS.U36_foresees_responsibility_of_type, model.createLiteral("soloist", "fr"));
 
     if (quantity > -1)
-      M23CastingDetail.addProperty(MUS.U9_has_quantity, model.createTypedLiteral(quantity));
+      M23CastingDetail.addProperty(MUS.U30_foresees_quantity_of_mop, model.createTypedLiteral(quantity));
 
     Literal mopLiteral = model.createLiteral(name, "fr");
 
@@ -417,11 +417,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       if (!field.isCode('a')) continue;
 
       String title = field.getSubfield('a').getData().trim();
-
-      if (title.isEmpty() || Converter.isNotSignificativeTitle(title))
-        continue;
-
-      titleList.add(title);
+      if (!title.isEmpty()) titleList.add(title);
     }
 
     return titleList;

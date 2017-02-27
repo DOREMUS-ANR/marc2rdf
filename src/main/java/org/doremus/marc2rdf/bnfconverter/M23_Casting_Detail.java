@@ -35,7 +35,7 @@ public class M23_Casting_Detail {
       .addProperty(RDF.type, MUS.M23_Casting_Detail)
       .addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, mop);
 
-    if (num != -1) M23CastingDetail.addProperty(MUS.U9_has_quantity, model.createTypedLiteral(num));
+    if (num != -1) M23CastingDetail.addProperty(MUS.U30_foresees_quantity_of_mop, model.createTypedLiteral(num));
 
     if (solo)
       M23CastingDetail.addProperty(

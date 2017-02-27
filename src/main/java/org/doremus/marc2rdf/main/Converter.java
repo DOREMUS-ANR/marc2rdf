@@ -299,35 +299,36 @@ public class Converter {
 
   }
 
-  public static boolean isNotSignificativeTitle(String title) {
-    if (notSignificativeTitleList == null) {
-      // Load it!
-      String fileName = Converter.class.getClass().getResource(properties.getProperty("BNFGenres")).getFile();
-      File fichier = new File(fileName);
-      try {
-        notSignificativeTitleList = new ArrayList<>();
-
-        FileInputStream fis = new FileInputStream(fichier);
-
-        XSSFWorkbook myWorkBook = new XSSFWorkbook(fis); // Trouver l'instance workbook du fichier XLSX
-        XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
-
-        for (Row row : mySheet) { // Traverser chaque ligne du fichier XLSX
-          Iterator<Cell> cellIterator = row.cellIterator();
-          while (cellIterator.hasNext()) { // Pour chaque ligne, iterer chaque colonne
-            Cell cell = cellIterator.next();
-            notSignificativeTitleList.add(cell.getStringCellValue());
-          }
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-        System.err.println("I cannot load not significative title table: " + fileName);
-        return false;
-      }
-    }
-
-    return notSignificativeTitleList.contains(title);
-  }
+  // TODO remove  definitively after closing https://github.com/DOREMUS-ANR/marc2rdf/issues/31
+//  public static boolean isNotSignificativeTitle(String title) {
+//    if (notSignificativeTitleList == null) {
+//      // Load it!
+//      String fileName = Converter.class.getClass().getResource(properties.getProperty("BNFGenres")).getFile();
+//      File fichier = new File(fileName);
+//      try {
+//        notSignificativeTitleList = new ArrayList<>();
+//
+//        FileInputStream fis = new FileInputStream(fichier);
+//
+//        XSSFWorkbook myWorkBook = new XSSFWorkbook(fis); // Trouver l'instance workbook du fichier XLSX
+//        XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
+//
+//        for (Row row : mySheet) { // Traverser chaque ligne du fichier XLSX
+//          Iterator<Cell> cellIterator = row.cellIterator();
+//          while (cellIterator.hasNext()) { // Pour chaque ligne, iterer chaque colonne
+//            Cell cell = cellIterator.next();
+//            notSignificativeTitleList.add(cell.getStringCellValue());
+//          }
+//        }
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//        System.err.println("I cannot load not significative title table: " + fileName);
+//        return false;
+//      }
+//    }
+//
+//    return notSignificativeTitleList.contains(title);
+//  }
 
 
 }

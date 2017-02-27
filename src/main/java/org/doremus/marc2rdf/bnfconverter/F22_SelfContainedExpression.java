@@ -39,13 +39,14 @@ public class F22_SelfContainedExpression extends DoremusResource {
     /**************************** Expression: Context for the expression ********************/
     String dedication = getDedicace();
     if (dedication != null) {
-      this.resource.addProperty(CIDOC.P67_refers_to, model.createResource(this.uri.toString() + "/dedication")
+      this.resource.addProperty(MUS.U44_has_dedication_statement, model.createResource(this.uri.toString() + "/dedication")
         .addProperty(RDF.type, MUS.M15_Dedication_Statement)
-        .addProperty(MUS.U44_has_dedication_statement, this.model.createLiteral(dedication, "fr")));
+        .addProperty(CIDOC.P3_has_note, this.model.createLiteral(dedication, "fr")));
     }
 
     /**************************** Expression: Title *****************************************/
-    for (Literal title : getTitle()) this.resource.addProperty(CIDOC.P102_has_title, title);
+    for (Literal title : getTitle())
+      this.resource.addProperty(MUS.U70_has_title, title).addProperty(RDFS.label, title);
 
 
     /**************************** Expression: Catalogue *************************************/
@@ -83,9 +84,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
         else M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, match);
 
         M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogNum);
-      } else
+      } else {
         System.out.println("Not parsable catalog: " + catalog);
-      // TODO what to do with not parsable catalogs?
+        // TODO what to do with not parsable catalogs?
+      }
 
       this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
     }
@@ -210,24 +212,20 @@ public class F22_SelfContainedExpression extends DoremusResource {
     for (DataField field : titleFields) {
       if (!field.isCode('a')) continue;
 
-      String title = field.getSubfield('a').getData();
-      String language = null;
+      String title = field.getSubfield('a').getData().trim(),
+        language = null;
 
-      if (title.isEmpty() || Converter.isNotSignificativeTitle(title))
-        continue;
+      if (title.isEmpty()) continue;
 
       if (field.isCode('h')) title += field.getSubfield('h').getData();
       if (field.isCode('i')) title += field.getSubfield('i').getData();
 
       if (field.isCode('w') && field.getSubfield('w').getData().length() >= 8)
-        language = field.getSubfield('w').getData().substring(6, 8).replaceAll(".", "");
+        language = field.getSubfield('w').getData().substring(6, 8).replaceAll("\\.", "");
 
-
-      Literal titleLiteral;
-      if (language == null)
-        titleLiteral = this.model.createLiteral(title.trim());
-      else
-        titleLiteral = this.model.createLiteral(title.trim(), language);
+      Literal titleLiteral = (language == null) ?
+        this.model.createLiteral(title.trim()) :
+        this.model.createLiteral(title.trim(), language);
 
       titleList.add(titleLiteral);
     }
