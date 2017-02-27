@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 public class PF31_Performance extends DoremusResource {
   private static final String frenchCreationRegex = "(Cr\u00e9ation fran\u00e7aise.+)";
+  private static final String noPremiereRegex = frenchCreationRegex + "|(enregistrement (de )?jazz)|(1re reprise)";
   private static final String frenchUncertainDate = "(?:le |en )?(?:" + TimeSpan.frenchDayRegex + "? ?" + TimeSpan.frenchMonthRegex + "? )?(?:\\(\\?\\) )?(\\d{4})(?: ?\\?)?";
   private static final String conductorRegex = "(?:(?:placé )?(?:sous|par) la dir(?:\\.|ection) d[e'u]|dirigé par|direction(?: :)?) ?((?:[A-Z]\\.)?[\\p{L} \\-']+)";
   private static final String interpreterRegex = "(?<!(?:organis|rapport)é )par (.+)";
@@ -38,7 +39,7 @@ public class PF31_Performance extends DoremusResource {
     this.f28 = f28;
 
     //check if it is a Premiere
-    Pattern p = Pattern.compile(frenchCreationRegex);
+    Pattern p = Pattern.compile(noPremiereRegex);
     Matcher m = p.matcher(note);
     isPremiere = !m.find();
     char flag = isPremiere ? 'p' : 'f';

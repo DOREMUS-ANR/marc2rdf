@@ -58,13 +58,17 @@ public class RecordConverter {
     // F28 Expression Creation R19 created a realisation of F20 Performance Work R12 is realised in F25 Performance Plan
 
     int performanceCounter = 0;
+    boolean hasPremiere = false;
     for (String performance : PF31_Performance.getPerformances(record)) {
       PF31_Performance f31 = new PF31_Performance(performance, record, identifier, ++performanceCounter, f28);
       PF25_PerformancePlan f25 = new PF25_PerformancePlan(f31.getIdentifier());
 
       f31.add(f25);
       f25.add(f22);
-      if (f31.isPremiere()) f14.addPremiere(f31);
+      if (!hasPremiere && f31.isPremiere()) {
+        f14.addPremiere(f31);
+        hasPremiere = true;
+      }
 
       model.add(f31.getModel());
       model.add(f25.getModel());
