@@ -5,16 +5,14 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.Converter;
-import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.Person;
-import org.doremus.marc2rdf.main.StanfordLemmatizer;
+import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import javax.rmi.CORBA.Util;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,15 +88,19 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     /**************************** Expression: Genre *****************************************/
     List<String> genres = getGenre();
     for (String genre : genres) {
+      Literal label = model.createLiteral(genre, "fr");
       this.resource.addProperty(MUS.U12_has_genre, model.createResource()
         .addProperty(RDF.type, MUS.M5_Genre_or_Form)
-        .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(genre, "fr")) // Le nom du genre est toujours en français
+        .addProperty(RDFS.label, label)
+        .addProperty(CIDOC.P1_is_identified_by, label)
       );
     }
+
     /**************************** Expression: Order Number **********************************/
     for (String orderNumber : getOrderNumber()) {
-      List<Integer> range = toRange(orderNumber);
-      if (range == null) this.resource.addProperty(MUS.U10_has_order_number, orderNumber);
+      List<Integer> range = Utils.toRange(orderNumber);
+      if (range == null)
+        this.resource.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNumber));
       else {
         for (int i : range) this.resource.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
       }
@@ -292,20 +294,10 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         }
       }
 
-      for (String part : catalogParts) {
-        if (part.matches("\\d+"))
-          M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(Integer.parseInt(part)));
-        else
-          M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, part);
-      }
+      for (String part : catalogParts)
+        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, Utils.toSafeNumLiteral(part));
 
-    } else {
-      if (catalogNum.matches("\\d+"))
-        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(Integer.parseInt(catalogNum)));
-      else
-        M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogNum);
-    }
-
+    } else M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, Utils.toSafeNumLiteral(catalogNum));
   }
 
   private void parseOpus(String opus) {
@@ -342,7 +334,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     Resource M2OpusStatement = model.createResource(this.uri + "/opus/" + memoryObj.replaceAll(" ", "_"))
       .addProperty(RDF.type, MUS.M2_Opus_Statement)
-      .addProperty(CIDOC.P3_has_note, note.trim());
+      .addProperty(CIDOC.P3_has_note, note.trim())
+      .addProperty(RDFS.label, note.trim());
 
     if (number != null) {
       if (number.contains(" et ")) {
@@ -352,7 +345,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       } else M2OpusStatement.addProperty(MUS.U42_has_opus_number, number);
     }
     if (subnumber != null) {
-      List<Integer> range = toRange(subnumber);
+      List<Integer> range = Utils.toRange(subnumber);
 
       if (range == null) M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, subnumber);
       else {
@@ -363,28 +356,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     }
 
     this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
-  }
-
-  private List<Integer> toRange(String rangeString) {
-    if (!rangeString.contains(" à ")) return null;
-
-    String[] singleNum = rangeString.split(" à ", 2);
-    List<Integer> range = new ArrayList<>();
-    try {
-      int start = Integer.parseInt(singleNum[0]);
-      int end = Integer.parseInt(singleNum[1]);
-
-      for (int i = start; i <= end; i++) {
-        range.add(i);
-      }
-
-    } catch (Exception e) {
-      System.out.println("Not able to parse range in " + rangeString);
-      System.out.println(e.getMessage());
-      return null;
-    }
-
-    return range;
   }
 
   public Resource makeCastingDetail(String name, int quantity, boolean solo, String uri) {
@@ -414,6 +385,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, match);
     else M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, model.createResource()
       .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
+      .addProperty(RDFS.label, mopLiteral)
       .addProperty(CIDOC.P1_is_identified_by, mopLiteral));
 
     return M23CastingDetail;

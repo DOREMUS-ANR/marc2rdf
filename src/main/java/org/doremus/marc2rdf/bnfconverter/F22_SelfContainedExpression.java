@@ -3,9 +3,11 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
+import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -47,7 +49,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
 
     /**************************** Expression: Catalogue *************************************/
-    int catalogProgressive = 0;
     for (String catalog : getCatalog()) {
       String[] catalogParts = catalog.split(" ");
       String catalogName = null, catalogNum = null;
@@ -66,10 +67,11 @@ public class F22_SelfContainedExpression extends DoremusResource {
         catalogNum = catalogParts[1].trim();
       }
 
-      String catalogId = (catalogName != null) ? (catalogName + catalogNum) : catalog;
+      String label = (catalogName != null) ? (catalogName + " " + catalogNum) : catalog;
 
-      Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + catalogId.replaceAll("[ /]", "_"))
+      Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + label.replaceAll("[ /]", "_"))
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
+        .addProperty(RDFS.label, label)
         .addProperty(CIDOC.P3_has_note, catalog.trim());
 
 
@@ -91,16 +93,21 @@ public class F22_SelfContainedExpression extends DoremusResource {
     /**************************** Expression: Opus ******************************************/
     String opus = getOpus();
     if (opus != null) {
-      Resource M2OpusStatement = model.createResource()
+      String[] opusParts = opus.split(",", 2);
+
+      String number = opusParts[0].replaceAll("Op\\.", "").trim(),
+        subnumber = opusParts.length > 1 ? opusParts[1].replaceAll("no", "").trim() : null;
+
+      String id = number;
+      if (subnumber != null) id += "-" + subnumber;
+
+      Resource M2OpusStatement = model.createResource(this.uri + "/opus/" + id.replaceAll(" ", "_"))
         .addProperty(RDF.type, MUS.M2_Opus_Statement)
-        .addProperty(CIDOC.P3_has_note, opus);
+        .addProperty(CIDOC.P3_has_note, opus)
+        .addProperty(RDFS.label, opus)
+        .addProperty(MUS.U42_has_opus_number, number);
 
-      String[] opusParts = opus.split(",");
-      M2OpusStatement.addProperty(MUS.U42_has_opus_number, opusParts[0].replaceAll("Op\\.", "").trim());
-
-      if (opusParts.length > 1) {
-        M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, opusParts[1].replaceAll("no", "").trim());
-      }
+      if (subnumber != null) M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, subnumber);
 
       this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
     }
@@ -110,9 +117,12 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
-      this.resource.addProperty(MUS.U11_has_key, model.createResource()
+      key = key.replaceFirst("\\.$", "").trim(); //remove final dot
+      Literal label = model.createLiteral(key, "fr");
+      this.resource.addProperty(MUS.U11_has_key, model.createResource(this.uri + "/key/" + key.toLowerCase().replaceAll(" ", "_"))
         .addProperty(RDF.type, MUS.M4_Key)
         .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(key, "fr"))
+        .addProperty(RDFS.label, label)
       );
     }
 
@@ -122,7 +132,13 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     /**************************** Expression: Order Number **********************************/
     String orderNumber = getOrderNumber();
-    if (orderNumber != null) this.resource.addProperty(MUS.U10_has_order_number, orderNumber);
+    if (orderNumber != null) {
+      List<Integer> range = Utils.toRange(orderNumber);
+      if (range == null)
+        this.resource.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNumber));
+      else
+        for (int i : range) this.resource.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
+    }
 
     /**************************** Expression: Casting ***************************************/
     List<M23_Casting_Detail> castDetails = new ArrayList<>();

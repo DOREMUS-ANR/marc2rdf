@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -104,6 +105,7 @@ public class F30_PublicationEvent extends DoremusResource {
     else // TODO uri of the publisher
       activity.addProperty(CIDOC.P14_carried_out_by, model.createResource()
         .addProperty(RDF.type, FRBROO.F11_Corporate_Body)
+        .addProperty(RDFS.label, publisher)
         .addProperty(CIDOC.P131_is_identified_by, publisher));
 
     this.resource.addProperty(CIDOC.P9_consists_of, activity);

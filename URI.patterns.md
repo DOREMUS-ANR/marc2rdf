@@ -54,10 +54,11 @@ The `<suffix>` is taken from this table:
 
 | Class | suffix |
 | --- | --- |
+| M1_Catalogue_Statement | catalog |
+| M2_Opus_Statement | opus |
+| M4_Key | key |
 | M6_Casting | casting |
 | M15_Dedication | dedication |
-| M1_Catalogue_Statement | catalog |
-| E52_Time-Span | time |
 | E4_Period | period |
-| M2_Opus_Statement | opus |
 | E7_Activity | activity |
+| E52_Time-Span | time |
