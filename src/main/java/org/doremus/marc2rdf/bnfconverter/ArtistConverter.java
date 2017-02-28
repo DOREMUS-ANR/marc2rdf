@@ -57,6 +57,7 @@ public class ArtistConverter {
     String ark = record.getAttrByName("IDPerenne").getData();
     base.asResource().addProperty(OWL.sameAs, model.createResource("http://catalogue.bnf.fr/" + ark));
 
+    model.add(base.getModel());
   }
 
 

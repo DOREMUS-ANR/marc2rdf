@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
@@ -29,8 +30,11 @@ public class F28_ExpressionCreation extends DoremusResource {
     TimeSpan dateMachine = getDateMachine();
     if (dateMachine != null) {
       dateMachine.setUri(this.uri + "/time");
-      this.resource.addProperty(CIDOC.P4_has_time_span, dateMachine.asResource());
-      this.model.add(dateMachine.getModel());
+      Resource dateRes = dateMachine.asResource();
+      if (dateRes != null) {
+        this.resource.addProperty(CIDOC.P4_has_time_span, dateMachine.asResource());
+        this.model.add(dateMachine.getModel());
+      }
     }
 
     /**************************** Work: Date of the work (expression représentative) ********/

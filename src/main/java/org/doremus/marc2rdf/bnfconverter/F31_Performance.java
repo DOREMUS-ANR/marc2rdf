@@ -70,7 +70,7 @@ public class F31_Performance extends DoremusResource {
       Matcher mDR = pDR.matcher(data);
 
       if (modifier != null) modifier = modifier.trim();
-      if (modifier != null && modifier.startsWith("à") && !modifier.startsWith("à l'occasion")) {
+      if (modifier != null && modifier.startsWith("à ") && !modifier.startsWith("à l'occasion")) {
         place = modifier.substring(2).replaceFirst("\\(.+\\)", "");
       }
 
@@ -102,7 +102,7 @@ public class F31_Performance extends DoremusResource {
         if (mC.find()) {
           conductor = mC.group(1);
 
-          post = post.replaceFirst(mC.group(0), "");
+          post = post.replace(mC.group(0), "");
         }
         if (post.startsWith("par ")) {
           Pattern pI = Pattern.compile("([\\p{L} \\-.]+)(?:\\(([^)]+)\\))?");
