@@ -4,8 +4,8 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.Converter;
 import org.doremus.ontology.MUS;
+import org.doremus.vocabulary.VocabularyManager;
 
 public class M23_Casting_Detail {
   private final Model model;
@@ -24,7 +24,7 @@ public class M23_Casting_Detail {
       this.num = Integer.parseInt(num.trim());
     else this.num = -1;
 
-    this.mop = Converter.mopVocabulary.getConcept(code);
+    this.mop = VocabularyManager.getVocabulary("mop-iaml").getConcept(code);
     this.solo = isSoloist;
 
     this.model = ModelFactory.createDefaultModel();

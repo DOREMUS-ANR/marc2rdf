@@ -11,8 +11,8 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
+import org.doremus.vocabulary.VocabularyManager;
 
-import javax.rmi.CORBA.Util;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -247,7 +247,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       // TODO what to do with not parsable catalogs?
     }
 
-    Resource match = Converter.catalogVocabulary.findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
+    Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
     if (match != null)
       catalogName = match.getProperty(model.createProperty("http://www.loc.gov/standards/mods/rdf/v1/#identifier")).getObject().toString();
 
@@ -380,7 +380,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     Literal mopLiteral = model.createLiteral(name, "fr");
 
-    Resource match = Converter.searchConceptInCategory(name, "fr", "mop");
+    Resource match = VocabularyManager.searchInCategory(name, "fr", "mop");
     if (match != null)
       M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, match);
     else M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, model.createResource()

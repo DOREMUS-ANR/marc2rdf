@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.main.Utils;
@@ -14,6 +13,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
+import org.doremus.vocabulary.VocabularyManager;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -77,7 +77,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
 
       if (catalogNum != null) {
-        Resource match = Converter.catalogVocabulary.findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
+        Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
 
         if (match == null)
           M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogName);
@@ -303,9 +303,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (codeGenre.isEmpty()) continue;
       if (codeGenre.equals("uu")) codeGenre = "uuu";
 
-      Resource res = null;
-      if (Converter.genreVocabulary != null)
-        res = Converter.genreVocabulary.getConcept(codeGenre);
+      Resource res = VocabularyManager.getVocabulary("genre-iaml").getConcept(codeGenre);
 
       if (res == null)
         System.out.println("Code genre not found: " + codeGenre + " in record " + record.getIdentifier());

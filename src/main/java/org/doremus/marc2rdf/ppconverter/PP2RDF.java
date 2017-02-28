@@ -15,6 +15,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
+import org.doremus.vocabulary.VocabularyManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.doremus.marc2rdf.main.Converter.catalogVocabulary;
 import static org.doremus.marc2rdf.main.Converter.properties;
 
 public class PP2RDF {
@@ -139,7 +139,7 @@ public class PP2RDF {
     while (iter.hasNext()) {
       Statement s = iter.nextStatement();
       String catalogueName = s.getObject().toString();
-      Resource match = catalogVocabulary.findModsResource(catalogueName, composers);
+      Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogueName, composers);
       if (match == null) continue;
 
       Resource subj = s.getSubject();

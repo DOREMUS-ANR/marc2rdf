@@ -35,7 +35,7 @@ dependencies {
 
 
 run {
-    if(project.hasProperty('marc')){
+    if (project.hasProperty('marc')) {
         args = ['marc']
     }
     standardOutput = System.out
@@ -95,4 +95,9 @@ task schemagenCidoc(type: UrlSchemaGen) {
     nostrict = true
     nocomments = true
     namespace = 'http://erlangen-crm.org/current/'
+}
+
+task updateVocabularies(type: JavaExec) {
+    main = "org.doremus.vocabulary.Sync"
+    classpath = sourceSets.main.runtimeClasspath
 }

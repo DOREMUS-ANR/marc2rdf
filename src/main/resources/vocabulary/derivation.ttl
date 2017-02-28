@@ -1,0 +1,203 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://data.doremus.org/vocabulary/derivation/> a skos:ConceptScheme ;
+    rdfs:label "List of types of derivation"@en,
+        "Liste de type de dérivation"@fr,
+        "Lista dei tipi di derivazione"@it ;
+    rdfs:comment "List of derivation links between two works"@en,
+        "Liste des liens de dérivations entre deux oeuvres"@fr,
+        "Lista delle relazioni di derivazione tra due opere"@it .
+
+<http://data.doremus.org/vocabulary/derivation/arrangement> a skos:Concept ;
+    skos:altLabel "Arrangement"@de,
+        "Adaptation"@fr,
+        "Adattamento"@it ;
+    skos:definition """Adaptation d’un morceau original par orchestration, par changement d’instrumentation, par ajout de mélodies ou de parties secondaires, par transposition, etc. L’arrangement s’étend d’une simple adaptation, voire une simplification, à une véritable composition étoffée à partir d’un morceau simple.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Bearbeitung"@de,
+        "Arrangement"@en,
+        "Arreglo"@es,
+        "Arrangement"@fr,
+        "Arrangiamento"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/fantasy> a skos:Concept ;
+    skos:altLabel "Phantasie"@de,"""Fancy
+Fantasia"""@en ;
+    skos:definition """Morceau de forme libre, parfois très proche de l’improvisation, dans laquelle le compositeur donne libre cours à son imagination.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+
+Au siècle dernier, -notamment en ce qui concerne les œuvres pour piano- œuvre écrite soit à partir de thèmes originaux, soit d’après des mélodies populaires ou des thèmes tirés de compositions ou œuvres théâtrales d’autres auteurs […].
+(Encyclopédie de la musique, Paris, Librairie générale française, 1992)
+"""@fr ;
+    skos:prefLabel "Fantasie"@de,
+        "Fantasy"@en,
+        "Fantasía"@es,
+        "Fantaisie"@fr,
+        "Fantasia"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/harmonization> a skos:Concept ;
+    skos:definition """Réalisation de l’accompagnement harmonique d’une mélodie.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)"""@fr ;
+    skos:prefLabel "Harmonisierung"@de,
+        "Harmonization"@en,
+        "Armonización"@es,
+        "Harmonisation"@fr,
+        "Armonizzazione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/medley> a skos:Concept ;
+    skos:altLabel """Pot-pourri
+Potpourri"""@en ;
+    skos:definition """Pièce composée d’une succession de mélodies, entières ou fragmentées, qui ne sont pas habituellement destinées à être jouées ensemble et qui sont souvent reliées par passages modulants. Le pot-pourri était particulièrement en vogue au XIXe s. (musique pour piano, arrangements pour formations de chambre ou fanfares).
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Potpourri"@de,
+        "Medley"@en,
+        "Popurrí"@es,
+        "Pot-pourri"@fr,
+        "Pot-pourri"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/orchestration> a skos:Concept ;
+    skos:altLabel "Orchestrierung"@de ;
+    skos:definition """Arrangement pour un orchestre d’une pièce écrite pour un instrument seul ou un petit ensemble.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Orchestration"@de,
+        "Orchestration"@en,
+        "Orquestración"@es,
+        "Orchestration"@fr,
+        "Orchestrazione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/paraphrase> a skos:Concept ;
+    skos:altLabel "Parafrasi"@it ;
+    skos:definition """Composition librement recomposée à partir d’un texte musical préexistant.
+(Encyclopédie de la musique, Paris, Librairie générale française, 1992)
+
+Au XIXe s., fantaisie brillante écrite généralement pour le piano sur des airs d’opéra.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)"""@fr ;
+    skos:prefLabel "Paraphrase"@de,
+        "Paraphrase"@en,
+        "Paráfrasis"@es,
+        "Paraphrase"@fr,
+        "Paràfrasi"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/parody> a skos:Concept ;
+    skos:definition """Imitation burlesque (d’une œuvre sérieuse). Contrefaçon ridicule.
+(Le Petit Robert, 2003.)
+
+Attention : ne pas confondre avec “messe parodie”."""@fr ;
+    skos:prefLabel "Parodie"@de,
+        "Parody"@en,
+        "Parodia"@es,
+        "Parodie"@fr,
+        "Parodia"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/reminiscence> a skos:Concept ;
+    skos:definition """Partie d’une œuvre qui évoque plus ou moins un autre morceau, sans être réellement du plagiat.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Reminiszenz"@de,
+        "Reminiscence"@en,
+        "Reminiscencia"@es,
+        "Réminiscence"@fr,
+        "Reminiscenza"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/reconstruction> a skos:Concept ;
+    skos:definition "Reconstruction d’une oeuvre perdue ou inachevée."@fr ;
+    skos:prefLabel "Rekonstruktion"@de,
+        "Reconstruction"@en,
+        "Reconstrucción"@es,
+        "Reconstruction"@fr,
+        "Ricostruzione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/reduction> a skos:Concept ;
+    skos:definition """Abrègement d’une partition conçue pour plusieurs instruments ou voix qui est destiné à un plus petit nombre d’exécutants. Réduction pour piano : abrègement pour le piano d’une partition écrite pour un ensemble de plusieurs exécutants.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Reduktion"@de,
+        "Reduction"@en,
+        "Reducción"@es,
+        "Réduction"@fr,
+        "Riduzione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/reharmonization> a skos:Concept ;
+    skos:altLabel "Riarmonizzazione"@it ;
+    skos:definition """Modification d’une progression harmonique ou de l’ensemble des accords d’une pièce, par substitution, suppression, ou ajout d’accords. Dans le jazz, on réharmonise fréquemment des morceaux du répertoire.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Reharmonisation"@de,
+        "Reharmonization"@en,
+        "Réharmonisation"@fr,
+        "Rearmonizzazione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/reorchestration> a skos:Concept ;
+    skos:definition """Changement, révision d’une orchestration.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)"""@fr ;
+    skos:prefLabel "Reorchestration"@de,
+        "Reorchestration"@en,
+        "Réorchestration"@fr,
+        "Riorchestrazione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/revision> a skos:Concept ;
+    skos:definition """Ensemble des adaptations appliquées à une partition ancienne aux conventions modernes.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Revision"@de,
+        "Revision"@en,
+        "Révision"@fr,
+        "Revisione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/transcription> a skos:Concept ;
+    skos:definition """Arrangement ou adaptation d’une œuvre musicale pour un autre instrument ou voix que l’original.
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Transkription"@de,
+        "Transcription"@en,
+        "Transcripcón"@es,
+        "Transcription"@fr,
+        "Trascrizione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/transposition> a skos:Concept ;
+    skos:altLabel "Trasporto"@it ;
+    skos:definition """Déplacement, vers le haut ou vers le bas  d’un ensemble de hauteurs, par addition ou soustraction d’un intervalle constant ; en transposant, on modifie les hauteurs absolues en conservant les intervalles (c’est-à-dire les hauteurs relatives)
+(Siron, Jacques, Dictionnaire des mots de la musique. Paris, Outre mesure, 2002.)
+"""@fr ;
+    skos:prefLabel "Transponierung"@de,
+        "Transposition"@en,
+        "Trasposizione"@es,
+        "Transposition"@fr,
+        "Trasposizione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .
+
+<http://data.doremus.org/vocabulary/derivation/variation> a skos:Concept ;
+    skos:definition """Procédé fondamental du langage musical consistant à transformer un élément thématique de base, à l’aide d’artifices variés. Considérée au sens large comme le développement d’une composition, la variation utilise de multiples procédés qui peuvent, selon leur nature, concerner la mélodie (ornements, inversions, rétrogradations, etc.), le rythme (diminution, augmentation, ornementation, modifications métriques, de tempo, etc.), l’harmonie (altérations, modulations tonales ou modales, élargissement du matériau original harmonique, etc.), le timbre (modification de la couleur instrumentale, du registre, etc.) ou peuvent être de nature agogique ou dynamique […].
+(Encyclopédie de la musique, Paris, Librairie générale française, 1992)
+
+Modification […] importante par rapport à l'œuvre initiale qui n'est plus présente que par un ou plusieurs thèmes.
+(Norme NF Z 44-079)
+"""@fr ;
+    skos:prefLabel "Variation"@de,
+        "Variation"@en,
+        "Variación"@es,
+        "Variation"@fr,
+        "Variazione"@it ;
+    skos:topConceptOf <http://data.doremus.org/vocabulary/derivation/> .

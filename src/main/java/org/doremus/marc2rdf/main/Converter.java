@@ -1,38 +1,26 @@
 package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
-import org.eclipse.egit.github.core.Repository;
-import org.eclipse.egit.github.core.RepositoryContents;
-import org.eclipse.egit.github.core.service.ContentsService;
-import org.eclipse.egit.github.core.service.RepositoryService;
+import org.doremus.vocabulary.VocabularyManager;
 
 import javax.swing.*;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Properties;
 
 public class Converter {
   private static boolean marcOut;
 
-  private static ArrayList<Vocabulary> vocabularies;
-  private static Map<String, List<Vocabulary>> vocabularyMap;
-  public static Vocabulary genreVocabulary, mopVocabulary, catalogVocabulary;
-
   public static Properties properties;
-  private static List<String> notSignificativeTitleList = null;
-  private static String inputFolderPath;
+//  private static List<String> notSignificativeTitleList = null;
   private static int maxFilesInFolder, filesInCurrentFolder, currentFolder;
   public static StanfordLemmatizer stanfordLemmatizer;
 
@@ -49,14 +37,9 @@ public class Converter {
     loadProperties();
     System.out.println("Running with the following properties: " + properties);
 
-    try {
-      loadVocabularies();
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println("Cannot load vocabularies. Continuing without accessing to them.");
-    }
+    VocabularyManager.init();
 
-    inputFolderPath = properties.getProperty("defaultInput");
+    String inputFolderPath = properties.getProperty("defaultInput");
     maxFilesInFolder = Integer.parseInt(properties.getProperty("maxFilesInAFolder"));
     filesInCurrentFolder = 0;
     currentFolder = 0;
@@ -153,9 +136,7 @@ public class Converter {
 
       if (m == null) continue;
 
-      for (Vocabulary v : vocabularies) {
-        v.buildReferenceIn(m);
-      }
+      VocabularyManager.string2uri(m);
 
       // Write the output file
       File fileName;
@@ -222,67 +203,6 @@ public class Converter {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-
-  private static void loadVocabularies() throws IOException {
-    final String vocabularyRoot = properties.getProperty("vocabularyRoot");
-    vocabularies = new ArrayList<>();
-    vocabularyMap = new HashMap<>();
-
-    String token = properties.getProperty("githubToken");
-
-    //get repo from GitHub
-    RepositoryService service = new RepositoryService();
-    if (token != null && !token.isEmpty())
-      service.getClient().setOAuth2Token(token);
-
-    Repository repo = service.getRepository("DOREMUS-ANR", "knowledge-base");
-
-    ContentsService contentsService = new ContentsService();
-    for (RepositoryContents content : contentsService.getContents(repo, "/vocabularies/")) {
-      if (!content.getName().endsWith(".ttl")) continue;
-
-      String vName = content.getName();
-      String url = vocabularyRoot + vName;
-      Vocabulary vocabulary = new Vocabulary(url);
-      vocabularies.add(vocabulary);
-      System.out.println("Loaded vocabulary at " + url);
-      if (vName.equals("genre-iaml.ttl")) {
-        genreVocabulary = vocabulary;
-      }
-      if (vName.equals("mop-iaml.ttl")) {
-        mopVocabulary = vocabulary;
-      }
-      if (vName.equals("catalogue.ttl")) {
-        catalogVocabulary = vocabulary;
-      }
-
-      String category = vName;
-      if (vName.contains("-")) category = vName.split("-", 2)[0];
-
-      List<Vocabulary> thisCategory = vocabularyMap.computeIfAbsent(category, k -> new ArrayList<>());
-      thisCategory.add(vocabulary);
-      Collections.sort(thisCategory);
-    }
-
-    Collections.sort(vocabularies);
-  }
-
-  public static Resource searchConceptInCategory(String label, String lang, String category) {
-    String langLabel = lang != null ? label + "@" + lang: label;
-    List<Vocabulary> vList = vocabularyMap.get(category);
-    Resource concept;
-    // first check: text + language
-    for (Vocabulary v : vList) {
-      concept = v.findConcept(langLabel, true);
-      if (concept != null) return concept;
-    }
-    // second check: text without caring about the language
-    for (Vocabulary v : vList) {
-      concept = v.findConcept(label, false);
-      if (concept != null) return concept;
-    }
-    return null;
   }
 
   private static void loadProperties() {

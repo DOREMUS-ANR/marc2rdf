@@ -7,6 +7,7 @@ import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
+import org.doremus.vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -131,7 +132,7 @@ public class PF31_Performance extends DoremusResource {
           continue; // wait for close parenthesis
         }
 
-        mopMatch = Converter.searchConceptInCategory(newInfo, "fr", "mop");
+        mopMatch = VocabularyManager.searchInCategory(newInfo, "fr", "mop");
         if (mopMatch != null && !roles.isEmpty()) {
           // i should add this info to the previous one
           roles.get(roles.size() - 1).setFunction(mopMatch);
@@ -156,7 +157,7 @@ public class PF31_Performance extends DoremusResource {
           if (mop != null) {
             mop = mop.replaceAll("\\(.+\\)", "").trim();
             // i take the mop only if it is in the vocabulary
-            mopMatch = Converter.searchConceptInCategory(mop, "fr", "mop");
+            mopMatch = VocabularyManager.searchInCategory(mop, "fr", "mop");
             if (mopMatch != null) interpreter = parts[0];
           }
         }
@@ -166,7 +167,7 @@ public class PF31_Performance extends DoremusResource {
           if (mopIntMatcher.find()) {
             interpreter = mopIntMatcher.group(1);
             mop = mopIntMatcher.group(2);
-            mopMatch = Converter.searchConceptInCategory(mop, "fr", "mop");
+            mopMatch = VocabularyManager.searchInCategory(mop, "fr", "mop");
           }
         }
 
