@@ -17,9 +17,9 @@ public class ConstructURI {
   }
 
   public static URI build(String className, String firstName, String lastName, String birthDate) throws URISyntaxException {
-	    String seed = firstName + lastName + birthDate;
-	    return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
-	  }
+    String seed = firstName + lastName + birthDate;
+    return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
+  }
 
   private static String generateUUID(String seed) {
     // source: https://gist.github.com/giusepperizzo/630d32cc473069497ac1
@@ -51,7 +51,9 @@ public class ConstructURI {
       case "F31_Performance":
         return "performance";
       case "E21_Person":
-          return "artist";
+        return "artist";
+      case "E4_Period":
+        return "period";
       default:
         throw new RuntimeException("[ConstructURI.java] Class not assigned to a collection: " + className);
     }

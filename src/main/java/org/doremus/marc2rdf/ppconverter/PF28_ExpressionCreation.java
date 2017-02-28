@@ -1,7 +1,10 @@
 package org.doremus.marc2rdf.ppconverter;
 
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.main.TimeSpan;
@@ -40,9 +43,11 @@ public class PF28_ExpressionCreation extends DoremusResource {
     /**************************** Work: Period of the work **********************************/
     String period = getPeriod();
     if (period != null) {
-      this.resource.addProperty(CIDOC.P10_falls_within, model.createResource(this.uri + "/period")
+      Literal periodLiteral = model.createLiteral(period, "fr");
+      this.resource.addProperty(CIDOC.P10_falls_within, model.createResource(ConstructURI.build("pp", "E4_Period", period).toString())
         .addProperty(RDF.type, CIDOC.E4_Period)
-        .addProperty(CIDOC.P1_is_identified_by, getPeriod()));
+        .addProperty(RDFS.label, periodLiteral)
+        .addProperty(CIDOC.P1_is_identified_by, periodLiteral));
     }
 
     /**************************** Work: is created by ***************************************/

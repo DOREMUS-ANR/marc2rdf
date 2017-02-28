@@ -31,6 +31,7 @@ The `<group>` is taken from this table
 | F40_IdentifierAssignment | event |
 | F50_ControlledAccessPoint |  |
 | E21_Person | artist |
+| E4_Period | period |
 
 ## Secondary entities
 
