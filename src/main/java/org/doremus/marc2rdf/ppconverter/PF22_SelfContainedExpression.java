@@ -90,7 +90,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     for (String genre : genres) {
       Literal label = model.createLiteral(genre, "fr");
       this.resource.addProperty(MUS.U12_has_genre, model.createResource()
-        .addProperty(RDF.type, MUS.M5_Genre_or_Form)
+        .addProperty(RDF.type, MUS.M5_Genre)
         .addProperty(RDFS.label, label)
         .addProperty(CIDOC.P1_is_identified_by, label)
       );
