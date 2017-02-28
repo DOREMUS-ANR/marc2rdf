@@ -50,7 +50,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         parseOpus(catalog);
         continue;
       }
-      parseCatalog(catalog);
+      for(String c : catalog.split(" ; "))
+        parseCatalog(c);
     }
 
 
@@ -242,6 +243,11 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     if (catalogParts.length > 1) {
       catalogName = catalogParts[0].trim();
       catalogNum = catalogParts[1].trim();
+    } else if(catalog.matches("^([a-zA-Z]+)(\\d+.*)$")){
+      Matcher m = Pattern.compile("^([a-zA-Z]+)(\\d+.*)$").matcher(catalog);
+      m.find();
+      catalogName = m.group(1).trim();
+      catalogNum = m.group(2).trim();
     } else {
       System.out.println("Not parsable catalog: " + catalog);
       // TODO what to do with not parsable catalogs?
@@ -497,7 +503,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     fields.addAll(record.getDatafieldsByCode("144", 'n'));
 
     for (String orderNumber : fields) {
-      orderNumber = orderNumber.replaceAll("(?i)n[o°]s?", "").trim();
+      orderNumber = orderNumber.replaceAll("(?i)n(?:o| ?°)s?", "").trim();
       if (!results.contains(orderNumber)) results.add(orderNumber);
     }
 

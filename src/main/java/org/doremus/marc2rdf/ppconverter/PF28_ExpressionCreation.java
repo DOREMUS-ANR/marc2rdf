@@ -17,6 +17,8 @@ import org.doremus.ontology.MUS;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PF28_ExpressionCreation extends DoremusResource {
   private List<Person> composers;
@@ -28,8 +30,23 @@ public class PF28_ExpressionCreation extends DoremusResource {
     /**************************** Work: Date of the work (expression représentative) ********/
     String[] dateMachine = getDateMachine();
     if (dateMachine != null) {
-      TimeSpan timeSpan = new TimeSpan(dateMachine[0], dateMachine[1]);
-      timeSpan.setUri(this.uri + "/time");
+      Pattern p = Pattern.compile(TimeSpan.frenchDateRegex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+      String start = dateMachine[0], end = dateMachine[1];
+      TimeSpan timeSpan = null;
+      if (start.length() <= 4 && end.length() <= 4) {
+        timeSpan = new TimeSpan(start, end);
+      } else {
+        Matcher ms = p.matcher(start), me = p.matcher(end);
+        if (ms.find() && me.find()) {
+          timeSpan = new TimeSpan(
+            ms.group(3), ms.group(2), ms.group(1),
+            me.group(3), me.group(2), me.group(1));
+        } else {
+          System.out.println(record.getIdentifier() + " | not a date: " + start + "/" + end);
+        }
+      }
+      if (timeSpan != null)
+        timeSpan.setUri(this.uri + "/time");
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
       this.model.add(timeSpan.getModel());
     }

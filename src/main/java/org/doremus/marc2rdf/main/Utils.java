@@ -23,7 +23,7 @@ public class Utils {
 
     } catch (Exception e) {
       System.out.println("Not able to parse range in " + rangeString);
-      System.out.println(e.getMessage());
+      System.out.println("--> " + e.getMessage());
       return null;
     }
 
