@@ -51,7 +51,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     /**************************** Expression: Catalogue *************************************/
     for (String catalog : getCatalog()) {
-      String[] catalogParts = catalog.split(" ");
+      String[] catalogParts = catalog.split(" ", 2);
       String catalogName = null, catalogNum = null;
 
       //fix: sometimes the catalog is written as "C172" instead of "C 172"
