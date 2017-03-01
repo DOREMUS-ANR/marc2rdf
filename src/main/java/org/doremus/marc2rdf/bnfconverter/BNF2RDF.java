@@ -16,7 +16,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.io.*;
+import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 
 public class BNF2RDF {
@@ -68,19 +68,6 @@ public class BNF2RDF {
       }
     }
 
-    // bnf organiz folder
-//    Record r = reader.getRecords().get(0);
-//    String type = r.getType();
-//    String subType = "other";
-//    ControlField leader = r.getControlfieldByCode("leader");
-//    if (leader != null)
-//      subType = leader.getData().charAt(9) + "";
-//    try {
-//      move(file, "/Users/pasquale/Doremus/src_bnf/"+ type + "/" + subType + "/");
-//    } catch (IOException e) {
-//      e.printStackTrace();
-//    }
-
     if (!somethingHasBeenConverted) return null;
 
     model.setNsPrefix("mus", MUS.getURI());
@@ -105,26 +92,5 @@ public class BNF2RDF {
 	    vur.exec();
 		/****************************************************************************************/
   }
-
-  private static void move(String src, String dst) throws IOException {
-    InputStream in = null;
-    OutputStream out = null;
-    try {
-      in = new FileInputStream(src);
-      out = new FileOutputStream(dst);
-      byte[] buffer = new byte[1024];
-      int length;
-      while ((length = in.read(buffer)) > 0) {
-        out.write(buffer, 0, length);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      in.close();
-      out.close();
-    }
-
-  }
-
 }
 

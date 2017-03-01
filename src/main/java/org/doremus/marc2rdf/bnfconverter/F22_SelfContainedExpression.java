@@ -217,8 +217,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       if (title.isEmpty()) continue;
 
-      if (field.isCode('h')) title += field.getSubfield('h').getData();
-      if (field.isCode('i')) title += field.getSubfield('i').getData();
+      if (field.isCode('h')) title += " | " + field.getSubfield('h').getData().trim();
+      if (field.isCode('i')) title += " | " + field.getSubfield('i').getData().trim();
 
       if (field.isCode('w') && field.getSubfield('w').getData().length() >= 8)
         language = field.getSubfield('w').getData().substring(6, 8).replaceAll("\\.", "");
