@@ -221,9 +221,9 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (field.isCode('i')) title += " | " + field.getSubfield('i').getData().trim();
 
       if (field.isCode('w') && field.getSubfield('w').getData().length() >= 8)
-        language = field.getSubfield('w').getData().substring(6, 8).replaceAll("\\.", "");
+        language = field.getSubfield('w').getData().substring(6, 8).replaceAll("\\.", "").trim();
 
-      Literal titleLiteral = (language == null) ?
+      Literal titleLiteral = (language == null || language.isEmpty()) ?
         this.model.createLiteral(title.trim()) :
         this.model.createLiteral(title.trim(), language);
 
