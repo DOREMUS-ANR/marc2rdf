@@ -21,6 +21,7 @@ public abstract class Vocabulary implements Comparable<Vocabulary> {
     this.vocabulary = model;
     this.name = name;
     this.category = name.split("-", 2)[0];
+    this.schemePath = null;
   }
 
   public static Vocabulary fromFile(File file) {
@@ -34,7 +35,7 @@ public abstract class Vocabulary implements Comparable<Vocabulary> {
 
     // Check the type of Vocabulary
     // is it a SKOS?
-    StmtIterator conceptSchemeIter = vocabulary.listStatements(new SimpleSelector(null, RDF.type, SKOS.ConceptScheme));
+    StmtIterator conceptSchemeIter = vocabulary.listStatements(new SimpleSelector(null, RDF.type, SKOS.Concept));
     if (conceptSchemeIter.hasNext()) return new SKOSVocabulary(name, vocabulary);
 
     // is it a MODS?
@@ -48,6 +49,7 @@ public abstract class Vocabulary implements Comparable<Vocabulary> {
 
 
   public Resource getConcept(String code) {
+    if (schemePath == null) return null;
     Resource concept = vocabulary.getResource(schemePath + code);
     if (vocabulary.contains(concept, null, (RDFNode) null))
       return concept;
@@ -55,7 +57,6 @@ public abstract class Vocabulary implements Comparable<Vocabulary> {
   }
 
   public abstract Resource findConcept(String text, boolean strict);
-
 
 
   @Override
@@ -81,6 +82,7 @@ public abstract class Vocabulary implements Comparable<Vocabulary> {
   protected void setSchemePathFromType(Resource type) {
     // Save default path
     StmtIterator conceptSchemeIter = vocabulary.listStatements(new SimpleSelector(null, RDF.type, type));
+    if (!conceptSchemeIter.hasNext()) return;
     schemePath = conceptSchemeIter.nextStatement().getSubject().toString();
 
     if (schemePath != null && !schemePath.endsWith("/") && !schemePath.endsWith("#"))
