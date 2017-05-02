@@ -122,7 +122,6 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
           while (mI.find()) {
             String interpreter = mI.group(1),
               role = mI.group(2);
-
             for (String intpt : interpreter.split("(,| et) "))
               addRole(intpt, role);
           }
@@ -141,6 +140,9 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   }
 
   private void addRole(String actor, String role) {
+    actor = actor.trim();
+    if(actor.isEmpty()) return;
+
     RDFNode actorRes;
     if (actor.equals("compositeur") || actor.equals("le compositeur")) {
       actorRes = f28.getComposers().get(0).asResource();
@@ -156,9 +158,11 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       // TODO compare with the casting
       return;
     }
+
+    role = role.trim();
     if (role.equals("conducteur"))
       M28.addProperty(MUS.U35_foresees_function_of_type, model.createLiteral("conducteur", "fr"));
-    else M28.addProperty(MUS.U1_used_medium_of_performance, slem.lemmatize(role).toString());
+    else M28.addProperty(MUS.U1_used_medium_of_performance, slem.lemmatize(role).get(0), "fr");
 
   }
 

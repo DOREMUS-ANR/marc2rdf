@@ -95,9 +95,8 @@ public class VocabularyManager {
       if (concept == null) continue; //match not found
 
       Resource subject = res.get("s").asResource();
-      Resource object = res.get("o").asResource();
-
-      if (object != null) {
+      if (res.get("o") != null) {
+        Resource object = res.get("o").asResource();
         // remove all properties of the object
         for (StmtIterator it = object.listProperties(); it.hasNext(); )
           statementsToRemove.add(it.nextStatement());
