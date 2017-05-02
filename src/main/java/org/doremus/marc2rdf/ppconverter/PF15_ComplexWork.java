@@ -1,5 +1,7 @@
 package org.doremus.marc2rdf.ppconverter;
 
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -15,6 +17,8 @@ public class PF15_ComplexWork extends DoremusResource{
   public PF15_ComplexWork(Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);
+    this.resource.addProperty(DCTerms.identifier, identifier);
+    this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/"+identifier));
   }
 
   public PF15_ComplexWork add(PF22_SelfContainedExpression f22) {

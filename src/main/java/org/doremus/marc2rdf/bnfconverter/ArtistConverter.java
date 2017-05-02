@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Person;
@@ -56,6 +57,9 @@ public class ArtistConverter {
 
     String ark = record.getAttrByName("IDPerenne").getData();
     base.asResource().addProperty(OWL.sameAs, model.createResource("http://catalogue.bnf.fr/" + ark));
+
+    // identifier
+    base.asResource().addProperty(DCTerms.identifier, record.getIdentifier());
 
     model.add(base.getModel());
   }

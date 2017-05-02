@@ -3,6 +3,8 @@ package org.doremus.marc2rdf.ppconverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.*;
@@ -34,6 +36,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   public PF22_SelfContainedExpression(Record record, String identifier, PF28_ExpressionCreation f28) throws URISyntaxException {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
+    this.resource.addProperty(DCTerms.identifier, identifier);
+    this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/"+identifier));
+
     this.f28 = f28;
     this.slem = Converter.stanfordLemmatizer;
     this.opusMemory = new ArrayList<>();

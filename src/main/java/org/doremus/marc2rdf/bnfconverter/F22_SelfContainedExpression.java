@@ -2,8 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.*;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.main.Utils;
@@ -35,6 +34,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
     super(record);
 
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
+    this.resource.addProperty(DCTerms.identifier, record.getIdentifier());
+    String ark = record.getAttrByName("IDPerenne").getData();
+    if(ark != null) this.resource.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/"+ark));
+
 
     /**************************** Expression: Context for the expression ********************/
     String dedication = getDedicace();
