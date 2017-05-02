@@ -19,7 +19,7 @@ import java.util.List;
 public class ArtistConverter {
 
   public ArtistConverter(Record record, Model model) throws URISyntaxException {
-    List<Person> artists = getArtistsInfo(record);
+    List<Person> artists = getArtistsInfo(record, true);
 
     if (artists.size() == 0) {
       System.out.println("Empty artist for record " + record.getIdentifier());
@@ -66,9 +66,15 @@ public class ArtistConverter {
 
 
   static List<Person> getArtistsInfo(Record record) throws URISyntaxException {
+    return getArtistsInfo(record, false);
+  }
+
+  static List<Person> getArtistsInfo(Record record, boolean full) throws URISyntaxException {
     List<Person> artists = new ArrayList<>();
 
     for (DataField field : record.getDatafieldsByCode("100")) {
+      if(!full && !field.isCode('3')) continue;
+
       String firstName = null, lastName = null, birthDate = null, deathDate = null, lang = null;
 
       if (field.isCode('m')) { // name
