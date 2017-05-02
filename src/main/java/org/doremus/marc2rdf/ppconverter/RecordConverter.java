@@ -28,7 +28,7 @@ public class RecordConverter {
     f22 = new PF22_SelfContainedExpression(record, identifier, f28);
     f14 = new PF14_IndividualWork(record, identifier);
     f15 = new PF15_ComplexWork(record, identifier);
-    PF42_RepresentativeExpressionAssignment f42 = new PF42_RepresentativeExpressionAssignment(record, identifier);
+    PM45_DescriptiveExpressionAssignment f42 = new PM45_DescriptiveExpressionAssignment(record, identifier);
 //    PF40_IdentifierAssignment f40 = new PF40_IdentifierAssignment(record);
 //    PF50_ControlledAccessPoint f50 = new PF50_ControlledAccessPoint(record);
 
@@ -54,27 +54,23 @@ public class RecordConverter {
   }
 
   private void addPerformances() throws URISyntaxException {
-    // TODO missing F20_PerformanceWork: check mapping rules
-    // F28 Expression Creation R19 created a realisation of F20 Performance Work R12 is realised in F25 Performance Plan
-
     int performanceCounter = 0;
     boolean hasPremiere = false;
-    for (String performance : PF31_Performance.getPerformances(record)) {
-      PF31_Performance f31 = new PF31_Performance(performance, record, identifier, ++performanceCounter, f28);
-      PF25_PerformancePlan f25 = new PF25_PerformancePlan(f31.getIdentifier());
+    for (String performance : PM42_PerformedExpressionCreation.getPerformances(record)) {
+      PM42_PerformedExpressionCreation m42 = new PM42_PerformedExpressionCreation(performance, record, identifier, ++performanceCounter, f28);
+      PF25_PerformancePlan f25 = new PF25_PerformancePlan(m42.getIdentifier());
 
-      f31.add(f25);
+      m42.add(f25);
       f25.add(f22);
-      if (!hasPremiere && f31.isPremiere()) {
-        f14.addPremiere(f31);
+      f15.add(m42);
+      if (!hasPremiere && m42.isPremiere()) {
+        f14.addPremiere(m42);
+        f22.addPremiere(m42);
         hasPremiere = true;
       }
 
-      model.add(f31.getModel());
+      model.add(m42.getModel());
       model.add(f25.getModel());
-
-      model.add(f25.getModel());
-      model.add(f31.getModel());
     }
 
   }
@@ -90,6 +86,7 @@ public class RecordConverter {
     f30.add(f24).add(f19);
     f19.add(f24);
     f14.add(f30);
+    f22.add(f30);
     f24.add(f22);
 
     model.add(f30.getModel());

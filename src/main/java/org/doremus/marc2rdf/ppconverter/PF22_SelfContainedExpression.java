@@ -538,4 +538,14 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     return record.getDatafieldsByCode("909", 'c');
   }
 
+  public PF22_SelfContainedExpression add(PF30_PublicationEvent f30) {
+    this.resource.addProperty(MUS.U4_had_princeps_publication, f30.asResource());
+    return this;
+  }
+
+  public PF22_SelfContainedExpression addPremiere(PM42_PerformedExpressionCreation m42) {
+    this.resource.addProperty(MUS.U5_had_premiere, m42.asResource());
+    return this;
+  }
+
 }

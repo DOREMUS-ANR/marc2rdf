@@ -2,11 +2,13 @@ package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 import org.doremus.vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
@@ -16,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class PF31_Performance extends DoremusResource {
+public class PM42_PerformedExpressionCreation extends DoremusResource {
   private static final String frenchCreationRegex = "(Cr\u00e9ation fran\u00e7aise.+)";
   private static final String noPremiereRegex = frenchCreationRegex + "|(enregistrement (de )?jazz)|(1re reprise)";
   private static final String frenchUncertainDate = "(?:le |en )?(?:" + TimeSpan.frenchDayRegex + "? ?" + TimeSpan.frenchMonthRegex + "? )?(?:\\(\\?\\) )?(\\d{4})(?: ?\\?)?";
@@ -32,8 +34,9 @@ public class PF31_Performance extends DoremusResource {
   private final PF28_ExpressionCreation f28;
 
   private boolean isPremiere;
+  private Resource M44_Performed_Work, M43_Performed_Expression;
 
-  public PF31_Performance(String note, Record record, String identifier, int i, PF28_ExpressionCreation f28) throws URISyntaxException {
+  public PM42_PerformedExpressionCreation(String note, Record record, String identifier, int i, PF28_ExpressionCreation f28) throws URISyntaxException {
     super(record, identifier);
 
     this.slem = Converter.stanfordLemmatizer;
@@ -52,8 +55,18 @@ public class PF31_Performance extends DoremusResource {
     this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
 
     this.resource = model.createResource(this.uri.toString())
-      .addProperty(RDF.type, FRBROO.F31_Performance)
+      .addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)
       .addProperty(CIDOC.P3_has_note, note);
+
+    String expressionUri = ConstructURI.build("pp", "M43_PerformedExpression", this.identifier).toString();
+    String workUri = ConstructURI.build("pp", "M44_PerformedWork", this.identifier).toString();
+    this.M43_Performed_Expression = model.createResource(expressionUri)
+      .addProperty(RDF.type, MUS.M43_Performed_Expression);
+    this.M44_Performed_Work = model.createResource(workUri)
+      .addProperty(RDF.type, MUS.M44_Performed_Work)
+      .addProperty(FRBROO.R9_is_realised_in, this.M43_Performed_Expression);
+    this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression)
+      .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work);
 
     parseNote(note);
   }
@@ -250,7 +263,15 @@ public class PF31_Performance extends DoremusResource {
     return results;
   }
 
-  public PF31_Performance add(PF25_PerformancePlan f25) {
+  public Resource getExpression() {
+    return M43_Performed_Expression;
+  }
+
+  public Resource getWork() {
+    return M44_Performed_Work;
+  }
+
+  public PM42_PerformedExpressionCreation add(PF25_PerformancePlan f25) {
     /**************************** exécution du plan ******************************************/
     this.resource.addProperty(FRBROO.R25_performed, f25.asResource());
 //    f25.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class F31_Performance extends DoremusResource {
+public class M42_PerformedExpressionCreation extends DoremusResource {
   private final StanfordLemmatizer slem;
 
   private static final String performanceRegex = "([eé]xécution|représentation) ([^:]+)?:";
@@ -28,8 +28,9 @@ public class F31_Performance extends DoremusResource {
 
   private boolean isPremiere;
   private F28_ExpressionCreation f28;
+  private Resource M44_Performed_Work, M43_Performed_Expression;
 
-  public F31_Performance(String note, Record record, F28_ExpressionCreation f28, int i) throws URISyntaxException {
+  public M42_PerformedExpressionCreation(String note, Record record, F28_ExpressionCreation f28, int i) throws URISyntaxException {
     super(record);
 
     //check if it is a Premiere
@@ -44,8 +45,18 @@ public class F31_Performance extends DoremusResource {
     this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
 
     this.resource = model.createResource(this.uri.toString());
-    this.resource.addProperty(RDF.type, FRBROO.F31_Performance);
+    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
     this.resource.addProperty(CIDOC.P3_has_note, note);
+
+    String expressionUri = ConstructURI.build("bnf", "M43_PerformedExpression", this.identifier).toString();
+    String workUri = ConstructURI.build("bnf", "M44_PerformedWork", this.identifier).toString();
+    this.M43_Performed_Expression = model.createResource(expressionUri)
+      .addProperty(RDF.type, MUS.M43_Performed_Expression);
+    this.M44_Performed_Work = model.createResource(workUri)
+      .addProperty(RDF.type, MUS.M44_Performed_Work)
+      .addProperty(FRBROO.R9_is_realised_in, this.M43_Performed_Expression);
+    this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression)
+      .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work);
 
     this.slem = Converter.stanfordLemmatizer;
     this.f28 = f28;
@@ -112,7 +123,7 @@ public class F31_Performance extends DoremusResource {
             String interpreter = mI.group(1),
               role = mI.group(2);
 
-            for(String intpt : interpreter.split("(,| et) "))
+            for (String intpt : interpreter.split("(,| et) "))
               addRole(intpt, role);
           }
         }
@@ -121,7 +132,7 @@ public class F31_Performance extends DoremusResource {
     }
 
     if (timeSpan != null) {
-      timeSpan.setUri(this.uri+ "/time");
+      timeSpan.setUri(this.uri + "/time");
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
       this.model.add(timeSpan.getModel());
     }
@@ -141,17 +152,25 @@ public class F31_Performance extends DoremusResource {
 
     this.resource.addProperty(CIDOC.P9_consists_of, M28);
 
-    if(role == null) {
+    if (role == null) {
       // TODO compare with the casting
       return;
     }
-    if(role.equals("conducteur"))
+    if (role.equals("conducteur"))
       M28.addProperty(MUS.U35_foresees_function_of_type, model.createLiteral("conducteur", "fr"));
     else M28.addProperty(MUS.U1_used_medium_of_performance, slem.lemmatize(role).toString());
 
   }
 
-  public F31_Performance add(F25_PerformancePlan plan) {
+  public Resource getExpression() {
+    return M43_Performed_Expression;
+  }
+
+  public Resource getWork() {
+    return M44_Performed_Work;
+  }
+
+  public M42_PerformedExpressionCreation add(F25_PerformancePlan plan) {
     /**************************** exécution du plan ******************************************/
     this.resource.addProperty(FRBROO.R25_performed, plan.asResource());
 //    plan.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), this.resource);

@@ -365,4 +365,13 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return intermarcMap.get(intermarcInput);
   }
 
+  public F22_SelfContainedExpression add(F30_PublicationEvent f30) {
+    this.resource.addProperty(MUS.U4_had_princeps_publication, f30.asResource());
+    return this;
+  }
+
+  public F22_SelfContainedExpression addPremiere(M42_PerformedExpressionCreation m42) {
+    this.resource.addProperty(MUS.U5_had_premiere, m42.asResource());
+    return this;
+  }
 }

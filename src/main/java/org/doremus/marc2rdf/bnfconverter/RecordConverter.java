@@ -26,7 +26,7 @@ public class RecordConverter {
     f14 = new F14_IndividualWork(record);
     f15 = new F15_ComplexWork(record);
 //    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
-    F42_RepresentativeExpressionAssignment f42 = new F42_RepresentativeExpressionAssignment(record);
+    M45_DescriptiveExpressionAssignment f42 = new M45_DescriptiveExpressionAssignment(record);
 
     addPrincepsPublication();
     addPerformances();
@@ -47,19 +47,22 @@ public class RecordConverter {
   }
 
   private void addPerformances() throws URISyntaxException {
-    // TODO missing F20_PerformanceWork: check mapping rules
-    // F28 Expression Creation R19 created a realisation of F20 Performance Work R12 is realised in F25 Performance Plan
-
     int performanceCounter = 0;
-    for(String performance: F31_Performance.getPerformances(record)) {
-      F31_Performance f31 = new F31_Performance(performance, record, f28, ++performanceCounter);
-      F25_PerformancePlan f25 = new F25_PerformancePlan(f31.getIdentifier());
 
-      f31.add(f25);
+    for(String performance: M42_PerformedExpressionCreation.getPerformances(record)) {
+      M42_PerformedExpressionCreation m42 = new M42_PerformedExpressionCreation(performance, record, f28, ++performanceCounter);
+      F25_PerformancePlan f25 = new F25_PerformancePlan(m42.getIdentifier());
+
+      m42.add(f25);
       f25.add(f22);
-      if(f31.isPremiere()) f14.addPremiere(f31);
+      f15.add(m42);
 
-      model.add(f31.getModel());
+      if (m42.isPremiere()) {
+        f14.addPremiere(m42);
+        f22.addPremiere(m42);
+      }
+
+      model.add(m42.getModel());
       model.add(f25.getModel());
     }
   }
@@ -76,6 +79,7 @@ public class RecordConverter {
     f19.add(f24);
 
     f14.add(f30);
+    f22.add(f30);
     f24.add(f22);
 
     model.add(f24.getModel());

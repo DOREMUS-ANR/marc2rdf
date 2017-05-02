@@ -39,7 +39,6 @@ public class F28_ExpressionCreation extends DoremusResource {
 
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateText = getDateText();
-    // TODO check! maybe this info could be better saved
     if (dateText != null) this.resource.addProperty(CIDOC.P3_has_note, dateText);
 
     /**************************** Work: is created by ***************************************/

@@ -61,6 +61,12 @@ public abstract class Vocabulary implements Comparable<Vocabulary> {
 
   @Override
   public int compareTo(Vocabulary v) {
+    // give priority to mimo
+    boolean thisMimo = this.getName().contains("mimo");
+    boolean thatMimo = v.getName().contains("mimo");
+
+    if (thisMimo != thatMimo) return thisMimo ? -1 : 1;
+
     // give priority to iaml
     boolean thisIaml = this.getName().contains("iaml");
     boolean thatIaml = v.getName().contains("iaml");

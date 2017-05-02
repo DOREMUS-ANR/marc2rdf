@@ -37,18 +37,22 @@ public class ConstructURI {
     switch (className) {
       case "F22_SelfContainedExpression":
       case "F25_PerformancePlan":
+      case "M43_PerformedExpression":
         return "expression";
       case "F28_ExpressionCreation":
       case "F30_PublicationEvent":
+      case "M45_DescriptiveExpressionAssignment":
       case "F42_RepresentativeExpressionAssignment":
         return "event";
       case "F14_IndividualWork":
       case "F15_ComplexWork":
       case "F19_PublicationWork":
+      case "M44_PerformedWork":
         return "work";
       case "F24_PublicationExpression":
         return "publication";
       case "F31_Performance":
+      case "M42_PerformedExpressionCreation":
         return "performance";
       case "E21_Person":
         return "artist";

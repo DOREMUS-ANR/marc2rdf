@@ -23,10 +23,14 @@ The `<group>` is taken from this table
 | F14_IndividualWork | work |
 | F15_ComplexWork | work |
 | F42_RepresentativeExpressionAssignment | event |
+| M45_DescriptiveExpressionAssignment | event |
 | F24_PublicationExpression | publication |
 | F30_PublicationEvent | event |
 | F19_PublicationWork | work |
 | F31_Performance | performance |
+| M42_PerformedExpressionCreation | performance |
+| M43_PerformedExpression | expression |
+| M44_PerformedWork | work |
 | F25_PerformancePlan | expression |
 | F40_IdentifierAssignment | event |
 | F50_ControlledAccessPoint |  |

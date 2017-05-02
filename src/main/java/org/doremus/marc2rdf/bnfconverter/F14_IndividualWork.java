@@ -20,7 +20,7 @@ public class F14_IndividualWork extends DoremusResource {
   }
 
 
-  public F14_IndividualWork addPremiere(F31_Performance premiere) {
+  public F14_IndividualWork addPremiere(M42_PerformedExpressionCreation premiere) {
     /**************************** Work: had premiere ****************************************/
     this.resource.addProperty(MUS.U5_had_premiere, premiere.asResource());
 
