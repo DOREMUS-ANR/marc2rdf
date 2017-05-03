@@ -25,7 +25,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private static final String conductorRegex = "(?:(?:placé )?(?:sous|par) la dir(?:\\.|ection) d[e'u]|dirigé par|direction(?: :)?) ?((?:[A-Z]\\.)?[\\p{L} \\-']+)";
   private static final String interpreterRegex = "(?<!(?:organis|rapport)é )par (.+)";
   private static final String dedicataireRegex = "\\(?(?:l[ea]s? |son |sa )?(?:dédica|commandi)taires?(?: de l'oeuvre)?\\)?";
-  private static final String composerRegex = " (le )?compositeur|l'auteur";
+  private static final String composerRegex = "(le )?compositeur|l'auteur";
   private static final String noUppercase = "[^A-Z]+";
 
   private static final String performanceRegex = "(?i)(?:(?:premi[èe]|1[èe]?)re? (?:représentation|[ée]x[ée]cution|audition|enregistrement|reprise) )|(?:cr[èée]{1,3}(?:ation|s)? )";
@@ -93,16 +93,18 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     m = p.matcher(note);
     if (m.find()) {
       String conductorString = m.group(1);
-      for (String conductor : conductorString.split("(et|avec)")) {
+      boolean first = true;
+      for (String conductor : conductorString.split(" (et|avec) ")) {
         String mop = null;
         if (conductor.contains(" au ") || conductor.contains(" à ")) {
           // i.e. "Leonard Bernstein avec Philippe Entremont au piano"
           String[] parts = conductor.split(" (au|à) (la)?");
           conductor = parts[0];
-          mop = parts[1];
+          if(!first) mop = parts[1];
         }
         Role r = makeRole(conductor, (mop == null) ? "conducteur" : mop);
         this.resource.addProperty(CIDOC.P9_consists_of, r.toM28IndividualPerformance());
+        first = false;
       }
       note = cleanString(note, m.group());
     }
@@ -237,8 +239,12 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private Role makeRole(String actor, String role) {
     if (role == null) return makeRole(actor, (String) null);
     role = role.trim();
+    actor = actor.trim();
 
     if (!role.equals("conducteur")) role = instrumentToSingular(role);
+    if (actor.matches(composerRegex))
+      return new Role(f28.getComposers().get(0).asResource(), role, this.model);
+
     return new Role(actor, role, this.model);
   }
 

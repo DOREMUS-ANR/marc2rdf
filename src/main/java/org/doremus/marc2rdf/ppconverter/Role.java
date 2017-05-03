@@ -38,6 +38,14 @@ public class Role {
     this.model = model;
   }
 
+  public Role(Resource actor, String function, Model model) {
+    this.actorRes = actor;
+    this.actor = null;
+    this.functionRes = null;
+    this.function = function;
+    this.model = model;
+  }
+
   public String getActor() {
     return actor;
   }
