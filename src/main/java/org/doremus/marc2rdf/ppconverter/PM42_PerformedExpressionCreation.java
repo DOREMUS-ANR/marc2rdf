@@ -209,6 +209,16 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   }
 
+  private String instrumentToSingular(String r) {
+    String[] parts = r.split(" ");
+    if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
+
+    // cornets à pistons --> cornet à pistons
+    parts[0] = slem.lemmatize(parts[0]).get(0);
+    return String.join(" ", parts);
+  }
+
+
   private static String cleanString(String note, String group) {
     if (note == null) return null;
     if (group == null || group.isEmpty()) return note;
@@ -228,7 +238,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     if (role == null) return makeRole(actor, (String) null);
     role = role.trim();
 
-    if (!role.equals("conducteur")) role = slem.lemmatize(role).toString();
+    if (!role.equals("conducteur")) role = instrumentToSingular(role);
     return new Role(actor, role, this.model);
   }
 

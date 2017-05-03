@@ -8,6 +8,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
+import org.doremus.vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -65,6 +66,9 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   }
 
   private void parseNote(String note) {
+    // to complex case: 1re exécution : Festival de Bordeaux, 8 juin 1969, par Jean Guillou, puis Zwolle (Pays-Bas), 18 juin 1969, par Charles de Wolff
+    note = note.split(", puis")[0];
+
     Pattern p1 = Pattern.compile(noteRegex1);
     Matcher m1 = p1.matcher(note);
 
@@ -108,7 +112,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
         if (parts.length > 0) place = parts[0].trim();
         String post = parts.length > 1 ? parts[1].trim() : "";
 
-        Pattern pC = Pattern.compile("sous la direction d['eu] ?(.+)");
+        Pattern pC = Pattern.compile("sous la dir(?:\\.|ection) d['eu] ?([^)]+)");
         Matcher mC = pC.matcher(post);
         if (mC.find()) {
           conductor = mC.group(1);
@@ -122,8 +126,12 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
           while (mI.find()) {
             String interpreter = mI.group(1),
               role = mI.group(2);
-            for (String intpt : interpreter.split("(,| et) "))
-              addRole(intpt, role);
+            for (String intpt : interpreter.split("(,| et) ")) {
+              System.out.println(intpt);
+              // groups starts normally with lowercase, i.e. les Wiener Sängerknaben
+              if (intpt.matches("^[a-z].+")) addRole(intpt, null);
+              else addRole(intpt, role);
+            }
           }
         }
 
@@ -141,7 +149,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
   private void addRole(String actor, String role) {
     actor = actor.trim();
-    if(actor.isEmpty()) return;
+    if (actor.isEmpty()) return;
 
     RDFNode actorRes;
     if (actor.equals("compositeur") || actor.equals("le compositeur")) {
@@ -160,10 +168,24 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     }
 
     role = role.trim();
-    if (role.equals("conducteur"))
-      M28.addProperty(MUS.U35_foresees_function_of_type, model.createLiteral("conducteur", "fr"));
-    else M28.addProperty(MUS.U1_used_medium_of_performance, slem.lemmatize(role).get(0), "fr");
+    for (String r : role.split(" et ")) {
+      if (r.equals("conducteur") || r.equals("direction"))
+        M28.addProperty(MUS.U35_foresees_function_of_type, model.createLiteral("conducteur", "fr"));
+      else {
+        Resource mopMatch = VocabularyManager.searchInCategory(instrumentToSingular(r), "fr", "mop");
+        if (mopMatch != null) M28.addProperty(MUS.U1_used_medium_of_performance, mopMatch);
+      }
+    }
 
+  }
+
+  private String instrumentToSingular(String r) {
+    String[] parts = r.split(" ");
+    if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
+
+    // cornets à pistons --> cornet à pistons
+    parts[0] = slem.lemmatize(parts[0]).get(0);
+    return String.join(" ", parts);
   }
 
   public Resource getExpression() {

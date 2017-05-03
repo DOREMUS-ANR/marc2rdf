@@ -37,7 +37,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
     this.resource.addProperty(DCTerms.identifier, identifier);
-    this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/"+identifier));
+    this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier));
 
     this.f28 = f28;
     this.slem = Converter.stanfordLemmatizer;
@@ -55,7 +55,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         parseOpus(catalog);
         continue;
       }
-      for(String c : catalog.split(" ; "))
+      for (String c : catalog.split(" ; "))
         parseCatalog(c);
     }
 
@@ -248,7 +248,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     if (catalogParts.length > 1) {
       catalogName = catalogParts[0].trim();
       catalogNum = catalogParts[1].trim();
-    } else if(catalog.matches("^([a-zA-Z]+)(\\d+.*)$")){
+    } else if (catalog.matches("^([a-zA-Z]+)(\\d+.*)$")) {
       Matcher m = Pattern.compile("^([a-zA-Z]+)(\\d+.*)$").matcher(catalog);
       m.find();
       catalogName = m.group(1).trim();
@@ -377,7 +377,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     if (name.equals("contrebasses")) name = "contrebasse";
 //    System.out.println(name + " --> " + slem.lemmatize(name));
     // singularize
-    name = String.join(" ", slem.lemmatize(name));
+    name = instrumentToSingular(name);
 
 
     Resource M23CastingDetail = model.createResource(uri)
@@ -547,5 +547,15 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     this.resource.addProperty(MUS.U5_had_premiere, m42.asResource());
     return this;
   }
+
+  private String instrumentToSingular(String r) {
+    String[] parts = r.split(" ");
+    if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
+
+    // cornets à pistons --> cornet à pistons
+    parts[0] = slem.lemmatize(parts[0]).get(0);
+    return String.join(" ", parts);
+  }
+
 
 }
