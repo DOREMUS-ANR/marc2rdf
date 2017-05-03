@@ -49,7 +49,7 @@ public class RecordConverter {
   private void addPerformances() throws URISyntaxException {
     int performanceCounter = 0;
 
-    for(String performance: M42_PerformedExpressionCreation.getPerformances(record)) {
+    for (String performance : M42_PerformedExpressionCreation.getPerformances(record)) {
       M42_PerformedExpressionCreation m42 = new M42_PerformedExpressionCreation(performance, record, f28, ++performanceCounter);
       F25_PerformancePlan f25 = new F25_PerformancePlan(m42.getIdentifier());
 
@@ -68,29 +68,33 @@ public class RecordConverter {
   }
 
   private void addPrincepsPublication() throws URISyntaxException {
-    String edition = F30_PublicationEvent.getEditionPrinceps(record);
-    if (edition == null) return;
+    int pubCounter = 0;
 
-    F30_PublicationEvent f30 = new F30_PublicationEvent(edition, record, f28);
-    F24_PublicationExpression f24 = new F24_PublicationExpression(f30.getIdentifier());
-    F19_PublicationWork f19 = new F19_PublicationWork(f30.getIdentifier());
+    for (String edition : F30_PublicationEvent.getEditionPrinceps(record)) {
 
-    f30.add(f24).add(f19);
-    f19.add(f24);
+      F30_PublicationEvent f30 = new F30_PublicationEvent(edition.trim(), record, f28, ++pubCounter);
+      F24_PublicationExpression f24 = new F24_PublicationExpression(f30.getIdentifier());
+      F19_PublicationWork f19 = new F19_PublicationWork(f30.getIdentifier());
 
-    f14.add(f30);
-    f22.add(f30);
-    f24.add(f22);
+      f30.add(f24).add(f19);
+      f19.add(f24);
+      f24.add(f22);
 
-    model.add(f24.getModel());
-    model.add(f30.getModel());
-    model.add(f19.getModel());
+      if (pubCounter > 1) {
+        f14.add(f30);
+        f22.add(f30);
+      }
+
+      model.add(f24.getModel());
+      model.add(f30.getModel());
+      model.add(f19.getModel());
+    }
   }
 
   private void linkToMovements() {
     for (String code : record.getDatafieldsByCode("302", '3'))
       try {
-        f14.addMovement(new F14_IndividualWork( code));
+        f14.addMovement(new F14_IndividualWork(code));
       } catch (URISyntaxException e) {
         e.printStackTrace();
       }

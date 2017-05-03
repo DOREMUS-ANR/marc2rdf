@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -31,11 +32,16 @@ public class F30_PublicationEvent extends DoremusResource {
   private final F28_ExpressionCreation f28;
 
 
-  public F30_PublicationEvent(String edition, Record record, F28_ExpressionCreation f28) throws URISyntaxException {
+  public F30_PublicationEvent(String edition, Record record, F28_ExpressionCreation f28, int i) throws URISyntaxException {
     super(record);
     this.f28 = f28;
 
+    this.identifier = record.getIdentifier() + i;
+    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
+
+    this.resource = model.createResource(this.uri.toString());
     this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);
+
     this.resource.addProperty(CIDOC.P3_has_note, edition);
 
     parseNote(edition);
@@ -50,14 +56,13 @@ public class F30_PublicationEvent extends DoremusResource {
     Matcher m2 = p2.matcher(note);
     Matcher m3 = p3.matcher(note);
 
-
+    String city = null, publisher = null;
     if (m.find()) {
       String descr = m.group(1);
       String dateModifier = m.group(2);
       String year = m.group(3);
       String endYear = m.group(4);
 
-      String city = null, publisher = null;
       if (descr != null) {
         descr = descr.trim();
         if (descr.startsWith(":")) descr = descr.substring(1).trim();
@@ -75,22 +80,24 @@ public class F30_PublicationEvent extends DoremusResource {
           city = parts[parts.length - 2].trim();
         }
       }
-      if (city != null) this.resource.addProperty(CIDOC.P7_took_place_at, city);
-      addPublisher(publisher);
 
       parseTime(year, endYear, dateModifier);
 
     } else if (m2.find()) {
-      String city = m2.group(1), publisher = m2.group(2);
-      if (city != null) this.resource.addProperty(CIDOC.P7_took_place_at, city);
-      addPublisher(publisher);
+      city = m2.group(1);
+      publisher = m2.group(2);
 
     } else if (m3.find()) {
-      String city = m3.group(1), year = m3.group(2);
-      if (city != null) this.resource.addProperty(CIDOC.P7_took_place_at, city);
+      city = m3.group(1);
+      String year = m3.group(2);
       parseTime(year);
     }
 
+    addPublisher(publisher);
+    if (city != null && !city.startsWith("dans ") && !city.contains("&")) {
+      city.replaceFirst("[.,:]^", "").trim();
+      this.resource.addProperty(CIDOC.P7_took_place_at, city);
+    }
   }
 
   private void addPublisher(String publisher) {
@@ -156,11 +163,11 @@ public class F30_PublicationEvent extends DoremusResource {
     return this;
   }
 
-  public static String getEditionPrinceps(Record record) {
-    // search edition priceps in the record
+  public static String[] getEditionPrinceps(Record record) {
+    // search edition princeps in the record
     for (String edition : record.getDatafieldsByCode("600", 'a')) {
-      if ((edition.contains("éd.")) || (edition.contains("édition"))) return edition;
+      if ((edition.contains("éd.")) || (edition.contains("édition"))) return edition.split(";");
     }
-    return null;
+    return new String[0];
   }
 }
