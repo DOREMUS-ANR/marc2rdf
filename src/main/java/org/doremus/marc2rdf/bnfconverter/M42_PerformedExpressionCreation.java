@@ -112,7 +112,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
         if (parts.length > 0) place = parts[0].trim();
         String post = parts.length > 1 ? parts[1].trim() : "";
 
-        Pattern pC = Pattern.compile("sous la dir(?:\\.|ection) d['eu] ?([^)]+)");
+        Pattern pC = Pattern.compile("(?:sous la dir(?:\\.|ection) d['eu] ?|dir\\. : )([^)]+)");
         Matcher mC = pC.matcher(post);
         if (mC.find()) {
           conductor = mC.group(1);
@@ -120,14 +120,13 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
           post = post.replace(mC.group(0), "");
         }
         if (post.startsWith("par ")) {
-          Pattern pI = Pattern.compile("([\\p{L} \\-.]+)(?:\\(([^)]+)\\))?");
+          Pattern pI = Pattern.compile("([\\p{L} \\-.']+)(?:\\(([^)]+)\\))?");
           Matcher mI = pI.matcher(post.substring(4));
 
           while (mI.find()) {
             String interpreter = mI.group(1),
               role = mI.group(2);
             for (String intpt : interpreter.split("(,| et) ")) {
-              System.out.println(intpt);
               // groups starts normally with lowercase, i.e. les Wiener Sängerknaben
               if (intpt.matches("^[a-z].+")) addRole(intpt, null);
               else addRole(intpt, role);
