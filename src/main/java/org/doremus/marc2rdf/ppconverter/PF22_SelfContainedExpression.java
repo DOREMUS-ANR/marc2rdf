@@ -116,7 +116,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     int castingNum = 0;
 
     for (String castingString : getCasting()) {
-      castingString = castingString.trim();
+      castingString = castingString.trim().replaceFirst("\\.$", "");
 
       String castingUri = this.uri.toString() + "/casting/" + (++castingNum);
       Resource M6Casting = model.createResource(castingUri);
@@ -229,8 +229,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
               quantity -= subQuantity;
             }
           }
-
-
           M6Casting.addProperty(MUS.U23_has_casting_detail, makeCastingDetail(part, quantity, isSolo, castingUri + "/detail/" + ++detailNum));
 
         }
