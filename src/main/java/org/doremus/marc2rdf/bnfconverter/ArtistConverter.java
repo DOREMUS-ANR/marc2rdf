@@ -85,6 +85,9 @@ public class ArtistConverter {
       }
       if (field.isCode('d')) { // birth - death dates
         String d = field.getSubfield('d').getData();
+
+        // av. J.-C.
+        d = d.replaceAll("av\\. J\\.-C\\.", "BC");
         String[] dates = d.split("-");
         birthDate = dates[0].trim();
         if (dates.length > 1) deathDate = dates[1].trim();

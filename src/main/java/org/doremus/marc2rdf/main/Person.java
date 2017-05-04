@@ -1,12 +1,8 @@
 package org.doremus.marc2rdf.main;
 
 import net.sf.junidecode.Junidecode;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.impl.XSDDateType;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.ontology.CIDOC;
@@ -107,18 +103,15 @@ public class Person {
     addProperty(FOAF.surname, this.getLastName(), lang);
     addProperty(FOAF.name, this.getFullName(), lang);
     addProperty(CIDOC.P131_is_identified_by, this.getIdentification(), lang);
-    addProperty(CIDOC.P98i_was_born, this.getBirthDate(), XSDDateType.XSDgYear);
-    addProperty(CIDOC.P100i_died_in, this.getDeathDate(), XSDDateType.XSDgYear);
+
+    addProperty(CIDOC.P98i_was_born, cleanDate(this.getBirthDate()));
+    addProperty(CIDOC.P100i_died_in, cleanDate(this.getDeathDate()));
     return resource;
   }
 
-  public void addProperty(Property property, String object, XSDDatatype type) {
-    if (property == null || object == null || object.isEmpty()) return;
-
-    if (type != null)
-      resource.addProperty(property, model.createTypedLiteral(object, type));
-    else
-      resource.addProperty(property, object);
+  public void addProperty(Property property, Literal object) {
+    if (property == null || object == null) return;
+    resource.addProperty(property, object);
   }
 
   public void addProperty(Property property, String object, String lang) {
@@ -131,7 +124,7 @@ public class Person {
   }
 
   public void addProperty(Property property, String object) {
-    addProperty(property, object, (String) null);
+    addProperty(property, object, null);
   }
 
 
@@ -142,4 +135,15 @@ public class Person {
     return identification;
   }
 
+  private Literal cleanDate(String d) {
+    if (d == null || d.isEmpty() || d.startsWith(".")) return null;
+
+    d = d.replaceFirst("(.{4}\\??) BC", "-$1");
+    d = d.replaceFirst("(.{4}) ?\\?", "$1");
+
+    if (d.matches("\\d{4}"))
+      return model.createTypedLiteral(d, XSDDateType.XSDgYear);
+
+    return model.createLiteral(d);
+  }
 }
