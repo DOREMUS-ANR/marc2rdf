@@ -34,6 +34,8 @@ public class PF28_ExpressionCreation extends DoremusResource {
       String start = dateMachine[0], end = dateMachine[1];
       TimeSpan timeSpan = null;
       if (start.length() <= 4 && end.length() <= 4) {
+        start = start.replaceAll("\\?", "0");
+        end = end.replaceAll("\\?", "9");
         timeSpan = new TimeSpan(start, end);
       } else {
         Matcher ms = p.matcher(start), me = p.matcher(end);
@@ -45,10 +47,11 @@ public class PF28_ExpressionCreation extends DoremusResource {
           System.out.println(record.getIdentifier() + " | not a date: " + start + "/" + end);
         }
       }
-      if (timeSpan != null)
+      if (timeSpan != null) {
         timeSpan.setUri(this.uri + "/time");
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-      this.model.add(timeSpan.getModel());
+        this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+        this.model.add(timeSpan.getModel());
+      }
     }
 
     /**************************** Work: Date of the work (expression représentative) ********/

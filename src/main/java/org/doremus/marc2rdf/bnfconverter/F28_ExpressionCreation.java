@@ -94,8 +94,8 @@ public class F28_ExpressionCreation extends DoremusResource {
         if (startString.isEmpty()) startString = endString;
         else if (endString.isEmpty()) endString = startString;
 
-        startString = startString.replaceAll("\\.", "0");
-        endString = endString.replaceAll("\\.", "9");
+        startString = startString.replaceAll("[.-]", "0");
+        endString = endString.replaceAll("[.-]", "9");
 
         return new TimeSpan(startString, endString);
       }
@@ -103,16 +103,16 @@ public class F28_ExpressionCreation extends DoremusResource {
       else {
         String startYear = fieldData.substring(28, 32);
 
-        if (startYear.matches("\\d+.+")) // at least a digit is specified
-          startYear = startYear.replaceAll("\\.|\\?", "0").trim();
-        else startYear = "";
+        if (startYear.matches("\\d+.+")) { // at least a digit is specified
+          startYear = startYear.replaceAll("[.?-]", "0").trim();
+        } else startYear = "";
 
-        String startMonth = fieldData.substring(32, 34).replaceAll("\\.", "").trim();
-        String startDay = fieldData.substring(34, 36).replaceAll("\\.", "").trim();
+        String startMonth = fieldData.substring(32, 34).replaceAll("[.-]", "").trim();
+        String startDay = fieldData.substring(34, 36).replaceAll("[.-]", "").trim();
 
-        String endYear = fieldData.substring(38, 42).replaceAll("[.?]", "").trim();
-        String endMonth = fieldData.substring(42, 44).replaceAll("\\.", "").trim();
-        String endDay = fieldData.substring(44, 46).replaceAll("\\.", "").trim();
+        String endYear = fieldData.substring(38, 42).replaceAll("[.-]", "").trim();
+        String endMonth = fieldData.substring(42, 44).replaceAll("[.-]", "").trim();
+        String endDay = fieldData.substring(44, 46).replaceAll("[.-]", "").trim();
 
         if (startYear.isEmpty() && endYear.isEmpty()) continue;
 
