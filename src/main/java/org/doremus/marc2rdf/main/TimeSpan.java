@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.impl.XSDDateType;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -12,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 public class TimeSpan {
   public static final String frenchDayRegex = "(1er|[\\d]{1,2})";
@@ -25,6 +27,8 @@ public class TimeSpan {
 
   private String startYear, startMonth, startDay;
   private String endYear, endMonth, endDay;
+  private String startDate, endDate;
+  private XSDDatatype startType, endType;
   private String label;
 
   public TimeSpan(String startYear) {
@@ -86,26 +90,13 @@ public class TimeSpan {
     this.startDay = day;
   }
 
-  private void computeLabel() {
-    if (startYear.isEmpty()) label = endYear.substring(0, 2) + "00"; //beginning of the century
-    else label = startYear;
-
-    // avoid "1915/1915" ==> "1915"
-    if (startMonth.isEmpty() && endMonth.isEmpty() && startYear.equals(endYear)) return;
-
-    if (!startMonth.isEmpty()) label += "-" + startMonth;
-    if (!startDay.isEmpty()) label += "-" + startDay;
-
-    if (!endYear.isEmpty() || !endMonth.isEmpty() || !endDay.isEmpty())
-      label += "/";
-    if (!endYear.isEmpty()) label += endYear;
-    if (!endMonth.isEmpty()) label += "-" + endMonth;
-    if (!endDay.isEmpty()) label += "-" + endDay;
+  private String computeLabel() {
+    if (Objects.equals(startDate, endDate)) return startDate;
+    return startDate + "/" + endDate;
   }
 
   private void initResource() {
     if (startYear.isEmpty() && endYear.isEmpty()) return;
-    if (this.label == null) computeLabel();
 
     // there is at least one of the two year
     if (startYear.isEmpty()) startYear = endYear.substring(0, 2) + "00"; //beginning of the century
@@ -115,25 +106,35 @@ public class TimeSpan {
       endDay = startDay;
     }
 
-    if (startMonth.isEmpty()) startMonth = "01";
-    if (startDay.isEmpty()) startDay = "01";
-    if (endMonth.isEmpty()) endMonth = "12";
-    if (endDay.isEmpty()) {
-      endDay = getLastDay(endMonth, endYear);
-      if (endDay == null) {
-        System.out.println("Cannot get last day of: " + endMonth + "/" + endYear);
-        return;
-      }
+    startType = XSDDateType.XSDgYear;
+    startDate = startYear;
+    if (!startMonth.isEmpty()) {
+      startType = XSDDateType.XSDgYearMonth;
+      startDate += "-" + startMonth;
+    }
+    if (!startDay.isEmpty()) {
+      startType = XSDDateType.XSDdate;
+      startDate += "-" + startDay;
     }
 
-    String startDate = startYear + "-" + startMonth + "-" + startDay;
-    String endDate = endYear + "-" + endMonth + "-" + endDay;
+    endType = XSDDateType.XSDgYear;
+    endDate = endYear;
+    if (!endMonth.isEmpty()) {
+      endType = XSDDatatype.XSDgYearMonth;
+      endDate += "-" + endMonth;
+    }
+    if (!endDay.isEmpty()) {
+      endType = XSDDateType.XSDdate;
+      endDate += "-" + endDay;
+    }
+
+    this.label = computeLabel();
 
     this.resource = this.model.createResource(this.uri)
       .addProperty(RDF.type, CIDOC.E52_Time_Span)
       .addProperty(RDFS.label, this.label)
-      .addProperty(CIDOC.P79_beginning_is_qualified_by, this.model.createTypedLiteral(startDate, XSDDateType.XSDdate))
-      .addProperty(CIDOC.P80_end_is_qualified_by, this.model.createTypedLiteral(endDate, XSDDateType.XSDdate));
+      .addProperty(CIDOC.P79_beginning_is_qualified_by, this.model.createTypedLiteral(startDate, startType))
+      .addProperty(CIDOC.P80_end_is_qualified_by, this.model.createTypedLiteral(endDate, endType));
   }
 
 
