@@ -12,9 +12,11 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class F28_ExpressionCreation extends DoremusResource {
+  private static final int lastYear = LocalDate.now().getYear() - 1;
   private List<Person> composers;
 
   public F28_ExpressionCreation(String identifier) throws URISyntaxException {
@@ -95,8 +97,9 @@ public class F28_ExpressionCreation extends DoremusResource {
         else if (endString.isEmpty()) endString = startString;
 
         startString = startString.replaceAll("[.-]", "0");
-        endString = endString.replaceAll("[.-]", "9");
-
+        if (endString.contains(".") || endString.contains("-")) {
+          endString = Math.min(Integer.parseInt(endString.replaceAll("[.-]", "9")), lastYear) + "";
+        }
         return new TimeSpan(startString, endString);
       }
       // known date
