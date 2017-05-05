@@ -1,11 +1,21 @@
 package org.doremus.marc2rdf.ppconverter;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.PROV;
 
 import java.net.URISyntaxException;
+import java.time.Instant;
 
 public class RecordConverter {
+  public final Resource provActivity, intermarcRes;
+
   private Record record;
   private Model model;
   private String identifier;
@@ -23,6 +33,19 @@ public class RecordConverter {
     this.record = record;
     this.model = model;
     this.identifier = identifier;
+
+    // PROV-O tracing
+    // FIXME this is not the intermarc uri
+    intermarcRes = model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier)
+      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.organizationURI));
+
+    provActivity = model.createResource(ConstructURI.build("pp", "prov", record.getIdentifier()).toString())
+      .addProperty(RDF.type, PROV.Activity).addProperty(RDF.type, PROV.Derivation)
+      .addProperty(PROV.used, intermarcRes)
+      .addProperty(RDFS.comment, "Reprise et conversion de la notice MARC de la Philharmonie de Paris", "fr")
+      .addProperty(RDFS.comment, "Resumption and conversion of the MARC record of the Philharmonie de Paris", "en")
+      .addProperty(PROV.atTime, Instant.now().toString(), XSDDatatype.XSDdateTime);
+
 
     f28 = new PF28_ExpressionCreation(record, identifier);
     f22 = new PF22_SelfContainedExpression(record, identifier, f28);
@@ -43,14 +66,19 @@ public class RecordConverter {
 //    f22.add(f50);
     f42.add(f22).add(f15);
 
+    for (DoremusResource res : new DoremusResource[]{f22, f28, f15, f14, f42}) {
+      addProvenanceTo(res);
+      model.add(res.getModel());
+    }
 
-    model.add(f22.getModel());
-    model.add(f28.getModel());
-    model.add(f15.getModel());
-    model.add(f14.getModel());
-    model.add(f42.getModel());
-//    model.add(f40.getModel());
-//    model.add(f50.getModel());
+  }
+
+
+  private void addProvenanceTo(DoremusResource res) {
+    res.asResource().addProperty(RDF.type, PROV.Entity)
+      .addProperty(PROV.wasAttributedTo, model.createResource("http://data.doremus.org/organization/DOREMUS"))
+      .addProperty(PROV.wasDerivedFrom, this.intermarcRes)
+      .addProperty(PROV.wasGeneratedBy, this.provActivity);
   }
 
   private void addPerformances() throws URISyntaxException {

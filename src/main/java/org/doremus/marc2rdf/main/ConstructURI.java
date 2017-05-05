@@ -58,6 +58,8 @@ public class ConstructURI {
         return "artist";
       case "E4_Period":
         return "period";
+      case "prov":
+        return "activity";
       default:
         throw new RuntimeException("[ConstructURI.java] Class not assigned to a collection: " + className);
     }

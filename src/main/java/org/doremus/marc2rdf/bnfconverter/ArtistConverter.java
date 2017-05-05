@@ -1,18 +1,22 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.PROV;
 
-import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +61,30 @@ public class ArtistConverter {
 
     String ark = record.getAttrByName("IDPerenne").getData();
     base.asResource().addProperty(OWL.sameAs, model.createResource("http://catalogue.bnf.fr/" + ark));
+    // END sameAs links
 
     // identifier
     base.asResource().addProperty(DCTerms.identifier, record.getIdentifier());
+
+
+    // PROV-O tracing
+    Resource intermarcRes = model.createResource("http://catalogue.bnf.fr/" + ark + ".intermarc")
+      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(BNF2RDF.organizationURI));
+
+    Resource provActivity = model.createResource(ConstructURI.build("bnf", "prov", record.getIdentifier()).toString())
+      .addProperty(RDF.type, PROV.Activity).addProperty(RDF.type, PROV.Derivation)
+      .addProperty(PROV.used, intermarcRes)
+      .addProperty(RDFS.comment, "Reprise et conversion de la notice MARC de la BnF", "fr")
+      .addProperty(RDFS.comment, "Resumption and conversion of the MARC record of the BnF", "en")
+      .addProperty(PROV.atTime, Instant.now().toString(), XSDDatatype.XSDdateTime);
+
+
+    base.asResource().addProperty(RDF.type, PROV.Entity)
+      .addProperty(PROV.wasAttributedTo, model.createResource("http://data.doremus.org/organization/DOREMUS"))
+      .addProperty(PROV.wasDerivedFrom, intermarcRes)
+      .addProperty(PROV.wasGeneratedBy, provActivity);
+
+    // END PROV-O tracing
 
     model.add(base.getModel());
   }
@@ -73,7 +98,7 @@ public class ArtistConverter {
     List<Person> artists = new ArrayList<>();
 
     for (DataField field : record.getDatafieldsByCode("100")) {
-      if(!full && !field.isCode('3')) continue;
+      if (!full && !field.isCode('3')) continue;
 
       String firstName = null, lastName = null, birthDate = null, deathDate = null, lang = null;
 

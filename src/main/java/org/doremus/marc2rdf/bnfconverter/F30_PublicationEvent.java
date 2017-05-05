@@ -37,12 +37,9 @@ public class F30_PublicationEvent extends DoremusResource {
     this.f28 = f28;
 
     this.identifier = record.getIdentifier() + i;
-    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
-
-    this.resource = model.createResource(this.uri.toString());
-    this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);
-
-    this.resource.addProperty(CIDOC.P3_has_note, edition);
+    regenerateResource();
+    this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event)
+      .addProperty(CIDOC.P3_has_note, edition);
 
     parseNote(edition);
   }

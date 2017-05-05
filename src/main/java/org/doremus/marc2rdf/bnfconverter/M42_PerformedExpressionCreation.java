@@ -43,11 +43,9 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     if (i > -1) flag += i;
 
     this.identifier = record.getIdentifier() + flag;
-    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
-
-    this.resource = model.createResource(this.uri.toString());
-    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
-    this.resource.addProperty(CIDOC.P3_has_note, note);
+    regenerateResource();
+    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)
+      .addProperty(CIDOC.P3_has_note, note);
 
     String expressionUri = ConstructURI.build("bnf", "M43_PerformedExpression", this.identifier).toString();
     String workUri = ConstructURI.build("bnf", "M44_PerformedWork", this.identifier).toString();

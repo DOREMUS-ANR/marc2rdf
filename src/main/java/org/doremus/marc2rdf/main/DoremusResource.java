@@ -1,17 +1,22 @@
 package org.doremus.marc2rdf.main;
 
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
+import org.doremus.marc2rdf.bnfconverter.RecordConverter;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
+import org.doremus.ontology.PROV;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 
 
 public abstract class DoremusResource {
@@ -23,7 +28,7 @@ public abstract class DoremusResource {
   protected Resource resource;
   protected Record record;
   protected String identifier;
-  private Resource publisher;
+  protected Resource publisher;
 
   public DoremusResource(String identifier) throws URISyntaxException {
     this.identifier = identifier;
@@ -39,9 +44,17 @@ public abstract class DoremusResource {
     } else
       this.publisher = model.createResource(BNF2RDF.organizationURI);
 
-    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
-
+    this.resource = null;
     /* create RDF resource */
+    regenerateResource();
+  }
+
+  protected void regenerateResource() throws URISyntaxException {
+    // delete old one
+    if(this.resource != null) this.resource.removeProperties();
+
+    // generate the new one
+    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
     this.resource = model.createResource(this.uri.toString());
   }
 
@@ -56,7 +69,6 @@ public abstract class DoremusResource {
   }
 
   public Resource asResource() {
-    this.resource.addProperty(DCTerms.publisher, this.publisher);
     return this.resource;
   }
 

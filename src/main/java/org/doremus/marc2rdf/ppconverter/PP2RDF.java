@@ -94,6 +94,7 @@ public class PP2RDF {
     model.setNsPrefix("dcterms", DCTerms.getURI());
     model.setNsPrefix("foaf", FOAF.getURI());
     model.setNsPrefix("rdfs", RDFS.getURI());
+    model.setNsPrefix("prov", PROV.getURI());
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";

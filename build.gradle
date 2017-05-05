@@ -59,7 +59,19 @@ buildscript {
     }
 }
 
-task schemagen(dependsOn: ['schemagenFrbroo', 'schemagenCidoc', 'schemagenDoremus'])
+task schemagen(dependsOn: ['schemagenFrbroo', 'schemagenCidoc', 'schemagenDoremus', 'schemagenProvO'])
+
+task schemagenProvO(type: UrlSchemaGen) {
+    input = uri('http://www.w3.org/ns/prov')
+    outputDirectory = file('src/main/java/')
+    packageName = 'org.doremus.ontology'
+    classNameSuffix = 'PROV'
+    ontology = true
+    inference = true
+    nostrict = true
+    nocomments = true
+    namespace = 'http://www.w3.org/ns/prov#'
+}
 
 task schemagenDoremus(type: UrlSchemaGen) {
     input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/doremus.ttl')

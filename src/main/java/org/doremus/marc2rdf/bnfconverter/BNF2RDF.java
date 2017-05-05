@@ -15,6 +15,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
+import org.doremus.ontology.PROV;
 
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
@@ -78,6 +79,7 @@ public class BNF2RDF {
     model.setNsPrefix("owl", OWL.getURI());
     model.setNsPrefix("foaf", FOAF.getURI());
     model.setNsPrefix("rdfs", RDFS.getURI());
+    model.setNsPrefix("prov", PROV.getURI());
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";

@@ -1,12 +1,21 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.PROV;
 
 import java.net.URISyntaxException;
+import java.time.Instant;
 
 
 public class RecordConverter {
+  public final Resource provActivity, intermarcRes;
   private Model model;
   private Record record;
 
@@ -19,6 +28,20 @@ public class RecordConverter {
   public RecordConverter(Record record, Model model) throws URISyntaxException {
     this.record = record;
     this.model = model;
+
+    String ark = record.getAttrByName("IDPerenne").getData();
+
+    // PROV-O tracing
+    intermarcRes = model.createResource("http://catalogue.bnf.fr/" + ark + ".intermarc")
+      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(BNF2RDF.organizationURI));
+
+    provActivity = model.createResource(ConstructURI.build("bnf", "prov", record.getIdentifier()).toString())
+      .addProperty(RDF.type, PROV.Activity).addProperty(RDF.type, PROV.Derivation)
+      .addProperty(PROV.used, intermarcRes)
+      .addProperty(RDFS.comment, "Reprise et conversion de la notice MARC de la BnF", "fr")
+      .addProperty(RDFS.comment, "Resumption and conversion of the MARC record of the BnF", "en")
+      .addProperty(PROV.atTime, Instant.now().toString(), XSDDatatype.XSDdateTime);
+
 
     // Instantiate work and expression
     f28 = new F28_ExpressionCreation(record);
@@ -38,12 +61,19 @@ public class RecordConverter {
 //    f40.add(f22).add(f14).add(f15);
     f42.add(f22).add(f15);
 
-    model.add(f22.getModel());
-    model.add(f28.getModel());
-    model.add(f14.getModel());
-    model.add(f15.getModel());
-//    model.add(f40.getModel());
-    model.add(f42.getModel());
+
+    for (DoremusResource res : new DoremusResource[]{f22, f28, f15, f14, f42}) {
+      addProvenanceTo(res);
+      model.add(res.getModel());
+    }
+
+  }
+
+  private void addProvenanceTo(DoremusResource res) {
+    res.asResource().addProperty(RDF.type, PROV.Entity)
+      .addProperty(PROV.wasAttributedTo, model.createResource("http://data.doremus.org/organization/DOREMUS"))
+      .addProperty(PROV.wasDerivedFrom, this.intermarcRes)
+      .addProperty(PROV.wasGeneratedBy, this.provActivity);
   }
 
   private void addPerformances() throws URISyntaxException {
