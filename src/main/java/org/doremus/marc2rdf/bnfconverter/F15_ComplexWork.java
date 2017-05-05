@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -8,6 +9,7 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
+import org.doremus.vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
 
@@ -25,26 +27,46 @@ public class F15_ComplexWork extends DoremusResource {
     if (ark != null) this.resource.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
 
 
-    // derivation
-    DataField derivField = record.getDatafieldByCode("301");
-    if (derivField != null) {
-      F15_ComplexWork targetWork = new F15_ComplexWork(derivField.getSubfield('3').getData());
-      this.resource.addProperty(FRBROO.R2_is_derivative_of, targetWork.asResource());
-
-      // derivation type
-      if (derivField.isCode('r')) {
-        String derivHeading = derivField.getSubfield('r').getData();
-        System.out.println("DERIVATION: " + derivHeading);
-
-        // TODO check
-        String derivType = derivHeading.replaceFirst(" de$", "").trim().toLowerCase();
-        this.resource.addProperty(MUS.U47_has_derivation_type, model.createLiteral(derivType, "fr"));
-
-      }
-    }
+    parseDerivation();
   }
 
-  public F15_ComplexWork(String identifier) throws URISyntaxException {
+  private void parseDerivation() throws URISyntaxException {
+    // derivation
+    DataField derivField = record.getDatafieldByCode("301");
+    if (derivField == null || !derivField.isCode('r')) return;
+
+    F15_ComplexWork targetWork = new F15_ComplexWork(derivField.getSubfield('3').getData());
+
+    // derivation type
+    String derivHeading = derivField.getSubfield('r').getData();
+
+    if (!derivHeading.endsWith("de") && !derivHeading.endsWith("par")) return;
+    String derivType = derivHeading.replaceFirst(" (de|par)$", "").trim().toLowerCase();
+
+    // we know this kind of derivation?
+    Resource match = searchDerivationMatch(derivType);
+    if (match == null) match = searchDerivationMatch(derivType.split(" ")[0]);
+    if (match == null) return;
+
+    this.resource.addProperty(FRBROO.R2_is_derivative_of, targetWork.asResource())
+      .addProperty(MUS.U47_has_derivation_type, match);
+  }
+
+  private Resource searchDerivationMatch(String str) {
+    // depluralize
+    str = str.replaceFirst("s$", "");
+
+    if (str.matches("arrang\u00e9e?")) str = "arrangement";
+    else if (str.matches("orchestr\u00e9")) str = "orchestration";
+    else if (str.matches("parodi\u00e9")) str = "parodie";
+    else if (str.matches("transcrit")) str = "transcription";
+    else if (str.matches("(version )?transpos\u00e9")) str = "transposition";
+    else if (str.matches("(version )?r\u00e9duite")) str = "reduction";
+
+    return VocabularyManager.getVocabulary("derivation").findConcept(str, false);
+  }
+
+  private F15_ComplexWork(String identifier) throws URISyntaxException {
     super(identifier);
   }
 
