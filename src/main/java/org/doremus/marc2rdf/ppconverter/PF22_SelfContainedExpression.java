@@ -162,6 +162,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
           String soloRegex1 = ", \\(solo\\)", soloRegex2 = " sol(o|iste)s?$";
           String part = match.replaceAll(soloRegex1, "")
             .replaceAll(soloRegex2, "").trim();
+
+          if(part.isEmpty()) continue;
+
           boolean isSolo = !part.equals(match);
 
           // replace french numeral with number
@@ -368,7 +371,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   }
 
   public Resource makeCastingDetail(String name, int quantity, boolean solo, String uri) {
-    name = name.replaceAll("non spécifiée", "");
+    name = name.replaceAll("non spécifiée", "").trim();
 
     // punctual fix
     if (name.equals("flûtes")) name = "flûte";

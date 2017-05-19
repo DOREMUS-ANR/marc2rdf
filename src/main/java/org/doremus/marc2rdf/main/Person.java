@@ -5,6 +5,7 @@ import org.apache.jena.datatypes.xsd.impl.XSDDateType;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.ontology.CIDOC;
 
 import java.net.URI;
@@ -102,6 +103,7 @@ public class Person {
     addProperty(FOAF.firstName, this.getFirstName(), lang);
     addProperty(FOAF.surname, this.getLastName(), lang);
     addProperty(FOAF.name, this.getFullName(), lang);
+    addProperty(RDFS.label, this.getFullName(), lang);
     addProperty(CIDOC.P131_is_identified_by, this.getIdentification(), lang);
 
     addProperty(CIDOC.P98i_was_born, cleanDate(this.getBirthDate()));

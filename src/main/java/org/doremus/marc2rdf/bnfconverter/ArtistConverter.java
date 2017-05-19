@@ -51,7 +51,23 @@ public class ArtistConverter {
       base.addProperty(FOAF.firstName, artist.getFirstName(), artist.getLang());
       base.addProperty(FOAF.surname, artist.getLastName(), artist.getLang());
       base.addProperty(FOAF.name, artist.getFullName(), artist.getLang());
+      base.addProperty(RDFS.label, artist.getFullName(), artist.getLang());
       base.addProperty(CIDOC.P131_is_identified_by, artist.getIdentification(), artist.getLang());
+    }
+
+    for (String[] names : getAlternateNames(record)) {
+      String firstName = names[0], surname = names[1], lang = names[2];
+
+      String fullName = surname;
+      if (firstName != null) {
+        String separator = firstName.endsWith("-") ? "" : " ";
+        fullName = firstName + separator + surname;
+      }
+
+      base.addProperty(FOAF.firstName, firstName, lang);
+      base.addProperty(FOAF.surname, surname, lang);
+      base.addProperty(FOAF.name, fullName, lang);
+      // NOTE: I intentionally did not add P131 and RDFS.label for distinguish alternate names
     }
 
     // sameAs links
@@ -127,6 +143,31 @@ public class ArtistConverter {
       artists.add(new Person(firstName, lastName, birthDate, deathDate, lang));
     }
     return artists;
+  }
+
+
+  static List<String[]> getAlternateNames(Record record) {
+    List<String[]> names = new ArrayList<>();
+    for (DataField field : record.getDatafieldsByCode("400")) {
+      String firstName = null, lastName = null, lang = null;
+
+      if (field.isCode('m')) { // name
+        firstName = field.getSubfield('m').getData().trim();
+      }
+      if (field.isCode('a')) { // surname
+        lastName = field.getSubfield('a').getData().trim();
+      }
+
+      if (field.isCode('w')) { // lang
+        String w = field.getSubfield('w').getData();
+        if (w.length() > 9)
+          lang = w.substring(6, 9).replaceAll("\\.", "").trim();
+        if (lang != null && lang.length() == 0) lang = null;
+      }
+
+      names.add(new String[]{firstName, lastName, lang});
+    }
+    return names;
   }
 
 }
