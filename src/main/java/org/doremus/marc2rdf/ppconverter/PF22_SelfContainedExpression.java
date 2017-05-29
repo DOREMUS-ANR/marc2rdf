@@ -259,7 +259,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       // TODO what to do with not parsable catalogs?
     }
 
-    Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
+    Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, f28.getComposers());
     if (match != null)
       catalogName = match.getProperty(model.createProperty("http://www.loc.gov/standards/mods/rdf/v1/#identifier")).getObject().toString();
 

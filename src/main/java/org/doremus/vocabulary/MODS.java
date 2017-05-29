@@ -8,9 +8,12 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.DCTerms;
+import org.doremus.marc2rdf.main.Person;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static edu.stanford.nlp.util.StringUtils.containsIgnoreCase;
 
@@ -19,17 +22,6 @@ public class MODS extends Vocabulary {
   private static final Model m = ModelFactory.createDefaultModel();
   public static final String uri = "http://www.loc.gov/standards/mods/rdf/v1/#";
   public static final Resource ModsResource = m.createResource(uri + "ModsResource");
-  public static final Property subjectName = m.createProperty(uri + "subjectName");
-
-  private static final ParameterizedSparqlString modsSearch = new ParameterizedSparqlString(
-    "prefix modsrdf: <http://www.loc.gov/standards/mods/rdf/v1/#>\n" +
-      "select distinct ?cat where {\n" +
-      "  { ?cat modsrdf:identifier ?id}\n" +
-      "  UNION {\n" +
-      "    ?cat modsrdf:identifierGroup ?ig .\n" +
-      "    ?ig modsrdf:identifierGroupValue ?id\n" +
-      "  }\n" +
-      "}");
 
 
   public MODS(String name, Model model) {
@@ -44,12 +36,21 @@ public class MODS extends Vocabulary {
     return findModsResource(text, null);
   }
 
-  public Resource findModsResource(String identifier, List<String> composers) {
+  public Resource findModsResource(String identifier, List<Person> subjects) {
     if (identifier == null || identifier.isEmpty()) return null;
 
+    String modsSearch =
+      "prefix modsrdf: <http://www.loc.gov/standards/mods/rdf/v1/#>\n" +
+        "select distinct ?cat where {\n" +
+        "  { ?cat modsrdf:identifier ?id}\n" +
+        "  UNION {\n" +
+        "    ?cat modsrdf:identifierGroup / modsrdf:identifierGroupValue ?id\n" +
+        "  }\n" +
+        "  FILTER (lcase(str(?id)) = \"" + identifier.toLowerCase() + "\")\n" +
+        "}";
+
     // search all catalogs with that identifier
-    modsSearch.setLiteral("id", identifier);
-    QueryExecution qexec = QueryExecutionFactory.create(modsSearch.asQuery(), vocabulary);
+    QueryExecution qexec = QueryExecutionFactory.create(modsSearch, vocabulary);
     ResultSet result = qexec.execSelect();
     List<Resource> candidateCatalogs = new ArrayList<>();
 
@@ -59,21 +60,24 @@ public class MODS extends Vocabulary {
       candidateCatalogs.add(resource);
     }
 
-    if (candidateCatalogs.size() == 0) return null;
-    else if (candidateCatalogs.size() > 1) {
-      if (composers != null) {
+    if (candidateCatalogs.size() == 0)
+      return null;
+
+    if (candidateCatalogs.size() > 1) {
+      if (subjects != null) {
         // load related artists
         for (Resource res : candidateCatalogs) {
-          String subjectName = res.getProperty(MODS.subjectName).getObject().toString();
-          if (containsIgnoreCase(composers, subjectName) || containsIgnoreCase(composers, subjectName.replaceAll("-", " "))) {
-            // found!
-            return res;
+          String curSubject = res.getProperty(DCTerms.subject).getObject().toString();
+          for (Person s : subjects) {
+            if (Objects.equals(s.getUri().toString(), curSubject))
+              return res;
           }
         }
+        // System.out.println("Too many results for catalog " + identifier + " and composers " + composers + ". It will be not linked.");
       }
-      // System.out.println("Too many results for catalog " + identifier + " and composers " + composers + ". It will be not linked.");
       return null;
-    } else return candidateCatalogs.get(0);
-  }
+    }
 
+    return candidateCatalogs.get(0);
+  }
 }

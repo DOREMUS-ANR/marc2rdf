@@ -85,7 +85,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
 
       if (catalogNum != null) {
-        Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, Person.toIdentifications(f28.getComposers()));
+        Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, f28.getComposers());
 
         if (match == null)
           M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogName);

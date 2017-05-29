@@ -83,7 +83,7 @@ public class PP2RDF {
       }
       found = true;
       RecordConverter mainRecord = new RecordConverter(r, model);
-      catalogToUri(model, Person.toIdentifications(mainRecord.f28.getComposers()));
+      catalogToUri(model, mainRecord.f28.getComposers());
     }
     if (!found) return null;
 
@@ -131,7 +131,7 @@ public class PP2RDF {
     return null;
   }
 
-  private static void catalogToUri(Model model, List<String> composers) {
+  private static void catalogToUri(Model model, List<Person> composers) {
     List<Statement> statementsToRemove = new ArrayList<>(),
       statementsToAdd = new ArrayList<>();
     Map<Resource, String> renamingMap = new HashMap<>();
