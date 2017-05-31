@@ -129,14 +129,6 @@ public class Person {
     addProperty(property, object, null);
   }
 
-
-  public static List<String> toIdentifications(List<Person> composers) {
-    List<String> identification = new ArrayList<>();
-    if (composers == null) return identification;
-    for (Person composer : composers) identification.add(Junidecode.unidecode(composer.getIdentification()));
-    return identification;
-  }
-
   private Literal cleanDate(String d) {
     if (d == null || d.isEmpty() || d.startsWith(".")) return null;
 

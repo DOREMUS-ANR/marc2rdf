@@ -7,7 +7,6 @@ import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -17,11 +16,8 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.vocabulary.VocabularyManager;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +26,6 @@ import java.util.regex.Pattern;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class F22_SelfContainedExpression extends DoremusResource {
-  private static HashMap<String, String> intermarcMap;
   private final String catalogFallbackRegex = "([a-z]+) ?(\\d+)";
 
   public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) throws URISyntaxException {
@@ -155,7 +150,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     for (String castingDetail : getCastMembers()) {
       String mopCode = castingDetail.substring(0, 2);
       String mopNum = castingDetail.substring(2, 4);
-      String iamlCode = itermarc2iaml(mopCode);
+      String iamlCode = Utils.itermarc2mop(mopCode);
 
       if (iamlCode == null)
         System.out.println("Iaml code not found for mop: " + mopCode);
@@ -165,7 +160,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     for (String castingDetail : getSoloists()) {
       String mopCode = castingDetail.substring(0, 2);
       String mopNum = castingDetail.substring(2, 4);
-      String iamlCode = itermarc2iaml(mopCode);
+      String iamlCode = Utils.itermarc2mop(mopCode);
 
       if (iamlCode == null)
         System.out.println("Iaml code not found for mop: " + mopCode);
@@ -228,8 +223,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
       if (field.isCode('h')) title += " | " + field.getSubfield('h').getData().trim();
       if (field.isCode('i')) title += " | " + field.getSubfield('i').getData().trim();
 
-      if (field.isCode('w') && field.getSubfield('w').getData().length() >= 8)
-        language = field.getSubfield('w').getData().substring(6, 8).replaceAll("\\.", "").trim();
+      if (field.isCode('w'))
+        language = Utils.intermarcExtractLang(field.getSubfield('w').getData());
 
       Literal titleLiteral = (language == null || language.isEmpty()) ?
         this.model.createLiteral(title.trim()) :
@@ -336,39 +331,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return record.getDatafieldsByCode("048", 'b');
   }
 
-
-  public static String itermarc2iaml(String intermarcInput) {
-    if (intermarcMap == null) {
-      String csvFile = F22_SelfContainedExpression.class.getClass().getResource("/intermarc2iaml.csv").getFile();
-      intermarcMap = new HashMap<>();
-
-      try {
-
-        BufferedReader br = new BufferedReader(new FileReader(csvFile));
-
-        String line = br.readLine();
-        boolean firstLine = true;
-
-        while (line != null) {
-          if (firstLine) firstLine = false; // header
-          else {
-            String str[] = line.split(";");
-
-            String intermarc = str[3];
-            String iaml = str[0];
-
-            if (!intermarc.isEmpty()) intermarcMap.put(intermarc, iaml);
-          }
-          line = br.readLine();
-        }
-
-
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    return intermarcMap.get(intermarcInput);
-  }
 
   public F22_SelfContainedExpression add(F30_PublicationEvent f30) {
     this.resource.addProperty(MUS.U4_had_princeps_publication, f30.asResource());

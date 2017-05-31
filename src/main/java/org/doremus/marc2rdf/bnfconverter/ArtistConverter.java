@@ -10,6 +10,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.Person;
+import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -37,7 +38,7 @@ public class ArtistConverter {
 
       for (Person artist : artists) {
         String lang = artist.getLang();
-        if (lang == null || lang.equals("fre")) {
+        if (lang == null || lang.equals("fr")) {
           base = artist;
           break;
         }
@@ -135,16 +136,13 @@ public class ArtistConverter {
       }
       if (field.isCode('w')) { // lang
         String w = field.getSubfield('w').getData();
-        if (w.length() > 9)
-          lang = w.substring(6, 9).replaceAll("\\.", "").trim();
-        if (lang != null && lang.length() == 0) lang = null;
+        lang = Utils.intermarcExtractLang(w);
       }
 
       artists.add(new Person(firstName, lastName, birthDate, deathDate, lang));
     }
     return artists;
   }
-
 
   static List<String[]> getAlternateNames(Record record) {
     List<String[]> names = new ArrayList<>();
@@ -160,15 +158,12 @@ public class ArtistConverter {
 
       if (field.isCode('w')) { // lang
         String w = field.getSubfield('w').getData();
-        if (w.length() > 9)
-          lang = w.substring(6, 9).replaceAll("\\.", "").trim();
-        if (lang != null && lang.length() == 0) lang = null;
+        lang = Utils.intermarcExtractLang(w);
       }
 
       names.add(new String[]{firstName, lastName, lang});
     }
     return names;
   }
-
 }
 
