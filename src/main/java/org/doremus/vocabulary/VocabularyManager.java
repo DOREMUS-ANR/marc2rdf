@@ -71,11 +71,6 @@ public class VocabularyManager {
   public static void string2uri(Model m) {
     for (Map.Entry<Property, String> entry : property2FamilyMap.entrySet())
       propertyMatching(m, entry.getKey(), entry.getValue());
-
-    // rude version, decide if mantain or remove
-    // for (Vocabulary v : vocabularies)
-    //  if (v instanceof SKOSVocabulary)
-    //    ((SKOSVocabulary) v).buildReferenceIn(m);
   }
 
 
