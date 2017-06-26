@@ -36,10 +36,10 @@ public class RecordConverter {
 
     // PROV-O tracing
     // FIXME this is not the intermarc uri
-    intermarcRes = model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier)
+    intermarcRes = model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + record.getIdentifier())
       .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.organizationURI));
 
-    provActivity = model.createResource(ConstructURI.build("pp", "prov", record.getIdentifier()).toString())
+    provActivity = model.createResource(ConstructURI.build("pp", "prov", identifier).toString())
       .addProperty(RDF.type, PROV.Activity).addProperty(RDF.type, PROV.Derivation)
       .addProperty(PROV.used, intermarcRes)
       .addProperty(RDFS.comment, "Reprise et conversion de la notice MARC de la Philharmonie de Paris", "fr")
