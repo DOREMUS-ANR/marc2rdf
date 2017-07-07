@@ -4,10 +4,7 @@ import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.DCTerms;
 import org.doremus.marc2rdf.main.Person;
 
@@ -67,7 +64,9 @@ public class MODS extends Vocabulary {
       if (subjects != null) {
         // load related artists
         for (Resource res : candidateCatalogs) {
-          String curSubject = res.getProperty(DCTerms.subject).getObject().toString();
+          Statement curSubjectStatements = res.getProperty(DCTerms.subject);
+          if (curSubjectStatements == null) return null;
+          String curSubject = curSubjectStatements.getObject().toString();
           for (Person s : subjects) {
             if (Objects.equals(s.getUri().toString(), curSubject))
               return res;

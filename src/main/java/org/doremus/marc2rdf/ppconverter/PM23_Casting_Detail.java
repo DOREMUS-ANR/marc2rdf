@@ -11,14 +11,16 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 import org.doremus.vocabulary.VocabularyManager;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class PM23_Casting_Detail {
   private final StanfordLemmatizer slem;
   String uri;
 
-  String name;
+  String name, namePlural, nameComplete;
   String note;
   int quantity;
   boolean solo;
@@ -46,8 +48,11 @@ public class PM23_Casting_Detail {
       name = matcher.group(0);
     }
 
-    this.name = instrumentToSingular(name);
-
+    this.nameComplete = name;
+    this.namePlural = name
+      .replaceAll("[(\\[].+[)\\]]", "").trim()
+      .replaceFirst("en (ut|ré|mi|fa|sol|la|si)( b(émol)?)?", "");
+    this.name = instrumentToSingular(namePlural);
   }
 
   private String instrumentToSingular(String r) {
@@ -55,6 +60,7 @@ public class PM23_Casting_Detail {
     if (r.equals("flûtes")) r = "flûte";
     if (r.equals("contrebasses")) r = "contrebasse";
     if (r.equals("altos")) r = "alto";
+    if (r.equals("percussioniste") ||  r.equals("percussions")) return "percussions";
 
     String[] parts = r.split(" ");
     if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
@@ -67,7 +73,7 @@ public class PM23_Casting_Detail {
   public Resource asResource(Model model) {
     Resource M23CastingDetail = model.createResource(uri)
       .addProperty(RDF.type, MUS.M23_Casting_Detail)
-      .addProperty(RDFS.label, (quantity > -1 ? quantity + " " : "") + name + (solo ? " solo" : ""))
+      .addProperty(RDFS.label, (quantity > -1 ? quantity + " " : "") + nameComplete + (solo ? " solo" : ""))
       .addProperty(CIDOC.P3_has_note, note, "fr");
 
     if (solo)
@@ -78,7 +84,15 @@ public class PM23_Casting_Detail {
 
     Literal mopLiteral = model.createLiteral(name, "fr");
 
+
     Resource match = VocabularyManager.searchInCategory(name, "fr", "mop");
+
+    if (match == null) {
+      // 2nd attempt, pluralize the whole name (i.e. saxophones sopranos -> saxophone soprano)
+      List<String> lemmas = slem.lemmatize(namePlural);
+      String joined = lemmas.stream().collect(Collectors.joining(" "));
+      match = VocabularyManager.searchInCategory(joined, "fr", "mop");
+    }
 
     if (match != null)
       M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, match);

@@ -72,7 +72,7 @@ public class PM6_Casting {
         match = match.trim();
 
         // i.e. "clarinette soliste", "piano, (solo)"
-        String soloRegex1 = ", \\(solo\\)", soloRegex2 = " sol(o|iste)s?$";
+        String soloRegex1 = ", \\(solo\\)", soloRegex2 = " sol(o|iste|i)s?$";
         String part = match.replaceAll(soloRegex1, "")
           .replaceAll(soloRegex2, "").trim();
 
@@ -86,7 +86,8 @@ public class PM6_Casting {
           .replaceAll("(?i)^trois ", "3 ")
           .replaceAll("(?i)^quatre ", "4 ")
           .replaceAll("(?i)^cinq ", "5 ")
-          .replaceAll("(?i)^six ", "6 ");
+          .replaceAll("(?i)^six ", "6 ")
+          .replaceAll("(?i)^onze ", "11 ");
 
         int quantity = -1;
 
@@ -152,6 +153,8 @@ public class PM6_Casting {
       for (int i = 0; i < cDets.size(); i++) {
         PM23_Casting_Detail current = cDets.get(i);
         String currentName = current.getLName();
+
+        if (currentName.equals("II")) current.name = cDets.get(i - 1).name;
 
         if (currentName.equals("alto") || currentName.equals("baryton")) {
           // workaround for https://github.com/DOREMUS-ANR/marc2rdf/issues/53
