@@ -1,6 +1,7 @@
 package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
@@ -20,9 +21,10 @@ public class Converter {
   private static boolean marcOut;
 
   public static Properties properties;
-//  private static List<String> notSignificativeTitleList = null;
   private static int maxFilesInFolder, filesInCurrentFolder, currentFolder;
   public static StanfordLemmatizer stanfordLemmatizer;
+  private static Model general;
+  private static boolean oneFile;
 
   private enum INSTITUTION {
     PHILARMONIE,
@@ -47,9 +49,8 @@ public class Converter {
     if (inputFolderPath == null || inputFolderPath.isEmpty())
       inputFolderPath = getDirFromFileChooser();
 
-    /***********
-     * Copier/Coller tous les fichiers dans un seul
-     **************/
+    oneFile = Boolean.parseBoolean(properties.getProperty("oneFile", "false"));
+    general = ModelFactory.createDefaultModel();
     listeRepertoire(new File(inputFolderPath));
   }
 
@@ -139,6 +140,12 @@ public class Converter {
       VocabularyManager.string2uri(m);
 
       // Write the output file
+      // write a unique file
+      if (oneFile) {
+        general.add(m);
+        continue;
+      }
+      // write file by file
       File fileName;
       String newFileName = file.getName().replaceFirst(".xml", ".ttl");
       String parentFolder = file.getParentFile().getAbsolutePath();
@@ -168,6 +175,13 @@ public class Converter {
     for (File subList : list) {
       if (subList.isDirectory())
         listeRepertoire(subList);
+    }
+
+    if(oneFile) {
+      File fileName = Paths.get(outputFolderPath, repertoire.getName() + ".ttl").toFile();
+      FileWriter out = new FileWriter(fileName);
+      general.write(out, "TURTLE");
+      out.close();
     }
   }
 
