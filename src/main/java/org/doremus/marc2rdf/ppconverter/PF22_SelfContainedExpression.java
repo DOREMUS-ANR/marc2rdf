@@ -7,9 +7,7 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.StanfordLemmatizer;
 import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -29,8 +27,6 @@ import java.util.regex.Pattern;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class PF22_SelfContainedExpression extends DoremusResource {
-  private static final String opusHeaderRegex = "(?i)^(?:op(?:\\.|us| )|Oeuvre|Werk nr\\.?) ?(?:post(?:hume|h?\\.|h))?";
-  private static final String opusSubnumberRegex = "(?i)(?:,? n(?:[o°.]| °)s?)";
   private final PF28_ExpressionCreation f28;
 
   private List<String> opusMemory;
@@ -51,7 +47,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     /**************************** Expression: Catalogue *************************************/
     for (String catalog : getCatalog()) {
       // sometimes there is the opus number inside here!
-      if (catalog.matches(opusHeaderRegex + ".*")) {
+      if (catalog.matches(Utils.opusHeaderRegex + ".*")) {
         // System.out.println("opus in catalog found " + catalog);
         parseOpus(catalog);
         continue;
@@ -71,7 +67,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         continue;
       }
       // if does not contain "Op." or "opus" etc., it is a catalog!
-      if (!opus.matches(opusHeaderRegex + ".*")) {
+      if (!opus.matches(Utils.opusHeaderRegex + ".*")) {
         // System.out.println("catalog in opus found " + opus);
         parseCatalog(opus);
         continue;
@@ -197,7 +193,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   }
 
   private void parseOpus(String opus) {
-    String opusData = opus.replaceFirst(opusHeaderRegex, "").replaceFirst("\\.$", "").trim();
+    String opusData = opus.replaceFirst(Utils.opusHeaderRegex, "").replaceFirst("\\.$", "").trim();
     if (opusData.isEmpty()) {
       // it means that it is only written "op. posthume" or similar
       // add it as a note to F22
@@ -205,8 +201,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       return;
     }
 
-    if (opusData.matches(".*" + opusSubnumberRegex + ".*")) {
-      String[] opusParts = opusData.split(opusSubnumberRegex);
+    if (opusData.matches(".*" + Utils.opusSubnumberRegex + ".*")) {
+      String[] opusParts = opusData.split(Utils.opusSubnumberRegex);
 
       addOpus(opus, opusParts[0].trim(), opusParts[1].trim());
     } else addOpus(opus, opusData);

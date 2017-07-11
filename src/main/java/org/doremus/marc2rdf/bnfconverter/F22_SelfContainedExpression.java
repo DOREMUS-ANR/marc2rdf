@@ -98,10 +98,16 @@ public class F22_SelfContainedExpression extends DoremusResource {
     /**************************** Expression: Opus ******************************************/
     String opus = getOpus();
     if (opus != null) {
-      String[] opusParts = opus.split(",", 2);
+      if (opus.matches("^\\[(.+)\\]$")) // fix "[Op. 3, no 2]"
+        opus = opus.substring(1, opus.length() - 1);
 
-      String number = opusParts[0].replaceAll("Op\\.", "").trim(),
-        subnumber = opusParts.length > 1 ? opusParts[1].replaceAll("no", "").trim() : null;
+      String[] opusParts = new String[]{opus};
+      if (opus.matches(".*" + Utils.opusSubnumberRegex + ".*"))
+        opusParts = opus.split(Utils.opusSubnumberRegex, 2);
+
+
+      String number = opusParts[0].replaceAll(Utils.opusHeaderRegex, "").trim();
+      String subnumber = opusParts.length > 1 ? opusParts[1].replaceAll("no", "").trim() : null;
 
       String id = number;
       if (subnumber != null) id += "-" + subnumber;
@@ -196,6 +202,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
   /***********************************
    * La dedicace
    ***********************************/
+
   private String getDedicace() {
     for (String dedicace : record.getDatafieldsByCode("600", 'a')) {
       if (dedicace.startsWith("Dédicace")) return dedicace;

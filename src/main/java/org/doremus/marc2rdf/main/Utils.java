@@ -15,6 +15,9 @@ public class Utils {
   private static Map<String, String> intermarcScriptMap;
   private static Map<String, String> intermarcMopMap;
 
+  public static final String opusHeaderRegex = "(?i)^(?:op(?:\\.|us| )|Oeuvre|Werk nr\\.?) ?(?:post(?:hume|h?\\.|h))?";
+  public static final String opusSubnumberRegex = "(?i)(?:,? n(?:[o°.]| °)[s.]?)";
+
   public static List<Integer> toRange(String rangeString) {
     if (!rangeString.contains(" à ")) return null;
 
