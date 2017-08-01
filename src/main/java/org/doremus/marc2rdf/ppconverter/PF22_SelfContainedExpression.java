@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.ppconverter;
 
+import net.sf.junidecode.Junidecode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
@@ -82,9 +83,13 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
-      this.resource.addProperty(MUS.U11_has_key, model.createResource()
-        .addProperty(RDF.type, MUS.M4_Key)
-        .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(key.trim(), "fr")) // Le nom du genre est toujours en français
+      key = key.trim();
+      String keyUri = this.uri + "/key/" + Junidecode.unidecode(key).toLowerCase().replaceAll(" ", "_");
+      this.resource.addProperty(MUS.U11_has_key,
+        model.createResource( keyUri)
+          .addProperty(RDF.type, MUS.M4_Key)
+          .addProperty(RDFS.label, key, "fr")
+          .addProperty(CIDOC.P1_is_identified_by, key, "fr")
       );
     }
 

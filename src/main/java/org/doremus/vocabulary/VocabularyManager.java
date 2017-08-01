@@ -112,7 +112,15 @@ public class VocabularyManager {
 
 
   public static Resource searchInCategory(String label, String lang, String category) {
-    String langLabel = lang != null ? label + "@" + lang : label;
+    String langLabel;
+    if (lang == null) {
+      langLabel = label;
+      String[] temp = langLabel.split("@");
+      label = temp[0];
+      lang = temp.length > 1 ? temp[1] : null;
+    } else {
+      langLabel = label + "@" + lang;
+    }
     List<Vocabulary> vList = getVocabularyCategory(category);
     Resource concept;
     // first check: text + language
@@ -124,6 +132,11 @@ public class VocabularyManager {
     for (Vocabulary v : vList) {
       concept = v.findConcept(label, false);
       if (concept != null) return concept;
+    }
+
+    // workaround: mi bemol => mi bemol majeur
+    if ("key".equals(category) && !label.endsWith("majeur")) {
+      return searchInCategory(label + " majeur", lang, category);
     }
     return null;
   }

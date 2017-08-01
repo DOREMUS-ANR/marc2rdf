@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import net.sf.junidecode.Junidecode;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
@@ -130,10 +131,13 @@ public class F22_SelfContainedExpression extends DoremusResource {
     for (String key : getKey()) {
       key = key.replaceFirst("\\.$", "").trim(); //remove final dot
       Literal label = model.createLiteral(key, "fr");
-      this.resource.addProperty(MUS.U11_has_key, model.createResource(this.uri + "/key/" + key.toLowerCase().replaceAll(" ", "_"))
-        .addProperty(RDF.type, MUS.M4_Key)
-        .addProperty(CIDOC.P1_is_identified_by, model.createLiteral(key, "fr"))
-        .addProperty(RDFS.label, label)
+      String keyUri = this.uri + "/key/" + Junidecode.unidecode(key).toLowerCase().replaceAll(" ", "_");
+
+      this.resource.addProperty(MUS.U11_has_key,
+        model.createResource(keyUri)
+          .addProperty(RDF.type, MUS.M4_Key)
+          .addProperty(CIDOC.P1_is_identified_by, label)
+          .addProperty(RDFS.label, label)
       );
     }
 
