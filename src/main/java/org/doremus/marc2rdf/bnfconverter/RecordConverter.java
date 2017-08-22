@@ -86,6 +86,7 @@ public class RecordConverter {
       m42.add(f25);
       f25.add(f22);
       f15.add(m42);
+      f22.add(m42);
 
       if (m42.isPremiere()) {
         f14.addPremiere(m42);

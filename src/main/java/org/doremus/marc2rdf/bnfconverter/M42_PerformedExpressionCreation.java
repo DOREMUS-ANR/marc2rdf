@@ -29,10 +29,15 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
   private boolean isPremiere;
   private F28_ExpressionCreation f28;
-  private Resource M44_Performed_Work, M43_Performed_Expression;
+  private Resource M44_Performed_Work, M43_Performed_Expression, F31_Performance;
+  private String place;
+  private TimeSpan timeSpan;
 
   public M42_PerformedExpressionCreation(String note, Record record, F28_ExpressionCreation f28, int i) throws URISyntaxException {
     super(record);
+
+    this.place = null;
+    this.timeSpan = null;
 
     //check if it is a Premiere
     Pattern p = Pattern.compile(performanceRegex);
@@ -47,8 +52,14 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)
       .addProperty(CIDOC.P3_has_note, note);
 
+    String performanceUri = ConstructURI.build("bnf", "F31_Performance", this.identifier).toString();
     String expressionUri = ConstructURI.build("bnf", "M43_PerformedExpression", this.identifier).toString();
     String workUri = ConstructURI.build("bnf", "M44_PerformedWork", this.identifier).toString();
+
+    this.F31_Performance = model.createResource(performanceUri)
+      .addProperty(RDF.type, FRBROO.F31_Performance)
+      .addProperty(CIDOC.P3_has_note, note)
+      .addProperty(CIDOC.P9_consists_of, this.resource);
     this.M43_Performed_Expression = model.createResource(expressionUri)
       .addProperty(RDF.type, MUS.M43_Performed_Expression);
     this.M44_Performed_Work = model.createResource(workUri)
@@ -61,6 +72,19 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.f28 = f28;
 
     parseNote(note);
+
+    if (place != null) {
+      this.resource.addProperty(CIDOC.P7_took_place_at, place);
+      this.F31_Performance.addProperty(CIDOC.P7_took_place_at, place);
+    }
+
+    if (timeSpan != null) {
+      timeSpan.setUri(this.uri + "/time");
+      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+      this.F31_Performance.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+
+      this.model.add(timeSpan.getModel());
+    }
   }
 
   private void parseNote(String note) {
@@ -70,8 +94,6 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     Pattern p1 = Pattern.compile(noteRegex1);
     Matcher m1 = p1.matcher(note);
 
-    TimeSpan timeSpan = null;
-    String place = null;
     String conductor = null;
 
     if (m1.find()) {
@@ -135,12 +157,6 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       } else System.out.println("Not parsed note on record " + record.getIdentifier() + " : " + data);
     }
 
-    if (timeSpan != null) {
-      timeSpan.setUri(this.uri + "/time");
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-      this.model.add(timeSpan.getModel());
-    }
-    if (place != null) this.resource.addProperty(CIDOC.P7_took_place_at, place);
     if (conductor != null) addRole(conductor, "conducteur");
   }
 
@@ -195,8 +211,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
   public M42_PerformedExpressionCreation add(F25_PerformancePlan plan) {
     /**************************** exécution du plan ******************************************/
-    this.resource.addProperty(FRBROO.R25_performed, plan.asResource());
-//    plan.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), this.resource);
+    this.F31_Performance.addProperty(FRBROO.R25_performed, plan.asResource());
     return this;
   }
 

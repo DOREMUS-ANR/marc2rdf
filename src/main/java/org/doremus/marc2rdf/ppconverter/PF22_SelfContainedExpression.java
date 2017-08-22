@@ -86,7 +86,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       key = key.trim();
       String keyUri = this.uri + "/key/" + Junidecode.unidecode(key).toLowerCase().replaceAll(" ", "_");
       this.resource.addProperty(MUS.U11_has_key,
-        model.createResource( keyUri)
+        model.createResource(keyUri)
           .addProperty(RDF.type, MUS.M4_Key)
           .addProperty(RDFS.label, key, "fr")
           .addProperty(CIDOC.P1_is_identified_by, key, "fr")
@@ -402,4 +402,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     return this;
   }
 
+  public PF22_SelfContainedExpression add(PM42_PerformedExpressionCreation m42) {
+    m42.asResource().addProperty(FRBROO.R66_included_performed_version_of, this.resource);
+    return this;
+  }
 }

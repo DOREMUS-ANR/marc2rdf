@@ -34,10 +34,15 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private final PF28_ExpressionCreation f28;
 
   private boolean isPremiere;
-  private Resource M44_Performed_Work, M43_Performed_Expression;
+  private Resource M44_Performed_Work, M43_Performed_Expression, F31_Performance;
+  private String place;
+  private TimeSpan timeSpan;
 
   public PM42_PerformedExpressionCreation(String note, Record record, String identifier, int i, PF28_ExpressionCreation f28) throws URISyntaxException {
     super(record, identifier);
+
+    this.place = null;
+    this.timeSpan = null;
 
     this.slem = Converter.stanfordLemmatizer;
     this.f28 = f28;
@@ -58,8 +63,14 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       .addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)
       .addProperty(CIDOC.P3_has_note, note);
 
+    String performanceUri = ConstructURI.build("pp", "F31_Performance", this.identifier).toString();
     String expressionUri = ConstructURI.build("pp", "M43_PerformedExpression", this.identifier).toString();
     String workUri = ConstructURI.build("pp", "M44_PerformedWork", this.identifier).toString();
+
+    this.F31_Performance = model.createResource(performanceUri)
+      .addProperty(RDF.type, FRBROO.F31_Performance)
+      .addProperty(CIDOC.P3_has_note, note)
+      .addProperty(CIDOC.P9_consists_of, this.resource);
     this.M43_Performed_Expression = model.createResource(expressionUri)
       .addProperty(RDF.type, MUS.M43_Performed_Expression);
     this.M44_Performed_Work = model.createResource(workUri)
@@ -69,6 +80,20 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work);
 
     parseNote(note);
+
+    if (place != null) {
+      this.resource.addProperty(CIDOC.P7_took_place_at, place);
+      this.F31_Performance.addProperty(CIDOC.P7_took_place_at, place);
+    }
+
+    if (timeSpan != null) {
+      timeSpan.setUri(this.uri + "/time");
+      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+      this.F31_Performance.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+
+      this.model.add(timeSpan.getModel());
+    }
+
   }
 
   private void parseNote(String note) {
@@ -79,12 +104,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     Pattern p = Pattern.compile(frenchUncertainDate);
     Matcher m = p.matcher(note);
     if (m.find()) {
-      TimeSpan timeSpan = new TimeSpan(m.group(3), m.group(2), m.group(1));
-      timeSpan.setUri(this.uri + "/time");
-
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-      this.model.add(timeSpan.getModel());
-
+      timeSpan = new TimeSpan(m.group(3), m.group(2), m.group(1));
       note = cleanString(note, m.group());
     }
 
@@ -100,7 +120,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
           // i.e. "Leonard Bernstein avec Philippe Entremont au piano"
           String[] parts = conductor.split(" (au|à) (la)?");
           conductor = parts[0];
-          if(!first) mop = parts[1];
+          if (!first) mop = parts[1];
         }
         Role r = makeRole(conductor, (mop == null) ? "conducteur" : mop);
         this.resource.addProperty(CIDOC.P9_consists_of, r.toM28IndividualPerformance());
@@ -135,7 +155,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
       for (String originalInterpreter : interpreterString.split("([,/]| et | avec )")) {
         String newInfo = originalInterpreter.replaceFirst("^(et|avec) ", "").trim();
-        String mop = null;
+        String mop;
         if (newInfo.isEmpty()) {
           interpreter = "";
           continue;
@@ -197,16 +217,12 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       note = cleanString(note, m.group());
     }
 
-//    System.out.println(note);
-
     // extract places
     Pattern cityPattern = Pattern.compile("(?<!\\w)à ([\\p{L}- ]+(\\([\\p{L}- ]+\\))?)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     Matcher cityMatcher = cityPattern.matcher(note);
     if (cityMatcher.find()) {
       String city = cityMatcher.group(1);
-      if (!city.matches(noUppercase)) {
-        this.resource.addProperty(CIDOC.P7_took_place_at, city);
-      }
+      if (!city.matches(noUppercase)) this.place = city;
     }
 
   }
@@ -289,8 +305,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   public PM42_PerformedExpressionCreation add(PF25_PerformancePlan f25) {
     /**************************** exécution du plan ******************************************/
-    this.resource.addProperty(FRBROO.R25_performed, f25.asResource());
-//    f25.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R25i_was_performed_by"), F31);
+    this.F31_Performance.addProperty(FRBROO.R25_performed, f25.asResource());
     return this;
   }
 

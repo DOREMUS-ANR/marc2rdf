@@ -2,11 +2,20 @@ package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.XSD;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
+import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
+import org.doremus.ontology.PROV;
 import org.doremus.vocabulary.VocabularyManager;
 
 import javax.swing.*;
@@ -136,6 +145,16 @@ public class Converter {
       }
 
       if (m == null) continue;
+
+      m.setNsPrefix("mus", MUS.getURI());
+      m.setNsPrefix("ecrm", CIDOC.getURI());
+      m.setNsPrefix("efrbroo", FRBROO.getURI());
+      m.setNsPrefix("xsd", XSD.getURI());
+      m.setNsPrefix("dcterms", DCTerms.getURI());
+      m.setNsPrefix("foaf", FOAF.getURI());
+      m.setNsPrefix("rdfs", RDFS.getURI());
+      m.setNsPrefix("prov", PROV.getURI());
+      m.setNsPrefix("owl", OWL.getURI());
 
       VocabularyManager.string2uri(m);
 

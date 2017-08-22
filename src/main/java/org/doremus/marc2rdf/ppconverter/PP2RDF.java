@@ -2,20 +2,13 @@ package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.StatementImpl;
-import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.util.ResourceUtils;
-import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.RDFS;
-import org.apache.jena.vocabulary.XSD;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.ontology.CIDOC;
-import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
-import org.doremus.ontology.PROV;
 import org.doremus.vocabulary.VocabularyManager;
 
 import java.io.File;
@@ -87,15 +80,6 @@ public class PP2RDF {
     }
     if (!found) return null;
 
-
-    model.setNsPrefix("mus", MUS.getURI());
-    model.setNsPrefix("ecrm", CIDOC.getURI());
-    model.setNsPrefix("efrbroo", FRBROO.getURI());
-    model.setNsPrefix("xsd", XSD.getURI());
-    model.setNsPrefix("dcterms", DCTerms.getURI());
-    model.setNsPrefix("foaf", FOAF.getURI());
-    model.setNsPrefix("rdfs", RDFS.getURI());
-    model.setNsPrefix("prov", PROV.getURI());
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";

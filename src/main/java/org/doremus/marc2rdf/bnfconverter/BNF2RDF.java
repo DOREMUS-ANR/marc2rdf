@@ -2,20 +2,11 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.update.UpdateAction;
-import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.OWL;
-import org.apache.jena.vocabulary.RDFS;
-import org.apache.jena.vocabulary.XSD;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.ontology.CIDOC;
-import org.doremus.ontology.FRBROO;
-import org.doremus.ontology.MUS;
-import org.doremus.ontology.PROV;
 
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
@@ -33,7 +24,6 @@ public class BNF2RDF {
   public static Model convert(String file) throws URISyntaxException, FileNotFoundException {
 
     /************* Creer un modele vide **************************/
-    //Model model = VirtModel.openDatabaseModel("DOREMUS", "jdbc:virtuoso://localhost:1111", "dba", "dba");
     Model model = ModelFactory.createDefaultModel();
 
     MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
@@ -71,28 +61,12 @@ public class BNF2RDF {
 
     if (!somethingHasBeenConverted) return null;
 
-    model.setNsPrefix("mus", MUS.getURI());
-    model.setNsPrefix("ecrm", CIDOC.getURI());
-    model.setNsPrefix("efrbroo", FRBROO.getURI());
-    model.setNsPrefix("xsd", XSD.getURI());
-    model.setNsPrefix("dcterms", DCTerms.getURI());
-    model.setNsPrefix("owl", OWL.getURI());
-    model.setNsPrefix("foaf", FOAF.getURI());
-    model.setNsPrefix("rdfs", RDFS.getURI());
-    model.setNsPrefix("prov", PROV.getURI());
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";
     UpdateAction.parseExecute(query, model);
 
     return model;
-
-    /****************************************************************************************/
-     /* String query = "WITH GRAPH  <DOREMUS>"+
-                 "delete where {?x ?p \"\" }";
-	    VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create(query, model);
-	    vur.exec();
-		/****************************************************************************************/
   }
 }
 
