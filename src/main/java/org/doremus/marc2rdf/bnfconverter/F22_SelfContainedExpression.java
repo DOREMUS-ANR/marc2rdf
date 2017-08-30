@@ -349,12 +349,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
   }
 
   public F22_SelfContainedExpression addPremiere(M42_PerformedExpressionCreation m42) {
-    this.resource.addProperty(MUS.U5_had_premiere, m42.asResource());
-    return this;
-  }
-
-  public F22_SelfContainedExpression add(M42_PerformedExpressionCreation m42) {
-    m42.asResource().addProperty(FRBROO.R66_included_performed_version_of, this.resource);
+    this.resource.addProperty(MUS.U5_had_premiere, m42.getMainPerformance());
     return this;
   }
 }

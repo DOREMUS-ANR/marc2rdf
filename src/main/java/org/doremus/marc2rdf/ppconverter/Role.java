@@ -66,12 +66,12 @@ public class Role {
     this.function = function;
   }
 
-  public Resource toM28IndividualPerformance() {
+  public Resource toM28IndividualPerformance(String uri) {
     if (actor == null && actorRes == null) return null;
 
     if (actorRes == null) actorRes = model.createLiteral(actor.trim());
 
-    Resource M28 = model.createResource()
+    Resource M28 = model.createResource(uri)
       .addProperty(RDF.type, MUS.M28_Individual_Performance)
       .addProperty(CIDOC.P14_carried_out_by, actorRes);
 
@@ -88,4 +88,5 @@ public class Role {
 
     return M28;
   }
+
 }

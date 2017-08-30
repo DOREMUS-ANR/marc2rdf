@@ -38,6 +38,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private String place;
   private TimeSpan timeSpan;
 
+  private int countConsistOf;
+
   public PM42_PerformedExpressionCreation(String note, Record record, String identifier, int i, PF28_ExpressionCreation f28) throws URISyntaxException {
     super(record, identifier);
 
@@ -46,6 +48,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
     this.slem = Converter.stanfordLemmatizer;
     this.f28 = f28;
+
+    this.countConsistOf = 0;
 
     //check if it is a Premiere
     Pattern p = Pattern.compile(noPremiereRegex);
@@ -87,7 +91,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     }
 
     if (timeSpan != null) {
-      timeSpan.setUri(this.uri + "/time");
+      timeSpan.setUri(this.F31_Performance.getURI() + "/time");
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
       this.F31_Performance.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
 
@@ -123,7 +127,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
           if (!first) mop = parts[1];
         }
         Role r = makeRole(conductor, (mop == null) ? "conducteur" : mop);
-        this.resource.addProperty(CIDOC.P9_consists_of, r.toM28IndividualPerformance());
+        this.resource.addProperty(CIDOC.P9_consists_of, r.toM28IndividualPerformance(this.uri + "/" + ++countConsistOf));
         first = false;
       }
       note = cleanString(note, m.group());
@@ -212,7 +216,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       }
 
       for (Role r : roles)
-        this.resource.addProperty(CIDOC.P9_consists_of, r.toM28IndividualPerformance());
+        this.resource.addProperty(CIDOC.P9_consists_of, r.toM28IndividualPerformance(this.uri + "/" + ++countConsistOf));
 
       note = cleanString(note, m.group());
     }
@@ -304,12 +308,23 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
   public PM42_PerformedExpressionCreation add(PF25_PerformancePlan f25) {
-    /**************************** exécution du plan ******************************************/
     this.F31_Performance.addProperty(FRBROO.R25_performed, f25.asResource());
     return this;
   }
 
+  public PM42_PerformedExpressionCreation add(PF22_SelfContainedExpression f22) {
+    this.M43_Performed_Expression.addProperty(MUS.U54_is_performed_expression_of, f22.asResource());
+    this.F31_Performance.addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
+    return this;
+  }
+
+
   public boolean isPremiere() {
     return isPremiere;
   }
+
+  public Resource getMainPerformance() {
+    return this.F31_Performance;
+  }
+
 }

@@ -32,12 +32,14 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   private Resource M44_Performed_Work, M43_Performed_Expression, F31_Performance;
   private String place;
   private TimeSpan timeSpan;
+  private int countConsistOf;
 
   public M42_PerformedExpressionCreation(String note, Record record, F28_ExpressionCreation f28, int i) throws URISyntaxException {
     super(record);
 
     this.place = null;
     this.timeSpan = null;
+    this.countConsistOf = 0;
 
     //check if it is a Premiere
     Pattern p = Pattern.compile(performanceRegex);
@@ -79,7 +81,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     }
 
     if (timeSpan != null) {
-      timeSpan.setUri(this.uri + "/time");
+      timeSpan.setUri(this.F31_Performance.getURI() + "/time");
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
       this.F31_Performance.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
 
@@ -169,7 +171,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       actorRes = f28.getComposers().get(0).asResource();
     } else actorRes = model.createLiteral(actor);
 
-    Resource M28 = model.createResource()
+    Resource M28 = model.createResource(this.uri + "/" + ++countConsistOf)
       .addProperty(RDF.type, MUS.M28_Individual_Performance)
       .addProperty(CIDOC.P14_carried_out_by, actorRes);
 
@@ -210,8 +212,13 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   }
 
   public M42_PerformedExpressionCreation add(F25_PerformancePlan plan) {
-    /**************************** exécution du plan ******************************************/
     this.F31_Performance.addProperty(FRBROO.R25_performed, plan.asResource());
+    return this;
+  }
+
+  public M42_PerformedExpressionCreation add(F22_SelfContainedExpression f22) {
+    this.M43_Performed_Expression.addProperty(MUS.U54_is_performed_expression_of, f22.asResource());
+    this.F31_Performance.addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
     return this;
   }
 
@@ -228,5 +235,9 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
   public boolean isPremiere() {
     return isPremiere;
+  }
+
+  public Resource getMainPerformance() {
+    return this.F31_Performance;
   }
 }

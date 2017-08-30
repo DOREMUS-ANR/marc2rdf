@@ -28,9 +28,9 @@ public class PF14_IndividualWork extends DoremusResource {
     return this;
   }
 
-  public PF14_IndividualWork addPremiere(PM42_PerformedExpressionCreation f31) {
+  public PF14_IndividualWork addPremiere(PM42_PerformedExpressionCreation premiere) {
     /**************************** Performance: 1ère exécution *************************************/
-    this.resource.addProperty(MUS.U5_had_premiere, f31.asResource());
+    this.resource.addProperty(MUS.U5_had_premiere, premiere.getMainPerformance());
     return this;
   }
 

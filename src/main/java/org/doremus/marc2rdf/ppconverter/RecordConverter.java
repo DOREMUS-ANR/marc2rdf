@@ -88,8 +88,7 @@ public class RecordConverter {
       PM42_PerformedExpressionCreation m42 = new PM42_PerformedExpressionCreation(performance, record, identifier, ++performanceCounter, f28);
       PF25_PerformancePlan f25 = new PF25_PerformancePlan(m42.getIdentifier());
 
-      m42.add(f25);
-      f22.add(m42);
+      m42.add(f25).add(f22);
       f25.add(f22);
       f15.add(m42);
       if (!hasPremiere && m42.isPremiere()) {
