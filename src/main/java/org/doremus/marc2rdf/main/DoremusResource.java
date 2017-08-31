@@ -12,6 +12,7 @@ import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.bnfconverter.RecordConverter;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.PROV;
 
 import java.net.URI;
@@ -51,7 +52,7 @@ public abstract class DoremusResource {
 
   protected void regenerateResource() throws URISyntaxException {
     // delete old one
-    if(this.resource != null) this.resource.removeProperties();
+    if (this.resource != null) this.resource.removeProperties();
 
     // generate the new one
     this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
@@ -78,6 +79,16 @@ public abstract class DoremusResource {
 
   public String getIdentifier() {
     return this.identifier;
+  }
+
+  protected void addNote(String text) {
+    if (text == null) return;
+    text = text.trim();
+    if (text.isEmpty()) return;
+
+    this.resource
+      .addProperty(RDFS.comment, text, "fr")
+      .addProperty(CIDOC.P3_has_note, text, "fr");
   }
 
 }

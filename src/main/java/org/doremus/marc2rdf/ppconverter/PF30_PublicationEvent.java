@@ -27,8 +27,7 @@ public class PF30_PublicationEvent extends DoremusResource {
     super(record, identifier);
 
     this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);
-    this.resource.addProperty(CIDOC.P3_has_note, note);
-
+    addNote(note);
     parseNote(note);
   }
 

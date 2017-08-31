@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -51,8 +52,8 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
     this.identifier = record.getIdentifier() + flag;
     regenerateResource();
-    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)
-      .addProperty(CIDOC.P3_has_note, note);
+    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
+    addNote(note);
 
     String performanceUri = ConstructURI.build("bnf", "F31_Performance", this.identifier).toString();
     String expressionUri = ConstructURI.build("bnf", "M43_PerformedExpression", this.identifier).toString();
@@ -61,6 +62,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.F31_Performance = model.createResource(performanceUri)
       .addProperty(RDF.type, FRBROO.F31_Performance)
       .addProperty(CIDOC.P3_has_note, note)
+      .addProperty(RDFS.comment, note)
       .addProperty(CIDOC.P9_consists_of, this.resource);
     this.M43_Performed_Expression = model.createResource(expressionUri)
       .addProperty(RDF.type, MUS.M43_Performed_Expression);

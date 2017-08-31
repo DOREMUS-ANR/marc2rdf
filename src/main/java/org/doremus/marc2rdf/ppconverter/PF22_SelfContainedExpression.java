@@ -78,8 +78,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     }
 
     /**************************** Expression: ***********************************************/
-    for (String note : getNote())
-      this.resource.addProperty(CIDOC.P3_has_note, note);
+    for (String note : getNote()) addNote(note);
 
     /**************************** Expression: key *******************************************/
     for (String key : getKey()) {

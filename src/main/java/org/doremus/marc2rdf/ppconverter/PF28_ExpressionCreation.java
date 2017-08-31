@@ -57,7 +57,6 @@ public class PF28_ExpressionCreation extends DoremusResource {
     /**************************** Work: Date of the work (expression représentative) ********/
     String dateText = getDateText();
     if (dateText != null && !dateText.isEmpty())
-      // TODO check: too generic?
       this.resource.addProperty(CIDOC.P3_has_note, dateText);
 
     /**************************** Work: Period of the work **********************************/

@@ -74,6 +74,7 @@ public class PM23_Casting_Detail {
     Resource M23CastingDetail = model.createResource(uri)
       .addProperty(RDF.type, MUS.M23_Casting_Detail)
       .addProperty(RDFS.label, (quantity > -1 ? quantity + " " : "") + nameComplete + (solo ? " solo" : ""))
+      .addProperty(RDFS.comment, note, "fr")
       .addProperty(CIDOC.P3_has_note, note, "fr");
 
     if (solo)

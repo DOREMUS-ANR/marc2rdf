@@ -45,7 +45,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
     if (dedication != null) {
       this.resource.addProperty(MUS.U44_has_dedication_statement, model.createResource(this.uri.toString() + "/dedication")
         .addProperty(RDF.type, MUS.M15_Dedication_Statement)
-        .addProperty(CIDOC.P3_has_note, this.model.createLiteral(dedication, "fr")));
+        .addProperty(RDFS.comment, dedication, "fr")
+        .addProperty(CIDOC.P3_has_note, dedication, "fr"));
     }
 
     /**************************** Expression: Title *****************************************/
@@ -125,7 +126,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     }
 
     /**************************** Expression: ***********************************************/
-    for (String note : getNote()) this.resource.addProperty(CIDOC.P3_has_note, note);
+    for (String note : getNote()) addNote(note);
 
     /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
@@ -188,7 +189,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       // casting notes
       for (String castingString : castingNotes)
-        M6Casting.addProperty(CIDOC.P3_has_note, castingString);
+        M6Casting.addProperty(CIDOC.P3_has_note, castingString)
+          .addProperty(RDFS.comment, castingString);
 
       // casting details
       int detailNum = 0;

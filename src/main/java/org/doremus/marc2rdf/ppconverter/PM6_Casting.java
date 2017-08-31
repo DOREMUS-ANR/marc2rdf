@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
@@ -25,6 +26,7 @@ public class PM6_Casting {
   public PM6_Casting(String note, String uri, Model model) {
     Resource M6Casting = model.createResource(uri)
       .addProperty(RDF.type, MUS.M6_Casting)
+      .addProperty(RDFS.comment, note)
       .addProperty(CIDOC.P3_has_note, note);
 
     this.resource = M6Casting;
