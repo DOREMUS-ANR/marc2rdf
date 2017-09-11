@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 public class Converter {
+  public final static String SCHEMA = "http://schema.org/";
   private static boolean marcOut;
 
   public static Properties properties;
@@ -153,7 +154,8 @@ public class Converter {
       m.setNsPrefix("prov", PROV.getURI());
       m.setNsPrefix("owl", OWL.getURI());
       m.setNsPrefix("time", Time.getURI());
-      
+      m.setNsPrefix("schema", SCHEMA);
+
       VocabularyManager.string2uri(m);
 
       // Write the output file

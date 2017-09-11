@@ -1,8 +1,9 @@
 package org.doremus.marc2rdf.main;
 
-import net.sf.junidecode.Junidecode;
-import org.apache.jena.datatypes.xsd.impl.XSDDateType;
-import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -10,12 +11,10 @@ import org.doremus.ontology.CIDOC;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Person {
-  private final Model model;
   private Resource resource;
+  private final Model model;
 
   private URI uri;
   private String firstName, lastName, birthDate, deathDate, lang;
@@ -34,7 +33,6 @@ public class Person {
 
     this.uri = ConstructURI.build("E21_Person", firstName, lastName, birthDate);
     initResource();
-
   }
 
   public Person(String firstName, String lastName, String birthDate) throws RuntimeException, URISyntaxException {
@@ -106,12 +104,32 @@ public class Person {
     addProperty(RDFS.label, this.getFullName(), lang);
     addProperty(CIDOC.P131_is_identified_by, this.getIdentification(), lang);
 
-    addProperty(CIDOC.P98i_was_born, cleanDate(this.getBirthDate()));
-    addProperty(CIDOC.P100i_died_in, cleanDate(this.getDeathDate()));
+    addDate(this.getBirthDate(), false);
+    addDate(this.getDeathDate(), true);
+
     return resource;
   }
 
-  public void addProperty(Property property, Literal object) {
+  public void addDate(String date, boolean isDeath) {
+    TimeSpan ts = cleanDate(date);
+    if (ts == null) return;
+
+    Property schemaProp = model.createProperty(Converter.SCHEMA + (isDeath ? "deathDate" : "birthDate"));
+
+    String url = this.uri + (isDeath ? "/death" : "/birth");
+    ts.setUri(url + "/interval");
+    addProperty(isDeath ? CIDOC.P100i_died_in : CIDOC.P98i_was_born,
+      model.createResource(url)
+        .addProperty(RDF.type, isDeath ? CIDOC.E69_Death : CIDOC.E67_Birth)
+        .addProperty(CIDOC.P4_has_time_span, ts.asResource())
+    );
+
+    this.resource.addProperty(schemaProp, ts.getStart());
+
+    model.add(ts.getModel());
+  }
+
+  public void addProperty(Property property, Resource object) {
     if (property == null || object == null) return;
     resource.addProperty(property, object);
   }
@@ -129,15 +147,34 @@ public class Person {
     addProperty(property, object, null);
   }
 
-  private Literal cleanDate(String d) {
-    if (d == null || d.isEmpty() || d.startsWith(".")) return null;
+  private TimeSpan cleanDate(String d) {
+    if (d == null || d.isEmpty() || d.startsWith(".") || d.equals("compositeur")) return null;
+    TimeSpan ts = null;
 
     d = d.replaceFirst("(.{4}\\??) BC", "-$1");
-    d = d.replaceFirst("(.{4}) ?\\?", "$1");
 
-    if (d.matches("\\d{4}"))
-      return model.createTypedLiteral(d, XSDDateType.XSDgYear);
+    boolean uncertain = false;
+    String uncertainRegex = "(.{4}) ?\\?";
+    if (d.matches(uncertainRegex)) {
+      uncertain = true;
+      d = d.replaceFirst(uncertainRegex, "$1");
+    }
+    if (d.startsWith("ca")) {
+      uncertain = true;
+      d.replaceFirst("^ca", "").trim();
+    }
+    // "850?" is 850-uncertain, not 8500-precision at decade
+    if (!d.startsWith("1") && d.charAt(3) == '?') {
+      uncertain = true;
+      d = d.substring(0, 3);
+    }
+    if (d.replaceFirst("^-", "").length() > 4)
+      // I have the info on the end date!
+      ts = new TimeSpan(d.substring(0, 4), d.substring(4));
+    else ts = new TimeSpan(d.substring(0, 4));
 
-    return model.createLiteral(d);
+    if (uncertain) ts.setQuality(TimeSpan.Precision.UNCERTAINTY);
+
+    return ts;
   }
 }

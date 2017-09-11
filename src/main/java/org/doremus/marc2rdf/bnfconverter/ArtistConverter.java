@@ -34,8 +34,6 @@ public class ArtistConverter {
     Person base = artists.get(0);
 
     if (artists.size() > 1) {
-//      System.out.println("****** Multiple name of artist for record " + record.getIdentifier());
-
       for (Person artist : artists) {
         String lang = artist.getLang();
         if (lang == null || lang.equals("fr")) {
@@ -130,7 +128,7 @@ public class ArtistConverter {
 
         // av. J.-C.
         d = d.replaceAll("av\\. J\\.-C\\.", "BC");
-        String[] dates = d.split("-");
+        String[] dates = d.split("[-–]");
         birthDate = dates[0].trim();
         if (dates.length > 1) deathDate = dates[1].trim();
       }

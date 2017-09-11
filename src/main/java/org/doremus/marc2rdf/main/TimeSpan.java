@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.main;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.impl.XSDDateType;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -43,7 +44,8 @@ public class TimeSpan {
     CERTAINTY("certain"),
     UNCERTAINTY("uncertain"),
     DECADE("precision at decade"),
-    CENTURY("precision at century");
+    CENTURY("precision at century"),
+    MILLENNIUM("precision at millennium");
     private final String text;
 
     Precision(final String text) {
@@ -111,6 +113,8 @@ public class TimeSpan {
         return Precision.DECADE;
       case 2:
         return Precision.CENTURY;
+      case 3:
+        return Precision.MILLENNIUM;
     }
     return null;
   }
@@ -150,6 +154,10 @@ public class TimeSpan {
     else if (day.length() == 1) day = "0" + day;
 
     this.startDay = day;
+  }
+
+  public Literal getStart() {
+    return this.model.createTypedLiteral(startDate, startType);
   }
 
   private String computeLabel() {
@@ -213,10 +221,10 @@ public class TimeSpan {
 
   }
 
-  private Resource makeInstant(String startDate, XSDDatatype startType) {
+  private Resource makeInstant(String date, XSDDatatype type) {
     return this.model.createResource()
       .addProperty(RDF.type, Time.Instant)
-      .addProperty(Time.inXSDDate, this.model.createTypedLiteral(startDate, startType));
+      .addProperty(Time.inXSDDate, this.model.createTypedLiteral(date, type));
   }
 
 
