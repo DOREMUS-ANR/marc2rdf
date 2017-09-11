@@ -156,7 +156,12 @@ public class PM6_Casting {
         PM23_Casting_Detail current = cDets.get(i);
         String currentName = current.getLName();
 
-        if (currentName.equals("II")) current.name = cDets.get(i - 1).name;
+        if (currentName == null && current.quantity > -1 && i < cDets.size() - 1) {
+          currentName = current.name = cDets.get(i + 1).name;
+        }
+
+        if (currentName.equalsIgnoreCase("II"))
+          current.name = cDets.get(i - 1).name;
 
         if (currentName.equals("alto") || currentName.equals("baryton")) {
           // workaround for https://github.com/DOREMUS-ANR/marc2rdf/issues/53

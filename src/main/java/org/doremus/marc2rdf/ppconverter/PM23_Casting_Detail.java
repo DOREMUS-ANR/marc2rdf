@@ -56,11 +56,13 @@ public class PM23_Casting_Detail {
   }
 
   private String instrumentToSingular(String r) {
+    if (r == null || r.isEmpty()) return null;
+
     // punctual fix
     if (r.equals("flûtes")) r = "flûte";
     if (r.equals("contrebasses")) r = "contrebasse";
     if (r.equals("altos")) r = "alto";
-    if (r.equals("percussioniste") ||  r.equals("percussions")) return "percussions";
+    if (r.equals("percussioniste") || r.equals("percussions")) return "percussions";
 
     String[] parts = r.split(" ");
     if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
@@ -107,6 +109,7 @@ public class PM23_Casting_Detail {
   }
 
   public String getLName() {
+    if (name == null) return null;
     return name.toLowerCase();
   }
 

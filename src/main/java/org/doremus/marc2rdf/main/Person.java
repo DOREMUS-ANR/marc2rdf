@@ -149,7 +149,7 @@ public class Person {
 
   private TimeSpan cleanDate(String d) {
     if (d == null || d.isEmpty() || d.startsWith(".") || d.equals("compositeur")) return null;
-    TimeSpan ts = null;
+    TimeSpan ts;
 
     d = d.replaceFirst("(.{4}\\??) BC", "-$1");
 
@@ -164,14 +164,14 @@ public class Person {
       d.replaceFirst("^ca", "").trim();
     }
     // "850?" is 850-uncertain, not 8500-precision at decade
-    if (!d.startsWith("1") && d.charAt(3) == '?') {
+    if (!d.startsWith("1") && d.length() > 3 && d.charAt(3) == '?'){
       uncertain = true;
       d = d.substring(0, 3);
     }
     if (d.replaceFirst("^-", "").length() > 4)
       // I have the info on the end date!
       ts = new TimeSpan(d.substring(0, 4), d.substring(4));
-    else ts = new TimeSpan(d.substring(0, 4));
+    else ts = new TimeSpan(d);
 
     if (uncertain) ts.setQuality(TimeSpan.Precision.UNCERTAINTY);
 
