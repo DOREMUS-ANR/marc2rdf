@@ -12,10 +12,7 @@ import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
-import org.doremus.ontology.CIDOC;
-import org.doremus.ontology.FRBROO;
-import org.doremus.ontology.MUS;
-import org.doremus.ontology.PROV;
+import org.doremus.ontology.*;
 import org.doremus.vocabulary.VocabularyManager;
 
 import javax.swing.*;
@@ -155,7 +152,8 @@ public class Converter {
       m.setNsPrefix("rdfs", RDFS.getURI());
       m.setNsPrefix("prov", PROV.getURI());
       m.setNsPrefix("owl", OWL.getURI());
-
+      m.setNsPrefix("time", Time.getURI());
+      
       VocabularyManager.string2uri(m);
 
       // Write the output file
@@ -196,7 +194,7 @@ public class Converter {
         listeRepertoire(subList);
     }
 
-    if(oneFile) {
+    if (oneFile) {
       File fileName = Paths.get(outputFolderPath, repertoire.getName() + ".ttl").toFile();
       FileWriter out = new FileWriter(fileName);
       general.write(out, "TURTLE");

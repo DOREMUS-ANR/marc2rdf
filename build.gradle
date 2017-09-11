@@ -72,6 +72,17 @@ task schemagenProvO(type: UrlSchemaGen) {
     nocomments = true
     namespace = 'http://www.w3.org/ns/prov#'
 }
+task schemagenTime(type: UrlSchemaGen) {
+    input = uri('https://raw.githubusercontent.com/w3c/sdw/gh-pages/time/rdf/time.ttl')
+    outputDirectory = file('src/main/java/')
+    packageName = 'org.doremus.ontology'
+    classNameSuffix = 'Time'
+    ontology = true
+    inference = true
+    nostrict = true
+    nocomments = true
+    namespace = 'http://www.w3.org/2006/time#'
+}
 
 task schemagenDoremus(type: UrlSchemaGen) {
     input = uri('https://raw.githubusercontent.com/DOREMUS-ANR/doremus-ontology/master/doremus.ttl')

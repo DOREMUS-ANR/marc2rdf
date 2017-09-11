@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.impl.XSDDateType;
 import org.apache.jena.rdf.model.Model;
@@ -8,9 +9,11 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.Time;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -21,6 +24,9 @@ public class TimeSpan {
   public static final String frenchDateRegex = "(?:le )?(?:" + frenchDayRegex + "? ?" + frenchMonthRegex + "? ?)?(\\d{4})";
   public static final String frenchDateRangeRegex = "(?:" + frenchDateRegex + "?-)" + frenchDateRegex;
 
+  private static final String[] UNCERTAINITY_CHARS = ".-?".split("");
+  private static final int lastYear = LocalDate.now().getYear() - 1;
+
   private final Model model;
   private Resource resource;
   private String uri;
@@ -29,7 +35,27 @@ public class TimeSpan {
   private String endYear, endMonth, endDay;
   private String startDate, endDate;
   private XSDDatatype startType, endType;
+  private Precision startQuality, endQuality;
   private String label;
+
+
+  public enum Precision {
+    CERTAINTY("certain"),
+    UNCERTAINTY("uncertain"),
+    DECADE("precision at decade"),
+    CENTURY("precision at century");
+    private final String text;
+
+    Precision(final String text) {
+      this.text = text;
+    }
+
+    @Override
+    public String toString() {
+      return text;
+    }
+  }
+
 
   public TimeSpan(String startYear) {
     this(startYear, null, null, null, null, null);
@@ -60,12 +86,48 @@ public class TimeSpan {
       this.startYear = this.startYear.substring(10, 14);
     }
 
+    // quality of the interval extremes
+    this.startQuality = computePrecision(this.startYear);
+    this.startYear = this.startYear.replaceAll("[-.?]", "0");
+
+    this.endQuality = computePrecision(this.endYear);
+    if (endQuality != null)
+      this.endYear = Math.min(Integer.parseInt(this.endYear.replaceAll("[-.?]", "9")), lastYear) + "";
+
+
     this.model = ModelFactory.createDefaultModel();
     this.resource = null;
     this.uri = null;
     this.label = null;
   }
 
+  private Precision computePrecision(String date) {
+    int sum = 0;
+    for (String c : UNCERTAINITY_CHARS) {
+      sum += StringUtils.countMatches(date, c);
+    }
+    switch (sum) {
+      case 1:
+        return Precision.DECADE;
+      case 2:
+        return Precision.CENTURY;
+    }
+    return null;
+  }
+
+
+  public void setQuality(Precision quality) {
+    this.startQuality = quality;
+    this.endQuality = quality;
+  }
+
+  public void setStartQuality(Precision quality) {
+    this.startQuality = quality;
+  }
+
+  public void setEndQuality(Precision quality) {
+    this.endQuality = quality;
+  }
 
   public void setUri(String uri) {
     this.uri = uri;
@@ -95,11 +157,18 @@ public class TimeSpan {
     return startDate + "/" + endDate;
   }
 
+  public boolean hasEndYear() {
+    return !this.endYear.isEmpty();
+  }
+
   private void initResource() {
     if (startYear.isEmpty() && endYear.isEmpty()) return;
 
     // there is at least one of the two year
-    if (startYear.isEmpty()) startYear = endYear.substring(0, 2) + "00"; //beginning of the century
+    if (startYear.isEmpty()) {
+      startYear = endYear.substring(0, 2) + "00"; //beginning of the century
+      startQuality = Precision.UNCERTAINTY;
+    }
     if (endYear.isEmpty()) {
       endYear = startYear;
       endMonth = startMonth;
@@ -132,9 +201,22 @@ public class TimeSpan {
 
     this.resource = this.model.createResource(this.uri)
       .addProperty(RDF.type, CIDOC.E52_Time_Span)
+      .addProperty(RDF.type, Time.Interval)
       .addProperty(RDFS.label, this.label)
-      .addProperty(CIDOC.P79_beginning_is_qualified_by, this.model.createTypedLiteral(startDate, startType))
-      .addProperty(CIDOC.P80_end_is_qualified_by, this.model.createTypedLiteral(endDate, endType));
+      .addProperty(Time.hasBeginning, makeInstant(startDate, startType))
+      .addProperty(Time.hasEnd, makeInstant(endDate, endType));
+
+    if (this.startQuality != null)
+      this.resource.addProperty(CIDOC.P79_beginning_is_qualified_by, startQuality.toString());
+    if (this.endQuality != null)
+      this.resource.addProperty(CIDOC.P80_end_is_qualified_by, endQuality.toString());
+
+  }
+
+  private Resource makeInstant(String startDate, XSDDatatype startType) {
+    return this.model.createResource()
+      .addProperty(RDF.type, Time.Instant)
+      .addProperty(Time.inXSDDate, this.model.createTypedLiteral(startDate, startType));
   }
 
 

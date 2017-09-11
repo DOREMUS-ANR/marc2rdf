@@ -3,7 +3,6 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -126,11 +125,11 @@ public class F30_PublicationEvent extends DoremusResource {
     else dateModifier = dateModifier.trim();
 
     TimeSpan timeSpan = new TimeSpan(year, endYear);
-    if (dateModifier.isEmpty() || dateModifier.equals("ca")) {
-      // nothing to do
+    if (dateModifier.equals("ca")) {
+      timeSpan.setQuality(TimeSpan.Precision.UNCERTAINTY);
     } else if (dateModifier.equalsIgnoreCase("Noël")) {
       timeSpan.setStartMonth("12"); // whole december
-    } else {
+    } else if (!dateModifier.isEmpty()) {
       Pattern p = Pattern.compile(textDateRegex);
       Matcher m = p.matcher(dateModifier.toLowerCase());
       if (m.find()) {
@@ -142,7 +141,7 @@ public class F30_PublicationEvent extends DoremusResource {
       }
     }
 
-    timeSpan.setUri(this.uri + "/time");
+    timeSpan.setUri(this.uri + "/interval");
     this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
     this.model.add(timeSpan.getModel());
   }

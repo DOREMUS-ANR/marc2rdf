@@ -66,4 +66,4 @@ The `<suffix>` is taken from this table:
 | M15_Dedication | dedication |
 | E4_Period | period |
 | E7_Activity | activity |
-| E52_Time-Span | time |
+| E52_Time-Span | interval |

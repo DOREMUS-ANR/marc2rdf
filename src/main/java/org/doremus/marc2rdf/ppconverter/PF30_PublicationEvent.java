@@ -106,9 +106,10 @@ public class PF30_PublicationEvent extends DoremusResource {
         Pattern pD = Pattern.compile(dateRegex);
         Matcher mD = pD.matcher(data);
 
-        if (mD.find())
+        if (mD.find()) {
           timeSpan = new TimeSpan(mD.group(3), mD.group(2), mD.group(1));
-
+          if (mD.group().contains(" vers ")) timeSpan.setQuality(TimeSpan.Precision.UNCERTAINTY);
+        }
         Pattern pDR = Pattern.compile(TimeSpan.frenchDateRangeRegex);
         Matcher mDR = pDR.matcher(data);
         if (mDR.find()) {
@@ -146,6 +147,9 @@ public class PF30_PublicationEvent extends DoremusResource {
         else timeSpan = new TimeSpan(year, endYear);
         timeSpan.setStartMonth(month);
 
+        if (mD.group().startsWith("ca "))
+          timeSpan.setQuality(TimeSpan.Precision.UNCERTAINTY);
+
         data = data.replace(mD.group(), "").trim().replaceFirst(" ?,$", "");
       }
 
@@ -178,7 +182,7 @@ public class PF30_PublicationEvent extends DoremusResource {
     if (city != null) this.resource.addProperty(CIDOC.P7_took_place_at, city);
 
     if (timeSpan != null) {
-      timeSpan.setUri(this.uri + "/time");
+      timeSpan.setUri(this.uri + "/interval");
 
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
       this.model.add(timeSpan.getModel());

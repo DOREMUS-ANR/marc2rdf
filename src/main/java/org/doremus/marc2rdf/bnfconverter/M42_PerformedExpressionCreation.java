@@ -23,7 +23,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   private static final String performanceRegex = "([eé]xécution|représentation) ([^:]+)?:";
 
   private static final String noteRegex1 = "(?i)(?:1[èe]?|Premi[èe])r?e? (?:[eé]xécution|représentation) +([^:]+ )*: (.+)";
-  private static final String numericDateRegex = "(\\d{4})(?:-?([\\d\\.]{2})-?([\\d\\.]{2}))?";
+  private static final String numericDateRegex = "(\\d{4})(?:-?([\\d.]{2})-?([\\d.]{2}))?";
 
   // "octobre ?, 1693 ?", "25 août, 1692 ?"
   private static final String frenchUncertainDate = "(?:le )?" + TimeSpan.frenchDayRegex + "? ?" + TimeSpan.frenchMonthRegex + "?(?: ?\\??,)? ?(\\d{4})(?: ?\\?)?";
@@ -83,7 +83,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     }
 
     if (timeSpan != null) {
-      timeSpan.setUri(this.F31_Performance.getURI() + "/time");
+      timeSpan.setUri(this.F31_Performance.getURI() + "/interval");
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
       this.F31_Performance.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
 
@@ -128,9 +128,25 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
           endMonth = mDR.group(5),
           endYear = mDR.group(6);
 
-        if (year == null && (month != null || day != null))
-          timeSpan = new TimeSpan(endYear, month, day, endYear, endMonth, endDay);
-        else timeSpan = new TimeSpan(endYear, endMonth, endDay);
+        if (year == null) {
+          if (month != null || day != null)
+            timeSpan = new TimeSpan(endYear, month, day, endYear, endMonth, endDay);
+          else timeSpan = new TimeSpan(endYear, endMonth, endDay);
+        } else timeSpan = new TimeSpan(year, month, day, endYear, endMonth, endDay);
+
+
+        if (mDR.group().contains("?")) {
+          if (timeSpan.hasEndYear()) {
+            String[] parts = mDR.group().split("-");
+            if (parts[0].contains("?"))
+              timeSpan.setStartQuality(TimeSpan.Precision.UNCERTAINTY);
+            if (parts[1].contains("?"))
+              timeSpan.setEndQuality(TimeSpan.Precision.UNCERTAINTY);
+          } else {
+            // only start date
+            timeSpan.setStartQuality(TimeSpan.Precision.UNCERTAINTY);
+          }
+        }
 
         String[] parts = data.split(",? ?" + longDate + " ?,?");
         if (parts.length > 0) place = parts[0].trim();

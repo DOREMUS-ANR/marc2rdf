@@ -94,7 +94,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     }
 
     if (timeSpan != null) {
-      timeSpan.setUri(this.F31_Performance.getURI() + "/time");
+      timeSpan.setUri(this.F31_Performance.getURI() + "/interval");
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
       this.F31_Performance.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
 
@@ -112,6 +112,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     Matcher m = p.matcher(note);
     if (m.find()) {
       timeSpan = new TimeSpan(m.group(3), m.group(2), m.group(1));
+      if (m.group().contains("?"))
+        timeSpan.setQuality(TimeSpan.Precision.UNCERTAINTY);
       note = cleanString(note, m.group());
     }
 

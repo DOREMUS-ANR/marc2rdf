@@ -12,11 +12,9 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
 import java.net.URISyntaxException;
-import java.time.LocalDate;
 import java.util.List;
 
 public class F28_ExpressionCreation extends DoremusResource {
-  private static final int lastYear = LocalDate.now().getYear() - 1;
   private List<Person> composers;
 
   public F28_ExpressionCreation(String identifier) throws URISyntaxException {
@@ -31,7 +29,7 @@ public class F28_ExpressionCreation extends DoremusResource {
     /**************************** Work: Date of the work (expression représentative) ********/
     TimeSpan dateMachine = getDateMachine();
     if (dateMachine != null) {
-      dateMachine.setUri(this.uri + "/time");
+      dateMachine.setUri(this.uri + "/interval");
       Resource dateRes = dateMachine.asResource();
       if (dateRes != null) {
         this.resource.addProperty(CIDOC.P4_has_time_span, dateMachine.asResource());
@@ -96,10 +94,6 @@ public class F28_ExpressionCreation extends DoremusResource {
         if (startString.isEmpty()) startString = endString;
         else if (endString.isEmpty()) endString = startString;
 
-        startString = startString.replaceAll("[.-]", "0");
-        if (endString.contains(".") || endString.contains("-")) {
-          endString = Math.min(Integer.parseInt(endString.replaceAll("[.-]", "9")), lastYear) + "";
-        }
         return new TimeSpan(startString, endString);
       }
       // known date
@@ -107,13 +101,17 @@ public class F28_ExpressionCreation extends DoremusResource {
         String startYear = fieldData.substring(28, 32);
 
         if (startYear.matches("\\d+.+")) { // at least a digit is specified
-          startYear = startYear.replaceAll("[.?-]", "0").trim();
+          startYear = startYear.trim();
         } else startYear = "";
 
         String startMonth = fieldData.substring(32, 34).replaceAll("[.-]", "").trim();
         String startDay = fieldData.substring(34, 36).replaceAll("[.-]", "").trim();
 
-        String endYear = fieldData.substring(38, 42).replaceAll("[.-]", "").trim();
+        String endYear = fieldData.substring(38, 42);
+        if (endYear.matches("\\d+.+")) { // at least a digit is specified
+          endYear = fieldData.substring(38, 42).trim();
+        } else endYear = "";
+
         String endMonth = fieldData.substring(42, 44).replaceAll("[.-]", "").trim();
         String endDay = fieldData.substring(44, 46).replaceAll("[.-]", "").trim();
 
