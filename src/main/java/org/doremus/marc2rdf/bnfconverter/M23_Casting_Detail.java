@@ -5,7 +5,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.ontology.MUS;
-import org.doremus.vocabulary.VocabularyManager;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 public class M23_Casting_Detail {
   private final Model model;

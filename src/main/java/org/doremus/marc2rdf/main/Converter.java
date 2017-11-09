@@ -13,7 +13,7 @@ import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.ontology.*;
-import org.doremus.vocabulary.VocabularyManager;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 import javax.swing.*;
 import java.io.*;
@@ -46,7 +46,10 @@ public class Converter {
     loadProperties();
     System.out.println("Running with the following properties: " + properties);
 
-    VocabularyManager.init();
+    ClassLoader classLoader = Converter.class.getClassLoader();
+    VocabularyManager.setVocabularyFolder(classLoader.getResource("vocabulary").getPath());
+    VocabularyManager.init(classLoader.getResource("property2family.csv"));
+
 
     String inputFolderPath = properties.getProperty("defaultInput");
     maxFilesInFolder = Integer.parseInt(properties.getProperty("maxFilesInAFolder"));

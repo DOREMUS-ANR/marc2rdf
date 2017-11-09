@@ -12,6 +12,7 @@ configurations.all {
 // In this section you declare where to find the dependencies of your project
 repositories {
     jcenter()
+    maven { url 'https://jitpack.io' }
     flatDir {
         dirs 'libs'
     }
@@ -20,17 +21,18 @@ repositories {
 // In this section you declare the dependencies for your production and test code
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21',
-            'org.slf4j:slf4j-simple:1.7.21',
-            'org.apache.jena:apache-jena-libs:3.1.0',
-            'org.apache.poi:poi:3.14',
-            'org.apache.poi:poi-ooxml:3.14',
-            'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5',
-            'com.openlinksw:virtjdbc4@jar',
-            'xml-apis:xml-apis:1.4.01',
-            'virtuoso.jena.driver:virt_jena3@jar',
-            'edu.stanford.nlp:stanford-corenlp:3.6.0',
-            'edu.stanford.nlp:stanford-corenlp:3.6.0:models',
-            'com.moparisthebest:junidecode:0.1.1'
+        'org.slf4j:slf4j-simple:1.7.21',
+        'org.apache.jena:apache-jena-libs:3.1.0',
+        'org.apache.poi:poi:3.14',
+        'org.apache.poi:poi-ooxml:3.14',
+        'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5',
+        'com.openlinksw:virtjdbc4@jar',
+        'xml-apis:xml-apis:1.4.01',
+        'virtuoso.jena.driver:virt_jena3@jar',
+        'edu.stanford.nlp:stanford-corenlp:3.6.0',
+        'edu.stanford.nlp:stanford-corenlp:3.6.0:models',
+        'com.moparisthebest:junidecode:0.1.1',
+        'com.github.DOREMUS-ANR:string2vocabulary:0.1'
 }
 
 
@@ -55,7 +57,7 @@ buildscript {
     // see https://github.com/gnagy/gradle-jena-plugin/pull/2
     dependencies {
         classpath 'org.apache.jena:jena-cmds:3.1.0',
-                'hu.webhejj.gradle:gradle-jena-plugin:1.1.0@jar'
+            'hu.webhejj.gradle:gradle-jena-plugin:1.1.0@jar'
     }
 }
 

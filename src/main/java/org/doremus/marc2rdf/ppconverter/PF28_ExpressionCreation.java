@@ -19,9 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class PF28_ExpressionCreation extends DoremusResource {
   private List<Person> composers;
+
+  public PF28_ExpressionCreation(String identifier) throws URISyntaxException {
+    super(identifier);
+    this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
+  }
 
   public PF28_ExpressionCreation(Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
@@ -83,6 +89,11 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
   public List<Person> getComposers() {
     return this.composers;
+  }
+  public List<String> getComposerUris() {
+    return this.composers.stream()
+      .map(e -> e.getUri().toString())
+      .collect(Collectors.toList());
   }
 
   public PF28_ExpressionCreation add(PF25_PerformancePlan plan) {

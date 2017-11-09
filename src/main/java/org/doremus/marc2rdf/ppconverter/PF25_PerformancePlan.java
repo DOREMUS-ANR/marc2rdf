@@ -11,11 +11,14 @@ public class PF25_PerformancePlan extends DoremusResource {
   public PF25_PerformancePlan(String identifier) throws URISyntaxException {
     super(identifier);
     this.resource.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
+
+    PF28_ExpressionCreation planCreation = new PF28_ExpressionCreation(identifier);
+    planCreation.asResource().addProperty(FRBROO.R17_created, this.resource);
+    model.add(planCreation.getModel());
   }
 
   public PF25_PerformancePlan add(PF22_SelfContainedExpression f22) {
     this.resource.addProperty(CIDOC.P165_incorporates, f22.asResource());
-//    f22.asResource().addProperty(model.createProperty(cidoc + "P165i_is_incorporated_in"), F25);
     return this;
   }
 

@@ -13,6 +13,7 @@ import org.doremus.ontology.MUS;
 
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class F28_ExpressionCreation extends DoremusResource {
   private List<Person> composers;
@@ -137,5 +138,11 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   public List<Person> getComposers() {
     return this.composers;
+  }
+
+  public List<String> getComposerUris() {
+    return this.composers.stream()
+      .map(e -> e.getUri().toString())
+      .collect(Collectors.toList());
   }
 }

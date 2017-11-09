@@ -9,7 +9,7 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
-import org.doremus.vocabulary.VocabularyManager;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
 

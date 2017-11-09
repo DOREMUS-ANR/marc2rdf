@@ -9,7 +9,7 @@ import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.MUS;
-import org.doremus.vocabulary.VocabularyManager;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -76,7 +76,7 @@ public class PP2RDF {
       }
       found = true;
       RecordConverter mainRecord = new RecordConverter(r, model);
-      catalogToUri(model, mainRecord.f28.getComposers());
+      catalogToUri(model, mainRecord.f28.getComposerUris());
     }
     if (!found) return null;
 
@@ -115,7 +115,7 @@ public class PP2RDF {
     return null;
   }
 
-  private static void catalogToUri(Model model, List<Person> composers) {
+  private static void catalogToUri(Model model, List<String> composers) {
     List<Statement> statementsToRemove = new ArrayList<>(),
       statementsToAdd = new ArrayList<>();
     Map<Resource, String> renamingMap = new HashMap<>();

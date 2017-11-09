@@ -15,7 +15,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
-import org.doremus.vocabulary.VocabularyManager;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -143,7 +143,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       // TODO what to do with not parsable catalogs?
     }
 
-    Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, f28.getComposers());
+    Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, f28.getComposerUris());
     if (match != null)
       catalogName = match.getProperty(model.createProperty("http://www.loc.gov/standards/mods/rdf/v1/#identifier")).getObject().toString();
 

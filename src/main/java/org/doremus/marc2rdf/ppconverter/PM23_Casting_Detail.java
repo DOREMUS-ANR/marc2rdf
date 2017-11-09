@@ -9,7 +9,7 @@ import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.StanfordLemmatizer;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
-import org.doremus.vocabulary.VocabularyManager;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.util.List;
 import java.util.regex.Matcher;

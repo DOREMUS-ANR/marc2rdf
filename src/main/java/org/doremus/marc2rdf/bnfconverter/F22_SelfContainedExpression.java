@@ -15,7 +15,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
-import org.doremus.vocabulary.VocabularyManager;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
 
       if (catalogNum != null) {
-        Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, f28.getComposers());
+        Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, f28.getComposerUris());
 
         if (match == null)
           M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogName);
