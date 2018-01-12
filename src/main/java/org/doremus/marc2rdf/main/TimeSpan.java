@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class TimeSpan {
+  private static final String UCT_DATE_REGEX = "\\d{4}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[1-2]\\d|3[0-1]))?)?(?:T(?:[0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ)?";
   public static final String frenchDayRegex = "(1er|[\\d]{1,2})";
   public static final String frenchMonthRegex = "(janvier|février|mars|avril|mai|juin|juillet|ao[ûu]t|septembre|octobre|novembre|décembre)";
   public static final String frenchDateRegex = "(?:le )?(?:" + frenchDayRegex + "? ?" + frenchMonthRegex + "? ?)?(\\d{4})";
@@ -38,6 +39,18 @@ public class TimeSpan {
   private XSDDatatype startType, endType;
   private Precision startQuality, endQuality;
   private String label;
+
+  public static TimeSpan emptyUncertain() {
+    TimeSpan ts = new TimeSpan(null);
+    ts.setQuality(Precision.UNCERTAINTY);
+    ts.resource = ts.model.createResource(ts.uri)
+      .addProperty(RDF.type, CIDOC.E52_Time_Span)
+      .addProperty(RDFS.label, "?")
+      .addProperty(CIDOC.P79_beginning_is_qualified_by, ts.startQuality.toString())
+      .addProperty(CIDOC.P80_end_is_qualified_by, ts.endQuality.toString());
+
+    return ts;
+  }
 
 
   public enum Precision {
@@ -158,6 +171,7 @@ public class TimeSpan {
   }
 
   public Literal getStart() {
+    if (startDate == null) return null;
     return this.model.createTypedLiteral(startDate, startType);
   }
 
@@ -211,9 +225,12 @@ public class TimeSpan {
     this.resource = this.model.createResource(this.uri)
       .addProperty(RDF.type, CIDOC.E52_Time_Span)
       .addProperty(RDF.type, Time.Interval)
-      .addProperty(RDFS.label, this.label)
-      .addProperty(Time.hasBeginning, makeInstant(startDate, startType))
-      .addProperty(Time.hasEnd, makeInstant(endDate, endType));
+      .addProperty(RDFS.label, this.label);
+
+    Resource startInstant = makeInstant(startDate, startType);
+    Resource endInstant = makeInstant(endDate, endType);
+    if (startInstant != null) this.resource.addProperty(Time.hasBeginning, startInstant);
+    if (endInstant != null) this.resource.addProperty(Time.hasEnd, endInstant);
 
     if (this.startQuality != null)
       this.resource.addProperty(CIDOC.P79_beginning_is_qualified_by, startQuality.toString());
@@ -223,6 +240,8 @@ public class TimeSpan {
   }
 
   private Resource makeInstant(String date, XSDDatatype type) {
+    if (!date.matches(UCT_DATE_REGEX)) return null;
+
     return this.model.createResource()
       .addProperty(RDF.type, Time.Instant)
       .addProperty(Time.inXSDDate, this.model.createTypedLiteral(date, type));

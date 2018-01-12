@@ -124,7 +124,8 @@ public class Person {
         .addProperty(CIDOC.P4_has_time_span, ts.asResource())
     );
 
-    this.resource.addProperty(schemaProp, ts.getStart());
+    if (ts.getStart() != null)
+      this.resource.addProperty(schemaProp, ts.getStart());
 
     model.add(ts.getModel());
   }
@@ -149,8 +150,8 @@ public class Person {
 
   private TimeSpan cleanDate(String d) {
     if (d == null || d.isEmpty() || d.startsWith(".") || d.equals("compositeur")) return null;
+    if (d.equals("?")) return TimeSpan.emptyUncertain();
     TimeSpan ts;
-
     d = d.replaceFirst("(.{4}\\??) BC", "-$1");
 
     boolean uncertain = false;
@@ -169,7 +170,7 @@ public class Person {
       d.replaceFirst("^après", "").trim();
     }
     // "850?" is 850-uncertain, not 8500-precision at decade
-    if (!d.startsWith("1") && d.length() > 3 && d.charAt(3) == '?'){
+    if (!d.startsWith("1") && d.length() > 3 && d.charAt(3) == '?') {
       uncertain = true;
       d = d.substring(0, 3);
     }
