@@ -154,6 +154,7 @@ public class Person {
     d = d.replaceFirst("(.{4}\\??) BC", "-$1");
 
     boolean uncertain = false;
+    boolean after = false;
     String uncertainRegex = "(.{4}) ?\\?";
     if (d.matches(uncertainRegex)) {
       uncertain = true;
@@ -162,6 +163,10 @@ public class Person {
     if (d.startsWith("ca")) {
       uncertain = true;
       d.replaceFirst("^ca", "").trim();
+    }
+    if (d.startsWith("après")) {
+      after = true;
+      d.replaceFirst("^après", "").trim();
     }
     // "850?" is 850-uncertain, not 8500-precision at decade
     if (!d.startsWith("1") && d.length() > 3 && d.charAt(3) == '?'){
@@ -174,6 +179,7 @@ public class Person {
     else ts = new TimeSpan(d);
 
     if (uncertain) ts.setQuality(TimeSpan.Precision.UNCERTAINTY);
+    if (after) ts.setQuality(TimeSpan.Precision.AFTER);
 
     return ts;
   }

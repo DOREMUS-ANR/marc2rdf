@@ -43,6 +43,7 @@ public class TimeSpan {
   public enum Precision {
     CERTAINTY("certain"),
     UNCERTAINTY("uncertain"),
+    AFTER("after"),
     DECADE("precision at decade"),
     CENTURY("precision at century"),
     MILLENNIUM("precision at millennium");
