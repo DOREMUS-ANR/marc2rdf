@@ -4,10 +4,11 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bah> a skos:Concept ;
     skos:altLabel "Alpenhorn"@de,
-        "Stockbückel"@de ;
+        "stockbückel"@de ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/b> ;
     skos:editorialNote "German term is preferred globally." ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/bah> ;
@@ -28,14 +29,14 @@
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
     skos:note "si bémol"@fr,
         "si bemolle"@it ;
-    skos:prefLabel "Bariton"@de,
+    skos:prefLabel "bariton"@de,
         "saxhorn baryton"@fr,
         "bombardino"@it,
         "bombardino"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bbd> a skos:Concept ;
-    skos:altLabel "Basstromba"@de,
-        "Kaiserbass"@de,
+    skos:altLabel "basstromba"@de,
+        "kaiserbass"@de,
         "basse impériale"@fr,
         "saxhorn basse"@fr,
         "basso in fa"@it,
@@ -52,7 +53,7 @@
         "12.-20. sec."@it,
         "fa, mi bemolle"@it,
         "mi bemolle"@it ;
-    skos:prefLabel "Bombardon"@de,
+    skos:prefLabel "bombardon"@de,
         "bombardon"@en,
         "bombardón"@es,
         "bombardone"@fr,
@@ -391,10 +392,10 @@
         "olifante"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bopg> a skos:Concept ;
-    skos:altLabel "Kontrastbombardon"@de,
-        "contrabass ophicleide"@en,
-        "oficleide-monstre"@fr,
+    skos:prefLabel "contrabass ophicleide"@en,
         "oficleide contrabaixo"@pt ;
+    skos:altLabel "kontrastbombardon"@de,
+        "oficleide-monstre"@fr ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/bop> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/bopg> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -525,10 +526,10 @@
         "tuba"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/btbf> a skos:Concept ;
-    skos:altLabel "Quartposaune"@de,
-        "Quintposaune"@de,
-        "bass trombone"@en,
+skos:prefLabel "bass trombone"@en,
         "trombone baixo"@pt ;
+    skos:altLabel "quartposaune"@de,
+        "quintposaune"@de ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/btb> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/btbf> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -537,10 +538,10 @@
         "usar o sufixo na posição 5: btbf"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/btbg> a skos:Concept ;
-    skos:altLabel "Doppelposaune"@de,
-        "Oktavposaune"@de,
-        "contrabass trombone"@en,
+    skos:prefLabel "contrabass trombone"@en,
         "trombone contrabaixo"@pt ;
+    skos:altLabel "doppelposaune"@de,
+        "oktavposaune"@de ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/btb> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/btbg> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -549,7 +550,7 @@
         "usar o sufixo na posição 5: btbg"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/btrj> a skos:Concept ;
-    skos:altLabel "Clarintrompete"@de,
+    skos:prefLabel "clarintrompete"@de,
         "high trumpet"@en,
         "trompete aguda"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/btr> ;
@@ -560,8 +561,8 @@
         "usar o sufixo na posição 5: btrj"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/btuf> a skos:Concept ;
-    skos:altLabel "Basstuba"@de,
-        "bass tuba"@en,
+    skos:prefLabel "basstuba"@de ;
+    skos:altLabel "bass tuba"@en,
         "tuba"@en,
         "basso tuba"@it,
         "tuba in sib"@it,
@@ -570,17 +571,17 @@
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/btuf> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
     skos:note "benutzen Suffix in Position 5: btuf"@de,
-        "19th-20th cent., use suffix in position 5: btuf"@en,
+        "19th-20th cent."@en,
         "use suffix in position 5: btuf"@en,
-        "20. sec., usare il suffisso in posizione 5: btuf"@it,
-        "si bemolle, usare il suffisso in posizione 5: btuf"@it,
+        "20. sec."@it,
+        "si bemolle"@it, "usare il suffisso in posizione 5: btuf"@it,
         "usar o sufixo na posição 5: btuf"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/btug> a skos:Concept ;
-    skos:altLabel "BBb bass"@en,
-        "contrabass tuba"@en,
-        "soubassophone"@fr,
+    skos:prefLabel "contrabass tuba"@en,
         "tuba contrabaixo"@pt ;
+    skos:altLabel "BBb bass"@en,
+        "soubassophone"@fr ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/btu> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/btug> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -589,7 +590,7 @@
         "usar o sufixo na posição 5: btug"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bun__y> a skos:Concept ;
-    skos:altLabel "Blechbläser - ethnisch"@de,
+    skos:prefLabel "Blechbläser - ethnisch"@de,
         "brass - ethnic"@en,
         "metales - étrnico"@es,
         "cuivre - ethnique"@fr,
@@ -605,11 +606,13 @@
         "usar o sufixo na posição 7: bvb..y"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bvba> a skos:Concept ;
+    skos:prefLabel "flicorno sopranino"@it,
+        "petit bugle"@fr ;
     skos:altLabel "cornett piccolo"@en,
         "bugle soprano en Mib"@fr,
-        "petit bugle"@fr,
         "cornettino in Mib"@it,
         "flicornino"@it,
+        "saxhorn sopranino"@fr,
         "piston"@it,
         "pistoncino"@it,
         "pistonino"@it,
@@ -617,17 +620,20 @@
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/bvb> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/bvba> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:note "Eb, D, use suffix in position 5: bvba"@en,
-        "mi bémol, utiliser le suffixe en position 5: bvba"@fr,
+    skos:note "Eb, D"@en, "use suffix in position 5: bvba"@en,
+        "mi bémol"@fr, "utiliser le suffixe en position 5: bvba"@fr,
         "utiliser le suffixe en position 5: bvba"@fr,
         "usare il suffisso in posizione 5: bvba"@it,
         "usar o sufixo na posição 5: bvba"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bvbb> a skos:Concept ;
-    skos:altLabel "Flugelhorn"@de,
-        "Flügelhorn"@de,
-        "sopran cornett"@en,
+    skos:prefLabel "flicorno soprano"@it,
         "bugle"@fr,
+        "flügelhorn"@de,
+        "flugelhorn"@en ;
+    skos:altLabel "flugelhorn"@de,
+        "sopran cornett"@en,
+        "saxhorn soprano"@fr,
         "flicorno"@it,
         "fliscorne soprano"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/bvb> ;
@@ -640,12 +646,15 @@
         "usar o sufixo na posição 5: bvbb"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bvbc> a skos:Concept ;
-    skos:altLabel "Althorn"@de,
-        "alt Cornett"@de,
+    skos:prefLabel "flicorno contralto"@it,
+        "althorn"@de,
+        "saxhorn alto"@fr,
+        "tenor horn"@en ;
+    skos:altLabel
+        "alt cornett"@de,
         "tenor-Tube"@de,
         "helicon"@en,
         "mellophone"@en,
-        "tenor horn"@en,
         "tuba alto"@en,
         "alto en Mib"@fr,
         "baryton aigu"@fr,
@@ -661,42 +670,42 @@
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/bvb> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/bvbc> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:note "Es, benutzen Suffix in Position 5: bvbc"@de,
+    skos:note "Es"@de,
         "benutzen Suffix in Position 5: bvbc"@de,
-        "Eb, D, use suffix in position 5: bvbc"@en,
-        "Eb, use suffix in position 5: bvbc"@en,
+        "Eb, D"@en,
         "use suffix in position 5: bvbc"@en,
-        "mi bémol, utiliser le suffixe en position 5: bvbc"@fr,
+        "mi bémol"@fr,
         "utiliser le suffixe en position 5: bvbc"@fr,
-        "mi bemolle, usare il suffisso in posizione 5: bvbc"@it,
+        "mi bemolle"@it,
         "usare il suffisso in posizione 5: bvbc"@it .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bvbd> a skos:Concept ;
+    skos:prefLabel "saxhorn ténor"@fr,
+        "flicorno tenore"@it ;
     skos:altLabel "Tenorhorn"@de,
         "Bb baritone"@en,
         "baritone"@en,
         "baryton"@fr,
         "bugle ténor"@fr,
         "clavicor"@fr,
-        "saxhorn ténor"@fr,
         "clavicorno"@it,
         "emboliclave"@it,
-        "flicorno tenore"@it,
         "tuba tenore"@it,
         "trompa tenor"@pt,
         "tuba tenor"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/bvb> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:note "Es, benutzen Suffix in Position 5: bvbd"@de,
+    skos:note "Es"@de, "benutzen Suffix in Position 5: bvbd"@de,
         "use suffix in position 5: bvbd"@en,
-        "mi bémol, utiliser le suffixe en position 5: bvbd"@fr,
-        "si bémol, utiliser le suffixe en position 5: bvbd"@fr,
+        "mi bémol"@fr,
+        "si bémol"@fr,
         "utiliser le suffixe en position 5: bvbd"@fr,
-        "si bemolle, usare il suffisso in posizione 5: bvbd"@it,
+        "si bemolle"@it,
         "usare il suffisso in posizione 5: bvbd"@it,
         "usar o sufixo na posição 5: bvbd"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bvbg> a skos:Concept ;
+    skos:prefLabel "flicorno contrabasso in sib"@it;
     skos:altLabel "basso in sib"@it,
         "elicon contrabbasso"@it,
         "helicon contrabbasso"@it,
@@ -705,20 +714,20 @@
         "sousafone contrabaixo"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/bvb> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:note "si bemolle, usare il suffisso in posizione 5: bvbg"@it,
+    skos:note "si bemolle"@it, "usare il suffisso in posizione 5: bvbg"@it,
         "usare il suffisso in posizione 5: bvbg"@it,
         "usar o sufixo na posição 5: bvbg"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/bvbi> a skos:Concept ;
-    skos:altLabel "oktav Kornett"@de,
+    skos:prefLabel "oktav kornett"@de,
         "piccolo cornett"@en,
         "petit saxhorn suraigu"@fr,
         "corneto agudo"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/bvb> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/bvbi> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:note "B, benutzen Suffix in Position 5: bvbi"@de,
-        "Ab, Bb, use suffix in position 5: bvbi"@en,
+    skos:note "B"@de, "benutzen Suffix in Position 5: bvbi"@de,
+        "Ab, Bb"@en, "use suffix in position 5: bvbi"@en,
         "utiliser le suffixe en position 5: bvbi"@fr,
         "usar o sufixo na posição 5: bvbi"@pt .
 
@@ -804,7 +813,7 @@
         "coro falado"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/cun__y> a skos:Concept ;
-    skos:altLabel "Chor - ethnisch"@de,
+    skos:prefLabel "Chor - ethnisch"@de,
         "choir - ethnic"@en,
         "coro - étnico"@es,
         "choeur - ethnique"@fr,
@@ -1369,14 +1378,14 @@
         "melopiano"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/kor__r> a skos:Concept ;
-    skos:altLabel "electric organ"@en,
-        "hammond organ"@en,
-        "orgue hammond"@fr,
+    skos:prefLabel "electric organ"@en,
         "orgue électrique"@fr,
         "organo elettrico"@it,
+        "órgão elétrico"@pt ;
+    skos:altLabel "hammond organ"@en,
+        "orgue hammond"@fr,
         "organo hammond"@it,
         "órgão eletrónico"@pt,
-        "órgão elétrico"@pt,
         "órgão hammond"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/kor> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/kor__r> ;
@@ -1387,8 +1396,8 @@
         "usar o sufixo na posição 7: kor..r"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/kor__s> a skos:Concept ;
+    skos:prefLabel "electronic organ"@en;
     skos:altLabel "electrone"@en,
-        "electronic organ"@en,
         "electone"@fr,
         "casiotone"@it,
         "organo bontempi"@it ;
@@ -1401,14 +1410,14 @@
         "use suffix in position 7: kor..s"@it .
 
 <http://data.doremus.org/vocabulary/iaml/mop/kpf__r> a skos:Concept ;
+    skos:prefLabel "electric piano"@en,
+        "pianoforte elettrico"@it,
+        "piano électrique"@fr,
+        "piano elétrico"@pt ;
     skos:altLabel "Neo-Bechstein-Flügel"@de,
         "electone"@en,
-        "electric piano"@en,
         "pianotron"@en,
-        "piano électrique"@fr,
-        "piano elettrico"@it,
-        "pianoforte elettrico"@it,
-        "piano elétrico"@pt ;
+        "piano elettrico"@it ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/kpf> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/kpf__r> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -1419,13 +1428,13 @@
         "usar o sufixo na posição 7: kpf..r"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/kpf__s> a skos:Concept ;
-    skos:altLabel "Digital Piano"@de,
-        "E-Piano"@de,
-        "elektronisches KIavier"@de,
-        "electronic piano"@en,
+    skos:prefLabel "electronic piano"@en,
         "piano électronique"@fr,
         "piano elettronico"@it,
         "piano eletrónico"@pt ;
+    skos:altLabel "digital piano"@de,
+        "E-Piano"@de,
+        "elektronisches klavier"@de ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/kpf> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/kpf__s> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -1523,7 +1532,7 @@
         "espineta"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/kun__y> a skos:Concept ;
-    skos:altLabel "Tastenistrument - ethnisch"@de,
+    skos:prefLabel "tastenistrument - ethnisch"@de,
         "keyboard - ethnic"@en,
         "teclado - étnico"@es,
         "clavier - ethnique"@fr,
@@ -2108,7 +2117,7 @@
         "diapasão"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/mui__y> a skos:Concept ;
-    skos:altLabel "Instrument - ethnisch"@de,
+    skos:prefLabel "instrument - ethnisch"@de,
         "instrument - ethnic"@en,
         "instrumento - étnico"@es,
         "instrument - ethnique"@fr ;
@@ -2359,7 +2368,7 @@
         "orquestra de cordas"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/oun__y> a skos:Concept ;
-    skos:altLabel "Orchester - ethnisch"@de,
+    skos:prefLabel "orchester - ethnisch"@de,
         "orchestra - ethnic"@en,
         "orquesta - étnico"@es,
         "orchestre - ethnique"@fr,
@@ -3796,9 +3805,9 @@
 
 <http://data.doremus.org/vocabulary/iaml/mop/pun__s> a skos:Concept ;
     skos:altLabel "drum machine"@en,
-        "electronic percussion"@en,
         "rhythm machine"@en,
-        "side man"@en,
+        "side man"@en ;
+    skos:prefLabel "electronic percussion"@en,
         "percusión electrónica"@es,
         "percussion électronique"@fr,
         "percussione elettronica"@it,
@@ -3813,7 +3822,7 @@
         "usar o sufixo na posição 7: pun..s"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/pun__y> a skos:Concept ;
-    skos:altLabel "Perkussion - ethnisch"@de,
+    skos:prefLabel "perkussion - ethnisch"@de,
         "percussion - ethnic"@en,
         "percusión - étnico"@es,
         "percussions - ethnique"@fr,
@@ -4390,7 +4399,7 @@
         "trombeta marinha"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/sun__y> a skos:Concept ;
-    skos:altLabel "strings, bowed - ethnic"@en,
+    skos:prefLabel "strings, bowed - ethnic"@en,
         "instrumento de cuerda frotada - étnico"@es,
         "cordes frottées - ethnique"@fr,
         "archi - etnico"@it,
@@ -4479,14 +4488,14 @@
         "contrabaixo de viola"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/svgf> a skos:Concept ;
-    skos:altLabel "basse de viole"@fr ;
+    skos:prefLabel "basse de viole"@fr ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/svg> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/svgf> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
     skos:note "utiliser le suffixe en position 5: svgf"@fr .
 
 <http://data.doremus.org/vocabulary/iaml/mop/svlj> a skos:Concept ;
-    skos:altLabel "Quartgeige"@de ;
+    skos:prefLabel "quartgeige"@de ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/svl> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/svlj> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -4756,7 +4765,7 @@
         "cobza"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/tgu__r> a skos:Concept ;
-    skos:altLabel "electric guitar"@en,
+    skos:prefLabel "electric guitar"@en,
         "guitarra eléctrica"@es,
         "guitare électrique"@fr,
         "chitarra elettrica"@it ;
@@ -4769,11 +4778,12 @@
         "usare il suffisso in posizione 7: tgu..r"@it .
 
 <http://data.doremus.org/vocabulary/iaml/mop/tguf_r> a skos:Concept ;
-    skos:altLabel "electric bass guitar"@en,
-        "fender bass"@en,
-        "gitare électrique basse"@fr,
+    skos:prefLabel "electric bass guitar"@en,
         "basso elettrico"@it,
+        "gitare électrique basse"@fr,
         "baixo elétrico"@pt ;
+    skos:altLabel
+        "fender bass"@en ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/tgu> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
     skos:note "use suffix in positions 5, 7: tguf.r"@en,
@@ -5102,7 +5112,7 @@
         "cavaquinho"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/tun__y> a skos:Concept ;
-    skos:altLabel "strings, plucked - ethnic"@en,
+    skos:prefLabel "strings, plucked - ethnic"@en,
         "instrumento de cuerda punteada - étnico"@es,
         "cordes pincées - ethnique"@fr,
         "pizzicati - etnico"@it,
@@ -5251,13 +5261,13 @@
         "soprano - criança"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/vctc> a skos:Concept ;
-    skos:altLabel "contratenor altus"@la ;
+    skos:prefLabel "contratenor altus"@la ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/vct> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/vctc> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> .
 
 <http://data.doremus.org/vocabulary/iaml/mop/vctf> a skos:Concept ;
-    skos:altLabel "contratenor bassus"@la ;
+    skos:prefLabel "contratenor bassus"@la ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/vct> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/vctf> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> .
@@ -5395,7 +5405,7 @@
         "tenor"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/vun__w> a skos:Concept ;
-    skos:altLabel "recorded voice"@en,
+    skos:prefLabel "recorded voice"@en,
         "voz grabada"@en,
         "voix enregistrée"@fr,
         "voce registrata"@it,
@@ -5409,7 +5419,7 @@
         "usar o sufixo na posição 7: vun..w"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/vun__y> a skos:Concept ;
-    skos:altLabel "Stimme - ethnisch"@de,
+    skos:prefLabel "stimme - ethnisch"@de,
         "voice - ethnic"@en,
         "voix - ethnique"@fr,
         "voce - etnica"@it,
@@ -5423,7 +5433,7 @@
         "usar o sufixo na posição 7: vun..y"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/vunj> a skos:Concept ;
-    skos:altLabel "hohe Stimme"@de,
+    skos:prefLabel "hohe stimme"@de,
         "high voice"@en,
         "voz alta"@es,
         "voix haute"@fr,
@@ -5440,7 +5450,7 @@
         "usar o sufixo na posição 5: vunj"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/vunk> a skos:Concept ;
-    skos:altLabel "medium voice"@en,
+    skos:prefLabel "medium voice"@en,
         "voz media"@es,
         "voix moyenne"@fr,
         "voce media"@it,
@@ -5455,7 +5465,7 @@
         "usar o sufixo na posição 5: vunk"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/vunl> a skos:Concept ;
-    skos:altLabel "tiefe Stimme"@de,
+    skos:prefLabel "tiefe stimme"@de,
         "low voice"@en,
         "voz baja"@es,
         "voix grave"@fr,
@@ -5517,14 +5527,14 @@
         "aulos"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wbaj> a skos:Concept ;
+    skos:prefLabel "fagottino"@it,
+        "tenoroon"@en ;
     skos:altLabel "Quintfagott"@de,
         "Tenorfagott"@de,
-        "tenoroon"@en,
         "basson quinte"@fr,
         "caledonica"@it,
         "fagotti-octavo"@it,
         "fagotti-quarto"@it,
-        "fagottino"@it,
         "fagotino"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/wba> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/wbaj> ;
@@ -5542,7 +5552,7 @@
     skos:editorialNote "English term is preferred globally." ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/wbh> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:prefLabel "Bassetthorn"@de,
+    skos:prefLabel "bassetthorn"@de,
         "basset-horn"@en,
         "corno di bassetto"@es,
         "cor de basset"@fr,
@@ -5608,13 +5618,14 @@
         "charamela"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wclf> a skos:Concept ;
-    skos:altLabel "bass clarinet"@en,
+    skos:prefLabel "clarinette basse"@fr,
+        "bass clarinet"@en,
+        "clarinetto basso"@it,
+        "clarinete baixo"@pt ;
+    skos:altLabel
         "basse-guerrière"@fr,
         "basse-orgue"@fr,
-        "clarinette basse"@fr,
-        "clarinetto basso"@it,
-        "clarone"@it,
-        "clarinete baixo"@pt ;
+        "clarone"@it ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/wcl> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/wclf> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -5624,16 +5635,18 @@
         "usar o sufixo na posição 5: wclf"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wclg> a skos:Concept ;
-    skos:altLabel "bathyphone"@fr,
-        "batyphone"@fr,
+    skos:prefLabel "bathyphone"@fr,
         "bathyphone"@pt ;
+    skos:altLabel "batyphone"@fr ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/wcl> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
     skos:note "utiliser le suffixe en position 5: wclg"@fr .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wclj> a skos:Concept ;
-    skos:altLabel "piccolo clarinet"@en,
-        "clarinette piccolo"@fr,
+    skos:prefLabel "piccolo clarinet"@en,
+        "clarinette piccolo"@it,
+        "clarinetto piccolo"@fr ;
+    skos:altLabel
         "clarinetto in lab"@it,
         "clarinetto in mib"@it,
         "quartino"@it,
@@ -5834,14 +5847,15 @@
         "pífaro"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wflf> a skos:Concept ;
-    skos:altLabel "albisiphon"@en,
-        "bass flute"@en,
+    skos:prefLabel "bass flute"@en,
         "flûte basse"@fr,
+        "flauto basso"@it,
+        "flauta baixo"@pt ;
+    skos:altLabel "albisiphon"@en,
         "albisifono"@it,
         "flauto albisi"@it,
         "flauto basso in do"@it,
-        "flautone"@it,
-        "flauta baixo"@pt ;
+        "flautone"@it;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/wfl> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/wflf> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -5851,7 +5865,7 @@
         "usar o sufixo na posição 5: wflf"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wflj> a skos:Concept ;
-    skos:altLabel "flautino"@it ;
+    skos:prefLabel "flautino"@it ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/wfl> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/wflj> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -5958,7 +5972,7 @@
         "nay"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/woa> a skos:Concept ;
-    skos:altLabel "Liebesoboe"@de,
+    skos:altLabel "liebesoboe"@de,
         "oboe de amor"@es ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/w> ;
     skos:editorialNote "Italian term is preferred globally." ;
@@ -5972,10 +5986,10 @@
         "oboé de amor"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wobd> a skos:Concept ;
-    skos:altLabel "tenor oboe"@en,
-        "haute-contre de hautbois"@fr,
+    skos:prefLabel "tenor oboe"@en,
+        "oboe tenore"@it;
+    skos:altLabel "haute-contre de hautbois"@fr,
         "taille de hautbois"@fr,
-        "oboe tenore"@it,
         "tenor oboe"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/wob> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/wobd> ;
@@ -5986,13 +6000,13 @@
         "usar o sufixo na posição 5: wobd"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wobe> a skos:Concept ;
-    skos:altLabel "Heckelphon"@de,
+    skos:prefLabel "heckelphon"@de,
         "heckelphone"@en,
         "heckelfón"@es,
         "heckelphone"@fr,
         "heckelfono"@it,
-        "heckelphon"@it,
         "heckelfone"@pt ;
+    skos:altLabel "heckelphon"@it ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/wob> ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/wobe> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -6003,14 +6017,14 @@
         "usar o sufixo na posição 5: wobe"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/woh> a skos:Concept ;
-    skos:altLabel "Jagdoboe"@de,
-        "Wald Hautbois"@de,
+    skos:altLabel "jagdoboe"@de,
+        "2ald hautbois"@de,
         "hautbois de chasse"@fr ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/w> ;
     skos:editorialNote "Italian term is preferred globally." ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/woh> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:prefLabel "Jagd-Hautboy"@de,
+    skos:prefLabel "jagd-hautboy"@de,
         "oboe da caccia"@en,
         "oboe de caza"@es,
         "oboe da caccia"@it,
@@ -6035,8 +6049,8 @@
         "flautim"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wpod> a skos:Concept ;
-    skos:altLabel "tenora"@es,
-        "tiple"@es,
+    skos:prefLabel "tenora"@es ;
+     skos:altLabel "tiple"@es,
         "tenora"@pt ;
     skos:broader <http://data.doremus.org/vocabulary/iaml/mop/wpo> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
@@ -6215,7 +6229,7 @@
         "sordun"@pt .
 
 <http://data.doremus.org/vocabulary/iaml/mop/wun__y> a skos:Concept ;
-    skos:altLabel "Holzbläser - ethnisch"@de,
+    skos:prefLabel "holzbläser - ethnisch"@de,
         "woodwind - ethnic"@en,
         "instrumento de viento madera - étnico"@es,
         "bois - ethnique"@fr,
@@ -6630,7 +6644,7 @@
     skos:editorialNote "English term is preferred globally." ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/wun> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:prefLabel "Holzbläser"@de,
+    skos:prefLabel "holzbläser"@de,
         "woodwind"@en,
         "instrumento de viento madera"@es,
         "bois"@fr,
@@ -6697,7 +6711,7 @@
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/kor> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
     skos:note "10.-19. sec."@it ;
-    skos:prefLabel "Orgel"@de,
+    skos:prefLabel "orgel"@de,
         "organ"@en,
         "órgano"@es,
         "orgue"@fr,
@@ -6880,7 +6894,7 @@
     skos:editorialNote "English term is preferred globally." ;
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/vun> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
-    skos:prefLabel "Stimme"@de,
+    skos:prefLabel "stimme"@de,
         "voice"@en,
         "voz"@es,
         "voix"@fr,
@@ -6890,8 +6904,9 @@
 
 <http://data.doremus.org/vocabulary/iaml/mop/bvb> a skos:Concept ;
     skos:altLabel "Cornett"@de,
-        "Saxhorn"@de,
-        "Ventilbügelhorn"@de,
+        "saxhorn"@de,
+        "saxhorn"@fr,
+        "ventilbügelhorn"@de,
         "fiscorno"@es,
         "sudrophone"@fr,
         "fiscorno"@it,
@@ -6904,7 +6919,7 @@
     skos:exactMatch <http://iflastandards.info/ns/unimarc/terms/mop/bvb> ;
     skos:inScheme <http://data.doremus.org/vocabulary/iaml/mop/> ;
     skos:note "19th-20th cent."@de ;
-    skos:prefLabel "Bügelhorn"@de,
+    skos:prefLabel "bügelhorn"@de,
         "valved bugle"@en,
         "fliscorno"@es,
         "bugle à pistons"@fr,
@@ -6930,7 +6945,13 @@
     skos:topConceptOf <http://data.doremus.org/vocabulary/iaml/mop/> .
 
 <http://data.doremus.org/vocabulary/iaml/mop/> a skos:ConceptScheme ;
-    rdfs:comment "List of Media of Performances" ;
+    rdfs:comment "List of Media of Performances according to IAML."@en,
+        "Liste des médias des performances selon IAML."@fr,
+        "Lista dei Media of Performance secondo l'IAML"@it;
+    dct:creator <http://data.doremus.org/organization/DOREMUS> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dct:created "2016-03-14"^^<http://www.w3.org/2001/XMLSchema#date> ;
+    dct:modified "2017-11-07"^^<http://www.w3.org/2001/XMLSchema#date> ;
     skos:hasTopConcept <http://data.doremus.org/vocabulary/iaml/mop/b>,
         <http://data.doremus.org/vocabulary/iaml/mop/c>,
         <http://data.doremus.org/vocabulary/iaml/mop/e>,
@@ -7004,4 +7025,3 @@
     skos:prefLabel "Percussion"@en,
         "Percussioni"@it ;
     skos:topConceptOf <http://data.doremus.org/vocabulary/iaml/mop/> .
-
