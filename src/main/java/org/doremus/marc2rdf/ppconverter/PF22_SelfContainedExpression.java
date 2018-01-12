@@ -82,7 +82,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
-      key = key.trim();
+      key = key.replaceFirst("\\.$", "").trim(); //remove final dot
       String keyUri = this.uri + "/key/" + Junidecode.unidecode(key).toLowerCase().replaceAll(" ", "_");
       this.resource.addProperty(MUS.U11_has_key,
         model.createResource(keyUri)
