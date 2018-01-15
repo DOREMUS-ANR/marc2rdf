@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
@@ -12,6 +13,8 @@ import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
 /***
  * Correspond à l'oeuvre musicale
@@ -32,16 +35,24 @@ public class F15_ComplexWork extends DoremusResource {
 
   private void parseDerivation() throws URISyntaxException {
     // derivation
-    DataField derivField = record.getDatafieldByCode("301");
-    if (derivField == null || !derivField.isCode('r')) return;
+    DataField derivField = record.getDatafieldByCode(301);
+    if (derivField == null || derivField.getIndicator1() == '7' || !derivField.isCode('r')) return;
 
     F15_ComplexWork targetWork = new F15_ComplexWork(derivField.getSubfield('3').getData());
 
     // derivation type
     String derivHeading = derivField.getSubfield('r').getData();
+    String derivType = null;
 
-    if (!derivHeading.endsWith("de") && !derivHeading.endsWith("par")) return;
-    String derivType = derivHeading.replaceFirst(" (de|par)$", "").trim().toLowerCase();
+    if (derivHeading.isEmpty())
+      derivType = record.getDatafieldByCode(144).getSubfield('a').getData();
+
+    if (derivType == null) {
+      if (!derivHeading.endsWith("de") && !derivHeading.endsWith("par"))
+        return;
+    }
+
+    derivType = derivHeading.replaceFirst(" (de|par)$", "").trim().toLowerCase();
 
     // we know this kind of derivation?
     Resource match = searchDerivationMatch(derivType);
@@ -66,12 +77,18 @@ public class F15_ComplexWork extends DoremusResource {
     return VocabularyManager.getVocabulary("derivation").findConcept(str, false);
   }
 
-  private F15_ComplexWork(String identifier) throws URISyntaxException {
+  public F15_ComplexWork(String identifier) throws URISyntaxException {
     super(identifier);
   }
 
   public F15_ComplexWork add(F22_SelfContainedExpression f22) {
-    this.resource.addProperty(MUS.U38_has_descriptive_expression, f22.asResource());
+    List<String> notes = record.getDatafieldsByCode("600", 'a');
+    boolean versionContained = Arrays.stream(notes.toArray()).anyMatch(
+      x -> ((String) x).toLowerCase().contains("versions"));
+
+    Property predicate = versionContained ? MUS.U38_has_descriptive_expression : FRBROO.R40_has_representative_expression;
+
+    this.resource.addProperty(predicate, f22.asResource());
     return this;
   }
 

@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
@@ -21,6 +22,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   private final StanfordLemmatizer slem;
 
   private static final String performanceRegex = "([eé]xécution|représentation) ([^:]+)?:";
+  public static final Pattern performancePattern = Pattern.compile(performanceRegex);
 
   private static final String noteRegex1 = "(?i)(?:1[èe]?|Premi[èe])r?e? (?:[eé]xécution|représentation) +([^:]+ )*: (.+)";
   private static final String numericDateRegex = "(\\d{4})(?:-?([\\d.]{2})-?([\\d.]{2}))?";
@@ -43,8 +45,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.countConsistOf = 0;
 
     //check if it is a Premiere
-    Pattern p = Pattern.compile(performanceRegex);
-    Matcher m = p.matcher(note);
+    Matcher m = performancePattern.matcher(note);
     m.find();
     isPremiere = m.group(2) == null;
     char flag = isPremiere ? 'p' : 'f';
@@ -64,11 +65,16 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       .addProperty(CIDOC.P3_has_note, note)
       .addProperty(RDFS.comment, note)
       .addProperty(CIDOC.P9_consists_of, this.resource);
+
     this.M43_Performed_Expression = model.createResource(expressionUri)
       .addProperty(RDF.type, MUS.M43_Performed_Expression);
+    for (Literal title : f28.expression.titles)
+      this.M43_Performed_Expression.addProperty(RDFS.label, title);
+
     this.M44_Performed_Work = model.createResource(workUri)
       .addProperty(RDF.type, MUS.M44_Performed_Work)
       .addProperty(FRBROO.R9_is_realised_in, this.M43_Performed_Expression);
+
     this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression)
       .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work);
 
@@ -242,11 +248,10 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
   public static List<String> getPerformances(Record record) {
     List<String> notes = new ArrayList<>();
-    Pattern p = Pattern.compile(performanceRegex);
 
     for (String note : record.getDatafieldsByCode("600", 'a')) {
-      Matcher m = p.matcher(note);
-      if (m.find()) notes.add(note);
+      if (performancePattern.matcher(note).find())
+        notes.add(note);
     }
     return notes;
   }

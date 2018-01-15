@@ -38,6 +38,9 @@ public class DataField extends Etiq {
     return subfields;
   }
 
+  public boolean isCode(int c) {
+    return isCode((char) c);
+  }
   public boolean isCode(char c) {
     for (Subfield subfield : subfields) {
       if (subfield.getCode() == c)
@@ -84,4 +87,6 @@ public class DataField extends Etiq {
 
     return sb.toString();
   }
+
+
 }

@@ -105,41 +105,48 @@ public class ArtistConverter {
   }
 
 
-  static List<Person> getArtistsInfo(Record record) throws URISyntaxException {
+  static List<Person> getArtistsInfo(Record record) {
     return getArtistsInfo(record, false);
   }
 
-  static List<Person> getArtistsInfo(Record record, boolean full) throws URISyntaxException {
+  static List<Person> getArtistsInfo(Record record, boolean full) {
     List<Person> artists = new ArrayList<>();
 
     for (DataField field : record.getDatafieldsByCode("100")) {
       if (!full && !field.isCode('3')) continue;
-
-      String firstName = null, lastName = null, birthDate = null, deathDate = null, lang = null;
-
-      if (field.isCode('m')) { // name
-        firstName = field.getSubfield('m').getData().trim();
-      }
-      if (field.isCode('a')) { // surname
-        lastName = field.getSubfield('a').getData().trim();
-      }
-      if (field.isCode('d')) { // birth - death dates
-        String d = field.getSubfield('d').getData();
-
-        // av. J.-C.
-        d = d.replaceAll("av\\. J\\.-C\\.", "BC");
-        String[] dates = d.split("[-–]");
-        birthDate = dates[0].trim();
-        if (dates.length > 1) deathDate = dates[1].trim();
-      }
-      if (field.isCode('w')) { // lang
-        String w = field.getSubfield('w').getData();
-        lang = Utils.intermarcExtractLang(w);
-      }
-
-      artists.add(new Person(firstName, lastName, birthDate, deathDate, lang));
+      artists.add(parseArtistField(field));
     }
     return artists;
+  }
+
+  public static Person parseArtistField(DataField field) {
+    String firstName = null, lastName = null, birthDate = null, deathDate = null, lang = null;
+
+    if (field.isCode('m')) { // name
+      firstName = field.getSubfield('m').getData().trim();
+    }
+    if (field.isCode('a')) { // surname
+      lastName = field.getSubfield('a').getData().trim();
+    }
+    if (field.isCode('d')) { // birth - death dates
+      String d = field.getSubfield('d').getData();
+
+      // av. J.-C.
+      d = d.replaceAll("av\\. J\\.-C\\.", "BC");
+      String[] dates = d.split("[-–]");
+      birthDate = dates[0].trim();
+      if (dates.length > 1) deathDate = dates[1].trim();
+    }
+    if (field.isCode('w')) { // lang
+      String w = field.getSubfield('w').getData();
+      lang = Utils.intermarcExtractLang(w);
+    }
+    try {
+      return new Person(firstName, lastName, birthDate, deathDate, lang);
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   static List<String[]> getAlternateNames(Record record) {

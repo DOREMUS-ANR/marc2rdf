@@ -39,7 +39,9 @@ public class Record {
     dataFields.add((DataField) field);
   }
 
-  void addAttr(Attr attr) { attrList.add(attr);}
+  void addAttr(Attr attr) {
+    attrList.add(attr);
+  }
 
   public List<Etiq> getControlFields() {
     List<Etiq> fields = new ArrayList<>();
@@ -53,6 +55,10 @@ public class Record {
     return fields;
   }
 
+  public DataField getDatafieldByCode(int code) {
+    return getDatafieldByCode(code + "");
+  }
+
   public DataField getDatafieldByCode(String code) {
     for (DataField field : this.dataFields) {
       if (field.getEtiq().equals(code)) {
@@ -60,6 +66,10 @@ public class Record {
       }
     }
     return null;
+  }
+
+  public List<DataField> getDatafieldsByCode(int code) {
+    return getDatafieldsByCode(code + "");
   }
 
   public List<DataField> getDatafieldsByCode(String code) {
@@ -100,7 +110,7 @@ public class Record {
     return results;
   }
 
-  public Attr getAttrByName(String name){
+  public Attr getAttrByName(String name) {
     for (Attr at : this.attrList) {
       if (at.getName().equals(name)) {
         return at;

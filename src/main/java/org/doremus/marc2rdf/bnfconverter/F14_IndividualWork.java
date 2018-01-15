@@ -21,19 +21,16 @@ public class F14_IndividualWork extends DoremusResource {
 
 
   public F14_IndividualWork addPremiere(M42_PerformedExpressionCreation premiere) {
-    /**************************** Work: had premiere ****************************************/
     this.resource.addProperty(MUS.U5_had_premiere, premiere.getMainPerformance());
     return this;
   }
 
   public F14_IndividualWork add(F22_SelfContainedExpression expression) {
-    /**************************** Work: is realised through (expression) ********************/
     this.resource.addProperty(FRBROO.R9_is_realised_in, expression.asResource());
     return this;
   }
 
   public F14_IndividualWork add(F30_PublicationEvent publication) {
-    /**************************** Work: had princeps publication ****************************/
     this.resource.addProperty(MUS.U4_had_princeps_publication, publication.asResource());
     return this;
   }

@@ -148,13 +148,11 @@ public class F30_PublicationEvent extends DoremusResource {
 
 
   public F30_PublicationEvent add(F24_PublicationExpression expression) {
-    /**************************** création d'une expression de publication *************/
     this.resource.addProperty(FRBROO.R24_created, expression.asResource());
     return this;
   }
 
   public F30_PublicationEvent add(F19_PublicationWork work) {
-    /**************************** création d'une expression de publication *************/
     this.resource.addProperty(FRBROO.R19_created_a_realisation_of, work.asResource());
     return this;
   }

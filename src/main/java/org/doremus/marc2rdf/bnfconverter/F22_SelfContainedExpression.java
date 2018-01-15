@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import net.sf.junidecode.Junidecode;
 import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
@@ -17,17 +18,25 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /***
  * Correspond à la description développée de l'expression représentative
  ***/
 public class F22_SelfContainedExpression extends DoremusResource {
   private final String catalogFallbackRegex = "([a-z]+) ?(\\d+)";
+  private final String DEDICACE_STRING = "(?i)(?:Sur l'édition, d|D)[ée]dicaces?(?: ?: ?)?(.+)";
+  private final Pattern DEDICACE_PATTERN = Pattern.compile(DEDICACE_STRING);
+
+  public List<Literal> titles;
 
   public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) throws URISyntaxException {
     super(record);
@@ -40,21 +49,36 @@ public class F22_SelfContainedExpression extends DoremusResource {
       this.resource.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
 
 
-    /**************************** Expression: Context for the expression ********************/
-    String dedication = getDedicace();
-    if (dedication != null) {
-      this.resource.addProperty(MUS.U44_has_dedication_statement, model.createResource(this.uri.toString() + "/dedication")
+    int dedCount = 0;
+    for (String dedication : getDedicace()) {
+      dedication = dedication.trim();
+      String dedUri = this.uri.toString() + "/dedication/" + ++dedCount;
+      this.resource.addProperty(MUS.U44_has_dedication_statement, model.createResource(dedUri)
         .addProperty(RDF.type, MUS.M15_Dedication_Statement)
         .addProperty(RDFS.comment, dedication, "fr")
         .addProperty(CIDOC.P3_has_note, dedication, "fr"));
     }
 
-    /**************************** Expression: Title *****************************************/
-    for (Literal title : getTitle())
+    List<Literal> s444 = getTitle(444, true);
+    List<Literal> ns444 = getTitle(444, false);
+    List<Literal> a144 = getTitle(144, true);
+    a144.addAll(getTitle(144, false));
+
+    for (Literal title : s444)
       this.resource.addProperty(MUS.U70_has_title, title).addProperty(RDFS.label, title);
+    this.titles = s444;
+    for (Literal title : ns444)
+      this.resource.addProperty(MUS.U68_has_variant_title, title);
+    for (Literal title : a144)
+      this.resource.addProperty(MUS.U71_has_uniform_music_title, title);
+
+    if (s444.size() == 0) {
+      a144.addAll(ns444);
+      this.resource.addProperty(RDFS.label, a144.get(0));
+      this.titles.add(a144.get(0));
+    }
 
 
-    /**************************** Expression: Catalogue *************************************/
     for (String catalog : getCatalog()) {
       String[] catalogParts = catalog.split(" ", 2);
       String catalogName = null, catalogNum = null;
@@ -72,7 +96,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
         catalogName = catalogParts[0].trim();
         catalogNum = catalogParts[1].trim();
       }
-
+      if ("WoO".equalsIgnoreCase(catalogName)) {
+        addOpus(catalog);
+        continue;
+      }
       String label = (catalogName != null) ? (catalogName + " " + catalogNum) : catalog;
 
       Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + label.replaceAll("[ /]", "_"))
@@ -97,38 +124,17 @@ public class F22_SelfContainedExpression extends DoremusResource {
       this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
     }
 
-    /**************************** Expression: Opus ******************************************/
     String opus = getOpus();
     if (opus != null) {
       if (opus.matches("^\\[(.+)\\]$")) // fix "[Op. 3, no 2]"
         opus = opus.substring(1, opus.length() - 1);
 
-      String[] opusParts = new String[]{opus};
-      if (opus.matches(".*" + Utils.opusSubnumberRegex + ".*"))
-        opusParts = opus.split(Utils.opusSubnumberRegex, 2);
 
-
-      String number = opusParts[0].replaceAll(Utils.opusHeaderRegex, "").trim();
-      String subnumber = opusParts.length > 1 ? opusParts[1].replaceAll("no", "").trim() : null;
-
-      String id = number;
-      if (subnumber != null) id += "-" + subnumber;
-
-      Resource M2OpusStatement = model.createResource(this.uri + "/opus/" + id.replaceAll(" ", "_"))
-        .addProperty(RDF.type, MUS.M2_Opus_Statement)
-        .addProperty(CIDOC.P3_has_note, opus)
-        .addProperty(RDFS.label, opus)
-        .addProperty(MUS.U42_has_opus_number, number);
-
-      if (subnumber != null) M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, subnumber);
-
-      this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
+      addOpus(opus);
     }
 
-    /**************************** Expression: ***********************************************/
     for (String note : getNote()) addNote(note);
 
-    /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
       key = key.replaceFirst("\\.$", "").trim(); //remove final dot
       Literal label = model.createLiteral(key, "fr");
@@ -142,11 +148,9 @@ public class F22_SelfContainedExpression extends DoremusResource {
       );
     }
 
-    /*************************** Expression: Genre *****************************************/
     List<Resource> genreList = getGenre();
     for (Resource genre : genreList) this.resource.addProperty(MUS.U12_has_genre, genre);
 
-    /**************************** Expression: Order Number **********************************/
     String orderNumber = getOrderNumber();
     if (orderNumber != null) {
       List<Integer> range = Utils.toRange(orderNumber);
@@ -156,7 +160,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
         for (int i : range) this.resource.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
     }
 
-    /**************************** Expression: Casting ***************************************/
     List<M23_Casting_Detail> castDetails = new ArrayList<>();
     for (String castingDetail : getCastMembers()) {
       String mopCode = castingDetail.substring(0, 2);
@@ -202,46 +205,99 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       this.resource.addProperty(MUS.U13_has_casting, M6Casting);
     }
+
+    List<String> characters = record.getDatafieldsByCode("608", 'b');
+    if (characters.size() > 0)
+      this.resource.addProperty(MUS.U33_has_set_of_characters,
+        model.createResource(this.uri.toString() + "/character")
+          .addProperty(RDF.type, MUS.M33_Set_of_Characters)
+          .addProperty(CIDOC.P3_has_note, String.join("; ", characters)));
   }
 
+  public F22_SelfContainedExpression(String identifier) throws URISyntaxException {
+    super(identifier);
+  }
 
-  /***********************************
-   * La dedicace
-   ***********************************/
+  private void addOpus(String note) {
+    Property numProp = MUS.U42_has_opus_number,
+      subProp = MUS.U17_has_opus_statement;
 
-  private String getDedicace() {
-    for (String dedicace : record.getDatafieldsByCode("600", 'a')) {
-      if (dedicace.startsWith("Dédicace")) return dedicace;
+    if (note.startsWith("WoO")) {
+      numProp = MUS.U69_has_WoO_number;
+      subProp = MUS.U76_has_WoO_subnumber;
     }
-    return null;
+
+    String[] opusParts = new String[]{note};
+    if (note.matches(".*" + Utils.opusSubnumberRegex + ".*"))
+      opusParts = note.split(Utils.opusSubnumberRegex, 2);
+
+
+    String number = opusParts[0].replaceAll(Utils.opusHeaderRegex, "").trim();
+    String subnumber = opusParts.length > 1 ? opusParts[1].replaceAll("no", "").trim() : null;
+
+    String id = number;
+    if (subnumber != null) id += "-" + subnumber;
+
+    Resource M2OpusStatement = model.createResource(this.uri + "/opus/" + id.replaceAll(" ", "_"))
+      .addProperty(RDF.type, MUS.M2_Opus_Statement)
+      .addProperty(CIDOC.P3_has_note, note)
+      .addProperty(RDFS.label, note)
+      .addProperty(numProp, number);
+
+    if (subnumber != null) M2OpusStatement.addProperty(subProp, subnumber);
+
+    if (subnumber == null) subnumber = "   ";
+    System.out.println(number + " | " + subnumber + " | " + note);
+    this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
+
   }
 
-  /***********************************
-   * Le titre
-   **************************************/
-  private List<Literal> getTitle() {
+  private List<String> getDedicace() {
+    List<String> dedicaces = new ArrayList<>();
+    for (String ded : record.getDatafieldsByCode("600", 'a')) {
+      Matcher m = DEDICACE_PATTERN.matcher(ded);
+
+      while (m.find()) {
+        String content = m.group(1);
+        if (content.startsWith("\""))
+          dedicaces.addAll(Arrays.asList(content.split(";")));
+        else dedicaces.add(ded);
+      }
+    }
+    return dedicaces;
+  }
+
+  private List<Literal> getTitle(int code, boolean significativeWanted) {
     List<Literal> titleList = new ArrayList<>();
 
-    List<DataField> titleFields = record.getDatafieldsByCode("444");
-    titleFields.addAll(record.getDatafieldsByCode("144"));
+
+    List<DataField> titleFields = record.getDatafieldsByCode(code);
+
 
     for (DataField field : titleFields) {
       if (!field.isCode('a')) continue;
 
-      String title = field.getSubfield('a').getData().trim(),
-        language = null;
+      StringBuilder title = new StringBuilder(field.getSubfield('a').getData().trim());
+      String language = null;
 
-      if (title.isEmpty()) continue;
+      if (title.length() == 0) continue;
 
-      if (field.isCode('h')) title += " | " + field.getSubfield('h').getData().trim();
-      if (field.isCode('i')) title += " | " + field.getSubfield('i').getData().trim();
+      if (!isMeaningfulTitle(title.toString())) {
+        if (significativeWanted) continue;
+        else
+          for (char c : new char[]{'e', 'j', 'b', 't', 'u', 'n', 'p', 'k', 'q', 'f', 'c', 'g'})
+            if (field.isCode(c)) title.append(". ").append(field.getSubfield(c).getData().trim());
+      }
+
+      if (field.isCode('h')) title.append(". ").append(field.getSubfield('h').getData().trim());
+      if (field.isCode('i')) title.append(". ").append(field.getSubfield('i').getData().trim());
 
       if (field.isCode('w'))
         language = Utils.intermarcExtractLang(field.getSubfield('w').getData());
 
       Literal titleLiteral = (language == null || language.isEmpty()) ?
-        this.model.createLiteral(title.trim()) :
-        this.model.createLiteral(title.trim(), language);
+        this.model.createLiteral(title.toString().trim()) :
+        this.model.createLiteral(title.toString().trim(), language);
 
       titleList.add(titleLiteral);
     }
@@ -249,16 +305,42 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return titleList;
   }
 
-  /***********************************
-   * Le catalogue
-   ***********************************/
+  private List<String> notMeaningfulTitles = null;
+
+  private boolean isMeaningfulTitle(String title) {
+    if (notMeaningfulTitles == null) {
+      try {
+        loadNotMeaningfulTitles();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    return notMeaningfulTitles.stream().anyMatch(str -> str.trim().equals(title));
+  }
+
+  private void loadNotMeaningfulTitles() throws IOException {
+    notMeaningfulTitles = new ArrayList<>();
+    File file = new File(this.getClass().getClassLoader().getResource("notMeaningfulTitles.txt").getFile());
+
+    try (Scanner scanner = new Scanner(file)) {
+
+      while (scanner.hasNextLine()) {
+        String line = scanner.nextLine();
+        notMeaningfulTitles.add(line.trim());
+      }
+
+      scanner.close();
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   private List<String> getCatalog() {
     return record.getDatafieldsByCode("144", 'k');
   }
 
-  /***********************************
-   * L'opus
-   ***********************************/
   private String getOpus() {
     DataField field = record.getDatafieldByCode("144");
 
@@ -266,17 +348,16 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return field.getSubfield('p').getData();
   }
 
-  /***********************************
-   * Note Libre
-   ***********************************/
   private List<String> getNote() {
     List<String> notes = new ArrayList<>();
 
     for (String note : record.getDatafieldsByCode("600", 'a')) {
-      if (!(note.contains("Date de composition")) && !(note.contains("Dates de composition")) && !(note.contains("comp."))
-        && !(note.contains("1re éd.")) && !(note.contains("éd.")) && !(note.contains("édition"))
-        && !(note.contains("1re exécution")) && !(note.contains("1re représentation")) && !(note.startsWith("Dédicace"))) {
-
+      if (!note.contains("éd.") && !note.contains("édition") &&
+        !M42_PerformedExpressionCreation.performancePattern.matcher(note).find() &&
+        !note.matches(DEDICACE_STRING) &&
+        !note.matches(F28_ExpressionCreation.MOTIVATIONS_REGEX) &&
+        !note.matches(F28_ExpressionCreation.INFLUENCE_REGEX) &&
+        !note.matches(F28_ExpressionCreation.DATE_REGEX_1) && !note.matches(F28_ExpressionCreation.DATE_REGEX_2)) {
         notes.add(note.trim());
       }
     }
@@ -352,6 +433,11 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
   public F22_SelfContainedExpression addPremiere(M42_PerformedExpressionCreation m42) {
     this.resource.addProperty(MUS.U5_had_premiere, m42.getMainPerformance());
+    return this;
+  }
+
+  public F22_SelfContainedExpression addMovement(F22_SelfContainedExpression movement) {
+    this.resource.addProperty(FRBROO.R5_has_component, movement.asResource());
     return this;
   }
 }

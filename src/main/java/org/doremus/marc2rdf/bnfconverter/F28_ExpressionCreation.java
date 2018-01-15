@@ -2,10 +2,12 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.ControlField;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -16,7 +18,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class F28_ExpressionCreation extends DoremusResource {
+  public static final String MOTIVATIONS_REGEX = "(?i).*((comp(osé|.)|[ée]crit) (pour|à l'occasion de)|commande de).*";
+  public static final String INFLUENCE_REGEX = "(?i).*inspir[eé].*";
+  public static final String DATE_REGEX_1 = "Dates? de composition.+";
+  public static final String DATE_REGEX_2 = ".*\\(.*comp.*\\)";
   private List<Person> composers;
+  private int composerCount;
+  public F22_SelfContainedExpression expression;
 
   public F28_ExpressionCreation(String identifier) throws URISyntaxException {
     super(identifier);
@@ -26,8 +34,8 @@ public class F28_ExpressionCreation extends DoremusResource {
   public F28_ExpressionCreation(Record record) throws URISyntaxException {
     super(record);
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
+    this.composerCount = 0;
 
-    /**************************** Work: Date of the work (expression représentative) ********/
     TimeSpan dateMachine = getDateMachine();
     if (dateMachine != null) {
       dateMachine.setUri(this.uri + "/interval");
@@ -38,33 +46,88 @@ public class F28_ExpressionCreation extends DoremusResource {
       }
     }
 
-    /**************************** Work: Date of the work (expression représentative) ********/
     String dateText = getDateText();
     if (dateText != null) this.resource.addProperty(CIDOC.P3_has_note, dateText);
 
-    /**************************** Work: is created by ***************************************/
     this.composers = ArtistConverter.getArtistsInfo(record);
-    int composerCount = 0;
-    for (Person composer : composers) {
-      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composerCount)
-        .addProperty(RDF.type, CIDOC.E7_Activity)
-        .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
-        .addProperty(CIDOC.P14_carried_out_by, composer.asResource())
+    for (Person composer : composers)
+      addActivity(composer, "compositeur");
+
+    // text authors
+    List<DataField> tAut = this.record.getDatafieldsByCode(322);
+    tAut.addAll(this.record.getDatafieldsByCode(320));
+    for (DataField d : tAut) {
+      Person author = ArtistConverter.parseArtistField(d);
+      String role = null;
+      if (d.getEtiq().equals("322"))
+        switch (d.getIndicator1()) {
+          case ' ':
+          case '8':
+            role = "auteur du texte";
+            break;
+          case '6':
+            role = "librettiste";
+            break;
+          case '7':
+            role = "parolier";
+            break;
+          case '9':
+            role = "auteur de l'argument";
+            break;
+        }
+      else switch (d.getIndicator1()) {
+        case ' ':
+          role = "auteur du texte";
+          break;
+        case '4':
+          role = "librettiste";
+          break;
+      }
+
+      if (author != null) addActivity(author, role);
+
+    }
+
+    int motivationCount = 0;
+    for (String mot : getMotivations()) {
+      this.resource.addProperty(CIDOC.P17_was_motivated_by,
+        model.createResource(this.uri + "/motivation/" + ++motivationCount)
+          .addProperty(RDF.type, CIDOC.E1_CRM_Entity)
+          .addProperty(RDFS.label, mot, "fr")
+          .addProperty(CIDOC.P3_has_note, mot, "fr")
       );
-      model.add(composer.getModel());
+    }
+
+    List<DataField> inspirations = this.record.getDatafieldsByCode("301");
+    inspirations.addAll(this.record.getDatafieldsByCode("302"));
+    for (DataField insp : inspirations) {
+      if (insp.getIndicator1() == '5' || insp.getIndicator1() == '7') return;
+      if (!insp.isCode(3)) return;
+
+      F15_ComplexWork targetWork = new F15_ComplexWork(insp.getSubfield('3').getData());
+
+      this.resource.addProperty(CIDOC.P15_was_influenced_by, targetWork.asResource());
+    }
+
+    int influenceCount = 0;
+    for (String infl : getInfluences()) {
+      this.resource.addProperty(CIDOC.P15_was_influenced_by,
+        model.createResource(this.uri + "/influence/" + ++influenceCount)
+          .addProperty(RDF.type, CIDOC.E1_CRM_Entity)
+          .addProperty(RDFS.label, infl, "fr")
+          .addProperty(CIDOC.P3_has_note, infl, "fr")
+      );
     }
   }
 
 
   public F28_ExpressionCreation add(F22_SelfContainedExpression expression) {
-    /**************************** Expression: created ***************************************/
+    this.expression = expression;
     this.resource.addProperty(FRBROO.R17_created, expression.asResource());
-//    expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
     return this;
   }
 
   public F28_ExpressionCreation add(F14_IndividualWork f14) {
-    /**************************** Work: created a realisation *******************************/
     this.resource.addProperty(FRBROO.R19_created_a_realisation_of, f14.asResource());
 //    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
     return this;
@@ -125,12 +188,9 @@ public class F28_ExpressionCreation extends DoremusResource {
     return null;
   }
 
-  /*************
-   * Date de création de l'expression (Format texte)
-   ***********************/
   private String getDateText() {
-    for (String date : record.getDatafieldsByCode("100", 'a')) {
-      if (date.contains("comp.") || date.contains("Date de composition") || date.contains("Dates de composition"))
+    for (String date : record.getDatafieldsByCode("600", 'a')) {
+      if (date.matches(DATE_REGEX_1) || date.matches(DATE_REGEX_2))
         return date;
     }
     return null;
@@ -138,6 +198,28 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   public List<Person> getComposers() {
     return this.composers;
+  }
+
+  private void addActivity(Person actor, String role) {
+    Resource activity = model.createResource(this.uri + "/activity/" + ++composerCount)
+      .addProperty(RDF.type, CIDOC.E7_Activity)
+      .addProperty(CIDOC.P14_carried_out_by, actor.asResource());
+
+    if (role != null)
+      activity.addProperty(MUS.U31_had_function_of_type, model.createLiteral(role, "fr"));
+
+    this.resource.addProperty(CIDOC.P9_consists_of, activity);
+    model.add(actor.getModel());
+  }
+
+  public List<String> getMotivations() {
+    return record.getDatafieldsByCode("600", 'a').stream()
+      .filter(s -> s.matches(MOTIVATIONS_REGEX)).collect(Collectors.toList());
+  }
+
+  public List<String> getInfluences() {
+    return record.getDatafieldsByCode("600", 'a').stream()
+      .filter(s -> s.matches(INFLUENCE_REGEX)).collect(Collectors.toList());
   }
 
   public List<String> getComposerUris() {
