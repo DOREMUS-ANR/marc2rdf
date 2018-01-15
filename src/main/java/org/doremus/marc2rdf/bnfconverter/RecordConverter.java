@@ -29,6 +29,8 @@ public class RecordConverter {
     this.record = record;
     this.model = model;
 
+//    System.out.println(record.getIdentifier());
+
     String ark = record.getAttrByName("IDPerenne").getData();
 
     // PROV-O tracing
@@ -51,15 +53,16 @@ public class RecordConverter {
 //    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
     M45_DescriptiveExpressionAssignment f42 = new M45_DescriptiveExpressionAssignment(record);
 
-    addPrincepsPublication();
-    addPerformances();
-    linkToMovements();
-
     f28.add(f22).add(f14);
     f15.add(f22).add(f14);
     f14.add(f22);
 //    f40.add(f22).add(f14).add(f15);
     f42.add(f22).add(f15);
+
+    addPrincepsPublication();
+    addPerformances();
+    linkToMovements();
+
 
 
     for (DoremusResource res : new DoremusResource[]{f22, f28, f15, f14, f42}) {

@@ -58,6 +58,7 @@ public class F28_ExpressionCreation extends DoremusResource {
     tAut.addAll(this.record.getDatafieldsByCode(320));
     for (DataField d : tAut) {
       Person author = ArtistConverter.parseArtistField(d);
+      if (author == null) continue;
       String role = null;
       if (d.getEtiq().equals("322"))
         switch (d.getIndicator1()) {

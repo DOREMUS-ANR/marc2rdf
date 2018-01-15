@@ -18,7 +18,8 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /***
  * Correspond à la description développée de l'expression représentative
@@ -48,6 +48,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     if (ark != null)
       this.resource.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
 
+    this.titles = new ArrayList<>();
 
     int dedCount = 0;
     for (String dedication : getDedicace()) {
@@ -67,6 +68,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     for (Literal title : s444)
       this.resource.addProperty(MUS.U70_has_title, title).addProperty(RDFS.label, title);
     this.titles = s444;
+
     for (Literal title : ns444)
       this.resource.addProperty(MUS.U68_has_variant_title, title);
     for (Literal title : a144)
@@ -74,8 +76,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     if (s444.size() == 0) {
       a144.addAll(ns444);
-      this.resource.addProperty(RDFS.label, a144.get(0));
-      this.titles.add(a144.get(0));
+      if (a144.size() > 0) {
+        this.resource.addProperty(RDFS.label, a144.get(0));
+        this.titles.add(a144.get(0));
+      }
     }
 
 
@@ -128,7 +132,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
     if (opus != null) {
       if (opus.matches("^\\[(.+)\\]$")) // fix "[Op. 3, no 2]"
         opus = opus.substring(1, opus.length() - 1);
-
 
       addOpus(opus);
     }
@@ -247,7 +250,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
     if (subnumber != null) M2OpusStatement.addProperty(subProp, subnumber);
 
     if (subnumber == null) subnumber = "   ";
-    System.out.println(number + " | " + subnumber + " | " + note);
     this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
 
   }
@@ -316,7 +318,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       }
     }
 
-    return notMeaningfulTitles.stream().anyMatch(str -> str.trim().equals(title));
+    return !notMeaningfulTitles.stream().anyMatch(str -> str.trim().equals(title));
   }
 
   private void loadNotMeaningfulTitles() throws IOException {

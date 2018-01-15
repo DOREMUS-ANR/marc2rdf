@@ -122,17 +122,21 @@ public class ArtistConverter {
   public static Person parseArtistField(DataField field) {
     String firstName = null, lastName = null, birthDate = null, deathDate = null, lang = null;
 
-    if (field.isCode('m')) { // name
+    if (field.isCode('m')) // name
       firstName = field.getSubfield('m').getData().trim();
-    }
-    if (field.isCode('a')) { // surname
+
+    if (field.isCode('a')) // surname
       lastName = field.getSubfield('a').getData().trim();
-    }
+
+
+    if (firstName == null && lastName == null)
+      return null;
+
     if (field.isCode('d')) { // birth - death dates
       String d = field.getSubfield('d').getData();
 
       // av. J.-C.
-      d = d.replaceAll("av\\. J\\.-C\\.", "BC");
+      d = d.replaceAll("av\\. J\\.?-C\\.?", "BC");
       String[] dates = d.split("[-–]");
       birthDate = dates[0].trim();
       if (dates.length > 1) deathDate = dates[1].trim();
