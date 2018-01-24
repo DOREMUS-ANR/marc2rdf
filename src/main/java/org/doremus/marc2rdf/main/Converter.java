@@ -18,6 +18,7 @@ import org.doremus.string2vocabulary.VocabularyManager;
 import javax.swing.*;
 import java.io.*;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ public class Converter {
     BNF
   }
 
-  public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException, NoSuchAlgorithmException {
+  public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
     stanfordLemmatizer = new StanfordLemmatizer();
 
     marcOut = Arrays.asList(args).indexOf("marc") > -1;
@@ -47,8 +48,11 @@ public class Converter {
     System.out.println("Running with the following properties: " + properties);
 
     ClassLoader classLoader = Converter.class.getClassLoader();
-    VocabularyManager.setVocabularyFolder(classLoader.getResource("vocabulary").getPath());
-    VocabularyManager.init(classLoader.getResource("property2family.csv"));
+    URL vocabularyFolder = classLoader.getResource("vocabulary");
+    URL p2fTable = classLoader.getResource("property2family.csv");
+    assert p2fTable != null && vocabularyFolder != null;
+    VocabularyManager.setVocabularyFolder(vocabularyFolder.getPath());
+    VocabularyManager.init(p2fTable);
 
 
     String inputFolderPath = properties.getProperty("defaultInput");
@@ -93,8 +97,7 @@ public class Converter {
     return dirName;
   }
 
-  /*************************************************************************************************/
-  private static void listeRepertoire(File repertoire) throws URISyntaxException, IOException, NoSuchAlgorithmException {
+  private static void listeRepertoire(File repertoire) throws URISyntaxException, IOException {
     String outputFolderPath = properties.getProperty("defaultOutput");
 
     if (!repertoire.isDirectory()) {
@@ -140,7 +143,8 @@ public class Converter {
       }
 
       if (institution == INSTITUTION.BNF) { // Notice BNF
-        m = BNF2RDF.convert(fich);
+        BNF2RDF conv = new BNF2RDF();
+        m =  conv.convert(fich);
       } else {  // Notice PP
         m = PP2RDF.convert(fich);
       }
@@ -254,38 +258,6 @@ public class Converter {
     }
 
   }
-
-  // TODO remove  definitively after closing https://github.com/DOREMUS-ANR/marc2rdf/issues/31
-//  public static boolean isNotSignificativeTitle(String title) {
-//    if (notSignificativeTitleList == null) {
-//      // Load it!
-//      String fileName = Converter.class.getClass().getResource(properties.getProperty("BNFGenres")).getFile();
-//      File fichier = new File(fileName);
-//      try {
-//        notSignificativeTitleList = new ArrayList<>();
-//
-//        FileInputStream fis = new FileInputStream(fichier);
-//
-//        XSSFWorkbook myWorkBook = new XSSFWorkbook(fis); // Trouver l'instance workbook du fichier XLSX
-//        XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Retourne la 1ere feuille du workbook XLSX
-//
-//        for (Row row : mySheet) { // Traverser chaque ligne du fichier XLSX
-//          Iterator<Cell> cellIterator = row.cellIterator();
-//          while (cellIterator.hasNext()) { // Pour chaque ligne, iterer chaque colonne
-//            Cell cell = cellIterator.next();
-//            notSignificativeTitleList.add(cell.getStringCellValue());
-//          }
-//        }
-//      } catch (IOException e) {
-//        e.printStackTrace();
-//        System.err.println("I cannot load not significative title table: " + fileName);
-//        return false;
-//      }
-//    }
-//
-//    return notSignificativeTitleList.contains(title);
-//  }
-
 
 }
 

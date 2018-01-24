@@ -4,14 +4,17 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.marcparser.Attr;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.PROV;
 
 import java.net.URISyntaxException;
 
 
-public class RecordConverter {
-  public final Resource provActivity, intermarcRes;
+public class BIBRecordConverter {
+  private final String ark;
+  public Resource provActivity, intermarcRes;
   private Model model;
   private Record record;
 
@@ -21,43 +24,51 @@ public class RecordConverter {
   private F15_ComplexWork f15;
 
 
-  public RecordConverter(Record record, Model model) throws URISyntaxException {
+  public BIBRecordConverter(Record record, Model model, String extArk) throws URISyntaxException {
     this.record = record;
     this.model = model;
 
-//    System.out.println(record.getIdentifier());
-
-    String ark = record.getAttrByName("IDPerenne").getData();
+    Attr arkField = record.getAttrByName("IDPerenne");
+    this.ark = (arkField == null) ? extArk : arkField.getData();
 
     // PROV-O tracing
     intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
     provActivity = BNF2RDF.computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
-
-    // Instantiate work and expression
-    f28 = new F28_ExpressionCreation(record);
-    f22 = new F22_SelfContainedExpression(record, f28);
-    f14 = new F14_IndividualWork(record);
-    f15 = new F15_ComplexWork(record);
-//    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
-    M45_DescriptiveExpressionAssignment f42 = new M45_DescriptiveExpressionAssignment(record);
-
-    f28.add(f22).add(f14);
-    f15.add(f22).add(f14);
-    f14.add(f22);
-//    f40.add(f22).add(f14).add(f15);
-    f42.add(f22).add(f15);
-
-    addPrincepsPublication();
-    addPerformances();
-    linkToMovements();
-    
-    for (DoremusResource res : new DoremusResource[]{f22, f28, f15, f14, f42}) {
-      addProvenanceTo(res);
-      model.add(res.getModel());
+    for (DataField field :record.getDatafieldsByCode(143)){
+      if (!field.isCode('a')) continue;
+      String subA = field.getSubfield('a').getData();
+      if(!"Traditions".equals(subA)) continue;
+      System.out.println(record.getIdentifier());
+      System.out.println(field);
     }
+//    // Instantiate work and expression
+//    f28 = new F28_ExpressionCreation(record);
+//    f22 = new F22_SelfContainedExpression(record, f28);
+//    f14 = new F14_IndividualWork(record);
+//    f15 = new F15_ComplexWork(record);
+////    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
+//    M45_DescriptiveExpressionAssignment f42 = new M45_DescriptiveExpressionAssignment(record);
+//
+//    f28.add(f22).add(f14);
+//    f15.add(f22).add(f14);
+//    f14.add(f22);
+////    f40.add(f22).add(f14).add(f15);
+//    f42.add(f22).add(f15);
+//
+//    addPrincepsPublication();
+//    addPerformances();
+//    linkToMovements();
+//
+//
+//
+//    for (DoremusResource res : new DoremusResource[]{f22, f28, f15, f14, f42}) {
+//      addProvenanceTo(res);
+//      model.add(res.getModel());
+//    }
 
   }
+
 
   private void addProvenanceTo(DoremusResource res) {
     res.asResource().addProperty(RDF.type, PROV.Entity)
@@ -124,5 +135,10 @@ public class RecordConverter {
   public Model getModel() {
     return model;
   }
+
+  public String getArk() {
+    return ark;
+  }
+
 
 }

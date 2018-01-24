@@ -3,7 +3,6 @@ package org.doremus.marc2rdf.marcparser;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,8 +94,7 @@ public class MarcXmlHandler implements ContentHandler {
     return recordList;
   }
 
-  /*********************************************************************************/
-  public void startElement(String uri, String name, String qName, Attributes attrs) throws SAXException {
+  public void startElement(String uri, String name, String qName, Attributes attrs) {
 
     String realName = (name.length() == 0) ? qName : name;
     Integer elementType = elementMap.get(realName);
@@ -169,18 +167,16 @@ public class MarcXmlHandler implements ContentHandler {
         bDATA = true;
         buffer = new StringBuffer();
         String nm = attrs.getValue("Nom");
-        attr =  new Attr(nm);
+        attr = new Attr(nm);
     }
   }
 
-  /*********************************************************************************/
-  public void characters(char[] ch, int start, int length) throws SAXException {
+  public void characters(char[] ch, int start, int length) {
     if (bDATA)
       buffer.append(new String(ch, start, length)); // Récupérer le contenu de la balise "data"
   }
 
-  /*********************************************************************************/
-  public void endElement(String uri, String name, String qName) throws SAXException {
+  public void endElement(String uri, String name, String qName) {
     String realName = (name.length() == 0) ? qName : name;
     Integer elementType = elementMap.get(realName);
     if (elementType == null) return;
@@ -209,11 +205,15 @@ public class MarcXmlHandler implements ContentHandler {
         break;
       case ATTR:
         attr.setData(buffer.toString());
-         record.addAttr(attr);
+        record.addAttr(attr);
     }
   }
 
-  public void endDocument() throws SAXException {
+  public void endDocument() {
+    // put last element of the list (the most external, as first)
+    Record last = recordList.get(recordList.size() - 1);
+    recordList.remove(last);
+    recordList.add(0, last);
   }
 
   private DataField newDataField(String tag, char ind1, char ind2, String... subfieldCodesAndData) {
@@ -237,25 +237,25 @@ public class MarcXmlHandler implements ContentHandler {
   }
 
 
-  public void startDocument() throws SAXException {
+  public void startDocument() {
   }
 
-  public void ignorableWhitespace(char[] data, int offset, int length) throws SAXException {
+  public void ignorableWhitespace(char[] data, int offset, int length) {
   }
 
-  public void endPrefixMapping(String prefix) throws SAXException {
+  public void endPrefixMapping(String prefix) {
   }
 
-  public void skippedEntity(String name) throws SAXException {
+  public void skippedEntity(String name) {
   }
 
   public void setDocumentLocator(Locator locator) {
   }
 
-  public void processingInstruction(String target, String data) throws SAXException {
+  public void processingInstruction(String target, String data) {
   }
 
-  public void startPrefixMapping(String prefix, String uri) throws SAXException {
+  public void startPrefixMapping(String prefix, String uri) {
   }
 
   public static class MarcXmlHandlerBuilder {

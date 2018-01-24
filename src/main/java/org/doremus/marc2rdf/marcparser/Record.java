@@ -31,6 +31,15 @@ public class Record {
     return this.type.equals(type);
   }
 
+  public boolean isTUM() {
+    return this.isType("Authority");
+  }
+
+  public boolean isBIB() {
+    return this.isType("Bibliographic");
+  }
+
+
   void addControlField(Etiq field) {
     controlFields.add((ControlField) field);
   }
