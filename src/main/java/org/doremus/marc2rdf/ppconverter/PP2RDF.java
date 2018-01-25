@@ -1,23 +1,18 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.jena.rdf.model.*;
-import org.apache.jena.rdf.model.impl.StatementImpl;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.update.UpdateAction;
-import org.apache.jena.util.ResourceUtils;
-import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.ontology.MUS;
-import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.doremus.marc2rdf.main.Converter.properties;
 
@@ -33,50 +28,42 @@ public class PP2RDF {
       .typeLabel("type")
       .idlabel("id");
   public static final String organizationURI = "http://data.doremus.org/organization/Philharmonie_de_Paris";
+  public static final String doremusURI = "http://data.doremus.org/organization/DOREMUS";
+
   public static final String dotSeparator = "(?<![^A-Z][A-Z]|[oO]p|Hob|réf|[èeé]d|dir|Mus|[Ss]t|sept)\\.";
 
   public static Model convert(String file) throws FileNotFoundException, URISyntaxException {
-    File folderTUMs = new File(properties.getProperty("TUMFolder"));
+    List<File> folderTUMs = Arrays.stream(properties.getProperty("TUMFolder").split(","))
+      .map(File::new)
+      .collect(Collectors.toList());
 
-    /************* Creer un modele vide **************************/
-    //Model model = VirtModel.openDatabaseModel("DOREMUS", "jdbc:virtuoso://localhost:1111", "dba", "dba");
     Model model = ModelFactory.createDefaultModel();
     MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
 
     boolean found = false;
     for (Record r : reader.getRecords()) {
-      /******
-       * Verifier si c'est une notice d'oeuvre ou un TUM
-       **********/
-      //noinspection StatementWithEmptyBody
-      if (r.isType("AIC:14")) {
-        // Si c'est un TUM
-        // nothing more required
-      } else if (r.isType("UNI:100")) {
-        // Si c'est une notice d'oeuvre
-        String idTUM = getIdTum(r);
+      // We convert TUMs contextually to notice d'oeuvre
+      if (r.isType("AIC:14")) continue;
 
+      // notice d'oeuvre: retrieve and convert TUM also
+      if (r.isType("UNI:100")) {
+        String idTUM = getIdTum(r);
         if (idTUM == null) {
           System.out.println("Notice without TUM specified: " + file);
           continue;
         }
-
-        // Convertir le TUM correspondant
-        File tum = getTUM(folderTUMs, idTUM);
+        File tum = searchTUM(folderTUMs, idTUM);
         if (tum == null) {
-          System.out.println("TUM specified but not found: notice " + file + ", tum " + idTUM);
+          System.out.println("TUM specified but not found: notice " + r.getIdentifier() + ", tum " + idTUM);
           continue;
         }
         MarcXmlReader tumReader = new MarcXmlReader(tum.getAbsolutePath(), PP2RDF.ppXmlHandlerBuilder);
         new RecordConverter(tumReader.getRecords().get(0), model, r.getIdentifier());
-      } else {
-        // TODO other notice types?
-        // System.out.println("Skipping not recognized PP notice type " + r.getType() + " for file " + file);
-        continue;
       }
-      found = true;
+
+
       RecordConverter mainRecord = new RecordConverter(r, model);
-      catalogToUri(model, mainRecord.f28.getComposerUris());
+      if (mainRecord.isConverted()) found = true;
     }
     if (!found) return null;
 
@@ -86,22 +73,26 @@ public class PP2RDF {
     UpdateAction.parseExecute(query, model);
 
     return model;
-
-    /****************************************************************************************/
-     /* String query = "WITH GRAPH  <DOREMUS>"+
-                 "delete where {?x ?p \"\" }";
-	    VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create(query, model);
-	    vur.exec();
-		/****************************************************************************************/
   }
 
   private static String getIdTum(Record r) {
-    for (String tum : r.getDatafieldsByCode("500", '3')) {
-      return tum.trim();
+    return r.getDatafieldsByCode("500", '3').stream().findFirst().map(String::trim).orElse(null);
+  }
+
+  /**
+   * Search TUM in multiple folders
+   **/
+  private static File searchTUM(List<File> folders, String idTUM) {
+    for (File f : folders) {
+      File tum = getTUM(f, idTUM);
+      if (tum != null) return tum;
     }
     return null;
   }
 
+  /**
+   * Search TUM in a single folder
+   **/
   private static File getTUM(final File folder, String idTUM) {
     for (File fileEntry : folder.listFiles()) {
       if (fileEntry.isDirectory()) {
@@ -115,33 +106,5 @@ public class PP2RDF {
     return null;
   }
 
-  private static void catalogToUri(Model model, List<String> composers) {
-    List<Statement> statementsToRemove = new ArrayList<>(),
-      statementsToAdd = new ArrayList<>();
-    Map<Resource, String> renamingMap = new HashMap<>();
-
-    StmtIterator iter = model.listStatements(new SimpleSelector(null, MUS.U40_has_catalogue_name, (RDFNode) null));
-
-    while (iter.hasNext()) {
-      Statement s = iter.nextStatement();
-      String catalogueName = s.getObject().toString();
-      Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogueName, composers);
-      if (match == null) continue;
-
-      Resource subj = s.getSubject();
-      statementsToRemove.add(s);
-      statementsToAdd.add(new StatementImpl(subj, s.getPredicate(), match));
-
-      String newCatalogName = match.getProperty(model.createProperty("http://www.loc.gov/standards/mods/rdf/v1/#identifier")).getObject().toString();
-
-      if (!newCatalogName.equals(catalogueName))
-        renamingMap.put(subj, subj.toString().replace(catalogueName, newCatalogName));
-    }
-    model.remove(statementsToRemove);
-    model.add(statementsToAdd);
-
-    for (Map.Entry<Resource, String> entry : renamingMap.entrySet())
-      ResourceUtils.renameResource(entry.getKey(), entry.getValue());
-  }
 
 }

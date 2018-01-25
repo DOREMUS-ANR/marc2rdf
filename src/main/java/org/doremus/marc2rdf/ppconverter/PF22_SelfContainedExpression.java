@@ -41,11 +41,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     this.f28 = f28;
     this.opusMemory = new ArrayList<>();
 
-    /**************************** Expression: Title *****************************************/
     for (String title : getTitle())
-      this.resource.addProperty(MUS.U70_has_title, title).addProperty(RDFS.label, title);
+      this.resource.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
 
-    /**************************** Expression: Catalogue *************************************/
     for (String catalog : getCatalog()) {
       // sometimes there is the opus number inside here!
       if (catalog.matches(Utils.opusHeaderRegex + ".*")) {
@@ -58,7 +56,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     }
 
 
-    /**************************** Expression: Opus ******************************************/
     for (String opus : getOpus()) {
       // is it for real an opus information?
 
@@ -77,10 +74,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       parseOpus(opus);
     }
 
-    /**************************** Expression: ***********************************************/
     for (String note : getNote()) addNote(note);
 
-    /**************************** Expression: key *******************************************/
     for (String key : getKey()) {
       key = key.replaceFirst("\\.$", "").trim(); //remove final dot
       String keyUri = this.uri + "/key/" + Junidecode.unidecode(key).toLowerCase().replaceAll(" ", "_");

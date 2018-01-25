@@ -79,7 +79,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
     for (Person composer : this.composers) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
         .addProperty(RDF.type, CIDOC.E7_Activity)
-        .addProperty(MUS.U31_had_function_of_type, model.createLiteral("compositeur", "fr"))
+        .addProperty(MUS.U31_had_function, model.createLiteral("compositeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, composer.asResource())
       );
 

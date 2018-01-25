@@ -80,7 +80,7 @@ public class PM23_Casting_Detail {
       .addProperty(CIDOC.P3_has_note, note, "fr");
 
     if (solo)
-      M23CastingDetail.addProperty(MUS.U36_foresees_responsibility_of_type, model.createLiteral("soloist", "fr"));
+      M23CastingDetail.addProperty(MUS.U36_foresees_responsibility, model.createLiteral("soloist", "fr"));
 
     if (quantity > -1)
       M23CastingDetail.addProperty(MUS.U30_foresees_quantity_of_mop, model.createTypedLiteral(quantity));
@@ -98,8 +98,8 @@ public class PM23_Casting_Detail {
     }
 
     if (match != null)
-      M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, match);
-    else M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, model.createResource()
+      M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance, match);
+    else M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance, model.createResource()
       .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
       .addProperty(RDFS.label, mopLiteral)
       .addProperty(CIDOC.P1_is_identified_by, mopLiteral));

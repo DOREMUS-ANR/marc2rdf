@@ -1,13 +1,17 @@
 package org.doremus.marc2rdf.main;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.impl.StatementImpl;
+import org.apache.jena.util.ResourceUtils;
+import org.doremus.ontology.MUS;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Utils {
@@ -18,6 +22,11 @@ public class Utils {
   public static final String opusHeaderRegex = "(?i)^(?:op(?:\\.|us| )|Oeuvre|WoO|Werk nr\\.?) ?(?:post(?:hume|h?\\" +
     ".|h))?";
   public static final String opusSubnumberRegex = "(?i)(?:,? n(?:[o°.]| °)[s.]?)";
+
+  public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?";
+  private final static Pattern DURATION_PATTERN = Pattern.compile(DURATION_REGEX);
+  private final static String[] DURATION_UNITS = new String[]{null, "H", "M", "S"};
+
 
   public static List<Integer> toRange(String rangeString) {
     if (!rangeString.contains(" à ")) return null;
@@ -157,6 +166,51 @@ public class Utils {
       lang = "und-" + script;
 
     return lang;
+  }
+
+  public static void catalogToUri(Model model, List<String> composers) {
+    List<Statement> statementsToRemove = new ArrayList<>(),
+      statementsToAdd = new ArrayList<>();
+    Map<Resource, String> renamingMap = new HashMap<>();
+
+    Property MODS_IDENTIFIER = model.createProperty("http://www.loc.gov/standards/mods/rdf/v1/#identifier");
+
+    StmtIterator iter = model.listStatements(new SimpleSelector(null, MUS.U40_has_catalogue_name, (RDFNode) null));
+
+    while (iter.hasNext()) {
+      Statement s = iter.nextStatement();
+      String catalogueName = s.getObject().toString();
+      Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogueName, composers);
+      if (match == null) continue;
+
+      Resource subj = s.getSubject();
+      statementsToRemove.add(s);
+      statementsToAdd.add(new StatementImpl(subj, s.getPredicate(), match));
+
+      String newCatalogName = match.getProperty(MODS_IDENTIFIER).getObject().toString();
+
+      if (!newCatalogName.equals(catalogueName))
+        renamingMap.put(subj, subj.toString().replace(catalogueName, newCatalogName));
+    }
+    model.remove(statementsToRemove);
+    model.add(statementsToAdd);
+
+    for (Map.Entry<Resource, String> entry : renamingMap.entrySet())
+      ResourceUtils.renameResource(entry.getKey(), entry.getValue());
+  }
+
+
+  public static String duration2iso(String f){
+    Matcher m = DURATION_PATTERN.matcher(f);
+    m.find();
+
+    StringBuilder duration = new StringBuilder("PT");
+
+    for (int i = 1; i < DURATION_UNITS.length; i++)
+      if (m.group(i) != null)
+        duration.append(m.group(i)).append(DURATION_UNITS[i]);
+
+    return duration.toString();
   }
 }
 

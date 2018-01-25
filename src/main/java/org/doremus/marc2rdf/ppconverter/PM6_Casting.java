@@ -160,6 +160,8 @@ public class PM6_Casting {
           currentName = current.name = cDets.get(i + 1).name;
         }
 
+        if (currentName == null) continue;
+
         if (currentName.equalsIgnoreCase("II"))
           current.name = cDets.get(i - 1).name;
 

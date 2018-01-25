@@ -16,11 +16,21 @@ import org.doremus.ontology.*;
 import org.doremus.string2vocabulary.VocabularyManager;
 
 import javax.swing.*;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stax.StAXSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -33,6 +43,7 @@ public class Converter {
   public static StanfordLemmatizer stanfordLemmatizer;
   private static Model general;
   private static boolean oneFile;
+  private static boolean splitFiles;
 
   private enum INSTITUTION {
     PHILARMONIE,
@@ -54,6 +65,7 @@ public class Converter {
     VocabularyManager.setVocabularyFolder(vocabularyFolder.getPath());
     VocabularyManager.init(p2fTable);
 
+    splitFiles = Boolean.parseBoolean(properties.getProperty("splitFiles", "false"));
 
     String inputFolderPath = properties.getProperty("defaultInput");
     maxFilesInFolder = Integer.parseInt(properties.getProperty("maxFilesInAFolder"));
@@ -133,7 +145,15 @@ public class Converter {
           handlerBuilder = PP2RDF.ppXmlHandlerBuilder;
           break;
         default:
-          System.out.println("Skipping not recognized file: " + file.getName());
+          if (splitFiles && file.getName().startsWith("Export")) {
+            // ALOES
+            try {
+              fileToFolder(file);
+            } catch (XMLStreamException | TransformerException e) {
+              e.printStackTrace();
+            }
+          } else
+            System.out.println("Skipping not recognized file: " + file.getName());
           continue;
       }
 
@@ -144,7 +164,7 @@ public class Converter {
 
       if (institution == INSTITUTION.BNF) { // Notice BNF
         BNF2RDF conv = new BNF2RDF();
-        m =  conv.convert(fich);
+        m = conv.convert(fich);
       } else {  // Notice PP
         m = PP2RDF.convert(fich);
       }
@@ -209,6 +229,72 @@ public class Converter {
       general.write(out, "TURTLE");
       out.close();
     }
+  }
+
+  private static void fileToFolder(File f) throws XMLStreamException, IOException, TransformerException {
+    // Separate the long files in a folder with a file for each record
+    if (!f.getName().endsWith(".xml")) return;
+    removeUTF8BOM(f);
+    System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+
+    String fileName = f.getName().replaceFirst("\\.xml", "");
+    System.out.println("Splitting file: " + fileName);
+
+    String dataFolderPath = f.getParent();
+    new File(Paths.get(dataFolderPath, fileName).toString()).mkdirs();
+
+    XMLInputFactory xif = XMLInputFactory.newInstance();
+    XMLStreamReader xsr = xif.createXMLStreamReader(new FileReader(f));
+    xsr.next(); // Skip Doctype
+    xsr.nextTag(); // Advance to statements element
+
+    TransformerFactory tf = TransformerFactory.newInstance();
+    Transformer t = tf.newTransformer();
+    QName recordName = QName.valueOf("NOTICE");
+
+    boolean transformed = false;
+    while (xsr.hasNext()) {
+      if(!transformed) xsr.next();
+      else transformed = false;
+      if (!xsr.isStartElement() || !xsr.getName().equals(recordName)) continue;
+
+      StringWriter stringWriter = new StringWriter();
+      String id = xsr.getAttributeValue(null, "id");
+      t.transform(new StAXSource(xsr), new StreamResult(stringWriter));
+      transformed = true;
+      String recordString = stringWriter.toString();
+      Files.write(Paths.get(dataFolderPath, fileName, id + ".xml"), recordString.getBytes(),
+        StandardOpenOption.CREATE);
+    }
+    xsr.close();
+  }
+
+  private static final String UTF8_BOM = "\uFEFF";
+
+  private static void removeUTF8BOM(File f) throws IOException {
+    // remove UTF8 BOM
+    // https://stackoverflow.com/questions/4569123/content-is-not-allowed-in-prolog-saxparserexception
+    boolean firstLine = true;
+    FileInputStream fis = new FileInputStream(f);
+    BufferedReader r = new BufferedReader(new InputStreamReader(fis, "UTF8"));
+
+    StringBuilder sb = new StringBuilder();
+    for (String s; (s = r.readLine()) != null; ) {
+      if (firstLine) {
+        if (s.startsWith(UTF8_BOM)) s = s.substring(1);
+        firstLine = false;
+      } else sb.append("\n");
+      sb.append(s);
+    }
+    r.close();
+    Files.delete(f.toPath());
+
+    String output = sb.toString().replaceAll("&#(31|28|29);", " ")
+      .replaceAll("&#30;", "f");
+
+    BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), "UTF8"));
+    w.write(output);
+    w.close();
   }
 
   private static void marcExport(String file, MarcXmlHandler.MarcXmlHandlerBuilder handler) {

@@ -7,6 +7,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.PROV;
 
@@ -20,10 +21,7 @@ public class RecordConverter {
   private Model model;
   private String identifier;
 
-  private PF22_SelfContainedExpression f22;
-  public PF28_ExpressionCreation f28;
-  private PF14_IndividualWork f14;
-  private PF15_ComplexWork f15;
+  private boolean converted;
 
   public RecordConverter(Record record, Model model) throws URISyntaxException {
     this(record, model, record.getIdentifier());
@@ -33,30 +31,60 @@ public class RecordConverter {
     this.record = record;
     this.model = model;
     this.identifier = identifier;
+    this.converted = false;
 
     // PROV-O tracing
-    // FIXME this is not the intermarc uri
-    intermarcRes = model.createResource("http://data.doremus.org/source/philharmonie/" + record.getIdentifier())
-      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.organizationURI));
+    intermarcRes = computeProvIntermarc(record.getIdentifier(), model);
+    provActivity = computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
-    provActivity = model.createResource(ConstructURI.build("pp", "prov", identifier).toString())
-      .addProperty(RDF.type, PROV.Activity).addProperty(RDF.type, PROV.Derivation)
-      .addProperty(PROV.used, intermarcRes)
-      .addProperty(RDFS.comment, "Reprise et conversion de la notice MARC de la Philharmonie de Paris", "fr")
-      .addProperty(RDFS.comment, "Resumption and conversion of the MARC record of the Philharmonie de Paris", "en")
-      .addProperty(PROV.atTime, Instant.now().toString(), XSDDatatype.XSDdateTime);
+    switch (record.getType()) {
+      case "AIC:14": // TUM
+      case "UNI:100": // Ouvres
+        this.convertUNI100();
+        break;
+      case "UNI:4": // Concerts video
+//        this.convertUNI4();
+        break;
+      case "UNI:44": // Concerts video
+        this.convertUNI44();
+        break;
+      default:
+//        System.out.println("Skipping not recognized PP notice type " + record.getType() + " for file " + record.getIdentifier());
 
+    }
+  }
 
-    f28 = new PF28_ExpressionCreation(record, identifier);
-    f22 = new PF22_SelfContainedExpression(record, identifier, f28);
-    f14 = new PF14_IndividualWork(record, identifier);
-    f15 = new PF15_ComplexWork(record, identifier);
+  private void convertUNI4() throws URISyntaxException {
+    if (!"UNI4C".equals(record.getDatafieldsByCode("019", 'a').get(0)))
+      return;
+    this.converted = true;
+
+    PM46_SetOfTracks tracks = new PM46_SetOfTracks(record);
+    model.add(tracks.getModel());
+  }
+
+  private void convertUNI44() throws URISyntaxException {
+    if (!"UNI44C".equals(record.getDatafieldsByCode("019", 'a').get(0)))
+      return;
+    this.converted = true;
+
+    PM24_Track track =  new PM24_Track(record);
+    model.add(track.getModel());
+  }
+
+  private void convertUNI100() throws URISyntaxException {
+    this.converted = true;
+
+    PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record, identifier);
+    PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record, identifier, f28);
+    PF14_IndividualWork f14 = new PF14_IndividualWork(record, identifier);
+    PF15_ComplexWork f15 = new PF15_ComplexWork(record, identifier);
     PM45_DescriptiveExpressionAssignment f42 = new PM45_DescriptiveExpressionAssignment(record, identifier);
 //    PF40_IdentifierAssignment f40 = new PF40_IdentifierAssignment(record);
 //    PF50_ControlledAccessPoint f50 = new PF50_ControlledAccessPoint(record);
 
-    addPrincepsPublication();
-    addPerformances();
+    addPrincepsPublication(f22, f14);
+    addPerformances(f22, f14, f15, f28);
 
     f28.add(f22).add(f14);
     f15.add(f22).add(f14);
@@ -71,21 +99,23 @@ public class RecordConverter {
       model.add(res.getModel());
     }
 
+    Utils.catalogToUri(model, f28.getComposerUris());
   }
-
 
   private void addProvenanceTo(DoremusResource res) {
     res.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo, model.createResource("http://data.doremus.org/organization/DOREMUS"))
+      .addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.doremusURI))
       .addProperty(PROV.wasDerivedFrom, this.intermarcRes)
       .addProperty(PROV.wasGeneratedBy, this.provActivity);
   }
 
-  private void addPerformances() throws URISyntaxException {
+  private void addPerformances(PF22_SelfContainedExpression f22, PF14_IndividualWork f14,
+                               PF15_ComplexWork f15, PF28_ExpressionCreation f28) throws URISyntaxException {
     int performanceCounter = 0;
     boolean hasPremiere = false;
     for (String performance : PM42_PerformedExpressionCreation.getPerformances(record)) {
-      PM42_PerformedExpressionCreation m42 = new PM42_PerformedExpressionCreation(performance, record, identifier, ++performanceCounter, f28);
+      PM42_PerformedExpressionCreation m42 =
+        new PM42_PerformedExpressionCreation(performance, record, identifier, ++performanceCounter, f28);
       PF25_PerformancePlan f25 = new PF25_PerformancePlan(m42.getIdentifier());
 
       m42.add(f25).add(f22);
@@ -103,7 +133,7 @@ public class RecordConverter {
 
   }
 
-  private void addPrincepsPublication() throws URISyntaxException {
+  private void addPrincepsPublication(PF22_SelfContainedExpression f22, PF14_IndividualWork f14) throws URISyntaxException {
     String edition = PF30_PublicationEvent.getEditionPrinceps(record);
     if (edition == null) return;
 
@@ -126,4 +156,23 @@ public class RecordConverter {
     return model;
   }
 
+  private static Resource computeProvActivity(String identifier, Resource intermarc, Model model) throws
+    URISyntaxException {
+    return model.createResource(ConstructURI.build("pp", "prov", identifier).toString())
+      .addProperty(RDF.type, PROV.Activity).addProperty(RDF.type, PROV.Derivation)
+      .addProperty(PROV.used, intermarc)
+      .addProperty(RDFS.comment, "Reprise et conversion de la notice MARC de la Philharmonie de Paris", "fr")
+      .addProperty(RDFS.comment, "Resumption and conversion of the MARC record of the Philharmonie de Paris", "en")
+      .addProperty(PROV.atTime, Instant.now().toString(), XSDDatatype.XSDdateTime);
+
+  }
+
+  private static Resource computeProvIntermarc(String identifier, Model model) {
+    return model.createResource("http://data.doremus.org/source/philharmonie/" + identifier)
+      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.organizationURI));
+  }
+
+  public boolean isConverted() {
+    return converted;
+  }
 }

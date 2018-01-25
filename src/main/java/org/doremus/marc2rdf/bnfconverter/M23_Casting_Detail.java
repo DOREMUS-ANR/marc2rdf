@@ -33,13 +33,13 @@ public class M23_Casting_Detail {
   public Resource asResource(String uri) {
     Resource M23CastingDetail = model.createResource(uri)
       .addProperty(RDF.type, MUS.M23_Casting_Detail)
-      .addProperty(MUS.U2_foresees_use_of_medium_of_performance_of_type, mop);
+      .addProperty(MUS.U2_foresees_use_of_medium_of_performance, mop);
 
     if (num != -1) M23CastingDetail.addProperty(MUS.U30_foresees_quantity_of_mop, model.createTypedLiteral(num));
 
     if (solo)
       M23CastingDetail.addProperty(
-        MUS.U36_foresees_responsibility_of_type, model.createLiteral("soliste", "fr"));
+        MUS.U36_foresees_responsibility, model.createLiteral("soliste", "fr"));
 
     return M23CastingDetail;
   }

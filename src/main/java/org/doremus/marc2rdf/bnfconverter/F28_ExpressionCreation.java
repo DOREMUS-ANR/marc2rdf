@@ -207,7 +207,7 @@ public class F28_ExpressionCreation extends DoremusResource {
       .addProperty(CIDOC.P14_carried_out_by, actor.asResource());
 
     if (role != null)
-      activity.addProperty(MUS.U31_had_function_of_type, model.createLiteral(role, "fr"));
+      activity.addProperty(MUS.U31_had_function, model.createLiteral(role, "fr"));
 
     this.resource.addProperty(CIDOC.P9_consists_of, activity);
     model.add(actor.getModel());

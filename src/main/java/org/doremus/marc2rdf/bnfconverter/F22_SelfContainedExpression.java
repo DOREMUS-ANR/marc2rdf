@@ -66,13 +66,13 @@ public class F22_SelfContainedExpression extends DoremusResource {
     a144.addAll(getTitle(144, false));
 
     for (Literal title : s444)
-      this.resource.addProperty(MUS.U70_has_title, title).addProperty(RDFS.label, title);
+      this.resource.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
     this.titles = s444;
 
     for (Literal title : ns444)
       this.resource.addProperty(MUS.U68_has_variant_title, title);
     for (Literal title : a144)
-      this.resource.addProperty(MUS.U71_has_uniform_music_title, title);
+      this.resource.addProperty(MUS.U71_has_uniform_title, title);
 
     if (s444.size() == 0) {
       a144.addAll(ns444);

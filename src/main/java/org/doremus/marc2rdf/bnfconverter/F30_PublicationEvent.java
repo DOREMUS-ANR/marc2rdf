@@ -101,7 +101,7 @@ public class F30_PublicationEvent extends DoremusResource {
 
     Resource activity = model.createResource(this.uri + "/activity")
       .addProperty(RDF.type, CIDOC.E7_Activity)
-      .addProperty(MUS.U35_foresees_function_of_type, model.createLiteral("editeur", "fr"));
+      .addProperty(MUS.U35_foresees_function, model.createLiteral("editeur", "fr"));
 
     if (publisher.equals("l'auteur")) // hypothesis: singular means only one author
       activity.addProperty(CIDOC.P14_carried_out_by, f28.getComposers().get(0).asResource());

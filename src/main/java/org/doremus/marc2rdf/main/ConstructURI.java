@@ -58,6 +58,14 @@ public class ConstructURI {
         return "artist";
       case "E4_Period":
         return "period";
+      case "M29_Editing":
+        return "editing";
+      case "M46_Set_of_Tracks":
+      case "M46_SetOfTracks":
+      case "F4_ManifestationSingleton":
+        return "manifestation";
+      case "M24_Track":
+        return "track";
       case "prov":
         return "activity";
       default:

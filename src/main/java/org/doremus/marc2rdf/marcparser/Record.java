@@ -91,6 +91,14 @@ public class Record {
     return results;
   }
 
+  public List<String> getDatafieldByCode(int code, int subFieldCode) {
+    return getDatafieldsByCode(code, String.valueOf(subFieldCode).charAt(0));
+  }
+
+  public List<String> getDatafieldsByCode(int code, char subFieldCode) {
+    return getDatafieldsByCode("" + code, subFieldCode);
+  }
+
   public List<String> getDatafieldsByCode(String code, char subFieldCode) {
     List<String> results = new ArrayList<>();
     for (DataField field : this.getDatafieldsByCode(code)) {
@@ -154,4 +162,5 @@ public class Record {
     }
     return sb.toString();
   }
+
 }
