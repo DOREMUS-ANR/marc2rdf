@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class PF22_SelfContainedExpression extends DoremusResource {
-  private final PF28_ExpressionCreation f28;
 
   private List<String> opusMemory;
 
@@ -38,7 +37,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     this.resource.addProperty(DCTerms.identifier, identifier);
     this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier));
 
-    this.f28 = f28;
     this.opusMemory = new ArrayList<>();
 
     for (String title : getTitle())
@@ -52,7 +50,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         continue;
       }
       for (String c : catalog.split(" ; "))
-        parseCatalog(c);
+        parseCatalog(c, f28);
     }
 
 
@@ -67,7 +65,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       // if does not contain "Op." or "opus" etc., it is a catalog!
       if (!opus.matches(Utils.opusHeaderRegex + ".*")) {
         // System.out.println("catalog in opus found " + opus);
-        parseCatalog(opus);
+        parseCatalog(opus, f28);
         continue;
       }
 
@@ -87,7 +85,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       );
     }
 
-    /**************************** Expression: Genre *****************************************/
     List<String> genres = getGenre();
     for (String genre : genres) {
       Literal label = model.createLiteral(genre, "fr");
@@ -98,7 +95,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       );
     }
 
-    /**************************** Expression: Order Number **********************************/
     for (String orderNumber : getOrderNumber()) {
       List<Integer> range = Utils.toRange(orderNumber);
       if (range == null)
@@ -108,7 +104,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       }
     }
 
-    /**************************** Expression: Casting ***************************************/
     int castingNum = 0;
 
     for (String castingString : getCasting()) {
@@ -121,7 +116,11 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
   }
 
-  private void parseCatalog(String catalog) {
+  public PF22_SelfContainedExpression(String identifier) throws URISyntaxException {
+    super(identifier);
+  }
+
+  private void parseCatalog(String catalog, PF28_ExpressionCreation f28) {
     String[] catalogParts = catalog.split("[ .]", 2);
     String catalogName = null, catalogNum = null;
 

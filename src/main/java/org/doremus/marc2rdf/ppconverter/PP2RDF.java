@@ -107,4 +107,20 @@ public class PP2RDF {
   }
 
 
+  public static String guessType(Record record) {
+    List<String> funCodes = record.getDatafieldByCode(700, 4);
+    funCodes.addAll(record.getDatafieldByCode(701, 4));
+    funCodes.addAll(record.getDatafieldByCode(702, 4));
+    funCodes.addAll(record.getDatafieldByCode(712, 4));
+
+    if (funCodes.size() == 1 && funCodes.get(0).equals("800"))
+      return "spoken word";
+    else if (funCodes.contains("195") || funCodes.contains("230") ||
+      funCodes.contains("545") || funCodes.contains("721"))
+      return "performed music";
+
+    return null;
+  }
+
+
 }

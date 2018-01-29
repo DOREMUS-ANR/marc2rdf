@@ -22,8 +22,6 @@ public class PM24_Track extends DoremusResource {
 
     this.resource.addProperty(RDF.type, MUS.M24_Track)
       .addProperty(DCTerms.identifier, this.identifier);
-
-
   }
 
   public PM24_Track(Record record) throws URISyntaxException {
@@ -33,12 +31,10 @@ public class PM24_Track extends DoremusResource {
       .addProperty(DCTerms.identifier, this.identifier)
       .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
 
-    List<String> funCodes = getFunctionCodes();
-    if (funCodes.size() == 1 && funCodes.get(0).equals("800"))
-      this.resource.addProperty(MUS.U227_has_content_type, "spoken word", "en");
-    else if (funCodes.contains("195") || funCodes.contains("230") ||
-      funCodes.contains("545") || funCodes.contains("721"))
-      this.resource.addProperty(MUS.U227_has_content_type, "performed music", "en");
+    String rdaType = PP2RDF.guessType(record);
+    if(rdaType!=null)
+      this.resource.addProperty(MUS.U227_has_content_type, rdaType, "en");
+
 
     for (String title : getTitles())
       this.resource.addProperty(CIDOC.P102_has_title, title)
@@ -77,12 +73,5 @@ public class PM24_Track extends DoremusResource {
     return null;
   }
 
-  private List<String> getFunctionCodes() {
-    List<String> f = record.getDatafieldByCode(700, 4);
-    f.addAll(record.getDatafieldByCode(701, 4));
-    f.addAll(record.getDatafieldByCode(702, 4));
-    f.addAll(record.getDatafieldByCode(712, 4));
-    return f;
-  }
 
 }

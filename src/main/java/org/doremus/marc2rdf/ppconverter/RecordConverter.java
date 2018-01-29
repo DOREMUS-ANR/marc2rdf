@@ -43,6 +43,7 @@ public class RecordConverter {
         this.convertUNI100();
         break;
       case "UNI:4": // Concerts video
+        // TODO uncomment me
 //        this.convertUNI4();
         break;
       case "UNI:44": // Concerts video
@@ -68,7 +69,9 @@ public class RecordConverter {
       return;
     this.converted = true;
 
-    PM24_Track track =  new PM24_Track(record);
+    PM24_Track track = new PM24_Track(record);
+    PM42_PerformedExpressionCreation perfExpression = new PM42_PerformedExpressionCreation(record);
+
     model.add(track.getModel());
   }
 
@@ -115,7 +118,7 @@ public class RecordConverter {
     boolean hasPremiere = false;
     for (String performance : PM42_PerformedExpressionCreation.getPerformances(record)) {
       PM42_PerformedExpressionCreation m42 =
-        new PM42_PerformedExpressionCreation(performance, record, identifier, ++performanceCounter, f28);
+        new PM42_PerformedExpressionCreation(performance, identifier, ++performanceCounter, f28);
       PF25_PerformancePlan f25 = new PF25_PerformancePlan(m42.getIdentifier());
 
       m42.add(f25).add(f22);

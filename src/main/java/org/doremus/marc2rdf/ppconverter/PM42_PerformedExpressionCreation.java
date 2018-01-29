@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.*;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -15,12 +16,14 @@ import org.doremus.string2vocabulary.VocabularyManager;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class PM42_PerformedExpressionCreation extends DoremusResource {
-  private static final String frenchCreationRegex = "(Cr\u00e9ation fran\u00e7aise.+)";
+  private static final String frenchCreationRegex = "(?i)(cr\u00e9ation fran\u00e7aise.*)";
+  private static final String premiereRegex = "(?i)cr[eéè]ation mondiale";
   private static final String noPremiereRegex = frenchCreationRegex + "|(enregistrement (de )?jazz)|(1re reprise)";
   private static final String frenchUncertainDate = "(?:le |en )?(?:" + TimeSpan.frenchDayRegex + "? ?" + TimeSpan.frenchMonthRegex + "? )?(?:\\(\\?\\) )?(\\d{4})(?: ?\\?)?";
   private static final String conductorRegex = "(?:(?:placé )?(?:sous|par) la dir(?:\\.|ection) d[e'u]|dirigé par|direction(?: :)?) ?((?:[A-Z]\\.)?[\\p{L} \\-']+)";
@@ -31,23 +34,92 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   private static final String performanceRegex = "(?i)(?:(?:premi[èe]|1[èe]?)re? (?:représentation|[ée]x[ée]cution|audition|enregistrement|reprise) )|(?:cr[èée]{1,3}(?:ation|s)? )";
 
-  private final StanfordLemmatizer slem;
-  private final PF28_ExpressionCreation f28;
+  private PF28_ExpressionCreation f28;
 
   private boolean isPremiere;
-  private Resource M44_Performed_Work, M43_Performed_Expression, F31_Performance;
+  private PM44_PerformedWork M44_Performed_Work;
+  private PM43_PerformedExpression M43_Performed_Expression;
+  private Resource F31_Performance;
   private String place;
   private TimeSpan timeSpan;
 
   private int countConsistOf;
 
-  public PM42_PerformedExpressionCreation(String note, Record record, String identifier, int i, PF28_ExpressionCreation f28) throws URISyntaxException {
-    super(record, identifier);
+  public PM42_PerformedExpressionCreation(Record record) throws URISyntaxException {
+    super(record);
+
+    this.M43_Performed_Expression = new PM43_PerformedExpression(this.identifier);
+    this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
+
+    List<DataField> workFields = record.getDatafieldsByCode(419);
+    String premiereNote = searchInNote(premiereRegex);
+    isPremiere = premiereNote != null;
+    if (premiereNote != null) this.addNote(premiereNote);
+
+    String frenchPremiereNote = searchInNote(premiereRegex);
+    if (frenchPremiereNote != null) this.addNote(frenchPremiereNote);
+
+    for (DataField f : workFields) {
+      // TODO when there is no code?
+      if (!f.isCode(3)) continue;
+      String workIdentifier = f.getSubfield(3).getData();
+      if (workIdentifier.isEmpty()) continue;
+
+      linkWorkById(workIdentifier);
+    }
+
+    TimeSpan date = getDate();
+    if (date != null)
+      this.resource.addProperty(CIDOC.P4_has_time_span, date.asResource());
+
+
+    StringJoiner sj = new StringJoiner("; ");
+    record.getDatafieldsByCode(200, 'g').forEach(sj::add);
+    this.resource.addProperty(MUS.U205_has_cast_detail, sj.toString());
+
+    Pattern p = Pattern.compile("(?i)musée de la Musique");
+    for (String n : record.getDatafieldsByCode(300, 'a')) {
+      if (p.matcher(n).find())
+        this.resource.addProperty(MUS.U193_used_historical_instruments, n);
+    }
+
+    String commandNote = searchInNote("commande de la Philharmonie de Paris");
+    if (commandNote != null)
+      this.addCommand(PP2RDF.organizationURI);
+
+  }
+
+  private void addCommand(String commander_uri) {
+
+    Resource activity = model.createResource(this.uri + "/activity/1")
+      .addProperty(RDF.type, CIDOC.E7_Activity)
+      .addProperty(CIDOC.P14_carried_out_by, model.createResource(commander_uri))
+      .addProperty(MUS.U31_had_function, "commanditaire", "fr");
+    this.resource.addProperty(CIDOC.P9_consists_of, activity);
+
+  }
+
+  private String searchInNote(String regex) {
+    Pattern p = Pattern.compile(regex);
+
+    char[] codes = new char[]{'a', 'e'};
+    for (DataField df : record.getDatafieldsByCode(200)) {
+      for (char c : codes) {
+        if (!df.isCode(c)) continue;
+        String note = df.getSubfield(c).getData();
+        if (p.matcher(note).find()) return note;
+      }
+    }
+    return null;
+  }
+
+  public PM42_PerformedExpressionCreation(String note, String identifier, int i, PF28_ExpressionCreation f28) throws URISyntaxException {
+    // Parse from a note of TUM
+    super(identifier);
 
     this.place = null;
     this.timeSpan = null;
 
-    this.slem = Converter.stanfordLemmatizer;
     this.f28 = f28;
 
     this.countConsistOf = 0;
@@ -70,21 +142,21 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       .addProperty(CIDOC.P3_has_note, note);
 
     String performanceUri = ConstructURI.build("pp", "F31_Performance", this.identifier).toString();
-    String expressionUri = ConstructURI.build("pp", "M43_PerformedExpression", this.identifier).toString();
-    String workUri = ConstructURI.build("pp", "M44_PerformedWork", this.identifier).toString();
 
     this.F31_Performance = model.createResource(performanceUri)
       .addProperty(RDF.type, FRBROO.F31_Performance)
       .addProperty(RDFS.comment, note)
       .addProperty(CIDOC.P3_has_note, note)
       .addProperty(CIDOC.P9_consists_of, this.resource);
-    this.M43_Performed_Expression = model.createResource(expressionUri)
-      .addProperty(RDF.type, MUS.M43_Performed_Expression);
-    this.M44_Performed_Work = model.createResource(workUri)
-      .addProperty(RDF.type, MUS.M44_Performed_Work)
-      .addProperty(FRBROO.R9_is_realised_in, this.M43_Performed_Expression);
-    this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression)
-      .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work);
+    this.M43_Performed_Expression = new PM43_PerformedExpression(this.identifier);
+    this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
+    this.model.add(M43_Performed_Expression.getModel())
+      .add(M44_Performed_Work.getModel());
+
+    this.M44_Performed_Work.asResource()
+      .addProperty(FRBROO.R9_is_realised_in, this.M43_Performed_Expression.asResource());
+    this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression.asResource())
+      .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work.asResource());
 
     parseNote(note);
 
@@ -237,6 +309,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
   private String instrumentToSingular(String r) {
+    StanfordLemmatizer slem = Converter.stanfordLemmatizer;
     String[] parts = r.split(" ");
     if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
 
@@ -305,11 +378,11 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
   public Resource getExpression() {
-    return M43_Performed_Expression;
+    return M43_Performed_Expression.asResource();
   }
 
   public Resource getWork() {
-    return M44_Performed_Work;
+    return M44_Performed_Work.asResource();
   }
 
   public PM42_PerformedExpressionCreation add(PF25_PerformancePlan f25) {
@@ -318,8 +391,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
   public PM42_PerformedExpressionCreation add(PF22_SelfContainedExpression f22) {
-    this.M43_Performed_Expression.addProperty(MUS.U54_is_performed_expression_of, f22.asResource());
-    this.F31_Performance.addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
+    this.M43_Performed_Expression.asResource()
+      .addProperty(MUS.U54_is_performed_expression_of, f22.asResource());
+    this.F31_Performance.asResource()
+      .addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
     return this;
   }
 
@@ -332,4 +407,27 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return this.F31_Performance;
   }
 
+  private void linkWorkById(String workIdentifier) throws URISyntaxException {
+    PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(workIdentifier);
+    PF14_IndividualWork f14 = new PF14_IndividualWork(workIdentifier);
+
+    if (isPremiere()) {
+      // FIXME
+      f22.addPremiere(this);
+      f14.addPremiere(this);
+    } else {
+      this.add(f22);
+    }
+  }
+
+
+  private TimeSpan getDate() {
+    String date = record.getDatafieldsByCode(981, 'a').get(0);
+    if (!date.matches("\\d{8}")) return null;
+
+    String y = date.substring(0, 4),
+      m = date.substring(4, 6),
+      d = date.substring(6);
+    return new TimeSpan(y, m, d);
+  }
 }

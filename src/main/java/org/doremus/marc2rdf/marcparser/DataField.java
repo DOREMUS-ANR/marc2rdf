@@ -41,6 +41,7 @@ public class DataField extends Etiq {
   public boolean isCode(int c) {
     return isCode((char) c);
   }
+
   public boolean isCode(char c) {
     for (Subfield subfield : subfields) {
       if (subfield.getCode() == c)
@@ -75,6 +76,19 @@ public class DataField extends Etiq {
   /***************
    * Recuperer la valeur d'une zone
    ***********************/
+  public String getString(int c) {
+    return getString((char) c);
+  }
+
+  public String getString(char code) {
+    if (!isCode(code)) return null;
+    String content = getSubfield(code).getData();
+    content = content.trim();
+    if(content.isEmpty()) return null;
+    else return content;
+  }
+
+
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(super.toString());

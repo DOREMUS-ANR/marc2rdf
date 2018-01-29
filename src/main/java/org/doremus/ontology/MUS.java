@@ -655,6 +655,4 @@ public class MUS {
     
     public static final OntClass M9_Derivation_Type = m_model.createClass( "http://data.doremus.org/ontology#M9_Derivation_Type" );
 
-  public class U31_had_function_of_type {
-  }
 }
