@@ -73,13 +73,14 @@ public class RecordConverter {
     PM42_PerformedExpressionCreation perfExpression = new PM42_PerformedExpressionCreation(record);
 
     model.add(track.getModel());
+    model.add(perfExpression.getModel());
   }
 
   private void convertUNI100() throws URISyntaxException {
     this.converted = true;
 
     PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record, identifier);
-    PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record, identifier, f28);
+    PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record, identifier, f28.getComposerUris());
     PF14_IndividualWork f14 = new PF14_IndividualWork(record, identifier);
     PF15_ComplexWork f15 = new PF15_ComplexWork(record, identifier);
     PM45_DescriptiveExpressionAssignment f42 = new PM45_DescriptiveExpressionAssignment(record, identifier);

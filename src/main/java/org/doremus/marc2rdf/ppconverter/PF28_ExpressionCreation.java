@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.ConstructURI;
@@ -23,17 +24,58 @@ import java.util.stream.Collectors;
 
 public class PF28_ExpressionCreation extends DoremusResource {
   private List<Person> composers;
+  private int composersCount = 0;
 
   public PF28_ExpressionCreation(String identifier) throws URISyntaxException {
     super(identifier);
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
   }
 
+  public PF28_ExpressionCreation(Record record) throws URISyntaxException {
+    this(record, record.getIdentifier());
+  }
+
   public PF28_ExpressionCreation(Record record, String identifier) throws URISyntaxException {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
-    /**************************** Work: Date of the work (expression représentative) ********/
+    if (record.isTUM()) convertUNI100();
+    else if ("UNI:44".equals(record.getType())) convertUNI44();
+  }
+
+  private void convertUNI44() throws URISyntaxException {
+    List<DataField> activities = record.getDatafieldsByCode(701);
+    activities.addAll(record.getDatafieldsByCode(700));
+    for (DataField a : activities) {
+      if (!a.isCode(4)) return;
+      if (!"230".equals(a.getString(4))) return;
+
+      String surname = a.getString('a');
+      String name = a.getString('b');
+
+      // FIXME convert person record
+      Person person = new Person(name, surname, null);
+
+      Resource activity = model.createResource(this.uri + "/activity/" + ++composersCount)
+        .addProperty(RDF.type, CIDOC.E7_Activity)
+        .addProperty(CIDOC.P14_carried_out_by, person.asResource())
+        .addProperty(MUS.U31_had_function, "compositeur", "fr");
+      this.resource.addProperty(CIDOC.P9_consists_of, activity);
+
+      model.add(person.getModel());
+    }
+
+    // unstructured roles
+    char[] unstrRolesCode = new char[]{'f', 'g'};
+    for (DataField df : record.getDatafieldsByCode(200)) {
+      for (char c : unstrRolesCode)
+        if (df.isCode(c))
+          this.resource.addProperty(MUS.U226_has_responsibility_detail, df.getString(c));
+    }
+  }
+
+  private void convertUNI100() throws URISyntaxException {
+
     String[] dateMachine = getDateMachine();
     if (dateMachine != null) {
       Pattern p = Pattern.compile(TimeSpan.frenchDateRegex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -58,12 +100,10 @@ public class PF28_ExpressionCreation extends DoremusResource {
       }
     }
 
-    /**************************** Work: Date of the work (expression représentative) ********/
     String dateText = getDateText();
     if (dateText != null && !dateText.isEmpty())
       this.resource.addProperty(CIDOC.P3_has_note, dateText);
 
-    /**************************** Work: Period of the work **********************************/
     String period = getPeriod();
     if (period != null) {
       Literal periodLiteral = model.createLiteral(period, "fr");
@@ -73,9 +113,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
         .addProperty(CIDOC.P1_is_identified_by, periodLiteral));
     }
 
-    /**************************** Work: is created by ***************************************/
     this.composers = getComposer();
-    int composersCount = 0;
     for (Person composer : this.composers) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
         .addProperty(RDF.type, CIDOC.E7_Activity)
@@ -90,6 +128,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
   public List<Person> getComposers() {
     return this.composers;
   }
+
   public List<String> getComposerUris() {
     return this.composers.stream()
       .map(e -> e.getUri().toString())
@@ -97,20 +136,17 @@ public class PF28_ExpressionCreation extends DoremusResource {
   }
 
   public PF28_ExpressionCreation add(PF25_PerformancePlan plan) {
-    /**************************** création d'une expression de plan d'exécution *************/
     this.resource.addProperty(FRBROO.R17_created, plan.asResource());
     return this;
   }
 
   public PF28_ExpressionCreation add(PF22_SelfContainedExpression expression) {
-    /**************************** Expression: created ***************************************/
     this.resource.addProperty(FRBROO.R17_created, expression.asResource());
     // expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
     return this;
   }
 
   public PF28_ExpressionCreation add(PF14_IndividualWork work) {
-    /**************************** Work: created a realisation *******************************/
     this.resource.addProperty(FRBROO.R19_created_a_realisation_of, work.asResource());
 //    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
 

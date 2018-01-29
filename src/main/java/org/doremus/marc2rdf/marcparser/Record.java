@@ -9,7 +9,7 @@ public class Record {
   private List<ControlField> controlFields;
   private List<Attr> attrList;
   private String id;
-  public String type;
+  private String type;
 
   public Record(String type, String id) {
     controlFields = new ArrayList<>();
@@ -32,7 +32,9 @@ public class Record {
   }
 
   public boolean isTUM() {
-    return this.isType("Authority");
+    return this.isType("Authority")  // TUM BnF
+      || this.isType("AIC:14")// TUM PP
+      || this.isType("UNI:100"); // Ouvres PP
   }
 
   public boolean isBIB() {

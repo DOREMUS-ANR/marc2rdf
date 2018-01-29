@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.bnfconverter.F14_IndividualWork;
 import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -44,6 +45,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private TimeSpan timeSpan;
 
   private int countConsistOf;
+  private boolean hasWorkLinked = false;
 
   public PM42_PerformedExpressionCreation(Record record) throws URISyntaxException {
     super(record);
@@ -51,27 +53,17 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     this.M43_Performed_Expression = new PM43_PerformedExpression(this.identifier);
     this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
 
-    List<DataField> workFields = record.getDatafieldsByCode(419);
     String premiereNote = searchInNote(premiereRegex);
     isPremiere = premiereNote != null;
+
     if (premiereNote != null) this.addNote(premiereNote);
 
     String frenchPremiereNote = searchInNote(premiereRegex);
     if (frenchPremiereNote != null) this.addNote(frenchPremiereNote);
 
-    for (DataField f : workFields) {
-      // TODO when there is no code?
-      if (!f.isCode(3)) continue;
-      String workIdentifier = f.getSubfield(3).getData();
-      if (workIdentifier.isEmpty()) continue;
-
-      linkWorkById(workIdentifier);
-    }
-
     TimeSpan date = getDate();
     if (date != null)
       this.resource.addProperty(CIDOC.P4_has_time_span, date.asResource());
-
 
     StringJoiner sj = new StringJoiner("; ");
     record.getDatafieldsByCode(200, 'g').forEach(sj::add);
@@ -87,6 +79,38 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     if (commandNote != null)
       this.addCommand(PP2RDF.organizationURI);
 
+    for (String workId : record.getDatafieldsByCode(419, '3'))
+      linkWorkById(workId);
+
+    boolean shouldICreateAF22 = false;
+    if (!this.hasWorkLinked) {
+      // TODO Si 701$4 a une valeur autre que 230 et que cette valeur a pour contexte F28
+      // dans le référentiel des fonctions, alors toujours créer un nouveau F22.
+      // Puis, indiquer en M31 la valeur du référentiel qui correspond.
+
+      // TODO Si 701$4=750 (qui signifie "autres"), chercher à identifier le rôle de la personne en analysant le
+      // contenu de 200$g (selon la même méthode que pour identifier les MOP).
+      // Si le rôle qui se rattache à la personne contient les mots :
+      //- lumières, lui donner la fonction "éclairagiste"
+      //- costumes, lui donner la fonction "costumier"
+      List<DataField> activities = record.getDatafieldsByCode(701);
+      activities.addAll(record.getDatafieldsByCode(700));
+
+      shouldICreateAF22 = activities.stream()
+        .filter(a -> "230".equals(a.getString(4)))
+        .toArray().length > 0;
+    }
+
+    if (shouldICreateAF22) {
+      PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
+      PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
+      PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
+
+      f28.add(f22).add(f14);
+      f14.add(f22);
+      this.add(f22);
+      model.add(f22.getModel()).add(f28.getModel()).add(f14.getModel());
+    }
   }
 
   private void addCommand(String commander_uri) {
@@ -407,7 +431,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return this.F31_Performance;
   }
 
-  private void linkWorkById(String workIdentifier) throws URISyntaxException {
+  void linkWorkById(String workIdentifier) throws URISyntaxException {
+    if (workIdentifier == null || workIdentifier.isEmpty())
+      return;
+
     PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(workIdentifier);
     PF14_IndividualWork f14 = new PF14_IndividualWork(workIdentifier);
 
@@ -418,6 +445,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     } else {
       this.add(f22);
     }
+
+    this.hasWorkLinked = true;
   }
 
 
@@ -430,4 +459,5 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       d = date.substring(6);
     return new TimeSpan(y, m, d);
   }
+
 }

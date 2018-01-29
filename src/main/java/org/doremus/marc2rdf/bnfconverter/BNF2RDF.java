@@ -62,7 +62,7 @@ public class BNF2RDF {
 //        return null;
 //      } else if(true) return null;
 
-      if (r.type == null) return null;
+      if (r.getType() == null) return null;
 
       if (r.isBIB()) {
         BIBRecordConverter conv = convertBIB(r, extArk);

@@ -17,6 +17,7 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
+import javax.crypto.Cipher;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,25 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
   private List<String> opusMemory;
 
-  public PF22_SelfContainedExpression(Record record, String identifier, PF28_ExpressionCreation f28) throws URISyntaxException {
+  public PF22_SelfContainedExpression(Record record) throws URISyntaxException {
+    this(record, record.getIdentifier(), null);
+  }
+
+  public PF22_SelfContainedExpression(Record record, String identifier, List<String> composers) throws
+    URISyntaxException {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
+
+    if (record.isTUM()) convertUNI100(composers);
+    else if ("UNI:44".equals(record.getType())) convertUNI44();
+  }
+
+  private void convertUNI44() {
+    for (String title : getTitle())
+      this.resource.addProperty(CIDOC.P102_has_title, title).addProperty(RDFS.label, title);
+  }
+
+  private void convertUNI100(List<String> composers) {
     this.resource.addProperty(DCTerms.identifier, identifier);
     this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier));
 
@@ -50,7 +67,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         continue;
       }
       for (String c : catalog.split(" ; "))
-        parseCatalog(c, f28);
+        parseCatalog(c, composers);
     }
 
 
@@ -65,7 +82,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       // if does not contain "Op." or "opus" etc., it is a catalog!
       if (!opus.matches(Utils.opusHeaderRegex + ".*")) {
         // System.out.println("catalog in opus found " + opus);
-        parseCatalog(opus, f28);
+        parseCatalog(opus, composers);
         continue;
       }
 
@@ -120,7 +137,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     super(identifier);
   }
 
-  private void parseCatalog(String catalog, PF28_ExpressionCreation f28) {
+  private void parseCatalog(String catalog, List<String> composers) {
     String[] catalogParts = catalog.split("[ .]", 2);
     String catalogName = null, catalogNum = null;
 
@@ -137,7 +154,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       // TODO what to do with not parsable catalogs?
     }
 
-    Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, f28.getComposerUris());
+    Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, composers);
     if (match != null)
       catalogName = match.getProperty(model.createProperty("http://www.loc.gov/standards/mods/rdf/v1/#identifier")).getObject().toString();
 
@@ -250,41 +267,39 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
 
   public PF22_SelfContainedExpression add(PF50_ControlledAccessPoint accessPoint) {
-    /**************************** Expression: Point d'Accès ********************************/
     this.resource.addProperty(CIDOC.P1_is_identified_by, accessPoint.asResource());
 //    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), this.resource);
     return this;
   }
 
 
-  /***********************************
-   * Le titre
-   **************************************/
   private List<String> getTitle() {
     List<String> titleList = new ArrayList<>();
     List<DataField> fields;
 
-    if (record.isType("AIC:14")) {
-      fields = record.getDatafieldsByCode("444");
-      fields.addAll(record.getDatafieldsByCode("144"));
-    } else { // type UNI:100
-      fields = record.getDatafieldsByCode("200");
+    switch (record.getType()) {
+      case "AIC:14":
+        fields = record.getDatafieldsByCode("444");
+        fields.addAll(record.getDatafieldsByCode("144"));
+        break;
+      case "UNI:100":
+      case "UNI:44":
+        fields = record.getDatafieldsByCode("200");
+        break;
+      default:
+        return titleList;
     }
 
     for (DataField field : fields) {
       if (!field.isCode('a')) continue;
-
-      String title = field.getSubfield('a').getData().trim();
-      if (!title.isEmpty()) titleList.add(title);
+      String title = field.getString('a').trim();
+      titleList.add(title);
     }
 
     return titleList;
   }
 
 
-  /***********************************
-   * Le catalogue
-   ***********************************/
   private List<String> getCatalog() {
     if (!record.isType("AIC:14")) return new ArrayList<>();
 
