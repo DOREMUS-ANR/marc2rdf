@@ -11,13 +11,13 @@ import java.net.URISyntaxException;
 
 public class PF14_IndividualWork extends DoremusResource {
   public PF14_IndividualWork(Record record, String identifier) throws URISyntaxException {
-    super(record, identifier);
-
-    this.resource.addProperty(RDF.type, FRBROO.F14_Individual_Work);
+    this(identifier);
+    this.record = record;
   }
 
   public PF14_IndividualWork(String identifier) throws URISyntaxException {
     super(identifier);
+    this.resource.addProperty(RDF.type, FRBROO.F14_Individual_Work);
   }
 
   public PF14_IndividualWork add(PF22_SelfContainedExpression f22) {

@@ -5,7 +5,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.bnfconverter.F14_IndividualWork;
 import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -49,9 +48,11 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   public PM42_PerformedExpressionCreation(Record record) throws URISyntaxException {
     super(record);
+    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
 
-    this.M43_Performed_Expression = new PM43_PerformedExpression(this.identifier);
+    this.M43_Performed_Expression = new PM43_PerformedExpression(record);
     this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
+    this.connectTriplet();
 
     String premiereNote = searchInNote(premiereRegex);
     isPremiere = premiereNote != null;
@@ -61,9 +62,12 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     String frenchPremiereNote = searchInNote(premiereRegex);
     if (frenchPremiereNote != null) this.addNote(frenchPremiereNote);
 
-    TimeSpan date = getDate();
-    if (date != null)
-      this.resource.addProperty(CIDOC.P4_has_time_span, date.asResource());
+    timeSpan = getDate();
+    if (timeSpan != null) {
+      timeSpan.setUri(this.uri + "/interval");
+      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+      this.model.add(timeSpan.getModel());
+    }
 
     StringJoiner sj = new StringJoiner("; ");
     record.getDatafieldsByCode(200, 'g').forEach(sj::add);
@@ -76,8 +80,9 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     }
 
     String commandNote = searchInNote("commande de la Philharmonie de Paris");
-    if (commandNote != null)
-      this.addCommand(PP2RDF.organizationURI);
+    if (commandNote != null) this.addCommand(PP2RDF.organizationURI);
+    commandNote = searchInNote("commande de l'Ensemble intercontemporain");
+    if (commandNote != null) this.addCommand(getEnsambleIntercontemporainUri());
 
     for (String workId : record.getDatafieldsByCode(419, '3'))
       linkWorkById(workId);
@@ -102,6 +107,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     }
 
     if (shouldICreateAF22) {
+      System.out.println(this.identifier);
       PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
       PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
       PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
@@ -174,13 +180,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       .addProperty(CIDOC.P9_consists_of, this.resource);
     this.M43_Performed_Expression = new PM43_PerformedExpression(this.identifier);
     this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
-    this.model.add(M43_Performed_Expression.getModel())
-      .add(M44_Performed_Work.getModel());
-
-    this.M44_Performed_Work.asResource()
-      .addProperty(FRBROO.R9_is_realised_in, this.M43_Performed_Expression.asResource());
-    this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression.asResource())
-      .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work.asResource());
+    this.connectTriplet();
 
     parseNote(note);
 
@@ -197,6 +197,16 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       this.model.add(timeSpan.getModel());
     }
 
+  }
+
+  private void connectTriplet() {
+    this.M44_Performed_Work.asResource()
+      .addProperty(FRBROO.R9_is_realised_in, this.M43_Performed_Expression.asResource());
+    this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression.asResource())
+      .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work.asResource());
+
+    this.model.add(M43_Performed_Expression.getModel())
+      .add(M44_Performed_Work.getModel());
   }
 
   private void parseNote(String note) {
@@ -417,8 +427,9 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   public PM42_PerformedExpressionCreation add(PF22_SelfContainedExpression f22) {
     this.M43_Performed_Expression.asResource()
       .addProperty(MUS.U54_is_performed_expression_of, f22.asResource());
-    this.F31_Performance.asResource()
-      .addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
+    if (this.F31_Performance != null)
+      this.F31_Performance.asResource()
+        .addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
     return this;
   }
 
@@ -451,7 +462,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
 
   private TimeSpan getDate() {
-    String date = record.getDatafieldsByCode(981, 'a').get(0);
+    List<String> dateList = record.getDatafieldsByCode(981, 'a');
+    if (dateList.size() < 1) return null;
+
+    String date = dateList.get(0);
     if (!date.matches("\\d{8}")) return null;
 
     String y = date.substring(0, 4),
@@ -460,4 +474,13 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return new TimeSpan(y, m, d);
   }
 
+  private static CorporateBody ensambleIntercontemporain = null;
+
+  private String getEnsambleIntercontemporainUri() throws URISyntaxException {
+    if (ensambleIntercontemporain == null) {
+      ensambleIntercontemporain = new CorporateBody("Ensamble Intercontemporain");
+      model.add(ensambleIntercontemporain.getModel());
+    }
+    return ensambleIntercontemporain.getUri().toString();
+  }
 }

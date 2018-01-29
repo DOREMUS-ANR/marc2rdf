@@ -43,8 +43,7 @@ public class RecordConverter {
         this.convertUNI100();
         break;
       case "UNI:4": // Concerts video
-        // TODO uncomment me
-//        this.convertUNI4();
+        this.convertUNI4();
         break;
       case "UNI:44": // Concerts video
         this.convertUNI44();

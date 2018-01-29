@@ -16,6 +16,10 @@ public class ConstructURI {
     return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
   }
 
+  public static URI build(String className, String name) throws URISyntaxException {
+    return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(className + name)).build();
+  }
+
   public static URI build(String className, String firstName, String lastName, String birthDate) throws URISyntaxException {
     String seed = firstName + lastName + birthDate;
     return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
@@ -55,6 +59,7 @@ public class ConstructURI {
       case "M42_PerformedExpressionCreation":
         return "performance";
       case "E21_Person":
+      case "F11_CorporateBody":
         return "artist";
       case "E4_Period":
         return "period";
