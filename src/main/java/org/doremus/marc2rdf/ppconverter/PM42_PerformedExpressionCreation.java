@@ -8,17 +8,17 @@ import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.marc2rdf.marcparser.Subfield;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 public class PM42_PerformedExpressionCreation extends DoremusResource {
@@ -33,6 +33,9 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private static final String noUppercase = "[^A-Z]+";
 
   private static final String performanceRegex = "(?i)(?:(?:premi[èe]|1[èe]?)re? (?:représentation|[ée]x[ée]cution|audition|enregistrement|reprise) )|(?:cr[èée]{1,3}(?:ation|s)? )";
+
+  private static final Resource INSTRUMENT = VocabularyManager.searchInCategory("instrument", "fr", "mop");
+  private static final Resource VOICE = VocabularyManager.searchInCategory("voix", "fr", "mop");
 
   private PF28_ExpressionCreation f28;
 
@@ -49,6 +52,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   public PM42_PerformedExpressionCreation(Record record) throws URISyntaxException {
     super(record);
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
+
+    this.countConsistOf = 0;
 
     this.M43_Performed_Expression = new PM43_PerformedExpression(record);
     this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
@@ -107,7 +112,6 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     }
 
     if (shouldICreateAF22) {
-      System.out.println(this.identifier);
       PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
       PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
       PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
@@ -117,30 +121,112 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       this.add(f22);
       model.add(f22.getModel()).add(f28.getModel()).add(f14.getModel());
     }
+
+    List<DataField> artistFields = record.getDatafieldsByCode(702);
+    artistFields.addAll(record.getDatafieldsByCode(712));
+
+    for (DataField df : artistFields) {
+      Artist artist = df.getEtiq().equals("712") ?
+        CorporateBody.fromUnimarcField(df) :
+        Person.fromUnimarcField(df);
+
+      Resource genericMop = null;
+      List<String> functTypes = df.getSubfields('4').stream()
+        .map(Subfield::getData)
+        .collect(Collectors.toList());
+
+      boolean isPrincipal = df.hasSubfieldValue('4', "040");
+      for (String functionType : functTypes)
+        switch (functionType) { // function
+          case "040": // principal artist, managed before
+            break;
+          // FUNCTIONS WITH MoPs
+          case "545": // musician
+            genericMop = INSTRUMENT;
+          case "721": // singer
+            if (genericMop == null) genericMop = VOICE;
+
+            String txt = searchArtistInNote(artist);
+            String originalTxt = txt;
+            if (txt == null) txt = "";
+
+            String operaRole = null;
+            if (txt.contains("(")) { // Laurent Laberdesque, baryton (Figaro, valet du Comte Almaviva)
+              int start = txt.indexOf("("),
+                end = txt.indexOf(")");
+
+              operaRole = txt.substring(start + 1, end);
+              txt = txt.substring(0, start);
+            }
+            List<String> parts = new LinkedList<>(Arrays.asList(txt.split(",")));
+            // workaround if there is no ","
+            if (parts.size() < 2) parts.add(".");
+
+            for (int i = 1; i < parts.size(); i++) {
+              String pt = parts.get(i).trim();
+              if (pt.equals("composition") || pt.equals("direction")) continue;
+              if (Character.isUpperCase(pt.codePointAt(0))) {
+                System.out.println("Considered not a mop/function: " + pt);
+                continue;
+              }
+              Resource mop = VocabularyManager.searchInCategory(pt, "fr", "mop");
+
+              PM28_Individual_Performance ip = new PM28_Individual_Performance(this.uri, ++countConsistOf);
+              ip.setMop(mop != null ? mop : genericMop);
+              if (mop == null && !pt.equals(".")) System.out.println("Mop not found: " + pt);
+
+              ip.addNote(originalTxt);
+              ip.setActor(artist);
+              ip.setCharacter(operaRole);
+              if (isPrincipal) ip.setAsPrincipal();
+
+              this.resource.addProperty(CIDOC.P9_consists_of, ip.asResource());
+              this.model.add(ip.getModel()).add(artist.getModel());
+            }
+            break;
+          // FUNCTIONS without MoPs
+          case "195": // chef de chœur
+          case "250": // chef d'orchestre
+          case "274": // danseur
+          case "303": // disc jockey
+          case "550": // narrateur
+          case "590": // interprète
+          case "780": // acteur / exécutant
+          case "800": // intervenant / présentateur
+            PM28_Individual_Performance ip = new PM28_Individual_Performance(this.uri, ++countConsistOf);
+            ip.setActor(artist);
+            ip.setFunctionByCode(functionType);
+            if (isPrincipal) ip.setAsPrincipal();
+            this.resource.addProperty(CIDOC.P9_consists_of, ip.asResource());
+            this.model.add(ip.getModel());
+        }
+    }
+  }
+
+  private String searchArtistInNote(Artist artist) {
+    List<String> fields = record.getDatafieldsByCode(200, 'f');
+    fields.addAll(record.getDatafieldsByCode(200, 'g'));
+    for (String note : fields)
+      if (note.contains(artist.getFullName())) return note;
+    return null;
+  }
+
+  private String searchInNote(String regex) {
+    Pattern p = Pattern.compile(regex);
+    List<String> fields = record.getDatafieldsByCode(200, 'a');
+    fields.addAll(record.getDatafieldsByCode(200, 'e'));
+
+    for (String note : fields)
+      if (p.matcher(note).find()) return note;
+    return null;
   }
 
   private void addCommand(String commander_uri) {
-
     Resource activity = model.createResource(this.uri + "/activity/1")
       .addProperty(RDF.type, CIDOC.E7_Activity)
       .addProperty(CIDOC.P14_carried_out_by, model.createResource(commander_uri))
       .addProperty(MUS.U31_had_function, "commanditaire", "fr");
     this.resource.addProperty(CIDOC.P9_consists_of, activity);
-
-  }
-
-  private String searchInNote(String regex) {
-    Pattern p = Pattern.compile(regex);
-
-    char[] codes = new char[]{'a', 'e'};
-    for (DataField df : record.getDatafieldsByCode(200)) {
-      for (char c : codes) {
-        if (!df.isCode(c)) continue;
-        String note = df.getSubfield(c).getData();
-        if (p.matcher(note).find()) return note;
-      }
-    }
-    return null;
   }
 
   public PM42_PerformedExpressionCreation(String note, String identifier, int i, PF28_ExpressionCreation f28) throws URISyntaxException {

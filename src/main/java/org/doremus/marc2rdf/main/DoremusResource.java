@@ -1,23 +1,17 @@
 package org.doremus.marc2rdf.main;
 
 
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
-import org.doremus.marc2rdf.bnfconverter.RecordConverter;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.ontology.CIDOC;
-import org.doremus.ontology.PROV;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Instant;
 
 
 public abstract class DoremusResource {
@@ -29,34 +23,29 @@ public abstract class DoremusResource {
   protected Resource resource;
   protected Record record;
   protected String identifier;
-  protected Resource publisher;
+  private Resource publisher;
 
-  public DoremusResource(String identifier) throws URISyntaxException {
-    this.identifier = identifier;
+  public DoremusResource() {
+    // do nothing, enables customisation for child class
     this.model = ModelFactory.createDefaultModel();
-
-    /* generate URI */
     this.className = this.getClass().getSimpleName();
     this.sourceDb = "bnf";
+    this.resource = null;
+
     if (this.className.startsWith("P")) {
       this.sourceDb = "pp";
       this.className = this.className.substring(1);
       this.publisher = model.createResource(PP2RDF.organizationURI);
     } else
       this.publisher = model.createResource(BNF2RDF.organizationURI);
-
-    this.resource = null;
-    /* create RDF resource */
-    regenerateResource();
   }
 
-  protected void regenerateResource() throws URISyntaxException {
-    // delete old one
-    if (this.resource != null) this.resource.removeProperties();
+  public DoremusResource(String identifier) throws URISyntaxException {
+    this();
+    this.identifier = identifier;
 
-    // generate the new one
-    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
-    this.resource = model.createResource(this.uri.toString());
+    /* create RDF resource */
+    regenerateResource();
   }
 
   public DoremusResource(Record record) throws URISyntaxException {
@@ -68,6 +57,17 @@ public abstract class DoremusResource {
     this(identifier);
     this.record = record;
   }
+
+
+  protected void regenerateResource() throws URISyntaxException {
+    // delete old one
+    if (this.resource != null) this.resource.removeProperties();
+
+    // generate the new one
+    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
+    this.resource = model.createResource(this.uri.toString());
+  }
+
 
   public Resource asResource() {
     return this.resource;
@@ -81,7 +81,7 @@ public abstract class DoremusResource {
     return this.identifier;
   }
 
-  protected void addNote(String text) {
+  public void addNote(String text) {
     if (text == null) return;
     text = text.trim();
     if (text.isEmpty()) return;

@@ -73,6 +73,17 @@ public class DataField extends Etiq {
     return results;
   }
 
+  /******************
+   * Check if a certain subfield is present with a certain value
+   *******************/
+  public boolean hasSubfieldValue(char code, String value) {
+    for (Subfield s : getSubfields(code))
+      if (s.getData().equals(value))
+        return true;
+    return false;
+  }
+
+
   /***************
    * Recuperer la valeur d'une zone
    ***********************/
@@ -87,7 +98,6 @@ public class DataField extends Etiq {
     if (content.isEmpty()) return null;
     else return content;
   }
-
 
   public String toString() {
     StringBuilder sb = new StringBuilder();

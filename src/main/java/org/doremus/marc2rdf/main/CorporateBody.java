@@ -1,28 +1,22 @@
 package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class CorporateBody {
-  private final Model model;
-  private final URI uri;
+public class CorporateBody extends Artist {
   private String name;
-  private Resource resource;
-
   public CorporateBody(String name) throws URISyntaxException, NullPointerException {
-    this.name = name;
-    this.model = ModelFactory.createDefaultModel();
-
+    super();
     if (name == null) throw new RuntimeException("Missing artist name");
 
+    this.name = name;
     this.uri = ConstructURI.build("F11_CorporateBody", name);
     initResource();
   }
@@ -45,5 +39,17 @@ public class CorporateBody {
 
   public URI getUri() {
     return uri;
+  }
+
+  public static CorporateBody fromUnimarcField(DataField field) throws URISyntaxException {
+    String name = field.getString('a');
+    if (name == null) return null;
+
+    return new CorporateBody(name.trim());
+  }
+
+  @Override
+  public String getFullName() {
+    return name;
   }
 }

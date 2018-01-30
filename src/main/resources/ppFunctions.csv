@@ -1,0 +1,130 @@
+20,annotateur
+30,arrangeur
+40,interprète principal
+50,cessionnaire de droits
+60,nom associé
+63,auteur présumé
+65,commissaire-priseur
+70,auteur
+72,auteur de citation
+75,postfacier
+80,préfacier
+90,auteur du script, du dialogue
+100,auteur adapté
+110,relieur
+120,dessinateur de la reliure
+130,maquettiste
+140,dessinateur de la jaquette
+150,dessinateur de l'ex-libris
+160,libraire
+170,calligraphe
+180,cartographe
+190,censeur
+195,chef de choeur
+200,chorégraphe
+205,collaborateur
+206,collecteur (par ex. musique traditionnelle)
+210,commentateur en audiovisuel
+212,commentateur de texte écrit
+220,compilateur
+230,compositeur
+233,compositeur de l'oeuvre adaptée
+236,compositeur de l'oeuvre principale
+240,compositeur typographe
+245,concepteur
+250,chef d'orchestre
+260,détenteur du copyright
+270,correcteur
+273,commissaire d'une exposition
+274,danseur
+280,dédicataire
+290,auteur de la dédicace
+300,réalisateur de film, metteur en scène
+303,disc jockey
+305,doctorant
+310,distributeur
+320,donateur
+330,auteur prétendu
+340,éditeur scientifique
+350,graveur
+360,aquafortiste
+365,expert
+370,monteur
+380,contrefacteur, faussaire
+390,propriétaire précédent
+400,mécène
+410,dessinateur sur ordinateur, technicien graphique
+420,personne honorée
+430,enlumineur
+440,illustrateur
+450,signataire de la présentation
+460,personne interviewée
+470,interviewer
+480,librettiste
+490,titulaire des droits (premier détenteur)
+500,concesseur
+510,lithographe
+520,parolier
+530,graveur sur métal
+540,contrôleur
+545,musicien
+550,narrateur
+560,créateur
+570,autres
+580,fabricant de papier
+590,interprète
+600,photographe
+610,imprimeur
+620,imprimeur de gravures
+630,producteur
+632,scénographe
+635,programmeur
+640,correcteur d'épreuves
+650,éditeur commercial
+651,directeur de publication
+660,destinataire
+665,producteur de disque
+670,ingénieur du son
+672,remixeur
+675,critique
+680,rubricateur
+690,scénariste
+695,conseiller scientifique
+700,copiste
+705,sculpteur
+710,attaché de presse, rédacteur, secrétaire
+720,signataire
+721,chanteur
+723,commanditaire
+727,directeur de thèse
+730,traducteur
+740,dessinateur de caractères d'imprimerie
+750,typographe
+760,graveur sur bois
+770,auteur du matériel d'accompagnement
+780,acteur,exécutant
+790,conférencier
+800,intervenant
+m01,Bibliographie
+m05,Cadences
+m09,Collaborateur
+m13,Coups d'archet
+m17,Directeur d'études
+m21,Directeur de publication
+m25,Documentation
+m29,Doigtés
+m33,Harmonisateur
+m37,Indications pédales
+m41,Instrumentation
+m45,Notateur
+m49,Orchestrateur
+m53,Ornementation
+m57,Registration
+m61,Réalisation (musique)
+m65,Réalisation de la basse continue
+m69,Rédacteur
+m73,Réduction
+m77,Révision
+m81,Tablatures
+m85,Transcription
+m86,Informatique musicale

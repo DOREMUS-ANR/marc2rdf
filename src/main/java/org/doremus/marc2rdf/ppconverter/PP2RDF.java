@@ -9,10 +9,15 @@ import org.doremus.marc2rdf.marcparser.Record;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.doremus.marc2rdf.main.Converter.properties;
 
@@ -31,8 +36,17 @@ public class PP2RDF {
   public static final String doremusURI = "http://data.doremus.org/organization/DOREMUS";
 
   public static final String dotSeparator = "(?<![^A-Z][A-Z]|[oO]p|Hob|réf|[èeé]d|dir|Mus|[Ss]t|sept)\\.";
+  public static Map<String, String> FUNCTION_MAP = null;
 
   public static Model convert(String file) throws FileNotFoundException, URISyntaxException {
+    if (FUNCTION_MAP == null) {
+      try {
+        initFunctionMap();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
     List<File> folderTUMs = Arrays.stream(properties.getProperty("TUMFolder").split(","))
       .map(File::new)
       .collect(Collectors.toList());
@@ -108,10 +122,10 @@ public class PP2RDF {
 
 
   public static String guessType(Record record) {
-    List<String> funCodes = record.getDatafieldByCode(700, 4);
-    funCodes.addAll(record.getDatafieldByCode(701, 4));
-    funCodes.addAll(record.getDatafieldByCode(702, 4));
-    funCodes.addAll(record.getDatafieldByCode(712, 4));
+    List<String> funCodes = record.getDatafieldsByCode(700, 4);
+    funCodes.addAll(record.getDatafieldsByCode(701, 4));
+    funCodes.addAll(record.getDatafieldsByCode(702, 4));
+    funCodes.addAll(record.getDatafieldsByCode(712, 4));
 
     if (funCodes.size() == 1 && funCodes.get(0).equals("800"))
       return "spoken word";
@@ -120,6 +134,16 @@ public class PP2RDF {
       return "performed music";
 
     return null;
+  }
+
+  private static void initFunctionMap() throws IOException {
+    String fmapPath = (new PP2RDF()).getClass().getClassLoader().getResource("ppFunctions.csv").getFile();
+
+    Stream<String> lines = Files.lines(Paths.get(fmapPath));
+    FUNCTION_MAP = lines.map(line -> line.split(","))
+      .collect(Collectors.toMap(line -> line[0], line -> line[1]));
+
+    lines.close();
   }
 
 

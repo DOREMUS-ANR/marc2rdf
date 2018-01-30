@@ -93,7 +93,7 @@ public class Record {
     return results;
   }
 
-  public List<String> getDatafieldByCode(int code, int subFieldCode) {
+  public List<String> getDatafieldsByCode(int code, int subFieldCode) {
     return getDatafieldsByCode(code, String.valueOf(subFieldCode).charAt(0));
   }
 

@@ -1,31 +1,25 @@
 package org.doremus.marc2rdf.main;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
-public class Person {
-  private Resource resource;
-  private final Model model;
-
-  private URI uri;
+public class Person extends Artist {
   private String firstName, lastName, birthDate, deathDate, lang;
 
   public Person(String firstName, String lastName, String birthDate, String deathDate, String lang) throws RuntimeException, URISyntaxException {
+    super();
     this.firstName = firstName;
     this.lastName = lastName;
     this.birthDate = birthDate;
     this.deathDate = deathDate;
     this.lang = lang;
-    this.model = ModelFactory.createDefaultModel();
 
     if (lastName == null) {
       throw new RuntimeException("Missing artist value: null | " + lastName + " | " + birthDate);
@@ -43,9 +37,6 @@ public class Person {
     this(firstName, lastName, birthDate, null, lang);
   }
 
-  public URI getUri() {
-    return uri;
-  }
 
   public String getFirstName() {
     return firstName;
@@ -69,13 +60,6 @@ public class Person {
     return lang;
   }
 
-  public Model getModel() {
-    return model;
-  }
-
-  public Resource asResource() {
-    return this.resource;
-  }
 
   public String getFullName() {
     String fullName = this.getLastName();
@@ -184,4 +168,21 @@ public class Person {
 
     return ts;
   }
+
+  public static Person fromUnimarcField(DataField field) throws URISyntaxException {
+    String firstName = null, lastName = null, birthDate = null, deathDate = null;
+    if (field.isCode('a'))  // surname
+      lastName = field.getString('a').trim();
+
+    if (field.isCode('b'))  // name
+      firstName = field.getString('b').trim();
+
+    if (field.isCode('f')) { // birth - death dates
+      String[] dates = field.getString('f').split("-");
+      birthDate = dates[0].trim();
+      if (dates.length > 1) deathDate = dates[1].trim();
+    }
+    return new Person(firstName, lastName, birthDate, deathDate, null);
+  }
+
 }

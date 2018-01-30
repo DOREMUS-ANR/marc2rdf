@@ -2,7 +2,6 @@ package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.ConstructURI;
@@ -44,38 +43,26 @@ public class PF28_ExpressionCreation extends DoremusResource {
   }
 
   private void convertUNI44() throws URISyntaxException {
-    List<DataField> activities = record.getDatafieldsByCode(701);
-    activities.addAll(record.getDatafieldsByCode(700));
-    for (DataField a : activities) {
-      if (!a.isCode(4)) return;
-      if (!"230".equals(a.getString(4))) return;
-
-      String surname = a.getString('a');
-      String name = a.getString('b');
-
-      // FIXME convert person record
-      Person person = new Person(name, surname, null);
-
-      Resource activity = model.createResource(this.uri + "/activity/" + ++composersCount)
+    this.composers = findComposers();
+    for (Person composer : this.composers) {
+      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
         .addProperty(RDF.type, CIDOC.E7_Activity)
-        .addProperty(CIDOC.P14_carried_out_by, person.asResource())
-        .addProperty(MUS.U31_had_function, "compositeur", "fr");
-      this.resource.addProperty(CIDOC.P9_consists_of, activity);
-
-      model.add(person.getModel());
+        .addProperty(MUS.U31_had_function, model.createLiteral("compositeur", "fr"))
+        .addProperty(CIDOC.P14_carried_out_by, composer.asResource())
+      );
+      model.add(composer.getModel());
     }
 
-    // unstructured roles
-    char[] unstrRolesCode = new char[]{'f', 'g'};
-    for (DataField df : record.getDatafieldsByCode(200)) {
-      for (char c : unstrRolesCode)
-        if (df.isCode(c))
-          this.resource.addProperty(MUS.U226_has_responsibility_detail, df.getString(c));
-    }
+//    // unstructured roles
+//    char[] unstrRolesCode = new char[]{'f', 'g'};
+//    for (DataField df : record.getDatafieldsByCode(200)) {
+//      for (char c : unstrRolesCode)
+//        if (df.isCode(c))
+//          this.resource.addProperty(MUS.U226_has_responsibility_detail, df.getString(c));
+//    }
   }
 
   private void convertUNI100() throws URISyntaxException {
-
     String[] dateMachine = getDateMachine();
     if (dateMachine != null) {
       Pattern p = Pattern.compile(TimeSpan.frenchDateRegex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -113,7 +100,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
         .addProperty(CIDOC.P1_is_identified_by, periodLiteral));
     }
 
-    this.composers = getComposer();
+    this.composers = findComposers();
     for (Person composer : this.composers) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
         .addProperty(RDF.type, CIDOC.E7_Activity)
@@ -186,9 +173,6 @@ public class PF28_ExpressionCreation extends DoremusResource {
     return null;
   }
 
-  /*************
-   * Période de création de l'expression
-   ********************************/
   private String getPeriod() {
     if (!record.isType("UNI:100")) return null;
 
@@ -203,36 +187,30 @@ public class PF28_ExpressionCreation extends DoremusResource {
     return null;
   }
 
-  private List<Person> getComposer() throws URISyntaxException {
-    if (!record.isType("UNI:100")) return new ArrayList<>();
-
+  private List<Person> findComposers() throws URISyntaxException {
     List<Person> composers = new ArrayList<>();
+    if (record.isType("AIC:14")) return composers;
 
     List<DataField> fields = record.getDatafieldsByCode("700");
-    for (DataField field : record.getDatafieldsByCode("701")) {
-      //prendre en compte aussi le 701 que si son $4 a la valeur "230"
-      if (field.isCode('4') && field.getSubfield('4').getData().equals("230")) {
-        //230 is the composer
-        fields.add(field);
-      }
-    }
+    if (!record.isTUM())
+      // 700 is composer by default only for work records
+      fields = fields.stream()
+        .filter(PF28_ExpressionCreation::isAComposer)
+        .collect(Collectors.toList());
 
-    for (DataField field : fields) {
-      String firstName = null, lastName = null, birthDate = null, deathDate = null;
-      if (field.isCode('a')) { // surname
-        lastName = field.getSubfield('a').getData().trim();
-      }
-      if (field.isCode('b')) { // name
-        firstName = field.getSubfield('b').getData().trim();
-      }
-      if (field.isCode('f')) { // birth - death dates
-        String[] dates = field.getSubfield('f').getData().split("-");
-        birthDate = dates[0].trim();
-        if (dates.length > 1) deathDate = dates[1].trim();
-      }
+    fields.addAll(record.getDatafieldsByCode("701").stream()
+      .filter(PF28_ExpressionCreation::isAComposer)
+      .collect(Collectors.toList())
+    );
 
-      composers.add(new Person(firstName, lastName, birthDate, deathDate, null));
-    }
+    for (DataField field : fields)
+      composers.add(Person.fromUnimarcField(field));
+
     return composers;
+  }
+
+
+  private static boolean isAComposer(DataField field) {
+    return field != null && "230".equals(field.getString(4));
   }
 }
