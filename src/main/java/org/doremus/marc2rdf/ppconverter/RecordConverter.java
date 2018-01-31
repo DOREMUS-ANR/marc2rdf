@@ -49,7 +49,7 @@ public class RecordConverter {
         this.convertUNI44();
         break;
       default:
-//        System.out.println("Skipping not recognized PP notice type " + record.getType() + " for file " + record.getIdentifier());
+        System.out.println("Skipping not recognized PP notice type " + record.getType() + " for file " + record.getIdentifier());
 
     }
   }
@@ -60,7 +60,13 @@ public class RecordConverter {
     this.converted = true;
 
     PM46_SetOfTracks tracks = new PM46_SetOfTracks(record);
-    model.add(tracks.getModel());
+    PM29_Editing editing = new PM29_Editing(record);
+    PF29_RecordingEvent recording = new PF29_RecordingEvent(record);
+    editing.add(tracks);
+
+    model.add(tracks.getModel())
+    .add(editing.getModel())
+    .add(recording.getModel());
   }
 
   private void convertUNI44() throws URISyntaxException {

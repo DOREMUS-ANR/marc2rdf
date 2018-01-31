@@ -170,6 +170,7 @@ public class Person extends Artist {
   }
 
   public static Person fromUnimarcField(DataField field) throws URISyntaxException {
+    // for fields 700 and 701
     String firstName = null, lastName = null, birthDate = null, deathDate = null;
     if (field.isCode('a'))  // surname
       lastName = field.getString('a').trim();

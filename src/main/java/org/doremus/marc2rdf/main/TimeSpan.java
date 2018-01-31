@@ -9,6 +9,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.Time;
 
@@ -36,6 +37,7 @@ public class TimeSpan {
   private String startYear, startMonth, startDay;
   private String endYear, endMonth, endDay;
   private String startDate, endDate;
+  private String startTime;
   private XSDDatatype startType, endType;
   private Precision startQuality, endQuality;
   private String label;
@@ -83,6 +85,15 @@ public class TimeSpan {
 
   public TimeSpan(String year, String month, String day) {
     this(year, month, day, null, null, null);
+  }
+
+  public TimeSpan(String year, String month, String day, String time) {
+    this(year, month, day, null, null, null);
+    if (time == null) return;
+
+    time = time.trim();
+    if (time.length() == 5) time += ":00";
+    this.startTime = time;
   }
 
   public TimeSpan(String startYear, String startMonth, String startDay, String endYear, String endMonth, String endDay) {
@@ -222,6 +233,11 @@ public class TimeSpan {
 
     this.label = computeLabel();
 
+    if (this.startTime != null) {
+      startType = XSDDatatype.XSDdateTime;
+      startDate += "T" + this.startTime;
+    }
+
     this.resource = this.model.createResource(this.uri)
       .addProperty(RDF.type, CIDOC.E52_Time_Span)
       .addProperty(RDF.type, Time.Interval)
@@ -316,5 +332,21 @@ public class TimeSpan {
 
   public String getLabel() {
     return label;
+  }
+
+  public static TimeSpan fromUnimarcField(DataField df) {
+    if (df == null || !df.isCode('a')) return null;
+
+    // 981$a20110607
+    String date = df.getString('a');
+    if (!date.matches("\\d{8}")) return null;
+
+    String y = date.substring(0, 4),
+      m = date.substring(4, 6),
+      d = date.substring(6);
+
+    // 981$b20:30
+    String time = df.getString('b');
+    return new TimeSpan(y, m, d, time);
   }
 }

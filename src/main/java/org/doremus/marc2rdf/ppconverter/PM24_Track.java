@@ -55,8 +55,7 @@ public class PM24_Track extends DoremusResource {
       .collect(Collectors.toList());
   }
 
-
-  public String getOrderNum() {
+  private String getOrderNum() {
     for (String f : record.getDatafieldsByCode(856, 'x')) {
       if (f == null || f.isEmpty()) continue;
       int l = f.length();

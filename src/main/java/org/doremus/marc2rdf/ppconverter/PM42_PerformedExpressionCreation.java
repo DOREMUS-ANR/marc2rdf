@@ -546,18 +546,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     this.hasWorkLinked = true;
   }
 
-
   private TimeSpan getDate() {
-    List<String> dateList = record.getDatafieldsByCode(981, 'a');
-    if (dateList.size() < 1) return null;
-
-    String date = dateList.get(0);
-    if (!date.matches("\\d{8}")) return null;
-
-    String y = date.substring(0, 4),
-      m = date.substring(4, 6),
-      d = date.substring(6);
-    return new TimeSpan(y, m, d);
+    return TimeSpan.fromUnimarcField(record.getDatafieldByCode(981));
   }
 
   private static CorporateBody ensambleIntercontemporain = null;
