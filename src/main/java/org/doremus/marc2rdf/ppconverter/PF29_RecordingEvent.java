@@ -120,6 +120,13 @@ public class PF29_RecordingEvent extends DoremusResource {
     return this;
   }
 
+  public PF29_RecordingEvent add(PF4_ManifestationSingleton support) {
+    this.resource.addProperty(FRBROO.R18_created, support.asResource());
+    support.asResource().addProperty(CIDOC.P128_carries, this.getRecording().asResource());
+    return this;
+  }
+
+
   public TimeSpan getTime() {
     return timeSpan;
   }
@@ -133,4 +140,5 @@ public class PF29_RecordingEvent extends DoremusResource {
   public List<E53_Place> getPlaces() {
     return places;
   }
+
 }

@@ -12,9 +12,12 @@ import org.doremus.ontology.MUS;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PF31_Performance extends DoremusResource {
+  private List<PF22_SelfContainedExpression> playedWorks;
+
   public PF31_Performance(Record record) throws URISyntaxException {
     super(record);
     this.resource.addProperty(RDF.type, FRBROO.F31_Performance)
@@ -23,11 +26,13 @@ public class PF31_Performance extends DoremusResource {
     PF25_PerformancePlan plan = new PF25_PerformancePlan(record);
     this.add(plan);
 
+    this.playedWorks = new ArrayList<>();
     for (String track : getTracks()) {
       this.add(new PM42_PerformedExpressionCreation(track));
       PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(track);
       this.add(f22);
       plan.add(f22);
+      playedWorks.add(f22);
       // I intentionally have not added the models: they will be in the UNI44 record
     }
     model.add(plan.getModel());
@@ -113,4 +118,7 @@ public class PF31_Performance extends DoremusResource {
     return record.getDatafieldsByCode(462, 3);
   }
 
+  public List<PF22_SelfContainedExpression> getPlayedWorks() {
+    return playedWorks;
+  }
 }

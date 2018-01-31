@@ -78,6 +78,8 @@ public class ConstructURI {
         return "manifestation";
       case "M24_Track":
         return "track";
+      case "M40_Context":
+        return "context";
       case "prov":
         return "activity";
       default:

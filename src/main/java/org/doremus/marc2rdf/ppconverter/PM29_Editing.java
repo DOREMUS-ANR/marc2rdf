@@ -52,4 +52,9 @@ public class PM29_Editing extends DoremusResource {
     this.resource.addProperty(MUS.U29_edited, recordingEvt.getRecording().asResource());
     return this;
   }
+
+  public PM29_Editing add(PF4_ManifestationSingleton support) {
+    this.resource.addProperty(FRBROO.R18_created, support.asResource());
+    return this;
+  }
 }

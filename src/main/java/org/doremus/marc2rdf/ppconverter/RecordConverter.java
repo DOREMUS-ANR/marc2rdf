@@ -67,6 +67,14 @@ public class RecordConverter {
     performance.setTime(recording.getTime());
     performance.setPlace(recording.getPlaces());
 
+    for (String supportId : record.getDatafieldsByCode(997, 3)) {
+      PF4_ManifestationSingleton support = new PF4_ManifestationSingleton(record, identifier);
+      support.add(performance.getPlayedWorks());
+      recording.add(support);
+      editing.add(support);
+      model.add(support.getModel());
+    }
+
     editing.add(tracks).add(recording);
     recording.add(performance);
 

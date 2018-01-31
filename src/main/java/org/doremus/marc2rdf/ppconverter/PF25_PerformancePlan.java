@@ -5,6 +5,7 @@ import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
+import org.doremus.ontology.MUS;
 
 import java.net.URISyntaxException;
 
@@ -28,4 +29,13 @@ public class PF25_PerformancePlan extends DoremusResource {
     return this;
   }
 
+  public void setAsImprovisation() {
+    try {
+      PM50_Performance_Mode pMode = new PM50_Performance_Mode(this.uri + "/mode", "improvisation");
+      this.resource.addProperty(MUS.U86_had_performance_mode, pMode.asResource());
+      this.model.add(pMode.getModel());
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+  }
 }

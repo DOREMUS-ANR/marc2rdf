@@ -108,6 +108,14 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       shouldICreateAF22 = activities.stream()
         .filter(a -> "230".equals(a.getString(4)))
         .toArray().length > 0;
+
+      if (isAnImprovisation()) {
+//        F25 Performance Plan R25i was performed by M42 Performed Expression Creation
+        PF25_PerformancePlan plan = new PF25_PerformancePlan(identifier);
+        plan.setAsImprovisation();
+        model.add(plan.getModel());
+      }
+
     }
 
     if (shouldICreateAF22) {
@@ -584,5 +592,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       model.add(ensambleIntercontemporain.getModel());
     }
     return ensambleIntercontemporain.getUri().toString();
+  }
+
+  private boolean isAnImprovisation() {
+    return record.getDatafieldsByCode(200, 'a').stream()
+      .anyMatch(s -> s.contains("improvisation"));
   }
 }
