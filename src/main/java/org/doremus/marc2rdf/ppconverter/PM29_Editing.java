@@ -47,4 +47,9 @@ public class PM29_Editing extends DoremusResource {
     this.resource.addProperty(FRBROO.R17_created, tracks.asResource());
     return this;
   }
+
+  public PM29_Editing add(PF29_RecordingEvent recordingEvt) {
+    this.resource.addProperty(MUS.U29_edited, recordingEvt.getRecording().asResource());
+    return this;
+  }
 }

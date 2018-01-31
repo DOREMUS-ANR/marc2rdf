@@ -6,7 +6,6 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Utils;
-import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
@@ -17,8 +16,8 @@ import java.util.stream.Collectors;
 
 public class PM24_Track extends DoremusResource {
 
-  public PM24_Track(DataField field) throws URISyntaxException {
-    super(field.getSubfield(3).getData());
+  public PM24_Track(String identifier) throws URISyntaxException {
+    super(identifier);
 
     this.resource.addProperty(RDF.type, MUS.M24_Track)
       .addProperty(DCTerms.identifier, this.identifier);

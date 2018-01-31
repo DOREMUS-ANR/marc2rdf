@@ -62,11 +62,19 @@ public class RecordConverter {
     PM46_SetOfTracks tracks = new PM46_SetOfTracks(record);
     PM29_Editing editing = new PM29_Editing(record);
     PF29_RecordingEvent recording = new PF29_RecordingEvent(record);
-    editing.add(tracks);
 
-    model.add(tracks.getModel())
-    .add(editing.getModel())
-    .add(recording.getModel());
+    PF31_Performance performance = new PF31_Performance(record);
+    performance.setTime(recording.getTime());
+    performance.setPlace(recording.getPlaces());
+
+    editing.add(tracks).add(recording);
+    recording.add(performance);
+
+    for (DoremusResource res : new DoremusResource[]{tracks, editing, recording, performance}) {
+      addProvenanceTo(res);
+      model.add(res.getModel());
+    }
+
   }
 
   private void convertUNI44() throws URISyntaxException {
@@ -77,8 +85,11 @@ public class RecordConverter {
     PM24_Track track = new PM24_Track(record);
     PM42_PerformedExpressionCreation perfExpression = new PM42_PerformedExpressionCreation(record);
 
-    model.add(track.getModel());
-    model.add(perfExpression.getModel());
+    for (DoremusResource res : new DoremusResource[]{track, perfExpression, perfExpression.getExpression()}) {
+      addProvenanceTo(res);
+      model.add(res.getModel());
+    }
+
   }
 
   private void convertUNI100() throws URISyntaxException {

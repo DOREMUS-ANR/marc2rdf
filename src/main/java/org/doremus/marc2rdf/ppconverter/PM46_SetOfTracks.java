@@ -6,7 +6,6 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Utils;
-import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -26,8 +25,8 @@ public class PM46_SetOfTracks extends DoremusResource {
       .addProperty(MUS.U227_has_content_type, "performed music", "en")
       .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
 
-    for (DataField trackField : getTracks()) {
-      PM24_Track track = new PM24_Track(trackField);
+    for (String trackCode : getTracks()) {
+      PM24_Track track = new PM24_Track(trackCode);
       this.resource.addProperty(FRBROO.R5_has_component, track.asResource());
       model.add(track.getModel());
     }
@@ -49,11 +48,8 @@ public class PM46_SetOfTracks extends DoremusResource {
       .collect(Collectors.toList());
   }
 
-  private List<DataField> getTracks() {
-    return record.getDatafieldsByCode(462).stream()
-      .filter(f -> f.isCode(3))
-      .filter(f -> !f.getSubfield(3).getData().isEmpty())
-      .collect(Collectors.toList());
+  private List<String> getTracks() {
+    return record.getDatafieldsByCode(462, 3);
   }
 
 

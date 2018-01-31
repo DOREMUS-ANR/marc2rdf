@@ -35,7 +35,7 @@ public class PF15_ComplexWork extends DoremusResource {
 
   public PF15_ComplexWork add(PM42_PerformedExpressionCreation performance) {
     this.resource.addProperty(FRBROO.R10_has_member, performance.getWork())
-      .addProperty(FRBROO.R13_is_realised_in, performance.getExpression());
+      .addProperty(FRBROO.R13_is_realised_in, performance.getExpression().asResource());
     return this;
   }
 }

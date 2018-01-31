@@ -47,11 +47,13 @@ public class ConstructURI {
       case "F30_PublicationEvent":
       case "M45_DescriptiveExpressionAssignment":
       case "F42_RepresentativeExpressionAssignment":
+      case "F29_RecordingEvent":
         return "event";
       case "F14_IndividualWork":
       case "F15_ComplexWork":
       case "F19_PublicationWork":
       case "M44_PerformedWork":
+      case "F21_RecordingWork":
         return "work";
       case "F24_PublicationExpression":
         return "publication";
@@ -64,8 +66,12 @@ public class ConstructURI {
         return "artist";
       case "E4_Period":
         return "period";
+      case "E53_Place":
+        return "place";
       case "M29_Editing":
         return "editing";
+      case "F26_Recording":
+        return "recording";
       case "M46_Set_of_Tracks":
       case "M46_SetOfTracks":
       case "F4_ManifestationSingleton":

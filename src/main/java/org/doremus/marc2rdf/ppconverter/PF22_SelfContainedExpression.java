@@ -17,7 +17,6 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
-import javax.crypto.Cipher;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +30,11 @@ import java.util.regex.Pattern;
 public class PF22_SelfContainedExpression extends DoremusResource {
 
   private List<String> opusMemory;
+
+  public PF22_SelfContainedExpression(String identifier) throws URISyntaxException {
+    super(identifier);
+    this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
+  }
 
   public PF22_SelfContainedExpression(Record record) throws URISyntaxException {
     this(record, record.getIdentifier(), null);
@@ -131,10 +135,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       this.resource.addProperty(MUS.U13_has_casting, M6Casting.asResource());
     }
 
-  }
-
-  public PF22_SelfContainedExpression(String identifier) throws URISyntaxException {
-    super(identifier);
   }
 
   private void parseCatalog(String catalog, List<String> composers) {

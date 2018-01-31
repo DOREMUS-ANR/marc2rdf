@@ -28,6 +28,7 @@ public class PM28_Individual_Performance extends DoremusResource {
 
   public void setActor(Artist actor) {
     this.resource.addProperty(CIDOC.P14_carried_out_by, actor.asResource());
+    this.model.add(actor.getModel());
   }
 
   public void setCharacter(String character) {
