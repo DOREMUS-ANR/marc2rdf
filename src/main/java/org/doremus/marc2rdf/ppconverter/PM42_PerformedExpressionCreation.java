@@ -188,22 +188,39 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
               operaRole = txt.substring(start + 1, end);
               txt = txt.substring(0, start);
             }
-            List<String> parts = new LinkedList<>(Arrays.asList(txt.split(",")));
+            List<String> parts = new LinkedList<>(Arrays.asList(txt.split("(,| et )")));
             // workaround if there is no ","
-            if (parts.size() < 2) parts.add(".");
+            if (parts.size() < 2) parts.add("");
 
+            String toBeAdded = "";
             for (int i = 1; i < parts.size(); i++) {
-              String pt = parts.get(i).trim();
-              if (pt.equals("composition") || pt.equals("direction")) continue;
-              if (Character.isUpperCase(pt.codePointAt(0))) {
-                System.out.println("Considered not a mop/function: " + pt);
+              String pt = toBeAdded + parts.get(i).trim();
+              toBeAdded = "";
+
+              if (pt.matches("composit(ion|eurs?)") ||
+                pt.matches("réalisat(ion|eurs?)") ||
+                pt.equals("texte") || pt.equals("parole") || pt.equals("musique") ||
+                pt.startsWith("de") || pt.startsWith("du") ||
+                pt.contains("programmation") ||
+                pt.contains("direction") || pt.contains("arrangement") ||
+                pt.matches("\\d+"))
                 continue;
-              }
-              Resource mop = VocabularyManager.searchInCategory(pt, "fr", "mop");
+
+              // Sometimes there is a list of comma-separated interpreters
+              // they are not mops obviously
+              if (!pt.isEmpty() && Character.isUpperCase(pt.codePointAt(0)))
+                continue;
+
+              pt = pt.replaceFirst(" solo$", "")
+                .replaceFirst("violoniste", "violin")
+                .replaceFirst("violoncelliste", "cello");
+
+              Resource mop = VocabularyManager.searchInCategory(instrumentToSingular(pt), "fr", "mop");
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
               ip.setMop(mop != null ? mop : genericMop);
-              if (mop == null && !pt.equals(".")) System.out.println("Mop not found: " + pt);
+              if (mop == null && !pt.equals(""))
+                System.out.println("Mop not found: " + pt + " | Full line: " + originalTxt);
 
               ip.addNote(originalTxt);
               ip.setActor(artist);
@@ -238,7 +255,13 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     List<String> fields = record.getDatafieldsByCode(200, 'f');
     fields.addAll(record.getDatafieldsByCode(200, 'g'));
     for (String note : fields)
-      if (note.contains(artist.getFullName())) return note;
+      if (note.contains(artist.getFullName())) {
+        if (note.contains(";")) {
+          for (String subNote : note.split(";"))
+            if (note.contains(artist.getFullName())) return subNote;
+        }
+        return note;
+      }
     return null;
   }
 
@@ -462,7 +485,9 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   }
 
-  private String instrumentToSingular(String r) {
+  private static String instrumentToSingular(String r) {
+    if (r == null || r.isEmpty()) return "";
+
     StanfordLemmatizer slem = Converter.stanfordLemmatizer;
     String[] parts = r.split(" ");
     if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);

@@ -152,8 +152,7 @@ public class Converter {
             } catch (XMLStreamException | TransformerException e) {
               e.printStackTrace();
             }
-          } else
-            System.out.println("Skipping not recognized file: " + file.getName());
+          } else System.out.println("Skipping not recognized file: " + file.getName());
           continue;
       }
 
@@ -237,7 +236,9 @@ public class Converter {
     removeUTF8BOM(f);
     System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
 
-    String fileName = f.getName().replaceFirst("\\.xml", "");
+    String fileName = f.getName()
+      .replaceFirst("\\.xml", "")
+      .replaceFirst("^Export", "");
     System.out.println("Splitting file: " + fileName);
 
     String dataFolderPath = f.getParent();
@@ -254,7 +255,7 @@ public class Converter {
 
     boolean transformed = false;
     while (xsr.hasNext()) {
-      if(!transformed) xsr.next();
+      if (!transformed) xsr.next();
       else transformed = false;
       if (!xsr.isStartElement() || !xsr.getName().equals(recordName)) continue;
 

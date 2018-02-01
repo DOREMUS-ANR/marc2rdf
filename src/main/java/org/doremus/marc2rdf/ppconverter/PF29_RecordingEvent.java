@@ -78,8 +78,11 @@ public class PF29_RecordingEvent extends DoremusResource {
     }
 
     timeSpan = getDate();
-    if (timeSpan != null)
+    if (timeSpan != null) {
+      this.timeSpan.setUri(this.uri + "/time");
       this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+      this.model.add(timeSpan.getModel());
+    }
 
     computePlaces();
   }
