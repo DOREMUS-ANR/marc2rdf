@@ -366,9 +366,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return notes;
   }
 
-  /***********************************
-   * Key (Tonalite)
-   ***********************************/
   private List<String> getKey() {
     List<String> keys = record.getDatafieldsByCode("444", 't');
     keys.addAll(record.getDatafieldsByCode("144", 't'));
@@ -376,9 +373,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return keys;
   }
 
-  /***********************************
-   * Le numero d'ordre
-   ***********************************/
   private String getOrderNumber() {
     List<String> fields = record.getDatafieldsByCode("444", 'n');
     fields.addAll(record.getDatafieldsByCode("144", 'n'));
@@ -388,9 +382,6 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return fields.get(0).replaceFirst("No", "").trim();
   }
 
-  /*****************************************
-   * Les genres
-   *************************************/
   private List<Resource> getGenre() {
     List<Resource> genres = new ArrayList<>();
 
@@ -400,7 +391,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       // special case
       if (codeGenre.isEmpty()) continue;
-      if (codeGenre.equals("uu")) codeGenre = "uuu";
+      if (codeGenre.equals("uu")) continue; // unknown form
 
       Resource res = VocabularyManager.getVocabulary("genre-iaml").getConcept(codeGenre);
 
