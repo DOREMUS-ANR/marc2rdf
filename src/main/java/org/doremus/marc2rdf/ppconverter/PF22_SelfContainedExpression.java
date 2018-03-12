@@ -377,9 +377,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     return results;
   }
 
-  /*****************************************
-   * Les genres
-   *************************************/
   private List<String> getGenre() {
     List<String> genres = new ArrayList<>();
 
@@ -392,9 +389,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     return genres;
   }
 
-  /***********************************
-   * Casting
-   ***********************************/
   private List<String> getCasting() {
     if (!record.isType("UNI:100")) return new ArrayList<>();
     return record.getDatafieldsByCode("909", 'c');

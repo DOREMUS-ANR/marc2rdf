@@ -51,7 +51,7 @@ public class PM6_Casting {
 
       // replace unuseful strings
       note = note
-        .replaceAll("^pour", "")
+        .replaceAll("(?i)^pour", "")
         .replaceAll("\\(\\d+ exécutants\\)", "").trim();
 
       // replace commas and conjunction inside parenthesis with '+'
@@ -74,9 +74,13 @@ public class PM6_Casting {
         match = match.trim();
 
         // i.e. "clarinette soliste", "piano, (solo)"
-        String soloRegex1 = ", \\(solo\\)", soloRegex2 = " sol(o|iste|i)s?$";
-        String part = match.replaceAll(soloRegex1, "")
-          .replaceAll(soloRegex2, "").trim();
+        String soloRegex1 = ", \\(solo\\)",
+          soloRegex2 = " sol[oi]s?$",
+        soloRegex3 = " solistes?";
+        String part = match
+          .replaceAll(soloRegex1, "")
+          .replaceAll(soloRegex2, "")
+          .replaceAll(soloRegex3, "").trim();
 
         if (part.isEmpty()) continue;
 
@@ -89,6 +93,7 @@ public class PM6_Casting {
           .replaceAll("(?i)^quatre ", "4 ")
           .replaceAll("(?i)^cinq ", "5 ")
           .replaceAll("(?i)^six ", "6 ")
+          .replaceAll("(?i)^huit ", "8 ")
           .replaceAll("(?i)^onze ", "11 ");
 
         int quantity = -1;
@@ -168,14 +173,11 @@ public class PM6_Casting {
         if (currentName.equals("alto") || currentName.equals("baryton")) {
           // workaround for https://github.com/DOREMUS-ANR/marc2rdf/issues/53
           String prev = "***", foll = "***";
-          if (i > 0)
-            prev = cDets.get(i - 1).getLName();
-          if (i < cDets.size() - 1)
-            foll = cDets.get(i + 1).getLName();
+          if (i > 0) prev = cDets.get(i - 1).getLName();
+          if (i < cDets.size() - 1) foll = cDets.get(i + 1).getLName();
 
-          if (voices.contains(prev) || voices.contains(foll)) {
+          if (voices.contains(prev) || voices.contains(foll))
             current.setAsVoice();
-          }
         }
 
         M6Casting.addProperty(MUS.U23_has_casting_detail, current.asResource(model));

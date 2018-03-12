@@ -22,8 +22,10 @@ public class PM23_Casting_Detail {
 
   String name, namePlural, nameComplete;
   String note;
+  private String lang;
   int quantity;
   boolean solo;
+
 
   public PM23_Casting_Detail(String name, int quantity, boolean isSubSolo, String uri) {
     this.name = name;
@@ -31,12 +33,16 @@ public class PM23_Casting_Detail {
     this.quantity = quantity;
     this.solo = isSubSolo;
     this.uri = uri;
+    this.lang = "fr";
 
     this.slem = Converter.stanfordLemmatizer;
 
     name = name
       .replaceAll("ou \\d", "") // 2 ou 4 bassoon
-      .replaceAll("non spécifiée", "").trim();
+      .replaceAll("non spécifiée?", "")
+      .replaceAll("\\(\\)", "")
+      .trim()
+      .replaceAll("[.\\-/]$", "");
 
 
     String gradeRegex = "(.+) (I+|\\d)";
@@ -49,9 +55,10 @@ public class PM23_Casting_Detail {
     }
 
     this.nameComplete = name;
+
     this.namePlural = name
       .replaceAll("[(\\[].+[)\\]]", "").trim()
-      .replaceFirst("en (ut|ré|mi|fa|sol|la|si)( b(émol)?)?", "");
+      .replaceFirst("(?i)en (ut|ré|mi|fa|sol|la|si)( b(émol)?)?", "");
     this.name = instrumentToSingular(namePlural);
   }
 
@@ -76,36 +83,62 @@ public class PM23_Casting_Detail {
     Resource M23CastingDetail = model.createResource(uri)
       .addProperty(RDF.type, MUS.M23_Casting_Detail)
       .addProperty(RDFS.label, (quantity > -1 ? quantity + " " : "") + nameComplete + (solo ? " solo" : ""))
-      .addProperty(RDFS.comment, note, "fr")
-      .addProperty(CIDOC.P3_has_note, note, "fr");
+      .addProperty(RDFS.comment, note, lang)
+      .addProperty(CIDOC.P3_has_note, note, lang);
 
     if (solo)
-      M23CastingDetail.addProperty(MUS.U36_foresees_responsibility, model.createLiteral("soloist", "fr"));
+      M23CastingDetail.addProperty(MUS.U36_foresees_responsibility, model.createLiteral("soloist", lang));
 
     if (quantity > -1)
       M23CastingDetail.addProperty(MUS.U30_foresees_quantity_of_mop, model.createTypedLiteral(quantity));
 
-    Literal mopLiteral = model.createLiteral(name, "fr");
+    Literal mopLiteral = model.createLiteral(name, lang);
 
 
-    Resource match = VocabularyManager.searchInCategory(name, "fr", "mop");
-
-    if (match == null) {
-      // 2nd attempt, pluralize the whole name (i.e. saxophones sopranos -> saxophone soprano)
-      List<String> lemmas = slem.lemmatize(namePlural);
-      String joined = lemmas.stream().collect(Collectors.joining(" "));
-      match = VocabularyManager.searchInCategory(joined, "fr", "mop");
-    }
+    Resource match = getMatch();
 
     if (match != null)
       M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance, match);
-    else M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance, model.createResource()
-      .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
-      .addProperty(RDFS.label, mopLiteral)
-      .addProperty(CIDOC.P1_is_identified_by, mopLiteral));
+    else M23CastingDetail.addProperty(MUS.U2_foresees_use_of_medium_of_performance,
+      model.createResource(this.uri + "/mop")
+        .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
+        .addProperty(RDFS.label, mopLiteral)
+        .addProperty(CIDOC.P1_is_identified_by, mopLiteral));
 
 
     return M23CastingDetail;
+  }
+
+  private Resource getMatch() {
+    Resource match = VocabularyManager.searchInCategory(name, lang, "mop");
+
+    if (match != null) return match;
+
+    // workaround for choirs
+    String _name = name.toLowerCase();
+    if (_name.contains("choeur") || _name.contains("choristes") || name.equals("satb"))
+      return VocabularyManager.searchInCategory("choir", "en", "mop");
+
+    // workaround for voices
+    if (_name.contains("voix")) {
+      String voixClean = _name.replace("voix", "").trim()
+        .replaceAll("^[^\\w]+", "").trim();
+      String _is = toItalianSinger(voixClean);
+      if (_is != null) {
+        lang = "it";
+        voixClean = _is;
+      }
+      match = VocabularyManager.searchInCategory(voixClean, lang, "mop");
+
+      if (match != null) return match;
+      return VocabularyManager.searchInCategory("voix", lang, "mop");
+    }
+
+    // 2nd attempt, pluralize the whole name (i.e. saxophones sopranos -> saxophone soprano)
+    List<String> lemmas = slem.lemmatize(namePlural);
+    String joined = lemmas.stream().collect(Collectors.joining(" "));
+    match = VocabularyManager.searchInCategory(joined, lang, "mop");
+    return match;
   }
 
   public String getLName() {
@@ -114,13 +147,21 @@ public class PM23_Casting_Detail {
   }
 
   public void setAsVoice() {
-    switch (this.name) {
+    String _name = toItalianSinger(this.name);
+    if (_name == null) return;
+
+    this.lang = "it";
+    this.name = _name;
+  }
+
+  private static String toItalianSinger(String input) {
+    switch (input) {
       case "alto":
-        this.name = "contralto";
-        break;
+        return "contralto";
       case "baryton":
-        this.name = "baritono";
-        break;
+        return "baritono";
+      default:
+        return null;
     }
   }
 }
