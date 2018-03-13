@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import net.sf.junidecode.Junidecode;
 import org.apache.http.client.utils.URIBuilder;
 
 import javax.xml.bind.DatatypeConverter;
@@ -17,11 +18,11 @@ public class ConstructURI {
   }
 
   public static URI build(String className, String name) throws URISyntaxException {
-    return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(className + name)).build();
+    return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(className + norm(name))).build();
   }
 
   public static URI build(String className, String firstName, String lastName, String birthDate) throws URISyntaxException {
-    String seed = firstName + lastName + birthDate;
+    String seed = norm(firstName + lastName + birthDate);
     return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(seed)).build();
   }
 
@@ -35,6 +36,11 @@ public class ConstructURI {
       System.err.println("[ConstructURI.java]" + e.getLocalizedMessage());
       return "";
     }
+  }
+
+  private static String norm(String input) {
+    // remove punctuation, ascii transliteration
+    return Junidecode.unidecode(input.replaceAll("[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]", " "));
   }
 
   private static String getCollectionName(String className) {
