@@ -8,6 +8,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
@@ -16,9 +17,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
-/***
- * Correspond à l'oeuvre musicale
- ***/
 public class F15_ComplexWork extends DoremusResource {
 
   public F15_ComplexWork(Record record) throws URISyntaxException {
@@ -82,14 +80,33 @@ public class F15_ComplexWork extends DoremusResource {
   }
 
   public F15_ComplexWork add(F22_SelfContainedExpression f22) {
-    List<String> notes = record.getDatafieldsByCode("600", 'a');
-    boolean versionContained = Arrays.stream(notes.toArray()).anyMatch(
-      x -> ((String) x).toLowerCase().contains("versions"));
+    boolean versionContained = versionContained();
 
-    Property predicate = versionContained ? MUS.U38_has_descriptive_expression : FRBROO.R40_has_representative_expression;
+    Property predicate = versionContained ?
+      MUS.U38_has_descriptive_expression : FRBROO.R40_has_representative_expression;
+
+    try {
+      DoremusResource assignment = versionContained ?
+        new M45_DescriptiveExpressionAssignment(record) :
+        new F42_Representative_Expression_Assignment(record);
+
+      assignment.asResource()
+        .addProperty(CIDOC.P141_assigned, f22.asResource())
+        .addProperty(CIDOC.P140_assigned_attribute_to, this.asResource());
+
+      this.model.add(assignment.getModel());
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
 
     this.resource.addProperty(predicate, f22.asResource());
     return this;
+  }
+
+  private boolean versionContained() {
+    List<String> notes = record.getDatafieldsByCode("600", 'a');
+    return Arrays.stream(notes.toArray()).anyMatch(
+      x -> ((String) x).toLowerCase().contains("versions"));
   }
 
   public F15_ComplexWork add(F14_IndividualWork f14) {
