@@ -374,7 +374,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
           conductor = parts[0];
           if (!first) mop = parts[1];
         }
-        Role r = makeRole(conductor, (mop == null) ? "conducteur" : mop);
+        Role r = makeRole(conductor, (mop == null) ? "conductor" : mop);
         this.resource.addProperty(CIDOC.P9_consists_of, r.toM28IndividualPerformance(this.uri + "/" + ++counter));
         first = false;
       }
@@ -518,7 +518,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     role = role.trim();
     actor = actor.trim();
 
-    if (!role.equals("conducteur")) role = instrumentToSingular(role);
+    if (!role.equals("conductor")) role = instrumentToSingular(role);
     if (actor.matches(composerRegex))
       return new Role(f28.getComposers().get(0).asResource(), role, this.model);
 

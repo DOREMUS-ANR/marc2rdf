@@ -183,7 +183,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       } else System.out.println("Not parsed note on record " + record.getIdentifier() + " : " + data);
     }
 
-    if (conductor != null) addRole(conductor, "conducteur");
+    if (conductor != null) addRole(conductor, "conductor");
   }
 
   private void addRole(String actor, String role) {
@@ -208,8 +208,8 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
     role = role.trim();
     for (String r : role.split(" et ")) {
-      if (r.equals("conducteur") || r.equals("direction"))
-        M28.addProperty(MUS.U35_foresees_function, model.createLiteral("conducteur", "fr"));
+      if (r.equals("conductor") || r.equals("direction"))
+        M28.addProperty(MUS.U35_foresees_function, model.createLiteral("conductor", "en"));
       else {
         Resource mopMatch = VocabularyManager.searchInCategory(instrumentToSingular(r), "fr", "mop");
         if (mopMatch != null) M28.addProperty(MUS.U1_used_medium_of_performance, mopMatch);
