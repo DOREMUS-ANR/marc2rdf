@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.ppconverter;
 
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -21,9 +22,22 @@ public class PM28_Individual_Performance extends DoremusResource {
       .addProperty(RDF.type, MUS.M28_Individual_Performance);
   }
 
+  public void set(Artist actor, String mop, String function, String character, String note, boolean isPrincipal) {
+    this.set(actor, model.createLiteral(mop), function, character, note, isPrincipal);
+  }
 
-  public void setMop(Resource mop) {
-    this.resource.addProperty(MUS.U1_used_medium_of_performance, mop);
+  public void set(Artist actor, RDFNode mop, String function, String character, String note, boolean isPrincipal) {
+    this.setActor(actor);
+    this.setMop(mop);
+    this.setFunctionByCode(function);
+    this.setCharacter(character);
+    this.addNote(note);
+    if (isPrincipal) this.setAsPrincipal();
+  }
+
+  public void setMop(RDFNode mop) {
+    if (mop != null)
+      this.resource.addProperty(MUS.U1_used_medium_of_performance, mop);
   }
 
   public void setActor(Artist actor) {
@@ -53,7 +67,8 @@ public class PM28_Individual_Performance extends DoremusResource {
   }
 
   public void setFunctionByCode(String code) {
-    this.setFunction(PP2RDF.FUNCTION_MAP.get(code));
+    if (code != null)
+      this.setFunction(PP2RDF.FUNCTION_MAP.get(code));
   }
 
   public void setFunction(String label) {

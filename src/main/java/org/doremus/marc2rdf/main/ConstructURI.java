@@ -18,7 +18,8 @@ public class ConstructURI {
   }
 
   public static URI build(String className, String name) throws URISyntaxException {
-    return builder.setPath("/" + getCollectionName(className) + "/" + generateUUID(className + norm(name))).build();
+    String _uuid = generateUUID(className + norm(name).toLowerCase());
+    return builder.setPath("/" + getCollectionName(className) + "/" + _uuid).build();
   }
 
   public static URI build(String className, String firstName, String lastName, String birthDate) throws URISyntaxException {
@@ -39,8 +40,11 @@ public class ConstructURI {
   }
 
   private static String norm(String input) {
-    // remove punctuation, ascii transliteration
-    return Junidecode.unidecode(input.replaceAll("[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]", " "));
+    // remove punctuation
+    String seed = input.replaceAll("[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]", " ");
+    // ascii transliteration
+    seed = Junidecode.unidecode(seed);
+    return seed;
   }
 
   private static String getCollectionName(String className) {

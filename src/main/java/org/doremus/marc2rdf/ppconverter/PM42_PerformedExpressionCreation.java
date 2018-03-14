@@ -12,11 +12,15 @@ import org.doremus.marc2rdf.marcparser.Subfield;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
+import org.doremus.string2vocabulary.Vocabulary;
 import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,8 +40,11 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   private static final String performanceRegex = "(?i)(?:(?:premi[èe]|1[èe]?)re? (?:représentation|[ée]x[ée]cution|audition|enregistrement|reprise) )|(?:cr[èée]{1,3}(?:ation|s)? )";
 
-  private static final Resource INSTRUMENT = VocabularyManager.searchInCategory("instrument", "fr", "mop");
-  private static final Resource VOICE = VocabularyManager.searchInCategory("voix", "fr", "mop");
+  private static final Vocabulary IAMLVoc = VocabularyManager.getVocabulary("mop-iaml");
+  private static final Resource INSTRUMENT = IAMLVoc.getConcept("mui");
+  private static final Resource ORCHESTRAS = IAMLVoc.getConcept("o");
+  private static final Resource CHORUSES = IAMLVoc.getConcept("c");
+  private static final Resource VOICE = IAMLVoc.getConcept("vun");
 
   private PF28_ExpressionCreation f28;
 
@@ -156,25 +163,28 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     artistFields.addAll(record.getDatafieldsByCode(712));
 
     for (DataField df : artistFields) {
-      Artist artist = df.getEtiq().equals("712") ?
-        CorporateBody.fromUnimarcField(df) :
-        Person.fromUnimarcField(df);
+      boolean isAGroup = df.getEtiq().equals("712");
+      Artist artist = isAGroup ? CorporateBody.fromUnimarcField(df) : Person.fromUnimarcField(df);
 
       Resource genericMop = null;
       List<String> functTypes = df.getSubfields('4').stream()
         .map(Subfield::getData)
         .collect(Collectors.toList());
 
+      boolean parsed = false;
       boolean isPrincipal = df.hasSubfieldValue('4', "040");
-      for (String functionType : functTypes)
+      for (String functionType : functTypes) {
+        boolean isInstrumentist = false;
         switch (functionType) { // function
           case "040": // principal artist, managed before
             break;
           // FUNCTIONS WITH MoPs
           case "545": // musician
-            genericMop = INSTRUMENT;
+            genericMop = isAGroup ? ORCHESTRAS : INSTRUMENT;
+            isInstrumentist = true;
           case "721": // singer
-            if (genericMop == null) genericMop = VOICE;
+            if (genericMop == null)
+              genericMop = isAGroup ? CHORUSES : VOICE;
 
             String txt = searchArtistInNotes(artist, record);
             String originalTxt = txt;
@@ -186,17 +196,15 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
                 end = txt.indexOf(")");
 
               operaRole = txt.substring(start + 1, end);
-              txt = txt.substring(0, start);
+              txt = txt.substring(0, start) + txt.substring(end);
             }
-            List<String> parts = new LinkedList<>(Arrays.asList(txt.split("(,| et )")));
-            // workaround if there is no ","
-            if (parts.size() < 2) parts.add("");
+            List<String> parts = Arrays.asList(txt.split("(,| et )"));
 
             String toBeAdded = "";
             for (int i = 1; i < parts.size(); i++) {
               String pt = toBeAdded + parts.get(i).trim();
               toBeAdded = "";
-
+              if (pt.isEmpty()) continue;
               if (pt.matches("composit(ion|eurs?)") ||
                 pt.matches("réalisat(ion|eurs?)") ||
                 pt.equals("texte") || pt.equals("parole") || pt.equals("musique") ||
@@ -208,24 +216,36 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
               // Sometimes there is a list of comma-separated interpreters
               // they are not mops obviously
-              if (!pt.isEmpty() && Character.isUpperCase(pt.codePointAt(0)))
+              if (Character.isUpperCase(pt.codePointAt(0)))
                 continue;
+
+              parsed = true;
 
               pt = pt.replaceFirst(" solo$", "")
                 .replaceFirst("violoniste", "violin")
                 .replaceFirst("violoncelliste", "cello");
 
+              pt = pt.trim();
+              if (!isInstrumentist)
+                pt = PM23_Casting_Detail.toItalianSinger(pt);
+
               Resource mop = VocabularyManager.searchInCategory(instrumentToSingular(pt), "fr", "mop");
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
-              ip.setMop(mop != null ? mop : genericMop);
-              if (mop == null && !pt.equals(""))
+              if (mop == null && !pt.isEmpty())
                 System.out.println("Mop not found: " + pt + " | Full line: " + originalTxt);
 
-              ip.addNote(originalTxt);
-              ip.setActor(artist);
-              ip.setCharacter(operaRole);
-              if (isPrincipal) ip.setAsPrincipal();
+              Resource _mop = (mop != null) ? mop : genericMop;
+              ip.set(artist, _mop, null, operaRole, originalTxt, isPrincipal);
+              activityList.add(ip);
+            }
+
+            if (!parsed) {
+              // add at least the generic instrument
+              PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
+              if (isAGroup)
+                genericMop = guessMopFromArtist(artist, genericMop);
+              ip.set(artist, genericMop, null, operaRole, originalTxt, isPrincipal);
 
               activityList.add(ip);
             }
@@ -240,15 +260,30 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
           case "780": // acteur / exécutant
           case "800": // intervenant / présentateur
             PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
-            ip.setActor(artist);
-            ip.setFunctionByCode(functionType);
-            if (isPrincipal) ip.setAsPrincipal();
+            ip.set(artist, (RDFNode) null, functionType, null, null, isPrincipal);
 
             activityList.add(ip);
         }
+      }
     }
 
     return activityList;
+  }
+
+  private static Resource guessMopFromArtist(Artist artist, Resource fallback) {
+    String _artist = artist.getFullName().toLowerCase();
+    if (_artist.contains("orchestr")) {
+      if (_artist.contains("symphon") || _artist.contains("philharmon"))
+        return IAMLVoc.getConcept("ofu");
+      return IAMLVoc.getConcept("oun");
+    } else if (_artist.contains("ensemble")) {
+      if (fallback == IAMLVoc.getConcept("c"))
+        return IAMLVoc.getConcept("cve");
+      return IAMLVoc.getConcept("oie");
+    }
+
+
+    return fallback;
   }
 
   private static String searchArtistInNotes(Artist artist, Record record) {
@@ -256,10 +291,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     fields.addAll(record.getDatafieldsByCode(200, 'g'));
     for (String note : fields)
       if (note.contains(artist.getFullName())) {
-        if (note.contains(";")) {
-          for (String subNote : note.split(";"))
-            if (note.contains(artist.getFullName())) return subNote;
-        }
+        if (note.contains(";"))
+          return Arrays.stream(note.split(";"))
+            .filter(sub -> sub.contains(artist.getFullName()))
+            .findFirst().get();
         return note;
       }
     return null;
@@ -613,7 +648,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   private String getEnsambleIntercontemporainUri() throws URISyntaxException {
     if (ensambleIntercontemporain == null) {
-      ensambleIntercontemporain = new CorporateBody("Ensamble Intercontemporain");
+      ensambleIntercontemporain = new CorporateBody("Ensamble intercontemporain");
       model.add(ensambleIntercontemporain.getModel());
     }
     return ensambleIntercontemporain.getUri().toString();

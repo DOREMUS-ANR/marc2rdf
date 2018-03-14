@@ -154,7 +154,7 @@ public class PM23_Casting_Detail {
     this.name = _name;
   }
 
-  private static String toItalianSinger(String input) {
+  static String toItalianSinger(String input) {
     switch (input) {
       case "alto":
         return "contralto";
