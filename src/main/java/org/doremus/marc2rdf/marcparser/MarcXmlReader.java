@@ -5,6 +5,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -16,7 +17,7 @@ public class MarcXmlReader {
   private List<Record> list;
 
   /********
-   * Le constructeur : lui passer le fichier MARCXML a parser
+   * Constructor bridge
    *********/
   public MarcXmlReader(InputStream input, MarcXmlHandler.MarcXmlHandlerBuilder handlerBuilder) {
     //Charger le fichier XML pour le parser
@@ -27,8 +28,12 @@ public class MarcXmlReader {
     this(new FileInputStream(inputFile), handlerBuilder);
   }
 
+  public MarcXmlReader(File inputFile, MarcXmlHandler.MarcXmlHandlerBuilder handlerBuilder) throws FileNotFoundException {
+    this(new FileInputStream(inputFile), handlerBuilder);
+  }
+
   /**********************
-   * Parser le fichier XML
+   * Constructor main
    ******************************/
 
   public MarcXmlReader(InputSource input, MarcXmlHandler.MarcXmlHandlerBuilder handlerBuilder) {

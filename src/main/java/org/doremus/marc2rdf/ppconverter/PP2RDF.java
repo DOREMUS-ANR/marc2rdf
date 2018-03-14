@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,34 +47,31 @@ public class PP2RDF {
       }
     }
 
-    List<File> folderTUMs = Arrays.stream(properties.getProperty("TUMFolder").split(","))
-      .map(File::new)
-      .collect(Collectors.toList());
-
     Model model = ModelFactory.createDefaultModel();
     MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
 
     boolean found = false;
     for (Record r : reader.getRecords()) {
-      // We convert TUMs contextually to notice d'oeuvre
+      // Skip TUMs (AIC:14). We will convert them contextually to UNI:100
       if (r.isType("AIC:14")) continue;
 
       // notice d'oeuvre: retrieve and convert TUM also
       if (r.isType("UNI:100")) {
-        String idTUM = getIdTum(r);
-        if (idTUM == null) {
+        List<String> idTUMs = getIdTums(r);
+        if (idTUMs.size() < 1) {
           System.out.println("Notice without TUM specified: " + file);
           continue;
         }
-        File tum = searchTUM(folderTUMs, idTUM);
-        if (tum == null) {
-          System.out.println("TUM specified but not found: notice " + r.getIdentifier() + ", tum " + idTUM);
-          continue;
-        }
-        MarcXmlReader tumReader = new MarcXmlReader(tum.getAbsolutePath(), PP2RDF.ppXmlHandlerBuilder);
-        new RecordConverter(tumReader.getRecords().get(0), model, r.getIdentifier());
-      }
 
+        PF15_ComplexWork first = null;
+        for (String idTUM : idTUMs)
+          try {
+            RecordConverter current = convertTum(idTUM.trim(), r.getIdentifier(), model, first);
+            first = current.getF15();
+          } catch (FileNotFoundException fe) {
+            System.out.println("TUM specified but not found: notice " + r.getIdentifier() + ", tum " + idTUM);
+          }
+      }
 
       RecordConverter mainRecord = new RecordConverter(r, model);
       if (mainRecord.isConverted()) found = true;
@@ -89,33 +86,35 @@ public class PP2RDF {
     return model;
   }
 
-  private static String getIdTum(Record r) {
-    return r.getDatafieldsByCode("500", '3').stream().findFirst().map(String::trim).orElse(null);
+  private static RecordConverter convertTum(String idTUM, String upperIdentifier, Model model, PF15_ComplexWork first) throws FileNotFoundException, URISyntaxException {
+    File tum = getTUM(properties.getProperty("TUMFolder"), idTUM);
+    if (tum == null) throw new FileNotFoundException();
+
+    MarcXmlReader tumReader = new MarcXmlReader(tum, PP2RDF.ppXmlHandlerBuilder);
+    Record tumRecord = tumReader.getRecords().get(0);
+
+    String id = (first == null) ? upperIdentifier : tumRecord.getIdentifier();
+    return new RecordConverter(tumRecord, model, id, first);
   }
 
-  /**
-   * Search TUM in multiple folders
-   **/
-  private static File searchTUM(List<File> folders, String idTUM) {
-    for (File f : folders) {
-      File tum = getTUM(f, idTUM);
-      if (tum != null) return tum;
-    }
-    return null;
+  private static List<String> getIdTums(Record r) {
+    return r.getDatafieldsByCode("500", '3');
   }
 
   /**
    * Search TUM in a single folder
    **/
+  private static File getTUM(final String folder, String idTUM) {
+    return getTUM(new File(folder), idTUM);
+  }
+
   private static File getTUM(final File folder, String idTUM) {
-    for (File fileEntry : folder.listFiles()) {
+    for (File fileEntry : Objects.requireNonNull(folder.listFiles())) {
       if (fileEntry.isDirectory()) {
         File f = getTUM(fileEntry, idTUM);
         if (f != null) return f;
-      } else if (fileEntry.getName().equals(idTUM + ".xml")) {
+      } else if (fileEntry.getName().equals(idTUM + ".xml"))
         return fileEntry;
-      }
-
     }
     return null;
   }

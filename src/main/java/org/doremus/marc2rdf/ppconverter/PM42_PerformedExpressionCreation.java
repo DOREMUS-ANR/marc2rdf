@@ -311,7 +311,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
     String performanceUri = ConstructURI.build("pp", "F31_Performance", this.identifier).toString();
 
-    this.F31_Performance = new PF31_Performance(performanceUri, note);
+    this.F31_Performance = new PF31_Performance(performanceUri, note, model);
     this.F31_Performance.add(this);
 
     this.M43_Performed_Expression = new PM43_PerformedExpression(this.identifier);

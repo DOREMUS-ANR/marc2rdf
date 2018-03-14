@@ -32,9 +32,9 @@ import java.util.regex.Pattern;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class F22_SelfContainedExpression extends DoremusResource {
-  private final String catalogFallbackRegex = "([a-z]+) ?(\\d+)";
-  private final String DEDICACE_STRING = "(?i)(?:Sur l'édition, d|D)[ée]dicaces?(?: ?: ?)?(.+)";
-  private final Pattern DEDICACE_PATTERN = Pattern.compile(DEDICACE_STRING);
+  private final static String catalogFallbackRegex = "([a-z]+) ?(\\d+)";
+  private final static String DEDICACE_STRING = "(?i)(?:Sur l'édition, d|D)[ée]dicaces?(?: ?: ?)?(.+)";
+  private final static Pattern DEDICACE_PATTERN = Pattern.compile(DEDICACE_STRING);
 
   public List<Literal> titles;
 
@@ -247,11 +247,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
       .addProperty(RDFS.label, note)
       .addProperty(numProp, number);
 
-    if (subnumber != null) M2OpusStatement.addProperty(subProp, subnumber);
+    if (subnumber != null)
+      M2OpusStatement.addProperty(subProp, subnumber);
 
-    if (subnumber == null) subnumber = "   ";
     this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
-
   }
 
   private List<String> getDedicace() {

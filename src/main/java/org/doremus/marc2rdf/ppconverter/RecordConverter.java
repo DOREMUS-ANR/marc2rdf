@@ -22,16 +22,23 @@ public class RecordConverter {
   private String identifier;
 
   private boolean converted;
+  private PF15_ComplexWork f15;
 
   public RecordConverter(Record record, Model model) throws URISyntaxException {
     this(record, model, record.getIdentifier());
   }
 
   public RecordConverter(Record record, Model model, String identifier) throws URISyntaxException {
+    this(record, model, identifier, null);
+  }
+
+  public RecordConverter(Record record, Model model, String identifier, PF15_ComplexWork f15) throws
+    URISyntaxException {
     this.record = record;
     this.model = model;
     this.identifier = identifier;
     this.converted = false;
+    this.f15 = f15;
 
     // PROV-O tracing
     intermarcRes = computeProvIntermarc(record.getIdentifier(), model);
@@ -50,7 +57,6 @@ public class RecordConverter {
         break;
       default:
         System.out.println("Skipping not recognized PP notice type " + record.getType() + " for file " + record.getIdentifier());
-
     }
   }
 
@@ -79,7 +85,7 @@ public class RecordConverter {
     recording.add(performance);
 
     for (DoremusResource res : new DoremusResource[]{tracks, editing, recording, performance}) {
-      addProvenanceTo(res);
+      res.addProvenance(intermarcRes, provActivity);
       model.add(res.getModel());
     }
 
@@ -94,7 +100,7 @@ public class RecordConverter {
     PM42_PerformedExpressionCreation perfExpression = new PM42_PerformedExpressionCreation(record);
 
     for (DoremusResource res : new DoremusResource[]{track, perfExpression, perfExpression.getExpression()}) {
-      addProvenanceTo(res);
+      res.addProvenance(intermarcRes, provActivity);
       model.add(res.getModel());
     }
 
@@ -106,35 +112,32 @@ public class RecordConverter {
     PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record, identifier);
     PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record, identifier, f28.getComposerUris());
     PF14_IndividualWork f14 = new PF14_IndividualWork(record, identifier);
-    PF15_ComplexWork f15 = new PF15_ComplexWork(record, identifier);
-    PM45_DescriptiveExpressionAssignment f42 = new PM45_DescriptiveExpressionAssignment(record, identifier);
-//    PF40_IdentifierAssignment f40 = new PF40_IdentifierAssignment(record);
-//    PF50_ControlledAccessPoint f50 = new PF50_ControlledAccessPoint(record);
+
+    if (f15 == null) {
+      f15 = new PF15_ComplexWork(record, identifier);
+      PM45_DescriptiveExpressionAssignment f42 = new PM45_DescriptiveExpressionAssignment(record, identifier);
+      f42.add(f22).add(f15);
+      f15.addProvenance(intermarcRes, provActivity);
+      f42.addProvenance(intermarcRes, provActivity);
+
+      model.add(f42.getModel());
+    }
+
+    f15.add(f22).add(f14);
 
     addPrincepsPublication(f22, f14);
     addPerformances(f22, f14, f15, f28);
 
     f28.add(f22).add(f14);
-    f15.add(f22).add(f14);
     f14.add(f22);
-//      f14.add(f50);
-//    f40.add(f22).add(f14).add(f15).add(f50);
-//    f22.add(f50);
-    f42.add(f22).add(f15);
 
-    for (DoremusResource res : new DoremusResource[]{f22, f28, f15, f14, f42}) {
-      addProvenanceTo(res);
+    for (DoremusResource res : new DoremusResource[]{f22, f28, f14}) {
+      res.addProvenance(intermarcRes, provActivity);
       model.add(res.getModel());
     }
+    model.add(f15.getModel());
 
     Utils.catalogToUri(model, f28.getComposerUris());
-  }
-
-  private void addProvenanceTo(DoremusResource res) {
-    res.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.doremusURI))
-      .addProperty(PROV.wasDerivedFrom, this.intermarcRes)
-      .addProperty(PROV.wasGeneratedBy, this.provActivity);
   }
 
   private void addPerformances(PF22_SelfContainedExpression f22, PF14_IndividualWork f14,
@@ -202,5 +205,9 @@ public class RecordConverter {
 
   public boolean isConverted() {
     return converted;
+  }
+
+  public PF15_ComplexWork getF15() {
+    return f15;
   }
 }

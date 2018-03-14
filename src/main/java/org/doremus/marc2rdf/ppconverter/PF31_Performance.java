@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.ppconverter;
 
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
@@ -74,9 +75,9 @@ public class PF31_Performance extends DoremusResource {
   }
 
 
-  public PF31_Performance(String uri, String note) throws URISyntaxException {
+  public PF31_Performance(String uri, String note, Model model) throws URISyntaxException {
     super();
-
+    this.model = model;
     this.uri = new URI(uri);
     this.regenerateResource();
 
