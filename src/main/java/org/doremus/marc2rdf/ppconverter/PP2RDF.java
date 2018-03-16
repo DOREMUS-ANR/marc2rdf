@@ -1,8 +1,8 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.update.UpdateAction;
+import org.doremus.marc2rdf.main.AbstractConverter;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
 import org.doremus.marc2rdf.marcparser.MarcXmlReader;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static org.doremus.marc2rdf.main.Converter.properties;
 
-public class PP2RDF {
+public class PP2RDF extends AbstractConverter {
   public static final MarcXmlHandler.MarcXmlHandlerBuilder ppXmlHandlerBuilder =
     new MarcXmlHandler.MarcXmlHandlerBuilder()
       .recordLabel("NOTICE")
@@ -37,8 +37,14 @@ public class PP2RDF {
 
   public static final String dotSeparator = "(?<![^A-Z][A-Z]|[oO]p|Hob|réf|[èeé]d|dir|Mus|[Ss]t|sept)\\.";
   public static Map<String, String> FUNCTION_MAP = null;
+  private static boolean modifiedOut = false;
 
-  public static Model convert(String file) throws FileNotFoundException, URISyntaxException {
+  public PP2RDF() {
+    super();
+    this.graphName = "philharmonie";
+  }
+
+  public Model convert(File file) throws FileNotFoundException {
     if (FUNCTION_MAP == null) {
       try {
         initFunctionMap();
@@ -47,7 +53,6 @@ public class PP2RDF {
       }
     }
 
-    Model model = ModelFactory.createDefaultModel();
     MarcXmlReader reader = new MarcXmlReader(file, PP2RDF.ppXmlHandlerBuilder);
 
     boolean found = false;
@@ -73,11 +78,16 @@ public class PP2RDF {
           }
       }
 
-      RecordConverter mainRecord = new RecordConverter(r, model);
-      if (mainRecord.isConverted()) found = true;
+      try {
+        RecordConverter mainRecord = new RecordConverter(r, model);
+        if (mainRecord.isConverted()) found = true;
+      } catch (URISyntaxException e) {
+        e.printStackTrace();
+      }
     }
-    if (!found) return null;
 
+    if (!found) return null;
+    if (!modifiedOut) modifiedOut = this.addModified();
 
     // Remove empty nodes
     String query = "delete where {?x ?p \"\" }";
@@ -86,15 +96,18 @@ public class PP2RDF {
     return model;
   }
 
-  private static RecordConverter convertTum(String idTUM, String upperIdentifier, Model model, PF15_ComplexWork first) throws FileNotFoundException, URISyntaxException {
+  private static RecordConverter convertTum(String idTUM, String upperIdentifier, Model model, PF15_ComplexWork first) throws FileNotFoundException {
     File tum = getTUM(properties.getProperty("TUMFolder"), idTUM);
-    if (tum == null) throw new FileNotFoundException();
-
     MarcXmlReader tumReader = new MarcXmlReader(tum, PP2RDF.ppXmlHandlerBuilder);
     Record tumRecord = tumReader.getRecords().get(0);
 
     String id = (first == null) ? upperIdentifier : tumRecord.getIdentifier();
-    return new RecordConverter(tumRecord, model, id, first);
+    try {
+      return new RecordConverter(tumRecord, model, id, first);
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   private static List<String> getIdTums(Record r) {

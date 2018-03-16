@@ -523,7 +523,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private static String instrumentToSingular(String r) {
     if (r == null || r.isEmpty()) return "";
 
-    StanfordLemmatizer slem = Converter.stanfordLemmatizer;
+    StanfordLemmatizer slem = StanfordLemmatizer.getDefaultLemmatizer();
     String[] parts = r.split(" ");
     if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
 

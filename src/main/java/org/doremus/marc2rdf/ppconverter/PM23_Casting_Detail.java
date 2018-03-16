@@ -5,7 +5,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.Converter;
 import org.doremus.marc2rdf.main.StanfordLemmatizer;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
@@ -35,7 +34,7 @@ public class PM23_Casting_Detail {
     this.uri = uri;
     this.lang = "fr";
 
-    this.slem = Converter.stanfordLemmatizer;
+    this.slem = StanfordLemmatizer.getDefaultLemmatizer();
 
     name = name
       .replaceAll("ou \\d", "") // 2 ou 4 bassoon

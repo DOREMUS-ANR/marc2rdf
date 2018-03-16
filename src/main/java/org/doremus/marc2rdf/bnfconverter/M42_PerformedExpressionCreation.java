@@ -5,7 +5,10 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.*;
+import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.StanfordLemmatizer;
+import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -78,7 +81,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression)
       .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work);
 
-    this.slem = Converter.stanfordLemmatizer;
+    this.slem = StanfordLemmatizer.getDefaultLemmatizer();
     this.f28 = f28;
 
     parseNote(note);

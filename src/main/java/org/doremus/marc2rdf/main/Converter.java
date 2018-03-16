@@ -26,7 +26,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,19 +39,13 @@ public class Converter {
 
   public static Properties properties;
   private static int maxFilesInFolder, filesInCurrentFolder, currentFolder;
-  public static StanfordLemmatizer stanfordLemmatizer;
   private static Model general;
   private static boolean oneFile;
   private static boolean splitFiles;
+  private static String outputFolderPath;
 
-  private enum INSTITUTION {
-    PHILARMONIE,
-    BNF
-  }
 
-  public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
-    stanfordLemmatizer = new StanfordLemmatizer();
-
+  public static void main(String[] args) throws IOException, InterruptedException {
     marcOut = Arrays.asList(args).indexOf("marc") > -1;
 
     loadProperties();
@@ -68,6 +61,8 @@ public class Converter {
     splitFiles = Boolean.parseBoolean(properties.getProperty("splitFiles", "false"));
 
     String inputFolderPath = properties.getProperty("defaultInput");
+    outputFolderPath = properties.getProperty("defaultOutput");
+
     maxFilesInFolder = Integer.parseInt(properties.getProperty("maxFilesInAFolder"));
     filesInCurrentFolder = 0;
     currentFolder = 0;
@@ -77,7 +72,7 @@ public class Converter {
 
     oneFile = Boolean.parseBoolean(properties.getProperty("oneFile", "false"));
     general = ModelFactory.createDefaultModel();
-    listeRepertoire(new File(inputFolderPath));
+    convertDirectory(new File(inputFolderPath));
   }
 
   private static String getDirFromFileChooser() throws InterruptedException {
@@ -109,15 +104,14 @@ public class Converter {
     return dirName;
   }
 
-  private static void listeRepertoire(File repertoire) throws URISyntaxException, IOException {
-    String outputFolderPath = properties.getProperty("defaultOutput");
+  private static void convertDirectory(File directory) throws IOException {
 
-    if (!repertoire.isDirectory()) {
+    if (!directory.isDirectory()) {
       System.out.println("Input directory not specified or not existing");
       return;
     }
 
-    File[] list = repertoire.listFiles();
+    File[] list = directory.listFiles();
     if (list == null) {
       System.out.println("Input directory is empty");
       return;
@@ -128,21 +122,28 @@ public class Converter {
 //      if(i < 0) break;
 //      --i;
 
-      if (!file.isFile() || !file.getName().endsWith(".xml")) continue;
+      if (file.isDirectory()) {
+        convertDirectory(file);
+        continue;
+      }
+
+      if (!file.isFile() || !file.getName().endsWith(".xml"))
+        continue;
+
       String fich = file.getAbsolutePath();
       Model m;
 
-      INSTITUTION institution;
+      AbstractConverter conv;
       MarcXmlHandler.MarcXmlHandlerBuilder handlerBuilder;
 
       switch (file.getName().length()) {
         case 12:
-          institution = INSTITUTION.BNF;
           handlerBuilder = BNF2RDF.bnfXmlHandlerBuilder;
+          conv = new BNF2RDF();
           break;
         case 11:
-          institution = INSTITUTION.PHILARMONIE;
           handlerBuilder = PP2RDF.ppXmlHandlerBuilder;
+          conv = new PP2RDF();
           break;
         default:
           if (splitFiles && file.getName().startsWith("Export")) {
@@ -161,13 +162,7 @@ public class Converter {
         continue;
       }
 
-      if (institution == INSTITUTION.BNF) { // Notice BNF
-        BNF2RDF conv = new BNF2RDF();
-        m = conv.convert(fich);
-      } else {  // Notice PP
-        m = PP2RDF.convert(fich);
-      }
-
+      m = conv.convert(file);
       if (m == null) continue;
 
       m.setNsPrefix("mus", MUS.getURI());
@@ -191,43 +186,41 @@ public class Converter {
         continue;
       }
       // write file by file
-      File fileName;
-      String newFileName = file.getName().replaceFirst(".xml", ".ttl");
-      String parentFolder = file.getParentFile().getAbsolutePath();
+      String outFolder;
       if (outputFolderPath != null && !outputFolderPath.isEmpty()) {
-        // default folder specified, write there
-        if (filesInCurrentFolder > maxFilesInFolder) {
-          ++currentFolder;
-          filesInCurrentFolder = 0;
-        }
-        fileName = Paths.get(outputFolderPath, currentFolder + "", newFileName).toFile();
-        ++filesInCurrentFolder;
-
-      } else {
-        // write in the same folder, in the "RDF" subfolder
-        fileName = Paths.get(parentFolder, "RDF", newFileName).toFile();
+        outFolder = nextFolder();
+      } else {// write in the same folder, in the "RDF" subfolder
+        String parentFolder = file.getParentFile().getAbsolutePath();
+        outFolder = Paths.get(parentFolder, "RDF").toString();
       }
-      //noinspection ResultOfMethodCallIgnored
-      fileName.getParentFile().mkdirs();
-      FileWriter out = new FileWriter(fileName);
-
-      // m.write(System.out, "TURTLE");
-      m.write(out, "TURTLE");
-      out.close();
-
+      writeModelToFile(m, outFolder, file.getName());
     }
 
-    for (File subList : list) {
-      if (subList.isDirectory())
-        listeRepertoire(subList);
-    }
+    if (oneFile)
+      writeModelToFile(general, outputFolderPath, directory.getName() + ".ttl");
+  }
 
-    if (oneFile) {
-      File fileName = Paths.get(outputFolderPath, repertoire.getName() + ".ttl").toFile();
-      FileWriter out = new FileWriter(fileName);
-      general.write(out, "TURTLE");
-      out.close();
+  private static String nextFolder() {
+    // default folder specified, write there
+    if (filesInCurrentFolder > maxFilesInFolder) {
+      ++currentFolder;
+      filesInCurrentFolder = 0;
     }
+    ++filesInCurrentFolder;
+    return Paths.get(outputFolderPath, String.valueOf(currentFolder)).toString();
+  }
+
+  private static void writeModelToFile(Model m, String folder, String name) throws IOException {
+    name = name.replaceFirst(".xml", ".ttl");
+
+    File outputFile = Paths.get(folder, name).toFile();
+    //noinspection ResultOfMethodCallIgnored
+    outputFile.getParentFile().mkdirs();
+    FileWriter out = new FileWriter(outputFile);
+
+    // m.write(System.out, "TURTLE");
+    m.write(out, "TURTLE");
+    out.close();
   }
 
   private static void fileToFolder(File f) throws XMLStreamException, IOException, TransformerException {

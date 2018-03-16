@@ -13,11 +13,7 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.Time;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
 
 public class TimeSpan {
@@ -274,20 +270,6 @@ public class TimeSpan {
     input = input.trim();
     if (input.length() == 1) input = "0" + input;
     return input;
-  }
-
-  private static String getLastDay(String month, String year) {
-    try {
-      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-      Date convertedDate = dateFormat.parse(year + month + "01");
-      Calendar c = Calendar.getInstance();
-      c.setTime(convertedDate);
-      c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
-      return c.get(Calendar.DAY_OF_MONTH) + "";
-    } catch (ParseException pe) {
-      pe.printStackTrace();
-      return null;
-    }
   }
 
   public Model getModel() {
