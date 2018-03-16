@@ -2,10 +2,8 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.ontology.PROV;
 
 import java.net.URISyntaxException;
 
@@ -25,7 +23,7 @@ public class RecordConverter {
     this.record = record;
     this.model = model;
 
-//    System.out.println(record.getIdentifier());
+    // System.out.println(record.getIdentifier());
 
     String ark = record.getAttrByName("IDPerenne").getData();
 
@@ -39,29 +37,20 @@ public class RecordConverter {
     f22 = new F22_SelfContainedExpression(record, f28);
     f14 = new F14_IndividualWork(record);
     f15 = new F15_ComplexWork(record);
-//    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
 
     f28.add(f22).add(f14);
     f15.add(f22).add(f14);
     f14.add(f22);
-//    f40.add(f22).add(f14).add(f15);
 
     addPrincepsPublication();
     addPerformances();
     linkToMovements();
-    
+
     for (DoremusResource res : new DoremusResource[]{f22, f28, f15, f14}) {
-      addProvenanceTo(res);
+      res.addProvenance(intermarcRes, provActivity);
       model.add(res.getModel());
     }
 
-  }
-
-  void addProvenanceTo(DoremusResource res) {
-    res.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo, model.createResource(BNF2RDF.doremusURI))
-      .addProperty(PROV.wasDerivedFrom, this.intermarcRes)
-      .addProperty(PROV.wasGeneratedBy, this.provActivity);
   }
 
   private void addPerformances() throws URISyntaxException {

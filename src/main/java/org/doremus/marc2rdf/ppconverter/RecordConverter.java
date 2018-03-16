@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 
 public class RecordConverter {
-  public final Resource provActivity, intermarcRes;
+  private final Resource provActivity, intermarcRes;
 
   private Record record;
   private Model model;
@@ -118,8 +118,6 @@ public class RecordConverter {
       PM45_DescriptiveExpressionAssignment f42 = new PM45_DescriptiveExpressionAssignment(record, identifier);
       f42.add(f22).add(f15);
       f15.addProvenance(intermarcRes, provActivity);
-      f42.addProvenance(intermarcRes, provActivity);
-
       model.add(f42.getModel());
     }
 

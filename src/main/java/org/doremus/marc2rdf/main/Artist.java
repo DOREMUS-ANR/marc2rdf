@@ -3,6 +3,9 @@ package org.doremus.marc2rdf.main;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.marc2rdf.ppconverter.PP2RDF;
+import org.doremus.ontology.PROV;
 
 import java.net.URI;
 
@@ -23,6 +26,13 @@ public abstract class Artist {
 
   public Resource asResource() {
     return this.resource;
+  }
+
+  public void addProvenance(Resource intermarcRes, Resource provActivity) {
+    this.asResource().addProperty(RDF.type, PROV.Entity)
+      .addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.doremusURI))
+      .addProperty(PROV.wasDerivedFrom, intermarcRes)
+      .addProperty(PROV.wasGeneratedBy, provActivity);
   }
 
   public URI getUri() {

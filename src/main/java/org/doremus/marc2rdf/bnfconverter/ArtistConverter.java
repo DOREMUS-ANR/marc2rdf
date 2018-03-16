@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ArtistConverter {
 
@@ -93,11 +94,7 @@ public class ArtistConverter {
       .addProperty(RDFS.comment, "Resumption and conversion of the MARC record of the BnF", "en")
       .addProperty(PROV.atTime, Instant.now().toString(), XSDDatatype.XSDdateTime);
 
-
-    base.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo, model.createResource("http://data.doremus.org/organization/DOREMUS"))
-      .addProperty(PROV.wasDerivedFrom, intermarcRes)
-      .addProperty(PROV.wasGeneratedBy, provActivity);
+    base.addProvenance(intermarcRes, provActivity);
 
     // END PROV-O tracing
 
@@ -110,30 +107,24 @@ public class ArtistConverter {
   }
 
   static List<Person> getArtistsInfo(Record record, boolean full) {
-    List<Person> artists = new ArrayList<>();
-
-    for (DataField field : record.getDatafieldsByCode("100")) {
-      if (!full && !field.isCode('3')) continue;
-      artists.add(parseArtistField(field));
-    }
-    return artists;
+    return record.getDatafieldsByCode("100").stream()
+      .filter(field -> full || field.isCode('3'))
+      .map(ArtistConverter::parseArtistField)
+      .collect(Collectors.toList());
   }
 
   public static Person parseArtistField(DataField field) {
-    String firstName = null, lastName = null, birthDate = null, deathDate = null, lang = null;
-
-    if (field.isCode('m')) // name
-      firstName = field.getSubfield('m').getData().trim();
-
-    if (field.isCode('a')) // surname
-      lastName = field.getSubfield('a').getData().trim();
-
-
+    String firstName = field.getString('m');
+    String lastName = field.getString('a');
     if (firstName == null && lastName == null)
       return null;
 
+    String birthDate = null;
+    String deathDate = null;
+    String lang = null;
+
     if (field.isCode('d')) { // birth - death dates
-      String d = field.getSubfield('d').getData();
+      String d = field.getString('d');
 
       // av. J.-C.
       d = d.replaceAll("av\\. J\\.?-C\\.?", "BC");
@@ -141,10 +132,12 @@ public class ArtistConverter {
       birthDate = dates[0].trim();
       if (dates.length > 1) deathDate = dates[1].trim();
     }
+
     if (field.isCode('w')) { // lang
-      String w = field.getSubfield('w').getData();
+      String w = field.getString('w');
       lang = Utils.intermarcExtractLang(w);
     }
+
     try {
       return new Person(firstName, lastName, birthDate, deathDate, lang);
     } catch (URISyntaxException e) {
@@ -156,17 +149,13 @@ public class ArtistConverter {
   static List<String[]> getAlternateNames(Record record) {
     List<String[]> names = new ArrayList<>();
     for (DataField field : record.getDatafieldsByCode("400")) {
-      String firstName = null, lastName = null, lang = null;
 
-      if (field.isCode('m')) { // name
-        firstName = field.getSubfield('m').getData().trim();
-      }
-      if (field.isCode('a')) { // surname
-        lastName = field.getSubfield('a').getData().trim();
-      }
+      String firstName = field.getString('m');
+      String lastName = field.getString('a');
 
+      String lang = null;
       if (field.isCode('w')) { // lang
-        String w = field.getSubfield('w').getData();
+        String w = field.getString('w');
         lang = Utils.intermarcExtractLang(w);
       }
 

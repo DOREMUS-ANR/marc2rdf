@@ -1,7 +1,7 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.ConstructURI;
@@ -93,11 +93,15 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
     String period = getPeriod();
     if (period != null) {
-      Literal periodLiteral = model.createLiteral(period, "fr");
-      this.resource.addProperty(CIDOC.P10_falls_within, model.createResource(ConstructURI.build("pp", "E4_Period", period).toString())
+      String periodUri = getPeriodUri(period);
+      Resource periodRes;
+      if (periodUri != null) periodRes = model.createResource(periodUri);
+      else periodRes = model.createResource(ConstructURI.build("pp", "E4_Period", period).toString())
         .addProperty(RDF.type, CIDOC.E4_Period)
-        .addProperty(RDFS.label, periodLiteral)
-        .addProperty(CIDOC.P1_is_identified_by, periodLiteral));
+        .addProperty(RDFS.label, period, "fr")
+        .addProperty(CIDOC.P1_is_identified_by, period, "fr");
+
+      this.resource.addProperty(CIDOC.P10_falls_within, periodRes);
     }
 
     this.composers = findComposers();
@@ -175,15 +179,11 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
   private String getPeriod() {
     if (!record.isType("UNI:100")) return null;
-
     for (DataField field : record.getDatafieldsByCode("610")) {
-      String period = "", value = "";
-      if (field.isCode('a')) period = field.getSubfield('a').getData().trim();
-      if (field.isCode('b')) value = field.getSubfield('b').getData().trim();
-
-      if (value.equals("02") && !period.isEmpty()) return period;
+      String period = field.getString('a');
+      String value = field.getString('b');
+      if ("02".equals(value) && period != null) return period;
     }
-
     return null;
   }
 
@@ -209,6 +209,25 @@ public class PF28_ExpressionCreation extends DoremusResource {
     return composers;
   }
 
+
+  private static String getPeriodUri(String input) {
+    String local;
+    if (input.contains("siècle")) {
+      String century = input.substring(0, 2);
+      local = century + "_century";
+      if (input.contains("moitié")) {
+        int begin = input.indexOf("moitié") - 6;
+        String half = input.substring(begin, begin + 1);
+        local += "_" + half;
+      }
+    } else if (input.equals("Renaissance"))
+      local = "renaissance";
+    else if (input.equals("Révolution française"))
+      local = "french_revolution";
+    else return null;
+
+    return "http://data.doremus.org/period/" + local;
+  }
 
   private static boolean isAComposer(DataField field) {
     return field != null && "230".equals(field.getString(4));
