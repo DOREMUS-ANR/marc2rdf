@@ -5,7 +5,6 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -36,10 +35,9 @@ public class PM46_SetOfTracks extends DoremusResource {
         .addProperty(RDFS.label, title);
     }
 
-    String duration = getDuration();
+    String duration = PM24_Track.getDuration(this.record);
     if (duration != null)
       this.resource.addProperty(MUS.U53_has_duration, duration, XSDDatatype.XSDdayTimeDuration);
-
   }
 
   private List<String> getTitles() {
@@ -53,11 +51,4 @@ public class PM46_SetOfTracks extends DoremusResource {
   }
 
 
-  private String getDuration() {
-    for (String f : record.getDatafieldsByCode(215, 'a')) {
-      if (f == null || f.isEmpty() || !f.matches(Utils.DURATION_REGEX)) continue;
-      return Utils.duration2iso(f);
-    }
-    return null;
-  }
 }

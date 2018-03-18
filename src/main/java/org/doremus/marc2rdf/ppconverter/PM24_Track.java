@@ -31,7 +31,7 @@ public class PM24_Track extends DoremusResource {
       .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
 
     String rdaType = PP2RDF.guessType(record);
-    if(rdaType!=null)
+    if (rdaType != null)
       this.resource.addProperty(MUS.U227_has_content_type, rdaType, "en");
 
 
@@ -43,7 +43,7 @@ public class PM24_Track extends DoremusResource {
     if (orderNum != null)
       this.resource.addProperty(MUS.U10_has_order_number, orderNum, XSDDatatype.XSDint);
 
-    String duration = getDuration();
+    String duration = getDuration(this.record);
     if (duration != null)
       this.resource.addProperty(MUS.U53_has_duration, duration, XSDDatatype.XSDdayTimeDuration);
   }
@@ -63,12 +63,11 @@ public class PM24_Track extends DoremusResource {
     return null;
   }
 
-  private String getDuration() {
-    for (String f : record.getDatafieldsByCode(215, 'a')) {
-      if (f == null || f.isEmpty() || !f.matches(Utils.DURATION_REGEX)) continue;
-      return Utils.duration2iso(f);
-    }
-    return null;
+  static String getDuration(Record record) {
+    return record.getDatafieldsByCode(215, 'a').stream()
+      .filter(f -> f != null && !f.isEmpty() && f.matches(Utils.DURATION_REGEX))
+      .findFirst().map(Utils::duration2iso)
+      .orElse(null);
   }
 
 

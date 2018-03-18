@@ -22,10 +22,9 @@ repositories {
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21',
         'org.slf4j:slf4j-simple:1.7.21',
-        'org.apache.jena:apache-jena-libs:3.1.0',
+        'org.apache.jena:apache-jena-libs:3.6.0',
         'org.apache.poi:poi:3.14',
         'org.apache.poi:poi-ooxml:3.14',
-        'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5',
         'com.openlinksw:virtjdbc4@jar',
         'xml-apis:xml-apis:1.4.01',
         'virtuoso.jena.driver:virt_jena3@jar',

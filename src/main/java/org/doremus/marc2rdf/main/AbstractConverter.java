@@ -20,7 +20,6 @@ public abstract class AbstractConverter {
   public abstract Model convert(File file) throws FileNotFoundException;
 
   protected boolean addModified() {
-    System.out.println(this.graphName);
     model.createResource("http://data.doremus.org/" + this.graphName)
       .addProperty(DCTerms.modified, Instant.now().toString(), XSDDatatype.XSDdateTime);
     return true;
