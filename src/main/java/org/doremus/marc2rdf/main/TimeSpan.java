@@ -17,7 +17,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class TimeSpan {
-  private static final String UCT_DATE_REGEX = "\\d{4}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[1-2]\\d|3[0-1]))?)?(?:T(?:[0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ)?";
+  private static final String UCT_DATE_REGEX = "\\d{4}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[1-2]\\d|3[0-1]))?)?(?:T" +
+    "(?:[0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ?)?";
   public static final String frenchDayRegex = "(1er|[\\d]{1,2})";
   public static final String frenchMonthRegex = "(janvier|février|mars|avril|mai|juin|juillet|ao[ûu]t|septembre|octobre|novembre|décembre)";
   public static final String frenchDateRegex = "(?:le )?(?:" + frenchDayRegex + "? ?" + frenchMonthRegex + "? ?)?(\\d{4})";
@@ -37,6 +38,7 @@ public class TimeSpan {
   private XSDDatatype startType, endType;
   private Precision startQuality, endQuality;
   private String label;
+  private boolean endRequired = true;
 
   public static TimeSpan emptyUncertain() {
     TimeSpan ts = new TimeSpan(null);
@@ -85,6 +87,7 @@ public class TimeSpan {
 
   public TimeSpan(String year, String month, String day, String time) {
     this(year, month, day, null, null, null);
+    this.endRequired = false;
     if (time == null) return;
 
     time = time.trim();
@@ -183,7 +186,7 @@ public class TimeSpan {
   }
 
   private String computeLabel() {
-    if (Objects.equals(startDate, endDate)) return startDate;
+    if (endDate.isEmpty() || Objects.equals(startDate, endDate)) return startDate;
     return startDate + "/" + endDate;
   }
 
@@ -199,7 +202,7 @@ public class TimeSpan {
       startYear = endYear.substring(0, 2) + "00"; //beginning of the century
       startQuality = Precision.UNCERTAINTY;
     }
-    if (endYear.isEmpty()) {
+    if (endRequired && endYear.isEmpty()) {
       endYear = startYear;
       endMonth = startMonth;
       endDay = startDay;
@@ -241,6 +244,7 @@ public class TimeSpan {
 
     Resource startInstant = makeInstant(startDate, startType);
     Resource endInstant = makeInstant(endDate, endType);
+
     if (startInstant != null) this.resource.addProperty(Time.hasBeginning, startInstant);
     if (endInstant != null) this.resource.addProperty(Time.hasEnd, endInstant);
 
@@ -248,7 +252,6 @@ public class TimeSpan {
       this.resource.addProperty(CIDOC.P79_beginning_is_qualified_by, startQuality.toString());
     if (this.endQuality != null)
       this.resource.addProperty(CIDOC.P80_end_is_qualified_by, endQuality.toString());
-
   }
 
   private Resource makeInstant(String date, XSDDatatype type) {
