@@ -17,7 +17,7 @@ public class PF4_ManifestationSingleton extends DoremusResource {
 
     this.resource
       .addProperty(RDF.type, FRBROO.F4_Manifestation_Singleton)
-      .addProperty(DCTerms.type, identifier);
+      .addProperty(DCTerms.identifier, identifier);
 
     record.getDatafieldsByCode(200, 'a')
       .forEach(this::addTitle);
