@@ -19,12 +19,11 @@ public class PM29_Editing extends DoremusResource {
     this.countActivity = 0;
     this.resource.addProperty(RDF.type, MUS.M29_Editing);
 
-    this.addProducer(model.createResource(PP2RDF.organizationURI));
     for (String producer : record.getDatafieldsByCode(911, 'a')) {
       producer = producer.trim();
-      if (producer.equals("Philharmonie de Paris")) continue;
-
-      addProducer(new CorporateBody(producer));
+      if (producer.equals("Philharmonie de Paris"))
+        this.addProducer(model.createResource(PP2RDF.organizationURI));
+      else addProducer(new CorporateBody(producer));
     }
   }
 
@@ -35,7 +34,8 @@ public class PM29_Editing extends DoremusResource {
 
   private void addProducer(Resource producer) {
     try {
-      E7_Activity activity = new E7_Activity(this.uri + "/activity/" + ++countActivity, producer, "Producteur de vidéogramme");
+      String activityUri = this.uri + "/activity/" + ++countActivity;
+      E7_Activity activity = new E7_Activity(activityUri, producer, "audio producer");
       this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
       this.model.add(activity.getModel());
     } catch (URISyntaxException e) {
