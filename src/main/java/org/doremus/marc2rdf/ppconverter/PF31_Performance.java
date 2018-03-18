@@ -29,10 +29,10 @@ public class PF31_Performance extends DoremusResource {
 
     this.playedWorks = new ArrayList<>();
     for (String track : getTracks()) {
-      this.add(new PM42_PerformedExpressionCreation(track));
+      PM42_PerformedExpressionCreation m42 = new PM42_PerformedExpressionCreation(track);
       PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(track);
-      this.add(f22);
-      plan.add(f22);
+      this.add(m42).add(f22);
+      plan.add(m42).add(f22);
       playedWorks.add(f22);
       // I intentionally have not added the models: they will be in the UNI44 record
     }
@@ -86,8 +86,9 @@ public class PF31_Performance extends DoremusResource {
       .addProperty(CIDOC.P3_has_note, note);
   }
 
-  public void add(PM42_PerformedExpressionCreation m42) {
+  public PF31_Performance add(PM42_PerformedExpressionCreation m42) {
     this.resource.addProperty(CIDOC.P9_consists_of, m42.asResource());
+    return this;
   }
 
   private void add(PF22_SelfContainedExpression f22) {

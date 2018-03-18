@@ -29,11 +29,6 @@ public class PF25_PerformancePlan extends DoremusResource {
     this.record = record;
   }
 
-  public PF25_PerformancePlan add(PF22_SelfContainedExpression f22) {
-    this.resource.addProperty(CIDOC.P165_incorporates, f22.asResource());
-    return this;
-  }
-
   public void setAsImprovisation() {
     try {
       PM50_Performance_Mode pMode = new PM50_Performance_Mode(this.uri + "/mode", "improvisation");
@@ -42,5 +37,15 @@ public class PF25_PerformancePlan extends DoremusResource {
     } catch (URISyntaxException e) {
       e.printStackTrace();
     }
+  }
+
+  public PF25_PerformancePlan add(PF22_SelfContainedExpression f22) {
+    this.resource.addProperty(CIDOC.P165_incorporates, f22.asResource());
+    return this;
+  }
+
+  public PF25_PerformancePlan add(PM42_PerformedExpressionCreation m42) {
+    this.resource.addProperty(CIDOC.P9_consists_of, m42.asResource());
+    return this;
   }
 }

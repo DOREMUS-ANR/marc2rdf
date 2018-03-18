@@ -90,10 +90,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     getMuseeMusique(record).forEach(note ->
       this.resource.addProperty(MUS.U193_used_historical_instruments, note));
 
-    String commandNote = searchInNote("commande de la Philharmonie de Paris");
-    if (commandNote != null) this.addCommand(PP2RDF.organizationURI);
-    commandNote = searchInNote("commande de l'Ensemble intercontemporain");
-    if (commandNote != null) this.addCommand(getEnsambleIntercontemporainUri());
+    if (searchInNote("commande de la Philharmonie de Paris") != null)
+      this.addCommand(PP2RDF.organizationURI);
+    if (searchInNote("commande de l'Ensemble intercontemporain") != null)
+      this.addCommand(getEnsambleIntercontemporainUri());
 
     for (String workId : record.getDatafieldsByCode(419, '3'))
       linkWorkById(workId);
@@ -117,7 +117,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
         .toArray().length > 0;
 
       if (isAnImprovisation()) {
-//        F25 Performance Plan R25i was performed by M42 Performed Expression Creation
+        // F25 Performance Plan R25i was performed by M42 Performed Expression Creation
         PF25_PerformancePlan plan = new PF25_PerformancePlan(identifier);
         plan.setAsImprovisation();
         model.add(plan.getModel());
