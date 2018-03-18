@@ -14,9 +14,13 @@ public class F25_PerformancePlan extends DoremusResource {
 
     this.resource.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
 
-    /**************************** création d'une expression de plan d'exécution *************/
+    F20_PerformanceWork work = new F20_PerformanceWork(this.identifier);
     F28_ExpressionCreation planCreation = new F28_ExpressionCreation(identifier);
-    planCreation.asResource().addProperty(FRBROO.R17_created, this.resource);
+    work.add(this);
+    planCreation.asResource()
+      .addProperty(FRBROO.R17_created, this.resource)
+      .addProperty(FRBROO.R19_created_a_realisation_of, work.asResource());
+    model.add(work.getModel());
     model.add(planCreation.getModel());
   }
 

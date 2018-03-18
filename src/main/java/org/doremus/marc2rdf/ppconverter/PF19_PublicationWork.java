@@ -14,7 +14,6 @@ public class PF19_PublicationWork extends DoremusResource{
   }
 
   public PF19_PublicationWork add(PF24_PublicationExpression f24) {
-    /**************************** réalisation d'une work ************************************/
     this.resource.addProperty(FRBROO.R3_is_realised_in, f24.asResource());
     return this;
   }
