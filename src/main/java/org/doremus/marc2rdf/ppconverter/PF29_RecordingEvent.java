@@ -10,7 +10,6 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
-import org.doremus.ontology.MUS;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -20,6 +19,9 @@ import java.util.regex.Pattern;
 
 
 public class PF29_RecordingEvent extends DoremusResource {
+  private final static String PLACE_REGEX = "(Cité de la musique|Salle Pleyel|Philharmonie de Paris|Grande Halle de la Villette)(?: \\((.+)\\))?";
+  private final static Pattern PLACE_PATTERN = Pattern.compile(PLACE_REGEX);
+
   private int countActivity;
 
   private final PF26_Recording f26_recording;
@@ -92,8 +94,6 @@ public class PF29_RecordingEvent extends DoremusResource {
   }
 
 
-  private final static String PLACE_REGEX = "(Cité de la musique|Salle Pleyel|Philharmonie de Paris|Grande Halle de la Villette)(?: \\((.+)\\))?";
-  private final static Pattern PLACE_PATTERN = Pattern.compile(PLACE_REGEX);
 
   private void computePlaces() throws URISyntaxException {
     for (String note : record.getDatafieldsByCode(200, 'e')) {
@@ -136,7 +136,7 @@ public class PF29_RecordingEvent extends DoremusResource {
 
   public void setPlace(E53_Place place) {
     this.model.add(place.getModel());
-    this.resource.addProperty(MUS.U7_foresees_place_at, place.asResource());
+    this.resource.addProperty(CIDOC.P7_took_place_at, place.asResource());
     this.places.add(place);
   }
 
