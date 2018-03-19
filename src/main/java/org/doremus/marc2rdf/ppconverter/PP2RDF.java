@@ -98,6 +98,7 @@ public class PP2RDF extends AbstractConverter {
 
   private static RecordConverter convertTum(String idTUM, String upperIdentifier, Model model, PF15_ComplexWork first) throws FileNotFoundException {
     File tum = getTUM(properties.getProperty("TUMFolder"), idTUM);
+    if (tum == null) throw new FileNotFoundException();
     MarcXmlReader tumReader = new MarcXmlReader(tum, PP2RDF.ppXmlHandlerBuilder);
     Record tumRecord = tumReader.getRecords().get(0);
 

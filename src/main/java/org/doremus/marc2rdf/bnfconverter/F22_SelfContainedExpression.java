@@ -167,10 +167,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
     for (String castingDetail : getCastMembers()) {
       String mopCode = castingDetail.substring(0, 2);
       String mopNum = castingDetail.substring(2, 4);
-      String iamlCode = Utils.itermarc2mop(mopCode);
 
+      String iamlCode = Utils.itermarc2mop(mopCode);
       if (iamlCode == null)
-        System.out.println("Iaml code not found for mop: " + mopCode);
+        System.out.println("Iaml code not found for mop: " + mopCode + ". Record: " + this.identifier);
       else
         castDetails.add(new M23_Casting_Detail(iamlCode, mopNum));
     }

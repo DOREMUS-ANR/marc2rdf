@@ -12,7 +12,7 @@ bco;cornet;cornet à piston;bc;
 bct;cornett;cornet à bouquin;;Pas d’équivalent dans le format source
 bcu;cornu;;;Pas d’équivalent dans le format source
 bdx;duplex;dublophone;;Pas d’équivalent dans le format source
-beu;euphonium;euphonium;;Pas d’équivalent dans le format source
+beu;euphonium;euphonium;bf;Pas d’équivalent dans le format source
 bhh;hunting horn;cor de chasse;;Pas d’équivalent dans le format source
 bho;horn;cor;ba;
 bht;herald's trumpet;buisine;;Pas d’équivalent dans le format source
@@ -31,7 +31,7 @@ btr;trumpet;trompette;bb;
 btu;tuba;tuba;be;
 bun;brass unspecified;cuivre - non spécifié;bn;
 bun;brass unspecified;cuivre -inconnu;bu;
-bun;brass unspecified;cuivre - ethnique;by;+ suffixe ‘y’
+bun__y;brass unspecified;cuivre - ethnique;by;+ suffixe ‘y’
 bvb;valved bugle;;;Pas d’équivalent dans le format source
 bwt;Wagner tuba;tuba wagner;;Pas d’équivalent dans le format source
 bzz;brass – other;cuivre - autre;bz;
@@ -43,7 +43,7 @@ cmi;mixed choir;chœur mixte;ck;
 cre;reciting choir;chœur parlé;;Pas d’équivalent dans le format source
 cun;choir unspecified;chœur - non spécifié;cn;
 cun;choir unspecified;chœur  -inconnu;cu;
-cun;choir unspecified;chœur - ethnique;cy;+ suffixe ‘y’
+cun__y;choir unspecified;chœur - ethnique;cy;+ suffixe ‘y’
 cwo;women' s choir;chœur de femmes;cb;
 czz;choir – other;choeur - autre;;Pas d’équivalent dans le format source
 eco;computer;ordinateur;ec;
@@ -88,7 +88,7 @@ ksp;sostenente piano;piano à archet;;Pas d’équivalent dans le format source
 kst;spinet;épinette;;Pas d’équivalent dans le format source
 kun;keyboard unspecified;clavier - non spécifié;kn;
 kun;keyboard unspecified;clavier - inconnu;ku;
-kun;keyboard unspecified;clavier - ethnique;ky;+ suffixe ‘y’
+kun__y;keyboard unspecified;clavier - ethnique;ky;+ suffixe ‘y’
 kvg;virginal;;;Pas d’équivalent dans le format source
 kzz;keyboard – other;clavier - autre;kz;
 mah;eolian harp;harpe éolienne;;Pas d’équivalent dans le format source
@@ -222,7 +222,7 @@ ptt;tom-tom;;;Pas d’équivalent dans le format source
 ptx;txalaparta;;;Pas d’équivalent dans le format source
 pun;percussion  unspecified;Percussions - non spécifié;pn;
 pun;percussion  unspecified;Percussions  - inconnu;pu;
-pun;percussion  unspecified;Percussions  - ethnique;py;+ suffixe ‘y’
+pun__y;percussion  unspecified;Percussions  - ethnique;py;+ suffixe ‘y’
 pvi;vibraphone;vibraphone;;Pas d’équivalent dans le format source
 pvs;vibra-slap;;;Pas d’équivalent dans le format source
 pwh;whip;fouet;;Pas d’équivalent dans le format source
@@ -255,7 +255,7 @@ sre;rebec;rebec;;Pas d’équivalent dans le format source
 stm;trumpet marine;trompette marine;;Pas d’équivalent dans le format source
 sun;string unspecified;Cordes frottées - non spécifié;sn;
 sun;string unspecified;Cordes frottées - inconnu;su;
-sun;string unspecified;Cordes frottées - ethnique;sy;+ suffixe ‘y’
+sun__y;string unspecified;Cordes frottées - ethnique;sy;+ suffixe ‘y’
 sva;viola;alto;sb;
 svc;cello;violoncelle;sc;
 svd;viola d'amore;viole d'amour;sf;
@@ -300,7 +300,7 @@ tud;ud;oud;;Pas d’équivalent dans le format source
 tuk;ukulele;;;Pas d’équivalent dans le format source
 tun;plucked unspecified;Cordes pincées - non spécifié;tn;
 tun;plucked unspecified;Cordes pincées -inconnu;tu;
-tun;plucked unspecified;Cordes pincées - ethnique;ty;+ suffixe ‘y’
+tun__y;plucked unspecified;Cordes pincées - ethnique;ty;+ suffixe ‘y’
 tvi;vihuela;;;Pas d’équivalent dans le format source
 tzi;zither;cithare;;Pas d’équivalent dans le format source
 tzz;plucked – other;cordes pincées - autre;tz;
@@ -327,7 +327,7 @@ vun;voice – unspecified;voix élevée;vh;+ suffixe ‘j’
 vun;voice – unspecified;voix  moyenne;vi;+ suffixe ‘k’
 vun;voice – unspecified;voix  basse;vj;+ suffixe ‘l’
 vun;voice – unspecified;voix  - inconnu;vu;
-vun;voice – unspecified;voix - ethnique;vy;+ suffixe ‘y’
+vun__y;voice – unspecified;voix - ethnique;vy;+ suffixe ‘y’
 vun;voice – unspecified;voix - non spécifié;vz;
 wau;aulos;;;Pas d’équivalent dans le format source
 wba;bassoon;basson;wd;
@@ -370,7 +370,8 @@ wsr;sarruso-phone;contrebasse-à-anche;;Pas d’équivalent dans le format sourc
 wsu;sordun;courtaut;;Pas d’équivalent dans le format source
 wun;woodwind unspecified;bois - non spécifié;wn;
 wun;woodwind unspecified;bois - inconnu;wu;
-wun;woodwind unspecified;bois - ethnique;wz;+ suffixe ‘y’
+wun__y;woodwind unspecified;bois - ethnique;wz;+ suffixe ‘y’
+wun__y;woodwind unspecified;bois - ethnique;wy;+ suffixe ‘y’
 wvu;voce umana;;;Pas d’équivalent dans le format source
 wzz;woodwind – other;bois - autre;wz;
 zab;acrobat;acrobate;;Pas d’équivalent dans le format source
@@ -384,4 +385,4 @@ zes;sound engineer;Ingénieur du son;;Pas d’équivalent dans le format source
 zju;juggler;jongleur;;Pas d’équivalent dans le format source
 zmi;mime;mime;;Sans objet pas de précision
 zwp;walk-on part;figurant(e);;Pas d’équivalent dans le format source
-zzz;performer – other;interprète - autre;;Sans objet pas de précision
+zzz;performer – other;interprète - autre;zz;Sans objet pas de précision

@@ -65,6 +65,7 @@ public class ConstructURI {
       case "F19_PublicationWork":
       case "M44_PerformedWork":
       case "F21_RecordingWork":
+      case "F20_PerformanceWork":
         return "work";
       case "F24_PublicationExpression":
         return "publication";
