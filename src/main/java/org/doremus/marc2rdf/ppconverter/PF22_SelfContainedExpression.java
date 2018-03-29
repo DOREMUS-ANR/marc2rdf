@@ -365,18 +365,4 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     return this;
   }
 
-  public void link2concert(List<String> df) {
-    if (df.isEmpty()) return;
-    String concert = df.get(0);
-    try {
-      PF31_Performance f31 = new PF31_Performance(concert);
-      PF25_PerformancePlan f25 = new PF25_PerformancePlan(concert, true);
-      f31.add(this);
-      f25.add(this);
-
-      this.model.add(f31.getModel()).add(f25.getModel());
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
-  }
 }

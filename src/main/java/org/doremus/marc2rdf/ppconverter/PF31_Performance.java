@@ -127,4 +127,8 @@ public class PF31_Performance extends DoremusResource {
   public List<PM43_PerformedExpression> getPlayedWorks() {
     return playedWorks;
   }
+
+  public PF25_PerformancePlan getRelatedF25() throws URISyntaxException {
+    return new PF25_PerformancePlan(getIdentifier(), true);
+  }
 }

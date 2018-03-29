@@ -67,6 +67,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     super(record);
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
 
+    List<String> concertIds = record.getDatafieldsByCode(935, 3);
+    if (!concertIds.isEmpty())
+      this.F31_Performance = new PF31_Performance(concertIds.get(0));
+
     this.M43_Performed_Expression = new PM43_PerformedExpression(record);
     this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
     this.connectTriplet();
@@ -136,7 +140,6 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
 
-
   static Stream<String> getMuseeMusique(Record record) {
     Pattern p = Pattern.compile("(?i)(musée de la Musique|collection)");
 
@@ -198,6 +201,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
             String toBeAdded = "";
             for (int i = 1; i < parts.size(); i++) {
               String pt = toBeAdded + parts.get(i).trim();
+              pt = pt.replaceAll("\\)", "").trim();
+
               toBeAdded = "";
               if (pt.isEmpty()) continue;
               if (pt.matches("composit(ion|eurs?)") ||
@@ -630,7 +635,9 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       f14.addPremiere(this);
     }
 
-    f22.link2concert(record.getDatafieldsByCode(935, 3));
+    this.F31_Performance.add(this);
+    PF25_PerformancePlan f25 = this.F31_Performance.getRelatedF25().add(this);
+    this.model.add(F31_Performance.getModel()).add(f25.getModel());
 
     this.add(f22);
     f15.add(this);
@@ -643,7 +650,9 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
     PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
 
-    f22.link2concert(record.getDatafieldsByCode(935, 3));
+    this.F31_Performance.add(this);
+    PF25_PerformancePlan f25 = this.F31_Performance.getRelatedF25().add(this);
+    this.model.add(F31_Performance.getModel()).add(f25.getModel());
 
     f28.add(f22).add(f14);
     f14.add(f22);
@@ -666,7 +675,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   private String getEnsambleIntercontemporainUri() throws URISyntaxException {
     if (ensambleIntercontemporain == null) {
-      ensambleIntercontemporain = new CorporateBody("Ensamble intercontemporain");
+      ensambleIntercontemporain = new CorporateBody("Ensemble intercontemporain");
       model.add(ensambleIntercontemporain.getModel());
     }
     return ensambleIntercontemporain.getUri().toString();
