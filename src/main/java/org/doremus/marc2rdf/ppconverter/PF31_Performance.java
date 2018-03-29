@@ -82,9 +82,7 @@ public class PF31_Performance extends DoremusResource {
   public PF31_Performance(String uri, String note, Model model) throws URISyntaxException {
     super();
     this.model = model;
-    this.uri = new URI(uri);
-    this.regenerateResource();
-
+    this.regenerateResource(uri);
     this.resource.addProperty(RDF.type, FRBROO.F31_Performance)
       .addProperty(RDFS.comment, note)
       .addProperty(CIDOC.P3_has_note, note);

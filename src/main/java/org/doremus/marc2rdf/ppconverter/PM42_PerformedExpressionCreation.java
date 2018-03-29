@@ -637,12 +637,12 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
     this.F31_Performance.add(this);
     PF25_PerformancePlan f25 = this.F31_Performance.getRelatedF25().add(this);
-    this.model.add(F31_Performance.getModel()).add(f25.getModel());
 
     this.add(f22);
     f15.add(this);
 
     this.hasWorkLinked = true;
+    this.model.add(F31_Performance.getModel()).add(f25.getModel());
   }
 
   private void linkNewWork() throws URISyntaxException {
@@ -650,9 +650,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
     PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
 
-    this.F31_Performance.add(this);
-    PF25_PerformancePlan f25 = this.F31_Performance.getRelatedF25().add(this);
-    this.model.add(F31_Performance.getModel()).add(f25.getModel());
+    PF25_PerformancePlan f25 = this.F31_Performance.getRelatedF25().add(f22);
 
     f28.add(f22).add(f14);
     f14.add(f22);
@@ -663,7 +661,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     }
 
     this.add(f22);
-    model.add(f22.getModel()).add(f28.getModel()).add(f14.getModel());
+    this.model.add(f22.getModel()).add(f28.getModel()).add(f14.getModel());
+    this.model.add(F31_Performance.getModel()).add(f25.getModel());
   }
 
 

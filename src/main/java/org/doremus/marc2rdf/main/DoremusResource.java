@@ -62,11 +62,20 @@ public abstract class DoremusResource {
 
 
   protected void regenerateResource() throws URISyntaxException {
+    regenerateResource(ConstructURI.build(this.sourceDb, this.className, this.identifier));
+  }
+
+  protected void regenerateResource(String uri) throws URISyntaxException {
+    regenerateResource(new URI(uri));
+  }
+
+  protected void regenerateResource(URI uri) {
+    this.uri = uri;
+
     // delete old one
     if (this.resource != null) this.resource.removeProperties();
 
     // generate the new one
-    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
     this.resource = model.createResource(this.uri.toString());
   }
 

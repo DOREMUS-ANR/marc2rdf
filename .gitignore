@@ -2,6 +2,7 @@
 
 # output directory
 build/
+out/
 
 # eclim daemon conf file
 workspace.xml
