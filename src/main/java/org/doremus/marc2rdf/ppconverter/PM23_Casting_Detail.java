@@ -154,13 +154,18 @@ public class PM23_Casting_Detail {
   }
 
   static String toItalianSinger(String input) {
+    return toItalianSinger(input, false);
+  }
+
+  static String toItalianSinger(String input, boolean safeMode) {
     switch (input) {
       case "alto":
         return "contralto";
       case "baryton":
         return "baritono";
       default:
-        return null;
+        return safeMode ? input : null;
     }
   }
+
 }

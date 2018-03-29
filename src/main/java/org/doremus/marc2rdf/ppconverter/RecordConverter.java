@@ -73,6 +73,10 @@ public class RecordConverter {
     performance.setTime(recording.getTime());
     performance.setPlace(recording.getPlaces());
 
+    for (PM43_PerformedExpression exp : performance.getPlayedWorks()){
+      tracks.add(exp);
+    }
+
     for (String supportId : record.getDatafieldsByCode(997, 3)) {
       PF4_ManifestationSingleton support = new PF4_ManifestationSingleton(record, supportId);
       support.add(performance.getPlayedWorks());
@@ -98,6 +102,7 @@ public class RecordConverter {
 
     PM24_Track track = new PM24_Track(record);
     PM42_PerformedExpressionCreation perfExpression = new PM42_PerformedExpressionCreation(record);
+    track.add(perfExpression.getExpression());
 
     for (DoremusResource res : new DoremusResource[]{track, perfExpression, perfExpression.getExpression()}) {
       res.addProvenance(intermarcRes, provActivity);

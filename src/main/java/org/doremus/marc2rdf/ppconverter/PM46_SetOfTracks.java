@@ -35,6 +35,12 @@ public class PM46_SetOfTracks extends DoremusResource {
         .addProperty(RDFS.label, title);
     }
 
+    for (String subtitle : record.getDatafieldsByCode(200, 'e')) {
+      subtitle = subtitle.trim();
+      this.resource.addProperty(MUS.U67_has_subtitle, subtitle);
+    }
+
+
     String duration = PM24_Track.getDuration(this.record);
     if (duration != null)
       this.resource.addProperty(MUS.U53_has_duration, duration, XSDDatatype.XSDdayTimeDuration);
@@ -51,4 +57,8 @@ public class PM46_SetOfTracks extends DoremusResource {
   }
 
 
+  public PM46_SetOfTracks add(PM43_PerformedExpression exp) {
+    this.asResource().addProperty(MUS.U51_is_partial_or_full_recording_of, exp.asResource());
+    return this;
+  }
 }

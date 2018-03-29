@@ -29,14 +29,13 @@ public class PF4_ManifestationSingleton extends DoremusResource {
   }
 
 
-  public PF4_ManifestationSingleton add(List<PF22_SelfContainedExpression> playedWorks) {
-    for (PF22_SelfContainedExpression f22 : playedWorks)
-      this.add(f22);
+  public PF4_ManifestationSingleton add(List<PM43_PerformedExpression> playedWorks) {
+    playedWorks.forEach(this::add);
     return this;
   }
 
-  private PF4_ManifestationSingleton add(PF22_SelfContainedExpression f22) {
-    this.resource.addProperty(CIDOC.P128_carries, f22.asResource());
+  private PF4_ManifestationSingleton add(PM43_PerformedExpression exp) {
+    this.resource.addProperty(CIDOC.P128_carries, exp.asResource());
     return this;
   }
 }

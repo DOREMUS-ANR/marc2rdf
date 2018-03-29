@@ -71,4 +71,8 @@ public class PM24_Track extends DoremusResource {
   }
 
 
+  public PM24_Track add(PM43_PerformedExpression expression) {
+    this.resource.addProperty(MUS.U51_is_partial_or_full_recording_of, expression.asResource());
+    return this;
+  }
 }

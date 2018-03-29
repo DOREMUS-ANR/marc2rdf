@@ -60,6 +60,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   public PM42_PerformedExpressionCreation(String identifier) throws URISyntaxException {
     super(identifier);
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
+    this.M43_Performed_Expression = new PM43_PerformedExpression(identifier);
   }
 
   public PM42_PerformedExpressionCreation(Record record) throws URISyntaxException {
@@ -129,6 +130,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
       PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
       PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
+
+      f22.link2concert(record.getDatafieldsByCode(935, 3));
 
       f28.add(f22).add(f14);
       f14.add(f22);
@@ -227,7 +230,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
               pt = pt.trim();
               if (!isInstrumentist)
-                pt = PM23_Casting_Detail.toItalianSinger(pt);
+                pt = PM23_Casting_Detail.toItalianSinger(pt, true);
 
               Resource mop = VocabularyManager.searchInCategory(instrumentToSingular(pt), "fr", "mop");
 

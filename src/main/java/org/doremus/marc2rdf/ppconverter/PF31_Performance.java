@@ -1,6 +1,7 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
@@ -17,12 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PF31_Performance extends DoremusResource {
-  private List<PF22_SelfContainedExpression> playedWorks;
+  private List<PM43_PerformedExpression> playedWorks;
 
   public PF31_Performance(Record record) throws URISyntaxException {
     super(record);
     this.resource.addProperty(RDF.type, FRBROO.F31_Performance)
-      .addProperty(CIDOC.P2_has_type, "concert");
+      .addProperty(CIDOC.P2_has_type, "concert")
+      .addProperty(DC.identifier, getIdentifier());
 
     PF25_PerformancePlan plan = new PF25_PerformancePlan(record);
     this.add(plan);
@@ -30,10 +32,9 @@ public class PF31_Performance extends DoremusResource {
     this.playedWorks = new ArrayList<>();
     for (String track : getTracks()) {
       PM42_PerformedExpressionCreation m42 = new PM42_PerformedExpressionCreation(track);
-      PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(track);
-      this.add(m42).add(f22);
-      plan.add(m42).add(f22);
-      playedWorks.add(f22);
+      this.add(m42);
+      plan.add(m42);
+      playedWorks.add(m42.getExpression());
       // I intentionally have not added the models: they will be in the UNI44 record
     }
     model.add(plan.getModel());
@@ -74,6 +75,9 @@ public class PF31_Performance extends DoremusResource {
       .forEach(this::addNote);
   }
 
+  public PF31_Performance(String identifier) throws URISyntaxException {
+    super(identifier);
+  }
 
   public PF31_Performance(String uri, String note, Model model) throws URISyntaxException {
     super();
@@ -91,7 +95,7 @@ public class PF31_Performance extends DoremusResource {
     return this;
   }
 
-  private void add(PF22_SelfContainedExpression f22) {
+  public void add(PF22_SelfContainedExpression f22) {
     this.resource.addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
   }
 
@@ -120,7 +124,7 @@ public class PF31_Performance extends DoremusResource {
     return record.getDatafieldsByCode(462, 3);
   }
 
-  public List<PF22_SelfContainedExpression> getPlayedWorks() {
+  public List<PM43_PerformedExpression> getPlayedWorks() {
     return playedWorks;
   }
 }

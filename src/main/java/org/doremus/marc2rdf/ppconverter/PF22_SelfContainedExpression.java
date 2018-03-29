@@ -45,6 +45,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
+
     if (record.isTUM()) convertUNI100(composers);
     else if ("UNI:44".equals(record.getType())) convertUNI44();
   }
@@ -402,5 +403,20 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   public PF22_SelfContainedExpression addPremiere(PM42_PerformedExpressionCreation m42) {
     this.resource.addProperty(MUS.U5_had_premiere, m42.getMainPerformance());
     return this;
+  }
+
+  public void link2concert(List<String> df) {
+    if (df.isEmpty()) return;
+    String concert = df.get(0);
+    try {
+      PF31_Performance f31 = new PF31_Performance(concert);
+      PF25_PerformancePlan f25 = new PF25_PerformancePlan(concert, true);
+      f31.add(this);
+      f25.add(this);
+
+      this.model.add(f31.getModel()).add(f25.getModel());
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
   }
 }

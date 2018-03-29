@@ -11,7 +11,13 @@ import java.net.URISyntaxException;
 
 public class PF25_PerformancePlan extends DoremusResource {
   public PF25_PerformancePlan(String identifier) throws URISyntaxException {
+    this(identifier, false);
+  }
+
+  public PF25_PerformancePlan(String identifier, boolean light) throws URISyntaxException {
     super(identifier);
+
+    if (light) return;
     this.resource.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
 
     PF20_PerformanceWork work = new PF20_PerformanceWork(this.identifier);
@@ -23,6 +29,7 @@ public class PF25_PerformancePlan extends DoremusResource {
     model.add(work.getModel());
     model.add(planCreation.getModel());
   }
+
 
   public PF25_PerformancePlan(Record record) throws URISyntaxException {
     this(record.getIdentifier());

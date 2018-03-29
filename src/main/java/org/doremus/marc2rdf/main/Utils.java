@@ -23,7 +23,7 @@ public class Utils {
     ".|h))?";
   public static final String opusSubnumberRegex = "(?i)(?:,? n(?:[o°.]| °)[s.]?)";
 
-  public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?";
+  public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?$";
   private final static Pattern DURATION_PATTERN = Pattern.compile(DURATION_REGEX);
   private final static String[] DURATION_UNITS = new String[]{null, "H", "M", "S"};
 
@@ -203,7 +203,6 @@ public class Utils {
   public static String duration2iso(String f){
     Matcher m = DURATION_PATTERN.matcher(f);
     m.find();
-
     StringBuilder duration = new StringBuilder("PT");
 
     for (int i = 1; i < DURATION_UNITS.length; i++)
