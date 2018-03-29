@@ -22,6 +22,11 @@ public class PF15_ComplexWork extends DoremusResource {
     this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier));
   }
 
+  public PF15_ComplexWork(String identifier) throws URISyntaxException {
+    super(identifier);
+    this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);
+  }
+
   public PF15_ComplexWork add(PF22_SelfContainedExpression f22) {
     if (record.isType("UNI:100"))
       this.resource.addProperty(MUS.U38_has_descriptive_expression, f22.asResource());

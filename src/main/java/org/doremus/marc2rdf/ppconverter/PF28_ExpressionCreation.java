@@ -133,14 +133,11 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
   public PF28_ExpressionCreation add(PF22_SelfContainedExpression expression) {
     this.resource.addProperty(FRBROO.R17_created, expression.asResource());
-    // expression.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R17i_was_created_by"), F28);
     return this;
   }
 
   public PF28_ExpressionCreation add(PF14_IndividualWork work) {
     this.resource.addProperty(FRBROO.R19_created_a_realisation_of, work.asResource());
-//    work.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
-
     return this;
   }
 

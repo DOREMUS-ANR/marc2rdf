@@ -96,7 +96,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     if (searchInNote("commande de l'Ensemble intercontemporain") != null)
       this.addCommand(getEnsambleIntercontemporainUri());
 
-    for (String workId : record.getDatafieldsByCode(419, '3'))
+    for (String workId : record.getDatafieldsByCode(449, '3'))
       linkWorkById(workId);
 
     boolean shouldICreateAF22 = false;
@@ -113,6 +113,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       List<DataField> activities = record.getDatafieldsByCode(701);
       activities.addAll(record.getDatafieldsByCode(700));
 
+      // 230 == composer
       shouldICreateAF22 = activities.stream()
         .filter(a -> "230".equals(a.getString(4)))
         .toArray().length > 0;
@@ -126,24 +127,15 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
     }
 
-    if (shouldICreateAF22) {
-      PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
-      PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
-      PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
-
-      f22.link2concert(record.getDatafieldsByCode(935, 3));
-
-      f28.add(f22).add(f14);
-      f14.add(f22);
-      this.add(f22);
-      model.add(f22.getModel()).add(f28.getModel()).add(f14.getModel());
-    }
+    if (shouldICreateAF22) linkNewWork();
 
     for (PM28_Individual_Performance ip : parseArtist(record, this.uri)) {
       this.resource.addProperty(CIDOC.P9_consists_of, ip.asResource());
       this.model.add(ip.getModel());
     }
   }
+
+
 
   static Stream<String> getMuseeMusique(Record record) {
     Pattern p = Pattern.compile("(?i)(musée de la Musique|collection)");
@@ -631,17 +623,40 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
     PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(workIdentifier);
     PF14_IndividualWork f14 = new PF14_IndividualWork(workIdentifier);
+    PF15_ComplexWork f15 = new PF15_ComplexWork(workIdentifier);
 
     if (isPremiere()) {
-      // FIXME
       f22.addPremiere(this);
       f14.addPremiere(this);
-    } else {
-      this.add(f22);
     }
+
+    f22.link2concert(record.getDatafieldsByCode(935, 3));
+
+    this.add(f22);
+    f15.add(this);
 
     this.hasWorkLinked = true;
   }
+
+  private void linkNewWork() throws URISyntaxException {
+    PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
+    PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
+    PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
+
+    f22.link2concert(record.getDatafieldsByCode(935, 3));
+
+    f28.add(f22).add(f14);
+    f14.add(f22);
+
+    if (isPremiere()) {
+      f22.addPremiere(this);
+      f14.addPremiere(this);
+    }
+
+    this.add(f22);
+    model.add(f22.getModel()).add(f28.getModel()).add(f14.getModel());
+  }
+
 
   private TimeSpan getDate() {
     return TimeSpan.fromUnimarcField(record.getDatafieldByCode(981));

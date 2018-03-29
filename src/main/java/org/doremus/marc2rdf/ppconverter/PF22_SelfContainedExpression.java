@@ -10,7 +10,6 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Utils;
-import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /***
@@ -256,11 +256,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       List<Integer> range = Utils.toRange(subnumber);
 
       if (range == null) M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, subnumber);
-      else {
-        for (int i : range)
-          M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, model.createTypedLiteral(i));
-
-      }
+      else
+        range.forEach(i -> M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, model.createTypedLiteral(i)));
     }
 
     this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
@@ -269,125 +266,88 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
   public PF22_SelfContainedExpression add(PF50_ControlledAccessPoint accessPoint) {
     this.resource.addProperty(CIDOC.P1_is_identified_by, accessPoint.asResource());
-//    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), this.resource);
     return this;
   }
 
 
   private List<String> getTitle() {
     List<String> titleList = new ArrayList<>();
-    List<DataField> fields;
 
     switch (record.getType()) {
       case "AIC:14":
-        fields = record.getDatafieldsByCode("444");
-        fields.addAll(record.getDatafieldsByCode("144"));
+        titleList = record.getDatafieldsByCode("444", 'a');
+        titleList.addAll(record.getDatafieldsByCode("144", 'a'));
         break;
       case "UNI:100":
       case "UNI:44":
-        fields = record.getDatafieldsByCode("200");
+        titleList = record.getDatafieldsByCode("200", 'a');
         break;
       default:
         return titleList;
     }
 
-    for (DataField field : fields) {
-      if (!field.isCode('a')) continue;
-      String title = field.getString('a').trim();
-      titleList.add(title);
-    }
-
-    return titleList;
+    return titleList.stream()
+      .map(String::trim)
+      .filter(t -> !t.isEmpty())
+      .collect(Collectors.toList());
   }
 
 
   private List<String> getCatalog() {
     if (!record.isType("AIC:14")) return new ArrayList<>();
 
-    List<String> results = new ArrayList<>();
 
     List<String> catalogFields = record.getDatafieldsByCode("444", 'k');
     catalogFields.addAll(record.getDatafieldsByCode("144", 'k'));
 
-    for (String catalog : catalogFields) {
-      if (!results.contains(catalog.trim())) results.add(catalog.trim());
-    }
-    return results;
+    return catalogFields.stream()
+      .map(String::trim)
+      .distinct()
+      .collect(Collectors.toList());
   }
 
-  /***********************************
-   * L'opus
-   ***********************************/
   private List<String> getOpus() {
     if (!record.isType("AIC:14")) return new ArrayList<>();
-
-    List<String> results = new ArrayList<>();
 
     List<String> opusFields = record.getDatafieldsByCode("444", 'p');
     opusFields.addAll(record.getDatafieldsByCode("144", 'p'));
 
-    for (String opus : opusFields) {
-      String o = opus.trim();
-      if (!results.contains(o)) results.add(o);
-    }
-    return results;
+    return opusFields.stream().map(String::trim).distinct().collect(Collectors.toList());
   }
 
-  /***********************************
-   * Note Libre
-   ***********************************/
   private List<String> getNote() {
     if (!record.isType("UNI:100")) return new ArrayList<>();
-
-    List<String> results = new ArrayList<>();
 
     List<String> opusFields = record.getDatafieldsByCode("909", 'a');
     // TODO code 919 has contents used also elsewhere
     opusFields.addAll(record.getDatafieldsByCode("919", 'a'));
 
-    for (String opus : opusFields)
-      results.add(opus.trim());
-
-    return results;
+    return opusFields.stream().map(String::trim).collect(Collectors.toList());
   }
 
-  /***********************************
-   * Key (Tonalite)
-   ***********************************/
   private List<String> getKey() {
     if (!record.isType("UNI:100")) return new ArrayList<>();
     return record.getDatafieldsByCode("909", 'd');
   }
 
-  /***********************************
-   * Le numero d'ordre
-   ***********************************/
   private List<String> getOrderNumber() {
     if (!record.isType("AIC:14")) return new ArrayList<>();
-
-    List<String> results = new ArrayList<>();
 
     List<String> fields = record.getDatafieldsByCode("444", 'n');
     fields.addAll(record.getDatafieldsByCode("144", 'n'));
 
-    for (String orderNumber : fields) {
-      orderNumber = orderNumber.replaceAll("(?i)n(?:o| ?°)s?", "").trim();
-      if (!results.contains(orderNumber)) results.add(orderNumber);
-    }
-
-    return results;
+    return fields.stream()
+      .map(orderNumber -> orderNumber.replaceAll("(?i)n(?:o| ?°)s?", "").trim())
+      .distinct()
+      .collect(Collectors.toList());
   }
 
   private List<String> getGenre() {
-    List<String> genres = new ArrayList<>();
-
-    for (DataField field : record.getDatafieldsByCode("610")) {
-      if (field.isCode('a') && field.isCode('b') && field.getSubfield('b').getData().trim().equals("04")) {
-        //$b=04 veut dire "genre"
-        genres.add(field.getSubfield('a').getData().toLowerCase().trim());
-      }
-    }
-    return genres;
+    return record.getDatafieldsByCode("610").stream()
+      .filter(field -> field.isCode('a') && field.isCode('b'))
+      .filter(field -> field.getString('b').equals("04"))    //$b=04 means "genre"
+      .map(field -> field.getString('a').toLowerCase())
+      .collect(Collectors.toList());
   }
 
   private List<String> getCasting() {
