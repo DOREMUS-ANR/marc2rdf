@@ -10,20 +10,19 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class PM23_Casting_Detail {
   private final StanfordLemmatizer slem;
   String uri;
+  String name;
 
-  String name, namePlural, nameComplete;
-  String note;
+  private String namePlural, nameComplete;
+  private String note;
   private String lang;
   int quantity;
-  boolean solo;
+  private boolean solo;
 
 
   public PM23_Casting_Detail(String name, int quantity, boolean isSubSolo, String uri) {
@@ -109,14 +108,14 @@ public class PM23_Casting_Detail {
   }
 
   private Resource getMatch() {
-    Resource match = VocabularyManager.searchInCategory(name, lang, "mop");
+    Resource match = VocabularyManager.searchInCategory(name, lang, "mop", false);
 
     if (match != null) return match;
 
     // workaround for choirs
     String _name = name.toLowerCase();
     if (_name.contains("choeur") || _name.contains("choristes") || name.equals("satb"))
-      return VocabularyManager.searchInCategory("choir", "en", "mop");
+      return VocabularyManager.searchInCategory("choir", "en", "mop", false);
 
     // workaround for voices
     if (_name.contains("voix")) {
@@ -127,16 +126,14 @@ public class PM23_Casting_Detail {
         lang = "it";
         voixClean = _is;
       }
-      match = VocabularyManager.searchInCategory(voixClean, lang, "mop");
+      match = VocabularyManager.searchInCategory(voixClean, lang, "mop", false);
 
       if (match != null) return match;
-      return VocabularyManager.searchInCategory("voix", lang, "mop");
+      return VocabularyManager.searchInCategory("voix", lang, "mop", false);
     }
 
     // 2nd attempt, pluralize the whole name (i.e. saxophones sopranos -> saxophone soprano)
-    List<String> lemmas = slem.lemmatize(namePlural);
-    String joined = lemmas.stream().collect(Collectors.joining(" "));
-    match = VocabularyManager.searchInCategory(joined, lang, "mop");
+    match = VocabularyManager.searchInCategory(namePlural, lang, "mop", true);
     return match;
   }
 

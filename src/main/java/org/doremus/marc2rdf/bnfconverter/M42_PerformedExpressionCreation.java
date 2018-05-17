@@ -214,20 +214,11 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       if (r.equals("conductor") || r.equals("direction"))
         M28.addProperty(MUS.U35_foresees_function, model.createLiteral("conductor", "en"));
       else {
-        Resource mopMatch = VocabularyManager.searchInCategory(instrumentToSingular(r), "fr", "mop");
+        Resource mopMatch = VocabularyManager.searchInCategory(r, "fr", "mop", true);
         if (mopMatch != null) M28.addProperty(MUS.U1_used_medium_of_performance, mopMatch);
       }
     }
 
-  }
-
-  private String instrumentToSingular(String r) {
-    String[] parts = r.split(" ");
-    if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
-
-    // cornets à pistons --> cornet à pistons
-    parts[0] = slem.lemmatize(parts[0]).get(0);
-    return String.join(" ", parts);
   }
 
   public Resource getExpression() {

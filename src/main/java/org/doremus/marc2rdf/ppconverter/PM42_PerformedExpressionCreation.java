@@ -229,7 +229,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
               if (!isInstrumentist)
                 pt = PM23_Casting_Detail.toItalianSinger(pt, true);
 
-              Resource mop = VocabularyManager.searchInCategory(instrumentToSingular(pt), "fr", "mop");
+              Resource mop = VocabularyManager.searchInCategory(pt, "fr", "mop", true);
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
               if (mop == null && !pt.isEmpty())
@@ -454,7 +454,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
           continue; // wait for close parenthesis
         }
 
-        mopMatch = VocabularyManager.searchInCategory(newInfo, "fr", "mop");
+        mopMatch = VocabularyManager.searchInCategory(newInfo, "fr", "mop", true);
         if (mopMatch != null && !roles.isEmpty()) {
           // i should add this info to the previous one
           roles.get(roles.size() - 1).setFunction(mopMatch);
@@ -479,7 +479,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
           if (mop != null) {
             mop = mop.replaceAll("\\(.+\\)", "").trim();
             // i take the mop only if it is in the vocabulary
-            mopMatch = VocabularyManager.searchInCategory(mop, "fr", "mop");
+            mopMatch = VocabularyManager.searchInCategory(mop, "fr", "mop", false);
             if (mopMatch != null) interpreter = parts[0];
           }
         }
@@ -489,7 +489,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
           if (mopIntMatcher.find()) {
             interpreter = mopIntMatcher.group(1);
             mop = mopIntMatcher.group(2);
-            mopMatch = VocabularyManager.searchInCategory(mop, "fr", "mop");
+            mopMatch = VocabularyManager.searchInCategory(mop, "fr", "mop", false);
           }
         }
 
@@ -520,19 +520,6 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   }
 
-  private static String instrumentToSingular(String r) {
-    if (r == null || r.isEmpty()) return "";
-
-    StanfordLemmatizer slem = StanfordLemmatizer.getDefaultLemmatizer();
-    String[] parts = r.split(" ");
-    if (parts.length == 1) return slem.lemmatize(parts[0]).get(0);
-
-    // cornets à pistons --> cornet à pistons
-    parts[0] = slem.lemmatize(parts[0]).get(0);
-    return String.join(" ", parts);
-  }
-
-
   private static String cleanString(String note, String group) {
     if (note == null) return null;
     if (group == null || group.isEmpty()) return note;
@@ -553,7 +540,6 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     role = role.trim();
     actor = actor.trim();
 
-    if (!role.equals("conductor")) role = instrumentToSingular(role);
     if (actor.matches(composerRegex))
       return new Role(f28.getComposers().get(0).asResource(), role, this.model);
 

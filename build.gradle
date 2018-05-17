@@ -31,7 +31,8 @@ dependencies {
         'edu.stanford.nlp:stanford-corenlp:3.6.0',
         'edu.stanford.nlp:stanford-corenlp:3.6.0:models',
         'com.moparisthebest:junidecode:0.1.1',
-        'com.github.DOREMUS-ANR:string2vocabulary:0.1'
+        'com.github.DOREMUS-ANR:string2vocabulary:0.3',
+        'org.geonames:geonames:1.0'
 }
 
 
