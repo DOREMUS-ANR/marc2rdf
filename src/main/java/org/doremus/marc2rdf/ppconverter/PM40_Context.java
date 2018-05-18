@@ -13,8 +13,8 @@ public class PM40_Context extends DoremusResource {
   public PM40_Context(String label) throws URISyntaxException {
     super();
 
-    this.uri = ConstructURI.build("M40_Context", label);
-    this.resource = model.createResource(this.uri.toString());
+    this.uri = ConstructURI.build("M40_Context", label).toString();
+    this.resource = model.createResource(this.uri);
 
     this.resource.addProperty(RDF.type, MUS.M40_Context)
       .addProperty(RDFS.label, label)

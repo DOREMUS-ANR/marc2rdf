@@ -8,33 +8,30 @@ import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 public class E7_Activity extends DoremusResource {
 
-  public E7_Activity(String uri) throws URISyntaxException {
+  public E7_Activity(String uri) {
     super();
 
-    this.uri = new URI(uri);
-    this.resource = model.createResource(this.uri.toString())
+    this.uri = uri;
+    this.resource = model.createResource(this.uri)
       .addProperty(RDF.type, CIDOC.E7_Activity);
   }
 
-  public E7_Activity(String uri, Resource carrier, Resource function) throws URISyntaxException {
+  public E7_Activity(String uri, Resource carrier, Resource function) {
     this(uri);
 
     setCarrier(carrier);
     setFunction(function);
   }
 
-  E7_Activity(String uri, Resource carrier, String function) throws URISyntaxException {
+  E7_Activity(String uri, Resource carrier, String function) {
     this(uri);
     setCarrier(carrier);
     setFunction(functionFromLabel(function));
   }
 
-  E7_Activity(String uri, Artist carrier, String function) throws URISyntaxException {
+  E7_Activity(String uri, Artist carrier, String function) {
     this(uri, carrier.asResource(), function);
     this.model.add(carrier.getModel());
   }

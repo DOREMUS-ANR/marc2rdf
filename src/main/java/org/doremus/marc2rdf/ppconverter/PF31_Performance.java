@@ -12,7 +12,6 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,7 +113,7 @@ public class PF31_Performance extends DoremusResource {
     this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
   }
 
-  public URI getUri() {
+  public String getUri() {
     return uri;
   }
 

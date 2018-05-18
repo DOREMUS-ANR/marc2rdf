@@ -12,16 +12,14 @@ import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.PROV;
 
-import java.net.URI;
 import java.net.URISyntaxException;
-
 
 public abstract class DoremusResource {
   protected String className;
   protected String sourceDb;
 
   protected Model model;
-  protected URI uri;
+  protected String uri;
   protected Resource resource;
   protected Record record;
   protected String identifier;
@@ -42,7 +40,7 @@ public abstract class DoremusResource {
       this.publisher = model.createResource(BNF2RDF.organizationURI);
   }
 
-  public DoremusResource(String identifier) throws URISyntaxException {
+  public DoremusResource(String identifier) {
     this();
     this.identifier = identifier;
 
@@ -50,33 +48,33 @@ public abstract class DoremusResource {
     regenerateResource();
   }
 
-  public DoremusResource(Record record) throws URISyntaxException {
+  public DoremusResource(Record record) {
     this(record.getIdentifier());
     this.record = record;
   }
 
-  public DoremusResource(Record record, String identifier) throws URISyntaxException {
+  public DoremusResource(Record record, String identifier) {
     this(identifier);
     this.record = record;
   }
 
 
-  protected void regenerateResource() throws URISyntaxException {
-    regenerateResource(ConstructURI.build(this.sourceDb, this.className, this.identifier));
+  protected void regenerateResource() {
+    try {
+      regenerateResource(ConstructURI.build(this.sourceDb, this.className, this.identifier).toString());
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
   }
 
-  protected void regenerateResource(String uri) throws URISyntaxException {
-    regenerateResource(new URI(uri));
-  }
-
-  protected void regenerateResource(URI uri) {
+  protected void regenerateResource(String uri) {
     this.uri = uri;
 
     // delete old one
     if (this.resource != null) this.resource.removeProperties();
 
     // generate the new one
-    this.resource = model.createResource(this.uri.toString());
+    this.resource = model.createResource(this.uri);
   }
 
   public void addProvenance(Resource intermarcRes, Resource provActivity) {

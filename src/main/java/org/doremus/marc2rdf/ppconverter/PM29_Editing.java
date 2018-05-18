@@ -33,14 +33,10 @@ public class PM29_Editing extends DoremusResource {
   }
 
   private void addProducer(Resource producer) {
-    try {
-      String activityUri = this.uri + "/activity/" + ++countActivity;
-      E7_Activity activity = new E7_Activity(activityUri, producer, "audio producer");
-      this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
-      this.model.add(activity.getModel());
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
+    String activityUri = this.uri + "/activity/" + ++countActivity;
+    E7_Activity activity = new E7_Activity(activityUri, producer, "audio producer");
+    this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
+    this.model.add(activity.getModel());
   }
 
   public PM29_Editing add(PM46_SetOfTracks tracks) {

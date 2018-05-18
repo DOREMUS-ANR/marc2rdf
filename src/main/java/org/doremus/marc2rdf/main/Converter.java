@@ -51,6 +51,9 @@ public class Converter {
     loadProperties();
     System.out.println("Running with the following properties: " + properties);
 
+    GeoNames.init(properties);
+
+
     ClassLoader classLoader = Converter.class.getClassLoader();
     URL vocabularyFolder = classLoader.getResource("vocabulary");
     URL p2fTable = classLoader.getResource("property2family.csv");

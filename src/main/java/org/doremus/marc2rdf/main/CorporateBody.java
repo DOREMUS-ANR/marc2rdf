@@ -7,7 +7,6 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 public class CorporateBody extends Artist {
@@ -17,7 +16,7 @@ public class CorporateBody extends Artist {
     if (name == null) throw new RuntimeException("Missing artist name");
 
     this.name = name;
-    this.uri = ConstructURI.build("F11_CorporateBody", name);
+    this.uri = ConstructURI.build("F11_CorporateBody", name).toString();
     initResource();
   }
 
@@ -37,7 +36,7 @@ public class CorporateBody extends Artist {
     return model;
   }
 
-  public URI getUri() {
+  public String getUri() {
     return uri;
   }
 

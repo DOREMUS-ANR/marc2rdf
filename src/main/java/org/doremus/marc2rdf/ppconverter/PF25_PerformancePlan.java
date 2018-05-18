@@ -37,13 +37,9 @@ public class PF25_PerformancePlan extends DoremusResource {
   }
 
   public void setAsImprovisation() {
-    try {
-      PM50_Performance_Mode pMode = new PM50_Performance_Mode(this.uri + "/mode", "improvisation");
-      this.resource.addProperty(MUS.U86_had_performance_mode, pMode.asResource());
-      this.model.add(pMode.getModel());
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
+    PM50_Performance_Mode pMode = new PM50_Performance_Mode(this.uri + "/mode", "improvisation");
+    this.resource.addProperty(MUS.U86_had_performance_mode, pMode.asResource());
+    this.model.add(pMode.getModel());
   }
 
   public PF25_PerformancePlan add(PF22_SelfContainedExpression f22) {

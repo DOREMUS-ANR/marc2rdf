@@ -7,12 +7,10 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.ontology.PROV;
 
-import java.net.URI;
-
 public abstract class Artist {
   protected final Model model;
   public Resource resource;
-  protected URI uri;
+  protected String uri;
 
   protected Artist() {
     this.model = ModelFactory.createDefaultModel();
@@ -35,7 +33,7 @@ public abstract class Artist {
       .addProperty(PROV.wasGeneratedBy, provActivity);
   }
 
-  public URI getUri() {
+  public String getUri() {
     return uri;
   }
 

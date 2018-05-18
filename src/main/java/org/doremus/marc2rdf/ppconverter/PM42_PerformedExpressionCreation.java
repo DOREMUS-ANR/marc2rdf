@@ -15,7 +15,6 @@ import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.Vocabulary;
 import org.doremus.string2vocabulary.VocabularyManager;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,7 +152,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return sj.toString();
   }
 
-  public static List<PM28_Individual_Performance> parseArtist(Record record, URI mainUri) throws URISyntaxException {
+  public static List<PM28_Individual_Performance> parseArtist(Record record, String mainUri) throws URISyntaxException {
     int counter = 0;
     List<PM28_Individual_Performance> activityList = new ArrayList<>();
 
@@ -337,7 +336,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     if (i >= 0)
       this.identifier += i;
 
-    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier);
+    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier).toString();
 
     this.resource = model.createResource(this.uri.toString())
       .addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)

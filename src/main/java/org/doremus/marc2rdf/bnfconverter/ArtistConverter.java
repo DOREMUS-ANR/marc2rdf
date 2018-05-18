@@ -70,8 +70,11 @@ public class ArtistConverter {
       // NOTE: I intentionally did not add P131 and RDFS.label for distinguish alternate names
     }
 
-    // sameAs links
+    // birth - death places
+    base.setBirthPlace(getPlace(record, true));
+    base.setDeathPlace(getPlace(record, false));
 
+    // sameAs links
     for (String isni : record.getDatafieldsByCode("031", 'a'))
       base.asResource().addProperty(OWL.sameAs, model.createResource("http://isni.org/isni/" + isni));
 
@@ -99,6 +102,14 @@ public class ArtistConverter {
     // END PROV-O tracing
 
     model.add(base.getModel());
+  }
+
+  private String getPlace(Record record, boolean birth) {
+    DataField df = record.getDatafieldByCode(603);
+    if (df == null) return null;
+
+    char code = birth ? 'a' : 'b';
+    return df.getString(code);
   }
 
 

@@ -10,16 +10,11 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 public class PM28_Individual_Performance extends DoremusResource {
-  public PM28_Individual_Performance(URI baseUri, int id) throws URISyntaxException {
+  public PM28_Individual_Performance(String baseUri, int id) {
     super();
-    this.uri = new URI(baseUri + "/" + id);
-
-    this.resource = model.createResource(this.uri.toString())
-      .addProperty(RDF.type, MUS.M28_Individual_Performance);
+    regenerateResource(baseUri + "/" + id);
+    this.resource.addProperty(RDF.type, MUS.M28_Individual_Performance);
   }
 
   public void set(Artist actor, String mop, String function, String character, String note, boolean isPrincipal) {

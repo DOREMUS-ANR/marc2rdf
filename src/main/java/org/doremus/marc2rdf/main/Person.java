@@ -7,11 +7,13 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
+import org.geonames.Toponym;
 
 import java.net.URISyntaxException;
 
 public class Person extends Artist {
   private String firstName, lastName, birthDate, deathDate, lang;
+  private String birthPlace, deathPlace;
 
   public Person(String firstName, String lastName, String birthDate, String deathDate, String lang) throws RuntimeException, URISyntaxException {
     super();
@@ -25,7 +27,7 @@ public class Person extends Artist {
       throw new RuntimeException("Missing artist value: null | " + lastName + " | " + birthDate);
     }
 
-    this.uri = ConstructURI.build("E21_Person", firstName, lastName, birthDate);
+    this.uri = ConstructURI.build("E21_Person", firstName, lastName, birthDate).toString();
     initResource();
   }
 
@@ -54,6 +56,38 @@ public class Person extends Artist {
     if (deathDate == null || deathDate.replaceAll("\\.", "").isEmpty())
       return null;
     return deathDate;
+  }
+
+  public void setBirthPlace(String place) {
+    if (place == null) return;
+    this.birthPlace = place;
+    if (resource == null) return;
+
+    Toponym place_toponym = GeoNames.query(place);
+    E53_Place placeEntity = (place_toponym == null) ? new E53_Place(place) : new E53_Place(place);
+
+    this.resource.addProperty(SCHEMA("birthPlace"), placeEntity.asResource());
+    this.model.add(placeEntity.getModel());
+
+  }
+
+  public void setDeathPlace(String place) {
+    if (place == null) return;
+    this.deathPlace = place;
+    if (resource == null) return;
+
+    // if not country specified
+    String country = null;
+    if (!place.contains("(") && this.birthPlace.contains("(")) {
+      // add the one of the birth place
+      country = this.birthPlace.split("[()]")[1];
+    }
+
+    Toponym place_toponym = GeoNames.query(place, country);
+    E53_Place placeEntity = (place_toponym == null) ? new E53_Place(place) : new E53_Place(place);
+
+    this.resource.addProperty(SCHEMA("deathPlace"), placeEntity.asResource());
+    this.model.add(placeEntity.getModel());
   }
 
   public String getLang() {
@@ -94,11 +128,13 @@ public class Person extends Artist {
     return resource;
   }
 
+  public Property SCHEMA(String label) {
+    return model.createProperty(Converter.SCHEMA + label);
+  }
+
   public void addDate(String date, boolean isDeath) {
     TimeSpan ts = cleanDate(date);
     if (ts == null) return;
-
-    Property schemaProp = model.createProperty(Converter.SCHEMA + (isDeath ? "deathDate" : "birthDate"));
 
     String url = this.uri + (isDeath ? "/death" : "/birth");
     ts.setUri(url + "/interval");
@@ -109,7 +145,7 @@ public class Person extends Artist {
     );
 
     if (ts.getStart() != null)
-      this.resource.addProperty(schemaProp, ts.getStart());
+      this.resource.addProperty(SCHEMA(isDeath ? "deathDate" : "birthDate"), ts.getStart());
 
     model.add(ts.getModel());
   }
