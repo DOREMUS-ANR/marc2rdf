@@ -122,8 +122,12 @@ public class Utils {
     return intermarcMopMap.get(intermarcInput);
   }
 
+  public static Map<String, String> csvToMap(String csvPath, int fieldKey, int fieldValue) throws IOException {
+    return csvToMap(csvPath, fieldKey, fieldValue, ";");
+  }
 
-  private static Map<String, String> csvToMap(String csvPath, int fieldKey, int fieldValue) throws IOException {
+  public static Map<String, String> csvToMap(String csvPath, int fieldKey, int fieldValue, String separator) throws
+    IOException {
     String csvFile = Utils.class.getClass().getResource(csvPath).getFile();
     Map<String, String> map = new HashMap<>();
 
@@ -135,8 +139,8 @@ public class Utils {
 
     while (line != null) {
       if (firstLine) firstLine = false; // header
-      else {
-        String str[] = line.split(";");
+      else if (!line.isEmpty()) {
+        String str[] = line.split(separator);
 
         String value = str[fieldValue];
         String key = str[fieldKey];
@@ -200,7 +204,7 @@ public class Utils {
   }
 
 
-  public static String duration2iso(String f){
+  public static String duration2iso(String f) {
     Matcher m = DURATION_PATTERN.matcher(f);
     m.find();
     StringBuilder duration = new StringBuilder("PT");

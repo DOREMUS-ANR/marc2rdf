@@ -19,6 +19,7 @@ public class GeoNames {
 
   static Map<String, Integer> cache; // cache String -> idGeoNames
   public static String destFolder;
+  private static Map<String, String> countries;
 
   public static void setDestFolder(String folder) {
     destFolder = folder;
@@ -78,7 +79,13 @@ public class GeoNames {
       if (searchResult.getToponyms().size() > 0) {
         tp = searchResult.getToponyms().get(0);
         downloadRdf(tp.getGeoNameId());
-        // TODO use countryCode to save the country also
+        String countryCode = tp.getCountryCode();
+        if (!cache.containsKey(countryCode)) {
+          //  save the country also
+          int countryId = Integer.parseInt(countries.get(countryCode));
+          downloadRdf(countryId);
+          addToCache(countryCode, countryId);
+        }
       }
 
       addToCache(rawString, tp != null ? tp.getGeoNameId() : -1);
@@ -137,6 +144,12 @@ public class GeoNames {
   public static void init(Properties properties) {
     loadCache();
     setUser(properties.getProperty("geonames_user"));
+
+    try {
+      countries = Utils.csvToMap("/countryInfoCSV.tsv", 0, 11, "\t");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     String outputFolderPath = properties.getProperty("defaultOutput");
     String geonamesFolder = Paths.get(outputFolderPath, "place", "geonames").toString();

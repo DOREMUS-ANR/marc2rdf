@@ -53,7 +53,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     int dedCount = 0;
     for (String dedication : getDedicace()) {
       dedication = dedication.trim();
-      String dedUri = this.uri.toString() + "/dedication/" + ++dedCount;
+      String dedUri = this.uri + "/dedication/" + ++dedCount;
       this.resource.addProperty(MUS.U44_has_dedication_statement, model.createResource(dedUri)
         .addProperty(RDF.type, MUS.M15_Dedication_Statement)
         .addProperty(RDFS.comment, dedication, "fr")
