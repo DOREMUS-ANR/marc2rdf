@@ -5,6 +5,7 @@ import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.E53_Place;
 import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;

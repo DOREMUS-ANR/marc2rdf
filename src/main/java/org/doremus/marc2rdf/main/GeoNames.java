@@ -95,7 +95,7 @@ public class GeoNames {
     return tp;
   }
 
-  // Use cache for passing from ITEMA3 id to GeoNames id
+  // Use cache for passing from string to GeoNames id
   public static int get(String id) {
     return cache.getOrDefault(id, -1);
   }
@@ -107,9 +107,8 @@ public class GeoNames {
       Properties properties = new Properties();
       properties.load(fis);
 
-      for (String key : properties.stringPropertyNames()) {
+      for (String key : properties.stringPropertyNames())
         cache.put(key, Integer.parseInt(properties.get(key).toString()));
-      }
     } catch (IOException e) {
       System.out.println("No 'places.properties' file found. I will create it.");
     }

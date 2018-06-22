@@ -2,10 +2,7 @@ package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.doremus.marc2rdf.main.CorporateBody;
-import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.Person;
-import org.doremus.marc2rdf.main.TimeSpan;
+import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;

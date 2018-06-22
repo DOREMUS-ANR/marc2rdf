@@ -32,6 +32,7 @@ dependencies {
         'edu.stanford.nlp:stanford-corenlp:3.6.0:models',
         'com.moparisthebest:junidecode:0.1.1',
         'com.github.DOREMUS-ANR:string2vocabulary:0.3',
+        'com.github.DOREMUS-ANR:isnimatcher:1.2.0',
         'org.geonames:geonames-ws-client:1.1.9'
 }
 

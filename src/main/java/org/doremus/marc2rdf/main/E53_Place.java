@@ -39,4 +39,7 @@ public class E53_Place extends DoremusResource {
 
   }
 
+  public void addSurroundingPlace(E53_Place external) {
+    this.resource.addProperty(CIDOC.P89_falls_within, external.asResource());
+  }
 }

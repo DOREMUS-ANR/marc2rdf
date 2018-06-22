@@ -8,7 +8,9 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.isnimatcher.ISNIRecord;
 import org.doremus.marc2rdf.main.ConstructURI;
+import org.doremus.marc2rdf.main.ISNIWrapper;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -23,7 +25,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ArtistConverter {
-
   public ArtistConverter(Record record, Model model) throws URISyntaxException {
     List<Person> artists = getArtistsInfo(record, true);
 
@@ -31,6 +32,7 @@ public class ArtistConverter {
       System.out.println("Empty artist for record " + record.getIdentifier());
       return;
     }
+
 
     Person base = artists.get(0);
 
@@ -75,8 +77,18 @@ public class ArtistConverter {
     base.setDeathPlace(getPlace(record, false));
 
     // sameAs links
-    for (String isni : record.getDatafieldsByCode("031", 'a'))
+    String isni = record.getDatafieldsByCode("031", 'a').stream().findFirst().orElse(null);
+    ISNIRecord rec;
+    if (isni != null) {
       base.asResource().addProperty(OWL.sameAs, model.createResource("http://isni.org/isni/" + isni));
+      rec = ISNIWrapper.get(isni);
+    } else {
+      rec = ISNIWrapper.search(base.getFullName(), base.getBirthDate());
+      if (rec != null)
+        base.asResource().addProperty(OWL.sameAs, model.createResource(rec.uri));
+    }
+    if (rec != null) isniEnrich(base, rec);
+
 
     String ark = record.getAttrByName("IDPerenne").getData();
     base.asResource().addProperty(OWL.sameAs, model.createResource("http://catalogue.bnf.fr/" + ark));
@@ -100,8 +112,25 @@ public class ArtistConverter {
     base.addProvenance(intermarcRes, provActivity);
 
     // END PROV-O tracing
-
     model.add(base.getModel());
+  }
+
+  private void isniEnrich(Person p, ISNIRecord isni) {
+    System.out.println(isni.uri);
+    p.addPropertyResource(OWL.sameAs, isni.getViafURI());
+    p.addPropertyResource(OWL.sameAs, isni.getMusicBrainzUri());
+    p.addPropertyResource(OWL.sameAs, isni.getMuziekwebURI());
+    p.addPropertyResource(OWL.sameAs, isni.getWikidataURI());
+
+    String wp = isni.getWikipediaUri("en");
+    String dp = isni.getDBpediaUri();
+
+    if (wp == null) {
+      wp = isni.getWikipediaUri("fr");
+      dp = isni.getDBpediaUri("fr");
+    }
+    p.addPropertyResource(OWL.sameAs, dp);
+    p.addPropertyResource(FOAF.isPrimaryTopicOf, wp);
   }
 
   private String getPlace(Record record, boolean birth) {

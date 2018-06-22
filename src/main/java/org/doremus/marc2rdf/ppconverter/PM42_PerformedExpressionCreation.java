@@ -509,11 +509,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     if (cityMatcher.find()) {
       String city = cityMatcher.group(1);
       if (!city.matches(noUppercase)) {
-        try {
-          this.place = new E53_Place(city);
-        } catch (URISyntaxException e) {
-          e.printStackTrace();
-        }
+        this.place = new E53_Place(city);
       }
     }
 

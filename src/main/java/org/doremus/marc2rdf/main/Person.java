@@ -150,6 +150,11 @@ public class Person extends Artist {
     model.add(ts.getModel());
   }
 
+  public void addPropertyResource(Property property, String object) {
+    if (property == null || object == null) return;
+    resource.addProperty(property, model.createResource(object));
+  }
+
   public void addProperty(Property property, Resource object) {
     if (property == null || object == null) return;
     resource.addProperty(property, object);
