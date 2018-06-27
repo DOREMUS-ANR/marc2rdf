@@ -18,11 +18,14 @@ public class ISNIWrapper {
   private static String folder = null;
   private static boolean DEBUG = false;
 
+  private static void init(){
+    folder = Converter.properties.getProperty("ISNIFolder");
+    ISNI.setBestViafBehavior(true);
+    loadCache();
+  }
+
   public static ISNIRecord get(String isni) {
-    if (folder == null) {
-      folder = Converter.properties.getProperty("ISNIFolder");
-      loadCache();
-    }
+    if (folder == null) init();
 
     Path p = Paths.get(folder, isni + ".xml");
     if (p.toFile().exists()) {
@@ -48,7 +51,7 @@ public class ISNIWrapper {
   }
 
   public static ISNIRecord search(String fullName, String date) {
-    ISNI.setBestViafBehavior(true);
+    if (folder == null) init();
 
     String k = fullName;
     if (date != null) {
@@ -93,7 +96,7 @@ public class ISNIWrapper {
 
   }
 
-  static void loadCache() {
+  private static void loadCache() {
     cache = new HashMap<>();
     try {
       FileInputStream fis = new FileInputStream("isni.properties");

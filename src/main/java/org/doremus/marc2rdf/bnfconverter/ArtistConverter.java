@@ -84,10 +84,8 @@ public class ArtistConverter {
       rec = ISNIWrapper.get(isni);
     } else {
       rec = ISNIWrapper.search(base.getFullName(), base.getBirthDate());
-      if (rec != null)
-        base.asResource().addProperty(OWL.sameAs, model.createResource(rec.uri));
     }
-    if (rec != null) isniEnrich(base, rec);
+    if (rec != null) base.isniEnrich(rec);
 
 
     String ark = record.getAttrByName("IDPerenne").getData();
@@ -115,22 +113,6 @@ public class ArtistConverter {
     model.add(base.getModel());
   }
 
-  private void isniEnrich(Person p, ISNIRecord isni) {
-    p.addPropertyResource(OWL.sameAs, isni.getViafURI());
-    p.addPropertyResource(OWL.sameAs, isni.getMusicBrainzUri());
-    p.addPropertyResource(OWL.sameAs, isni.getMuziekwebURI());
-    p.addPropertyResource(OWL.sameAs, isni.getWikidataURI());
-
-    String wp = isni.getWikipediaUri();
-    String dp = isni.getDBpediaUri();
-
-    if (wp == null) {
-      wp = isni.getWikipediaUri("fr");
-      dp = isni.getDBpediaUri("fr");
-    }
-    p.addPropertyResource(OWL.sameAs, dp);
-    p.addPropertyResource(FOAF.isPrimaryTopicOf, wp);
-  }
 
   private String getPlace(Record record, boolean birth) {
     DataField df = record.getDatafieldByCode(603);

@@ -3,10 +3,13 @@ package org.doremus.marc2rdf.main;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.isnimatcher.ISNIRecord;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.PROV;
 import org.doremus.ontology.Schema;
 import org.geonames.Toponym;
 
@@ -15,6 +18,7 @@ import java.net.URISyntaxException;
 public class Person extends Artist {
   private String firstName, lastName, birthDate, deathDate, lang;
   private String birthPlace, deathPlace;
+  private TimeSpan timeSpan;
 
   public Person(String firstName, String lastName, String birthDate, String deathDate, String lang) throws URISyntaxException {
     super();
@@ -49,8 +53,19 @@ public class Person extends Artist {
     return lastName;
   }
 
+  private boolean hasBirthDate() {
+    return this.getBirthDate() != null && !this.getBirthDate().isEmpty();
+  }
+
   public String getBirthDate() {
     return birthDate;
+  }
+
+  public String getBirthYear() {
+    if (!hasBirthDate()) return null;
+    String year = birthDate;
+    if (birthDate.length() > 4) year = year.substring(0, 4);
+    return year.replaceAll("\\?", ".");
   }
 
   public String getDeathDate() {
@@ -130,21 +145,21 @@ public class Person extends Artist {
   }
 
   public void addDate(String date, boolean isDeath) {
-    TimeSpan ts = cleanDate(date);
-    if (ts == null) return;
+    this.timeSpan = cleanDate(date);
+    if (timeSpan == null) return;
 
     String url = this.uri + (isDeath ? "/death" : "/birth");
-    ts.setUri(url + "/interval");
+    timeSpan.setUri(url + "/interval");
     addProperty(isDeath ? CIDOC.P100i_died_in : CIDOC.P98i_was_born,
       model.createResource(url)
         .addProperty(RDF.type, isDeath ? CIDOC.E69_Death : CIDOC.E67_Birth)
-        .addProperty(CIDOC.P4_has_time_span, ts.asResource())
+        .addProperty(CIDOC.P4_has_time_span, timeSpan.asResource())
     );
 
-    if (ts.getStart() != null)
-      this.resource.addProperty(isDeath ? Schema.deathDate : Schema.birthDate, ts.getStart());
+    if (timeSpan.getStart() != null)
+      this.resource.addProperty(isDeath ? Schema.deathDate : Schema.birthDate, timeSpan.getStart());
 
-    model.add(ts.getModel());
+    model.add(timeSpan.getModel());
   }
 
   public void addPropertyResource(Property property, String object) {
@@ -224,4 +239,72 @@ public class Person extends Artist {
     return new Person(firstName, lastName, birthDate, deathDate, null);
   }
 
+  public void interlink() {
+    // 1. search in doremus by name/date
+    Resource match = getPersonFromDoremus();
+    if (match != null) {
+      this.setUri(match.getURI());
+      return;
+    }
+
+    // 2. search in isni by name/date
+    ISNIRecord isniMatch = ISNIWrapper.search(this.getFullName(), this.getBirthYear());
+    if (isniMatch == null) return;
+
+    // 3. search in doremus by isni
+    match = getPersonFromDoremus(isniMatch.uri);
+    if (match != null) {
+      this.setUri(match.getURI());
+      return;
+    }
+
+    // 4. add isni info
+    this.isniEnrich(isniMatch);
+  }
+
+  private Resource getPersonFromDoremus() {
+    String sparql =
+      "PREFIX ecrm: <" + CIDOC.getURI() + ">\n" +
+        "PREFIX foaf: <" + FOAF.getURI() + ">\n" +
+        "PREFIX prov: <" + PROV.getURI() + ">\n" +
+        "PREFIX schema: <" + Schema.getURI() + ">\n" +
+        "SELECT DISTINCT ?s " +
+        "FROM <http://data.doremus.org/bnf> " +
+        "WHERE { " +
+        "?s a ecrm:E21_Person; foaf:name \"" + this.getFullName() + "\"." +
+        (this.hasBirthDate() ? "?s schema:birthDate ?date. FILTER regex(str(?date), \"" + this.getBirthYear() +
+          "\")\n" : "") +
+        "}";
+
+    return (Resource) Utils.queryDoremus(sparql, "s");
+  }
+
+  private Resource getPersonFromDoremus(String isni) {
+    String sparql =
+      "PREFIX owl: <" + OWL.getURI() + ">\n" +
+        "SELECT DISTINCT * WHERE {" +
+        " ?s owl:sameAs <" + isni + ">" +
+        "}";
+
+    return (Resource) Utils.queryDoremus(sparql, "s");
+  }
+
+
+  public void isniEnrich(ISNIRecord isni) {
+    this.addPropertyResource(OWL.sameAs, isni.uri);
+    this.addPropertyResource(OWL.sameAs, isni.getViafURI());
+    this.addPropertyResource(OWL.sameAs, isni.getMusicBrainzUri());
+    this.addPropertyResource(OWL.sameAs, isni.getMuziekwebURI());
+    this.addPropertyResource(OWL.sameAs, isni.getWikidataURI());
+
+    String wp = isni.getWikipediaUri();
+    String dp = isni.getDBpediaUri();
+
+    if (wp == null) {
+      wp = isni.getWikipediaUri("fr");
+      dp = isni.getDBpediaUri("fr");
+    }
+    this.addPropertyResource(OWL.sameAs, dp);
+    this.addPropertyResource(FOAF.isPrimaryTopicOf, wp);
+  }
 }

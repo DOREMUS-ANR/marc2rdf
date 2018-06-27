@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.StatementImpl;
 import org.apache.jena.util.ResourceUtils;
@@ -216,6 +217,20 @@ public class Utils {
   }
 
 
+  public static QuerySolution queryDoremus(String sparql) {
+    Query query = QueryFactory.create();
+    QueryFactory.parse(query, sparql, "", Syntax.syntaxSPARQL_11);
+    QueryExecution qexec = QueryExecutionFactory.sparqlService("http://data.doremus.org/sparql", query);
+    ResultSet r = qexec.execSelect();
+    if (!r.hasNext()) return null;
+    return r.next();
 
+  }
+
+  public static RDFNode queryDoremus(String sparql, String var) {
+    QuerySolution result = queryDoremus(sparql);
+    if (result == null) return null;
+    else return result.get(var);
+  }
 }
 

@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.main;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.ontology.PROV;
@@ -37,4 +38,10 @@ public abstract class Artist {
     return uri;
   }
 
+  protected void setUri(String uri) {
+    if (uri.equals(this.uri)) return;
+    this.uri = uri;
+    if (this.resource != null)
+      this.resource = ResourceUtils.renameResource(this.resource, this.uri);
+  }
 }

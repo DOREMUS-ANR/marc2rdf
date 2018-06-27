@@ -203,6 +203,8 @@ public class PF28_ExpressionCreation extends DoremusResource {
     for (DataField field : fields)
       composers.add(Person.fromUnimarcField(field));
 
+    for (Person p : composers) p.interlink();
+
     return composers;
   }
 
