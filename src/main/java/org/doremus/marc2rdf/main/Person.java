@@ -78,7 +78,7 @@ public class Person extends Artist {
 
     // if not country specified
     String country = null;
-    if (!place.contains("(") && this.birthPlace.contains("(")) {
+    if (this.birthPlace != null && !place.contains("(") && this.birthPlace.contains("(")) {
       // add the one of the birth place
       country = this.birthPlace.split("[()]")[1];
     }

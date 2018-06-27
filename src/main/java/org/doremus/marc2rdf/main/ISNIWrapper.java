@@ -26,6 +26,7 @@ public class ISNIWrapper {
     Path p = Paths.get(folder, isni + ".xml");
     if (p.toFile().exists()) {
       try {
+        System.out.println("ISNI from file");
         return ISNIRecord.fromFile(p);
       } catch (IOException e) {
         e.printStackTrace();
@@ -34,6 +35,7 @@ public class ISNIWrapper {
       }
     } else {
       try {
+        System.out.println("ISNI by id " + isni);
         ISNIRecord r = ISNI.get(isni);
         r.save(p);
         return r;
@@ -45,6 +47,7 @@ public class ISNIWrapper {
   }
 
   public static ISNIRecord search(String fullName, String date) {
+    ISNI.setBestViafBehavior(true);
 
     String k = fullName;
     if (date != null) {
@@ -56,8 +59,18 @@ public class ISNIWrapper {
       return get(cache.get(k));
 
     try {
+      System.out.println("ISNI by string");
+      System.out.println(fullName);
+      System.out.println(date);
       ISNIRecord r = ISNI.search(fullName, date);
+      if (r == null){
+        cache.put(k, null);
+        saveCache();
+        return null;
+      }
       r.save(Paths.get(folder, r.id + ".xml"));
+      cache.put(k, r.id);
+      saveCache();
       return r;
     } catch (IOException e) {
       e.printStackTrace();
