@@ -116,13 +116,12 @@ public class ArtistConverter {
   }
 
   private void isniEnrich(Person p, ISNIRecord isni) {
-    System.out.println(isni.uri);
     p.addPropertyResource(OWL.sameAs, isni.getViafURI());
     p.addPropertyResource(OWL.sameAs, isni.getMusicBrainzUri());
     p.addPropertyResource(OWL.sameAs, isni.getMuziekwebURI());
     p.addPropertyResource(OWL.sameAs, isni.getWikidataURI());
 
-    String wp = isni.getWikipediaUri("en");
+    String wp = isni.getWikipediaUri();
     String dp = isni.getDBpediaUri();
 
     if (wp == null) {

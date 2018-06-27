@@ -16,6 +16,7 @@ import java.util.Properties;
 public class ISNIWrapper {
   private static HashMap<String, String> cache; // fullName -> isni
   private static String folder = null;
+  private static boolean DEBUG = false;
 
   public static ISNIRecord get(String isni) {
     if (folder == null) {
@@ -26,7 +27,7 @@ public class ISNIWrapper {
     Path p = Paths.get(folder, isni + ".xml");
     if (p.toFile().exists()) {
       try {
-        System.out.println("ISNI from file");
+        if (DEBUG) System.out.println("ISNI from file");
         return ISNIRecord.fromFile(p);
       } catch (IOException e) {
         e.printStackTrace();
@@ -35,7 +36,7 @@ public class ISNIWrapper {
       }
     } else {
       try {
-        System.out.println("ISNI by id " + isni);
+        if (DEBUG) System.out.println("ISNI by id " + isni);
         ISNIRecord r = ISNI.get(isni);
         r.save(p);
         return r;
@@ -59,16 +60,15 @@ public class ISNIWrapper {
       return get(cache.get(k));
 
     try {
-      System.out.println("ISNI by string");
-      System.out.println(fullName);
-      System.out.println(date);
+      if (DEBUG) System.out.println("ISNI by string: " + k);
       ISNIRecord r = ISNI.search(fullName, date);
-      if (r == null){
+      if (r == null) {
         cache.put(k, null);
         saveCache();
         return null;
       }
       r.save(Paths.get(folder, r.id + ".xml"));
+      if (DEBUG) System.out.println("--found " + r.uri);
       cache.put(k, r.id);
       saveCache();
       return r;
