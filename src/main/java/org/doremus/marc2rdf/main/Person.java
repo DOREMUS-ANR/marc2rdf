@@ -7,6 +7,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.Schema;
 import org.geonames.Toponym;
 
 import java.net.URISyntaxException;
@@ -15,7 +16,7 @@ public class Person extends Artist {
   private String firstName, lastName, birthDate, deathDate, lang;
   private String birthPlace, deathPlace;
 
-  public Person(String firstName, String lastName, String birthDate, String deathDate, String lang) throws RuntimeException, URISyntaxException {
+  public Person(String firstName, String lastName, String birthDate, String deathDate, String lang) throws URISyntaxException {
     super();
     this.firstName = firstName;
     this.lastName = lastName;
@@ -31,7 +32,7 @@ public class Person extends Artist {
     initResource();
   }
 
-  public Person(String firstName, String lastName, String birthDate) throws RuntimeException, URISyntaxException {
+  public Person(String firstName, String lastName, String birthDate) throws URISyntaxException {
     this(firstName, lastName, birthDate, null, null);
   }
 
@@ -66,7 +67,7 @@ public class Person extends Artist {
     Toponym place_toponym = GeoNames.query(place);
     E53_Place placeEntity = (place_toponym == null) ? new E53_Place(place) : new E53_Place(place);
 
-    this.resource.addProperty(SCHEMA("birthPlace"), placeEntity.asResource());
+    this.resource.addProperty(Schema.birthPlace, placeEntity.asResource());
     this.model.add(placeEntity.getModel());
 
   }
@@ -86,7 +87,7 @@ public class Person extends Artist {
     Toponym place_toponym = GeoNames.query(place, country);
     E53_Place placeEntity = (place_toponym == null) ? new E53_Place(place) : new E53_Place(place);
 
-    this.resource.addProperty(SCHEMA("deathPlace"), placeEntity.asResource());
+    this.resource.addProperty(Schema.deathPlace, placeEntity.asResource());
     this.model.add(placeEntity.getModel());
   }
 
@@ -113,7 +114,7 @@ public class Person extends Artist {
   }
 
   private Resource initResource() {
-    this.resource = model.createResource(this.getUri().toString());
+    this.resource = model.createResource(this.getUri());
     resource.addProperty(RDF.type, CIDOC.E21_Person);
 
     addProperty(FOAF.firstName, this.getFirstName(), lang);
@@ -126,10 +127,6 @@ public class Person extends Artist {
     addDate(this.getDeathDate(), true);
 
     return resource;
-  }
-
-  public Property SCHEMA(String label) {
-    return model.createProperty(Converter.SCHEMA + label);
   }
 
   public void addDate(String date, boolean isDeath) {
@@ -145,7 +142,7 @@ public class Person extends Artist {
     );
 
     if (ts.getStart() != null)
-      this.resource.addProperty(SCHEMA(isDeath ? "deathDate" : "birthDate"), ts.getStart());
+      this.resource.addProperty(isDeath ? Schema.deathDate : Schema.birthDate, ts.getStart());
 
     model.add(ts.getModel());
   }
@@ -188,11 +185,11 @@ public class Person extends Artist {
     }
     if (d.startsWith("ca")) {
       uncertain = true;
-      d.replaceFirst("^ca", "").trim();
+      d = d.replaceFirst("^ca", "").trim();
     }
     if (d.startsWith("après")) {
       after = true;
-      d.replaceFirst("^après", "").trim();
+      d = d.replaceFirst("^après", "").trim();
     }
     // "850?" is 850-uncertain, not 8500-precision at decade
     if (!d.startsWith("1") && d.length() > 3 && d.charAt(3) == '?') {

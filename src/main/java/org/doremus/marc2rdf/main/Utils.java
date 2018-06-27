@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 
 public class Utils {
+
   private static Map<String, Locale> localeMap;
   private static Map<String, String> intermarcScriptMap;
   private static Map<String, String> intermarcMopMap;
@@ -26,7 +27,6 @@ public class Utils {
   public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?$";
   private final static Pattern DURATION_PATTERN = Pattern.compile(DURATION_REGEX);
   private final static String[] DURATION_UNITS = new String[]{null, "H", "M", "S"};
-
 
   public static List<Integer> toRange(String rangeString) {
     if (!rangeString.contains(" à ")) return null;
@@ -51,10 +51,9 @@ public class Utils {
   }
 
   public static Literal toSafeNumLiteral(String str) {
-    Model model = ModelFactory.createDefaultModel();
     if (str.matches("\\d+"))
-      return model.createTypedLiteral(Integer.parseInt(str));
-    else return model.createTypedLiteral(str);
+      return ResourceFactory.createTypedLiteral(Integer.parseInt(str));
+    else return ResourceFactory.createTypedLiteral(str);
   }
 
   public static String toISO2Lang(String lang) {
@@ -215,5 +214,8 @@ public class Utils {
 
     return duration.toString();
   }
+
+
+
 }
 
