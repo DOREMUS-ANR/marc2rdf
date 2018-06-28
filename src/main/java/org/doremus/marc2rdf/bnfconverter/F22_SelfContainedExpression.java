@@ -4,7 +4,7 @@ import net.sf.junidecode.Junidecode;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -42,7 +42,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     super(record);
 
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
-    this.resource.addProperty(DCTerms.identifier, record.getIdentifier());
+    this.resource.addProperty(DC.identifier, record.getIdentifier());
 
     String ark = record.getAttrByName("IDPerenne").getData();
     if (ark != null)

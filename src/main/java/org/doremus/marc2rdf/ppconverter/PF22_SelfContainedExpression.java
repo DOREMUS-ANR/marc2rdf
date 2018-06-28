@@ -4,7 +4,7 @@ import net.sf.junidecode.Junidecode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -56,7 +56,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   }
 
   private void convertUNI100(List<String> composers) {
-    this.resource.addProperty(DCTerms.identifier, identifier);
+    this.resource.addProperty(DC.identifier, identifier);
     this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier));
 
     this.opusMemory = new ArrayList<>();

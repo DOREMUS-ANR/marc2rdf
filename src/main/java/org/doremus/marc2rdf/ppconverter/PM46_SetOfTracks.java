@@ -1,7 +1,7 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
@@ -20,7 +20,7 @@ public class PM46_SetOfTracks extends DoremusResource {
     super(record);
 
     this.resource.addProperty(RDF.type, MUS.M46_Set_of_Tracks)
-      .addProperty(DCTerms.identifier, this.identifier)
+      .addProperty(DC.identifier, this.identifier)
       .addProperty(MUS.U227_has_content_type, "performed music", "en")
       .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
 

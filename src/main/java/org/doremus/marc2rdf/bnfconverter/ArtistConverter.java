@@ -4,7 +4,7 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -98,7 +98,7 @@ public class ArtistConverter {
     // END sameAs links
 
     // identifier
-    base.asResource().addProperty(DCTerms.identifier, record.getIdentifier());
+    base.asResource().addProperty(DC.identifier, record.getIdentifier());
 
 
     // PROV-O tracing

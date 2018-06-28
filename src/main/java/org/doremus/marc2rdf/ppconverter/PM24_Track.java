@@ -1,7 +1,7 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
@@ -20,14 +20,14 @@ public class PM24_Track extends DoremusResource {
     super(identifier);
 
     this.resource.addProperty(RDF.type, MUS.M24_Track)
-      .addProperty(DCTerms.identifier, this.identifier);
+      .addProperty(DC.identifier, this.identifier);
   }
 
   public PM24_Track(Record record) throws URISyntaxException {
     super(record);
 
     this.resource.addProperty(RDF.type, MUS.M24_Track)
-      .addProperty(DCTerms.identifier, this.identifier)
+      .addProperty(DC.identifier, this.identifier)
       .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
 
     String rdaType = PP2RDF.guessType(record);

@@ -1,6 +1,6 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
@@ -17,7 +17,7 @@ public class PF4_ManifestationSingleton extends DoremusResource {
 
     this.resource
       .addProperty(RDF.type, FRBROO.F4_Manifestation_Singleton)
-      .addProperty(DCTerms.identifier, identifier);
+      .addProperty(DC.identifier, identifier);
 
     record.getDatafieldsByCode(200, 'a')
       .forEach(this::addTitle);
