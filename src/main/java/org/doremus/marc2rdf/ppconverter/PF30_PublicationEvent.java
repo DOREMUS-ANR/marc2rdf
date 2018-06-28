@@ -170,7 +170,7 @@ public class PF30_PublicationEvent extends DoremusResource {
     if (publisher != null) {
       Resource activity = model.createResource(this.uri + "/activity")
         .addProperty(RDF.type, CIDOC.E7_Activity)
-        .addProperty(MUS.U35_foresees_function, model.createLiteral("editeur", "fr"))
+        .addProperty(MUS.U31_had_function, model.createLiteral("editeur", "fr"))
         .addProperty(CIDOC.P14_carried_out_by, model.createResource()
           .addProperty(RDF.type, FRBROO.F11_Corporate_Body)
           .addProperty(CIDOC.P131_is_identified_by, publisher));

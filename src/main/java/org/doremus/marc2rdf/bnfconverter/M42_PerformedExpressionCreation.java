@@ -212,7 +212,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     role = role.trim();
     for (String r : role.split(" et ")) {
       if (r.equals("conductor") || r.equals("direction"))
-        M28.addProperty(MUS.U35_foresees_function, model.createLiteral("conductor", "en"));
+        M28.addProperty(MUS.U31_had_function, model.createLiteral("conductor", "en"));
       else {
         Resource mopMatch = VocabularyManager.searchInCategory(r, "fr", "mop", true);
         if (mopMatch != null) M28.addProperty(MUS.U1_used_medium_of_performance, mopMatch);

@@ -80,7 +80,7 @@ public class Role {
     } else if (function != null) {
       function = function.trim();
       if (function.equals("conducteur"))
-        M28.addProperty(MUS.U35_foresees_function, model.createLiteral(function, "fr"));
+        M28.addProperty(MUS.U31_had_function, model.createLiteral(function, "fr"));
       else M28.addProperty(MUS.U1_used_medium_of_performance, model.createLiteral(function));
     } else {
       // TODO compare with the casting
