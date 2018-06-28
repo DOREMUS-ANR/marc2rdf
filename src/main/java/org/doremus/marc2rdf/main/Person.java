@@ -13,6 +13,7 @@ import org.doremus.ontology.PROV;
 import org.doremus.ontology.Schema;
 import org.geonames.Toponym;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class Person extends Artist {
@@ -162,9 +163,9 @@ public class Person extends Artist {
     model.add(timeSpan.getModel());
   }
 
-  public void addPropertyResource(Property property, String object) {
-    if (property == null || object == null) return;
-    resource.addProperty(property, model.createResource(object));
+  public void addPropertyResource(Property property, String uri) {
+    if (property == null || uri == null) return;
+    resource.addProperty(property, model.createResource(uri));
   }
 
   public void addProperty(Property property, Resource object) {
@@ -248,7 +249,12 @@ public class Person extends Artist {
     }
 
     // 2. search in isni by name/date
-    ISNIRecord isniMatch = ISNIWrapper.search(this.getFullName(), this.getBirthYear());
+    ISNIRecord isniMatch = null;
+    try {
+      isniMatch = ISNIWrapper.search(this.getFullName(), this.getBirthYear());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     if (isniMatch == null) return;
 
     // 3. search in doremus by isni
@@ -283,8 +289,7 @@ public class Person extends Artist {
     String sparql =
       "PREFIX owl: <" + OWL.getURI() + ">\n" +
         "SELECT DISTINCT * WHERE {" +
-        " ?s owl:sameAs <" + isni + ">" +
-        "}";
+        " ?s owl:sameAs <" + isni + "> }";
 
     return (Resource) Utils.queryDoremus(sparql, "s");
   }

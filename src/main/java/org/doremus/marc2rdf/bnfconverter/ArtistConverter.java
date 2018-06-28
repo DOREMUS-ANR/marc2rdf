@@ -18,6 +18,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.PROV;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -78,14 +79,18 @@ public class ArtistConverter {
 
     // sameAs links
     String isni = record.getDatafieldsByCode("031", 'a').stream().findFirst().orElse(null);
-    ISNIRecord rec;
-    if (isni != null) {
-      base.asResource().addProperty(OWL.sameAs, model.createResource("http://isni.org/isni/" + isni));
-      rec = ISNIWrapper.get(isni);
-    } else {
-      rec = ISNIWrapper.search(base.getFullName(), base.getBirthDate());
+    try {
+      ISNIRecord rec;
+      if (isni != null) {
+        base.asResource().addProperty(OWL.sameAs, model.createResource("http://isni.org/isni/" + isni));
+        rec = ISNIWrapper.get(isni);
+      } else {
+        rec = ISNIWrapper.search(base.getFullName(), base.getBirthDate());
+      }
+      if (rec != null) base.isniEnrich(rec);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
-    if (rec != null) base.isniEnrich(rec);
 
 
     String ark = record.getAttrByName("IDPerenne").getData();

@@ -18,13 +18,13 @@ public class ISNIWrapper {
   private static String folder = null;
   private static boolean DEBUG = false;
 
-  private static void init(){
+  private static void init() {
     folder = Converter.properties.getProperty("ISNIFolder");
     ISNI.setBestViafBehavior(true);
     loadCache();
   }
 
-  public static ISNIRecord get(String isni) {
+  public static ISNIRecord get(String isni) throws IOException {
     if (folder == null) init();
 
     Path p = Paths.get(folder, isni + ".xml");
@@ -32,9 +32,7 @@ public class ISNIWrapper {
       try {
         if (DEBUG) System.out.println("ISNI from file");
         return ISNIRecord.fromFile(p);
-      } catch (IOException e) {
-        e.printStackTrace();
-      } catch (JAXBException e) {
+      } catch (IOException | JAXBException e) {
         e.printStackTrace();
       }
     } else {
@@ -43,14 +41,14 @@ public class ISNIWrapper {
         ISNIRecord r = ISNI.get(isni);
         r.save(p);
         return r;
-      } catch (IOException e) {
-        e.printStackTrace();
+      } catch (NullPointerException e) {
+        return null;
       }
     }
     return null;
   }
 
-  public static ISNIRecord search(String fullName, String date) {
+  public static ISNIRecord search(String fullName, String date) throws IOException {
     if (folder == null) init();
 
     String k = fullName;
@@ -62,23 +60,18 @@ public class ISNIWrapper {
     if (cache.containsKey(k))
       return get(cache.get(k));
 
-    try {
-      if (DEBUG) System.out.println("ISNI by string: " + k);
-      ISNIRecord r = ISNI.search(fullName, date);
-      if (r == null) {
-        cache.put(k, null);
-        saveCache();
-        return null;
-      }
-      r.save(Paths.get(folder, r.id + ".xml"));
-      if (DEBUG) System.out.println("--found " + r.uri);
-      cache.put(k, r.id);
+    if (DEBUG) System.out.println("ISNI by string: " + k);
+    ISNIRecord r = ISNI.search(fullName, date);
+    if (r == null) {
+      cache.put(k, null);
       saveCache();
-      return r;
-    } catch (IOException e) {
-      e.printStackTrace();
+      return null;
     }
-    return null;
+    r.save(Paths.get(folder, r.id + ".xml"));
+    if (DEBUG) System.out.println("--found " + r.uri);
+    cache.put(k, r.id);
+    saveCache();
+    return r;
   }
 
   private static void saveCache() {
@@ -89,7 +82,7 @@ public class ISNIWrapper {
     }
 
     try {
-      properties.store(new FileOutputStream("isni.properties"), null);
+      properties.store(new FileOutputStream(Paths.get(folder,"isni.properties").toFile()), null);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -99,7 +92,7 @@ public class ISNIWrapper {
   private static void loadCache() {
     cache = new HashMap<>();
     try {
-      FileInputStream fis = new FileInputStream("isni.properties");
+      FileInputStream fis = new FileInputStream(Paths.get(folder,"isni.properties").toFile());
       Properties properties = new Properties();
       properties.load(fis);
 

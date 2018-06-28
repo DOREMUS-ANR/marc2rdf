@@ -93,7 +93,6 @@ public class Utils {
 
   public static String toLangDefaultScript(String lang) {
     if (lang == null || lang.isEmpty()) return null;
-
     return LocaleUtility.getScript(new Locale(lang));
   }
 
