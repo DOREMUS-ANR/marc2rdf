@@ -591,6 +591,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     if (this.F31_Performance != null)
       this.F31_Performance.asResource()
         .addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
+
+    this.model.add(M43_Performed_Expression.getModel())
+      .add(F31_Performance.getModel());
+
     return this;
   }
 
