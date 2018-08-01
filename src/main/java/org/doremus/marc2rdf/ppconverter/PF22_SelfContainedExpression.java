@@ -16,7 +16,6 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -28,20 +27,21 @@ import java.util.stream.Collectors;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class PF22_SelfContainedExpression extends DoremusResource {
+  private static String CATALOG_REGEX = "(?i)^([a-z]+)(\\d+.*)$";
+  private static Pattern CATALOG_PATTERN = Pattern.compile(CATALOG_REGEX);
 
   private List<String> opusMemory;
 
-  public PF22_SelfContainedExpression(String identifier) throws URISyntaxException {
+  public PF22_SelfContainedExpression(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
   }
 
-  public PF22_SelfContainedExpression(Record record) throws URISyntaxException {
+  public PF22_SelfContainedExpression(Record record) {
     this(record, record.getIdentifier(), null);
   }
 
-  public PF22_SelfContainedExpression(Record record, String identifier, List<String> composers) throws
-    URISyntaxException {
+  public PF22_SelfContainedExpression(Record record, String identifier, List<String> composers) {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
 
@@ -145,15 +145,12 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     if (catalogParts.length > 1) {
       catalogName = catalogParts[0].trim();
       catalogNum = catalogParts[1].trim();
-    } else if (catalog.matches("^([a-zA-Z]+)(\\d+.*)$")) {
-      Matcher m = Pattern.compile("^([a-zA-Z]+)(\\d+.*)$").matcher(catalog);
+    } else if (catalog.matches(CATALOG_REGEX)) {
+      Matcher m = CATALOG_PATTERN.matcher(catalog);
       m.find();
       catalogName = m.group(1).trim();
       catalogNum = m.group(2).trim();
-    } else {
-      System.out.println("Not parsable catalog: " + catalog);
-      // TODO what to do with not parsable catalogs?
-    }
+    } else Utils.log("Not parsable catalog: " + catalog, record);
 
     Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, composers);
     if (match != null)
@@ -161,7 +158,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     String label = (catalogName != null) ? (catalogName + " " + catalogNum) : catalog;
 
-    Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + label.replaceAll("[ /]", "_"))
+    Resource M1CatalogStatement = model.createResource(this.uri + "/catalog/" + label.replaceAll("[ /]", "_"))
       .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
       .addProperty(RDFS.label, label)
       .addProperty(CIDOC.P3_has_note, catalog);
@@ -197,7 +194,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
             M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(j));
           }
         } catch (NumberFormatException e) {
-          System.out.println("not parsed as range " + catalogNum);
+          Utils.log("not parsed as range " + catalogNum, record);
           // DO NOTHING
         }
       }

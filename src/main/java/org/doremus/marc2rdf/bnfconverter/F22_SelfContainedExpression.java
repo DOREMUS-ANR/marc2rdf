@@ -32,7 +32,9 @@ import java.util.regex.Pattern;
  * Correspond à la description développée de l'expression représentative
  ***/
 public class F22_SelfContainedExpression extends DoremusResource {
-  private final static String catalogFallbackRegex = "([a-z]+) ?(\\d+)";
+  private final static String CATALOG_FALLBACK_REGEX = "([a-z]+) ?(\\d+)";
+  private final static Pattern CATALOG_FALLBACK_PATTERN = Pattern.compile(CATALOG_FALLBACK_REGEX);
+
   private final static String DEDICACE_STRING = "(?i)(?:Sur l'édition, d|D)[ée]dicaces?(?: ?: ?)?(.+)";
   private final static Pattern DEDICACE_PATTERN = Pattern.compile(DEDICACE_STRING);
 
@@ -90,8 +92,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       //fix: sometimes the catalog is written as "C172" instead of "C 172"
       // I try to separate letters and numbers
       if (catalogParts.length < 2) {
-        Pattern pattern = Pattern.compile(catalogFallbackRegex, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(catalog);
+        Matcher matcher = CATALOG_FALLBACK_PATTERN.matcher(catalog);
         if (matcher.find()) {
           catalogParts = new String[]{matcher.group(1), matcher.group(2)};
         }
@@ -106,7 +107,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       }
       String label = (catalogName != null) ? (catalogName + " " + catalogNum) : catalog;
 
-      Resource M1CatalogStatement = model.createResource(this.uri.toString() + "/catalog/" + label.replaceAll("[ /]", "_"))
+      Resource M1CatalogStatement = model.createResource(this.uri + "/catalog/" + label.replaceAll("[ /]", "_"))
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
         .addProperty(RDFS.label, label)
         .addProperty(CIDOC.P3_has_note, catalog.trim());
@@ -120,10 +121,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
         else M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, match);
 
         M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogNum);
-      } else {
-        System.out.println("Not parsable catalog: " + catalog);
-        // TODO what to do with not parsable catalogs?
-      }
+      } else Utils.log("Not parsable catalog: " + catalog, record);
+
 
       this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
     }
@@ -189,7 +188,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     // if I have the info about casting
     if (castingNotes.size() > 0 || castDetails.size() > 0) {
-      String castingUri = this.uri.toString() + "/casting/1";
+      String castingUri = this.uri + "/casting/1";
       Resource M6Casting = model.createResource(castingUri);
       M6Casting.addProperty(RDF.type, MUS.M6_Casting);
 
@@ -212,12 +211,12 @@ public class F22_SelfContainedExpression extends DoremusResource {
     List<String> characters = record.getDatafieldsByCode("608", 'b');
     if (characters.size() > 0)
       this.resource.addProperty(MUS.U33_has_set_of_characters,
-        model.createResource(this.uri.toString() + "/character")
+        model.createResource(this.uri + "/character")
           .addProperty(RDF.type, MUS.M33_Set_of_Characters)
           .addProperty(CIDOC.P3_has_note, String.join("; ", characters)));
   }
 
-  public F22_SelfContainedExpression(String identifier) throws URISyntaxException {
+  public F22_SelfContainedExpression(String identifier) {
     super(identifier);
   }
 
@@ -325,14 +324,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
     File file = new File(this.getClass().getClassLoader().getResource("notMeaningfulTitles.txt").getFile());
 
     try (Scanner scanner = new Scanner(file)) {
-
       while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
         notMeaningfulTitles.add(line.trim());
       }
-
-      scanner.close();
-
     } catch (IOException e) {
       e.printStackTrace();
     }

@@ -232,7 +232,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
               if (mop == null && !pt.isEmpty())
-                System.out.println("Mop not found: " + pt + " | Full line: " + originalTxt);
+                Utils.log("Mop not found: " + pt + " | Full line: " + originalTxt, record);
 
               Resource _mop = (mop != null) ? mop : genericMop;
               ip.set(artist, _mop, null, operaRole, originalTxt, isPrincipal);
