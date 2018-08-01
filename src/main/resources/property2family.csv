@@ -3,5 +3,11 @@ http://data.doremus.org/ontology#U2_foresees_use_of_medium_of_performance,mop
 http://data.doremus.org/ontology#U11_has_key,key
 http://data.doremus.org/ontology#U12_has_genre,genre
 http://data.doremus.org/ontology#U31_had_function,function
+http://data.doremus.org/ontology#U32_had_responsibility,responsibility
 http://data.doremus.org/ontology#U35_foresees_function,function
+http://data.doremus.org/ontology#U36_foresees_responsibility,responsibility
+http://data.doremus.org/ontology#U47_has_derivation_type,derivation
 http://data.doremus.org/ontology#U227_has_content_type,RDAContentType
+http://data.doremus.org/ontology#U94_has_work_type,work_type
+http://data.doremus.org/ontology#U81_had_performer_status,performer_status
+http://data.doremus.org/ontology#U82_has_foreseen_performer_status,performer_status
