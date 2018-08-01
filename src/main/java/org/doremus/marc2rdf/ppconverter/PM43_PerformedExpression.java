@@ -8,15 +8,13 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
-
 public class PM43_PerformedExpression extends DoremusResource {
-  public PM43_PerformedExpression(String identifier) throws URISyntaxException {
+  public PM43_PerformedExpression(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, MUS.M43_Performed_Expression);
   }
 
-  public PM43_PerformedExpression(Record record) throws URISyntaxException {
+  public PM43_PerformedExpression(Record record) {
     super(record);
     this.resource.addProperty(RDF.type, MUS.M43_Performed_Expression);
 

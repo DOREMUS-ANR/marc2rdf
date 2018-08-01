@@ -21,7 +21,7 @@ public class Person extends Artist {
   private String birthPlace, deathPlace;
   private TimeSpan timeSpan;
 
-  public Person(String firstName, String lastName, String birthDate, String deathDate, String lang) throws URISyntaxException {
+  public Person(String firstName, String lastName, String birthDate, String deathDate, String lang) {
     super();
     this.firstName = firstName;
     this.lastName = lastName;
@@ -33,15 +33,19 @@ public class Person extends Artist {
       throw new RuntimeException("Missing artist value: null | " + lastName + " | " + birthDate);
     }
 
-    this.uri = ConstructURI.build("E21_Person", firstName, lastName, birthDate).toString();
+    try {
+      this.uri = ConstructURI.build("E21_Person", firstName, lastName, birthDate).toString();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
     initResource();
   }
 
-  public Person(String firstName, String lastName, String birthDate) throws URISyntaxException {
+  public Person(String firstName, String lastName, String birthDate) {
     this(firstName, lastName, birthDate, null, null);
   }
 
-  public Person(String firstName, String lastName, String birthDate, String lang) throws URISyntaxException {
+  public Person(String firstName, String lastName, String birthDate, String lang) {
     this(firstName, lastName, birthDate, null, lang);
   }
 
@@ -223,7 +227,7 @@ public class Person extends Artist {
     return ts;
   }
 
-  public static Person fromUnimarcField(DataField field) throws URISyntaxException {
+  public static Person fromUnimarcField(DataField field) {
     // for fields 700 and 701
     String firstName = null, lastName = null, birthDate = null, deathDate = null;
     if (field.isCode('a'))  // surname

@@ -10,20 +10,19 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PM24_Track extends DoremusResource {
 
-  public PM24_Track(String identifier) throws URISyntaxException {
+  public PM24_Track(String identifier) {
     super(identifier);
 
     this.resource.addProperty(RDF.type, MUS.M24_Track)
       .addProperty(DC.identifier, this.identifier);
   }
 
-  public PM24_Track(Record record) throws URISyntaxException {
+  public PM24_Track(Record record) {
     super(record);
 
     this.resource.addProperty(RDF.type, MUS.M24_Track)

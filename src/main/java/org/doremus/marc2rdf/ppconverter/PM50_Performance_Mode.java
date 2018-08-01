@@ -12,7 +12,7 @@ public class PM50_Performance_Mode extends DoremusResource {
 
     regenerateResource(uri);
 
-    this.resource.addProperty(RDF.type, MUS.M50_Performance_Mode)
+    this.resource.addProperty(RDF.type, MUS.M50_Creation_or_Performance_Mode)
       .addProperty(RDFS.label, label)
       .addProperty(CIDOC.P1_is_identified_by, label);
   }

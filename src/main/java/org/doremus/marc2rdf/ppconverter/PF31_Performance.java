@@ -75,11 +75,12 @@ public class PF31_Performance extends DoremusResource {
       .forEach(this::addNote);
   }
 
-  public PF31_Performance(String identifier) throws URISyntaxException {
+
+  public PF31_Performance(String identifier) {
     super(identifier);
   }
 
-  public PF31_Performance(String uri, String note, Model model) throws URISyntaxException {
+  public PF31_Performance(String uri, String note, Model model) {
     super();
     this.model = model;
     this.regenerateResource(uri);
@@ -126,7 +127,7 @@ public class PF31_Performance extends DoremusResource {
     return playedWorks;
   }
 
-  public PF25_PerformancePlan getRelatedF25() throws URISyntaxException {
+  public PF25_PerformancePlan getRelatedF25() {
     return new PF25_PerformancePlan(getIdentifier(), true);
   }
 }

@@ -7,14 +7,12 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
-
 public class PF25_PerformancePlan extends DoremusResource {
-  public PF25_PerformancePlan(String identifier) throws URISyntaxException {
+  public PF25_PerformancePlan(String identifier) {
     this(identifier, false);
   }
 
-  public PF25_PerformancePlan(String identifier, boolean light) throws URISyntaxException {
+  public PF25_PerformancePlan(String identifier, boolean light) {
     super(identifier);
 
     if (light) return;
@@ -31,14 +29,14 @@ public class PF25_PerformancePlan extends DoremusResource {
   }
 
 
-  public PF25_PerformancePlan(Record record) throws URISyntaxException {
+  public PF25_PerformancePlan(Record record) {
     this(record.getIdentifier());
     this.record = record;
   }
 
   public void setAsImprovisation() {
     PM50_Performance_Mode pMode = new PM50_Performance_Mode(this.uri + "/mode", "improvisation");
-    this.resource.addProperty(MUS.U86_had_performance_mode, pMode.asResource());
+    this.resource.addProperty(MUS.U90_foresees_creation_or_performance_mode, pMode.asResource());
     this.model.add(pMode.getModel());
   }
 

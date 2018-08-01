@@ -13,7 +13,6 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,12 +25,12 @@ public class F28_ExpressionCreation extends DoremusResource {
   private int composerCount;
   public F22_SelfContainedExpression expression;
 
-  public F28_ExpressionCreation(String identifier) throws URISyntaxException {
+  public F28_ExpressionCreation(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
   }
 
-  public F28_ExpressionCreation(Record record) throws URISyntaxException {
+  public F28_ExpressionCreation(Record record) {
     super(record);
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
     this.composerCount = 0;
@@ -85,7 +84,7 @@ public class F28_ExpressionCreation extends DoremusResource {
           break;
       }
 
-      if (author != null) addActivity(author, role);
+      addActivity(author, role);
 
     }
 
@@ -225,7 +224,7 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   public List<String> getComposerUris() {
     return this.composers.stream()
-      .map(e -> e.getUri().toString())
+      .map(e -> e.getUri())
       .collect(Collectors.toList());
   }
 }

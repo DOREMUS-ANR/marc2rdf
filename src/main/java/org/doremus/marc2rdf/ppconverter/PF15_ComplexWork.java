@@ -8,21 +8,19 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
-
 /***
  * Correspond à l'oeuvre musicale
  ***/
 public class PF15_ComplexWork extends DoremusResource {
 
-  public PF15_ComplexWork(Record record, String identifier) throws URISyntaxException {
+  public PF15_ComplexWork(Record record, String identifier) {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);
     this.resource.addProperty(DC.identifier, identifier);
     this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier));
   }
 
-  public PF15_ComplexWork(String identifier) throws URISyntaxException {
+  public PF15_ComplexWork(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);
   }

@@ -99,13 +99,10 @@ public class RecordConverter {
   }
 
   private void linkToMovements() {
-    for (String code : record.getDatafieldsByCode("302", '3'))
-      try {
-        f14.addMovement(new F14_IndividualWork(code));
-        f22.addMovement(new F22_SelfContainedExpression(code));
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-      }
+    for (String code : record.getDatafieldsByCode("302", '3')) {
+      f14.addMovement(new F14_IndividualWork(code));
+      f22.addMovement(new F22_SelfContainedExpression(code));
+    }
   }
 
   public Model getModel() {

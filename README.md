@@ -43,6 +43,11 @@ The class **Converter** is the "main" class to start converting MARCXML records 
     6. Click on "DOREMUS" ------> Display of all RDF triples generated from “XMLFile.xml”
 
 
+### Logging
+
+The application logs by default in a `log.txt` file in the root of the project. If required, change the file 
+`src/main/resources/tinylog.properties`, according to [this documentation](https://tinylog.org/configuration).
+
 ### Commands
 
     gradle run                  ## start conversion of files

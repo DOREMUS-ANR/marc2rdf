@@ -164,12 +164,7 @@ public class ArtistConverter {
       lang = Utils.intermarcExtractLang(w);
     }
 
-    try {
-      return new Person(firstName, lastName, birthDate, deathDate, lang);
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
-    return null;
+    return new Person(firstName, lastName, birthDate, deathDate, lang);
   }
 
   static List<String[]> getAlternateNames(Record record) {

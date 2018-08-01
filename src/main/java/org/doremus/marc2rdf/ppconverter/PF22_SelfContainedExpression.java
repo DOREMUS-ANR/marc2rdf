@@ -61,13 +61,14 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     this.opusMemory = new ArrayList<>();
 
-    for (String title : getTitle())
+    for (String title : getTitle()) {
+      log(title);
       this.resource.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
-
+    }
     for (String catalog : getCatalog()) {
       // sometimes there is the opus number inside here!
       if (catalog.matches(Utils.opusHeaderRegex + ".*")) {
-        // System.out.println("opus in catalog found " + catalog);
+        log("opus in catalog found " + catalog);
         parseOpus(catalog);
         continue;
       }
@@ -86,7 +87,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       }
       // if does not contain "Op." or "opus" etc., it is a catalog!
       if (!opus.matches(Utils.opusHeaderRegex + ".*")) {
-        // System.out.println("catalog in opus found " + opus);
+        log("catalog in opus found " + opus);
         parseCatalog(opus, composers);
         continue;
       }
@@ -130,7 +131,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     for (String castingString : getCasting()) {
       castingString = castingString.trim().replaceFirst("\\.$", "");
-      String castingUri = this.uri.toString() + "/casting/" + (++castingNum);
+      String castingUri = this.uri + "/casting/" + (++castingNum);
       PM6_Casting M6Casting = new PM6_Casting(castingString, castingUri, model);
 
       this.resource.addProperty(MUS.U13_has_casting, M6Casting.asResource());
@@ -150,7 +151,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
       m.find();
       catalogName = m.group(1).trim();
       catalogNum = m.group(2).trim();
-    } else Utils.log("Not parsable catalog: " + catalog, record);
+    } else log("Not parsable catalog: " + catalog);
 
     Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, composers);
     if (match != null)
@@ -194,7 +195,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
             M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, model.createTypedLiteral(j));
           }
         } catch (NumberFormatException e) {
-          Utils.log("not parsed as range " + catalogNum, record);
+          log("not parsed as range " + catalogNum);
           // DO NOTHING
         }
       }
@@ -232,7 +233,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   private void addOpus(String note, String number, String subnumber) {
     String memoryObj = number;
     if (subnumber != null) memoryObj += "-" + subnumber;
-//    System.out.println(note + " --> " + memoryObj);
 
     if (opusMemory.contains(memoryObj)) return;
     opusMemory.add(memoryObj);

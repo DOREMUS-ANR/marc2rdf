@@ -19,7 +19,7 @@ import java.util.List;
 
 public class F15_ComplexWork extends DoremusResource {
 
-  public F15_ComplexWork(Record record) throws URISyntaxException {
+  public F15_ComplexWork(Record record) {
     super(record);
 
     this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);
@@ -31,7 +31,7 @@ public class F15_ComplexWork extends DoremusResource {
     parseDerivation();
   }
 
-  private void parseDerivation() throws URISyntaxException {
+  private void parseDerivation() {
     // derivation
     DataField derivField = record.getDatafieldByCode(301);
     if (derivField == null || derivField.getIndicator1() == '7' || !derivField.isCode('r')) return;
@@ -75,7 +75,7 @@ public class F15_ComplexWork extends DoremusResource {
     return VocabularyManager.getVocabulary("derivation").findConcept(str, false);
   }
 
-  public F15_ComplexWork(String identifier) throws URISyntaxException {
+  public F15_ComplexWork(String identifier) {
     super(identifier);
   }
 

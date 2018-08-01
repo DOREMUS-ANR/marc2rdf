@@ -25,16 +25,16 @@ public class PF28_ExpressionCreation extends DoremusResource {
   private List<Person> composers;
   private int composersCount = 0;
 
-  public PF28_ExpressionCreation(String identifier) throws URISyntaxException {
+  public PF28_ExpressionCreation(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
   }
 
-  public PF28_ExpressionCreation(Record record) throws URISyntaxException {
+  public PF28_ExpressionCreation(Record record) {
     this(record, record.getIdentifier());
   }
 
-  public PF28_ExpressionCreation(Record record, String identifier) throws URISyntaxException {
+  public PF28_ExpressionCreation(Record record, String identifier) {
     super(record, identifier);
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
@@ -42,7 +42,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
     else if ("UNI:44".equals(record.getType())) convertUNI44();
   }
 
-  private void convertUNI44() throws URISyntaxException {
+  private void convertUNI44() {
     this.composers = findComposers();
     for (Person composer : this.composers) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
@@ -62,7 +62,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
 //    }
   }
 
-  private void convertUNI100() throws URISyntaxException {
+  private void convertUNI100() {
     String[] dateMachine = getDateMachine();
     if (dateMachine != null) {
       Pattern p = Pattern.compile(TimeSpan.frenchDateRegex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -95,13 +95,22 @@ public class PF28_ExpressionCreation extends DoremusResource {
     if (period != null) {
       String periodUri = getPeriodUri(period);
       Resource periodRes;
-      if (periodUri != null) periodRes = model.createResource(periodUri);
-      else periodRes = model.createResource(ConstructURI.build("pp", "E4_Period", period).toString())
-        .addProperty(RDF.type, CIDOC.E4_Period)
-        .addProperty(RDFS.label, period, "fr")
-        .addProperty(CIDOC.P1_is_identified_by, period, "fr");
+      try {
 
-      this.resource.addProperty(CIDOC.P10_falls_within, periodRes);
+        if (periodUri != null) periodRes = model.createResource(periodUri);
+        else {
+          periodUri = ConstructURI.build("pp", "E4_Period", period).toString();
+          periodRes = model.createResource(periodUri)
+            .addProperty(RDF.type, CIDOC.E4_Period)
+            .addProperty(RDFS.label, period, "fr")
+            .addProperty(CIDOC.P1_is_identified_by, period, "fr");
+        }
+
+        this.resource.addProperty(CIDOC.P10_falls_within, periodRes);
+
+      } catch (URISyntaxException e) {
+        e.printStackTrace();
+      }
     }
 
     this.composers = findComposers();
@@ -184,7 +193,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
     return null;
   }
 
-  private List<Person> findComposers() throws URISyntaxException {
+  private List<Person> findComposers() {
     List<Person> composers = new ArrayList<>();
     if (record.isType("AIC:14")) return composers;
 

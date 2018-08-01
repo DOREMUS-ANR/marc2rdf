@@ -56,13 +56,13 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   private boolean hasWorkLinked = false;
 
-  public PM42_PerformedExpressionCreation(String identifier) throws URISyntaxException {
+  public PM42_PerformedExpressionCreation(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
     this.M43_Performed_Expression = new PM43_PerformedExpression(identifier);
   }
 
-  public PM42_PerformedExpressionCreation(Record record) throws URISyntaxException {
+  public PM42_PerformedExpressionCreation(Record record)  {
     super(record);
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
 
@@ -132,7 +132,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
     if (shouldICreateAF22) linkNewWork();
 
-    for (PM28_Individual_Performance ip : parseArtist(record, this.uri)) {
+    for (PM28_Individual_Performance ip : parseArtist(record, uri)) {
       this.resource.addProperty(CIDOC.P9_consists_of, ip.asResource());
       this.model.add(ip.getModel());
     }
@@ -152,7 +152,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return sj.toString();
   }
 
-  public static List<PM28_Individual_Performance> parseArtist(Record record, String mainUri) throws URISyntaxException {
+  public static List<PM28_Individual_Performance> parseArtist(Record record, String mainUri) {
     int counter = 0;
     List<PM28_Individual_Performance> activityList = new ArrayList<>();
 
@@ -232,7 +232,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
               if (mop == null && !pt.isEmpty())
-                Utils.log("Mop not found: " + pt + " | Full line: " + originalTxt, record);
+                log("Mop not found: " + pt + " | Full line: " + originalTxt, record);
 
               Resource _mop = (mop != null) ? mop : genericMop;
               ip.set(artist, _mop, null, operaRole, originalTxt, isPrincipal);
@@ -607,7 +607,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return this.F31_Performance.asResource();
   }
 
-  void linkWorkById(String workIdentifier) throws URISyntaxException {
+  void linkWorkById(String workIdentifier)  {
     if (workIdentifier == null || workIdentifier.isEmpty())
       return;
 
@@ -630,7 +630,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     this.model.add(F31_Performance.getModel()).add(f25.getModel());
   }
 
-  private void linkNewWork() throws URISyntaxException {
+  private void linkNewWork()  {
     PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
     PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
     PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
@@ -657,12 +657,12 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   private static CorporateBody ensambleIntercontemporain = null;
 
-  private String getEnsambleIntercontemporainUri() throws URISyntaxException {
+  private String getEnsambleIntercontemporainUri() {
     if (ensambleIntercontemporain == null) {
       ensambleIntercontemporain = new CorporateBody("Ensemble intercontemporain");
       model.add(ensambleIntercontemporain.getModel());
     }
-    return ensambleIntercontemporain.getUri().toString();
+    return ensambleIntercontemporain.getUri();
   }
 
   private boolean isAnImprovisation() {

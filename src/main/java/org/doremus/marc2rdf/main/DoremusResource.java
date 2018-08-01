@@ -4,6 +4,7 @@ package org.doremus.marc2rdf.main;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
@@ -11,6 +12,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.PROV;
+import org.pmw.tinylog.Logger;
 
 import java.net.URISyntaxException;
 
@@ -106,4 +108,19 @@ public abstract class DoremusResource {
       .addProperty(CIDOC.P3_has_note, text, "fr");
   }
 
+  protected void log(String message) {
+    Logger.info(record.getIdentifier() + " | " + message);
+  }
+
+  protected static void log(String message, Record record) {
+    Logger.info(record.getIdentifier() + " | " + message);
+  }
+
+  public void setUri(String uri) {
+    if (this.uri == null || uri.equals(this.uri)) return;
+
+    this.uri = uri;
+    if (this.resource != null)
+      this.resource = ResourceUtils.renameResource(this.resource, uri);
+  }
 }

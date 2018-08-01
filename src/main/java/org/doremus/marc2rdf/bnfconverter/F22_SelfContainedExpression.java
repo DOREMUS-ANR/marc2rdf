@@ -121,7 +121,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
         else M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, match);
 
         M1CatalogStatement.addProperty(MUS.U41_has_catalogue_number, catalogNum);
-      } else Utils.log("Not parsable catalog: " + catalog, record);
+      } else log("Not parsable catalog: " + catalog);
 
 
       this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
@@ -168,18 +168,15 @@ public class F22_SelfContainedExpression extends DoremusResource {
       String mopNum = castingDetail.substring(2, 4);
 
       String iamlCode = Utils.itermarc2mop(mopCode);
-      if (iamlCode == null)
-        System.out.println("Iaml code not found for mop: " + mopCode + ". Record: " + this.identifier);
-      else
-        castDetails.add(new M23_Casting_Detail(iamlCode, mopNum));
+      if (iamlCode == null) log("Iaml code not found for mop: " + mopCode);
+      else castDetails.add(new M23_Casting_Detail(iamlCode, mopNum));
     }
     for (String castingDetail : getSoloists()) {
       String mopCode = castingDetail.substring(0, 2);
       String mopNum = castingDetail.substring(2, 4);
       String iamlCode = Utils.itermarc2mop(mopCode);
 
-      if (iamlCode == null)
-        System.out.println("Iaml code not found for mop: " + mopCode);
+      if (iamlCode == null) log("Iaml code not found for mop: " + mopCode);
       else
         castDetails.add(new M23_Casting_Detail(iamlCode, mopNum, true));
     }
@@ -389,8 +386,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       Resource res = VocabularyManager.getVocabulary("genre-iaml").getConcept(codeGenre);
 
-      if (res == null)
-        System.out.println("Code genre not found: " + codeGenre + " in record " + record.getIdentifier());
+      if (res == null) log("Code genre not found: " + codeGenre);
       else genres.add(res);
     }
 

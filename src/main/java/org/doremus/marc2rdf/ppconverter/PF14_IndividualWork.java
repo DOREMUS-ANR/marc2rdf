@@ -7,15 +7,13 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
-
 public class PF14_IndividualWork extends DoremusResource {
-  public PF14_IndividualWork(Record record, String identifier) throws URISyntaxException {
+  public PF14_IndividualWork(Record record, String identifier) {
     this(identifier);
     this.record = record;
   }
 
-  public PF14_IndividualWork(String identifier) throws URISyntaxException {
+  public PF14_IndividualWork(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, FRBROO.F14_Individual_Work);
   }

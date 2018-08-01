@@ -35,10 +35,10 @@ public class BIBRecordConverter {
     intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
     provActivity = BNF2RDF.computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
-    for (DataField field :record.getDatafieldsByCode(143)){
+    for (DataField field : record.getDatafieldsByCode(143)) {
       if (!field.isCode('a')) continue;
       String subA = field.getSubfield('a').getData();
-      if(!"Traditions".equals(subA)) continue;
+      if (!"Traditions".equals(subA)) continue;
       System.out.println(record.getIdentifier());
       System.out.println(field);
     }
@@ -123,13 +123,10 @@ public class BIBRecordConverter {
   }
 
   private void linkToMovements() {
-    for (String code : record.getDatafieldsByCode("302", '3'))
-      try {
-        f14.addMovement(new F14_IndividualWork(code));
-        f22.addMovement(new F22_SelfContainedExpression(code));
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-      }
+    for (String code : record.getDatafieldsByCode("302", '3')) {
+      f14.addMovement(new F14_IndividualWork(code));
+      f22.addMovement(new F22_SelfContainedExpression(code));
+    }
   }
 
   public Model getModel() {

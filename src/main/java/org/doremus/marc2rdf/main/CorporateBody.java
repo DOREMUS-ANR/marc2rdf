@@ -11,12 +11,16 @@ import java.net.URISyntaxException;
 
 public class CorporateBody extends Artist {
   private String name;
-  public CorporateBody(String name) throws URISyntaxException, NullPointerException {
+  public CorporateBody(String name) throws NullPointerException {
     super();
     if (name == null) throw new RuntimeException("Missing artist name");
 
     this.name = name;
-    this.uri = ConstructURI.build("F11_CorporateBody", name).toString();
+    try {
+      this.uri = ConstructURI.build("F11_CorporateBody", name).toString();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
     initResource();
   }
 
@@ -40,7 +44,7 @@ public class CorporateBody extends Artist {
     return uri;
   }
 
-  public static CorporateBody fromUnimarcField(DataField field) throws URISyntaxException {
+  public static CorporateBody fromUnimarcField(DataField field) {
     String name = field.getString('a');
     if (name == null) return null;
 

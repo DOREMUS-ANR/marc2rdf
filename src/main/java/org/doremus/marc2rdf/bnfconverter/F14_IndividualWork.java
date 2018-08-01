@@ -7,26 +7,23 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
-
 public class F14_IndividualWork extends DoremusResource {
-  public F14_IndividualWork(Record record) throws URISyntaxException {
+  public F14_IndividualWork(Record record) {
     super(record);
     this.resource.addProperty(RDF.type, FRBROO.F14_Individual_Work);
   }
 
-  public F14_IndividualWork(String identifier) throws URISyntaxException {
+  public F14_IndividualWork(String identifier) {
     super(identifier);
-  }
-
-
-  public F14_IndividualWork addPremiere(M42_PerformedExpressionCreation premiere) {
-    this.resource.addProperty(MUS.U5_had_premiere, premiere.getMainPerformance());
-    return this;
   }
 
   public F14_IndividualWork add(F22_SelfContainedExpression expression) {
     this.resource.addProperty(FRBROO.R9_is_realised_in, expression.asResource());
+    return this;
+  }
+
+  public F14_IndividualWork addPremiere(M42_PerformedExpressionCreation premiere) {
+    this.resource.addProperty(MUS.U5_had_premiere, premiere.getMainPerformance());
     return this;
   }
 

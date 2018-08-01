@@ -38,8 +38,7 @@ public class M23_Casting_Detail {
     if (num != -1) M23CastingDetail.addProperty(MUS.U30_foresees_quantity_of_mop, model.createTypedLiteral(num));
 
     if (solo)
-      M23CastingDetail.addProperty(
-        MUS.U36_foresees_responsibility, model.createLiteral("soliste", "fr"));
+      M23CastingDetail.addProperty(MUS.U36_foresees_responsibility, "soliste", "fr");
 
     return M23CastingDetail;
   }
