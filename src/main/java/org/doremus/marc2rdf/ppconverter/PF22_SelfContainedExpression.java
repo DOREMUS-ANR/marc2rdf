@@ -335,7 +335,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     fields.addAll(record.getDatafieldsByCode("144", 'n'));
 
     return fields.stream()
-      .map(orderNumber -> orderNumber.replaceAll("(?i)n(?:o| ?°)s?", "").trim())
+      .map(orderNumber ->
+        orderNumber.replaceAll("(?i)n(?:o| ?°|r\\.)s?", "").trim()
+      )
       .distinct()
       .collect(Collectors.toList());
   }
