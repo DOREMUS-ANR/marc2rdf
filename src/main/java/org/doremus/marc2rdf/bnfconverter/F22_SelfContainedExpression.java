@@ -40,7 +40,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
   public List<Literal> titles;
 
-  public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) throws URISyntaxException {
+  public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) {
     super(record);
 
     this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);

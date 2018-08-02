@@ -95,7 +95,7 @@ public class RecordConverter {
 
   }
 
-  private void convertUNI44() throws URISyntaxException {
+  private void convertUNI44() {
     if (!"UNI44C".equals(record.getDatafieldsByCode("019", 'a').get(0)))
       return;
     this.converted = true;

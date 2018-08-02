@@ -4,10 +4,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.ConstructURI;
-import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.Person;
-import org.doremus.marc2rdf.main.TimeSpan;
+import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -43,7 +40,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
   }
 
   private void convertUNI44() {
-    this.composers = findComposers();
+    this.composers = findArtistWithFunction(Function.COMPOSER);
     for (Person composer : this.composers) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
         .addProperty(RDF.type, CIDOC.E7_Activity)
@@ -113,7 +110,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
       }
     }
 
-    this.composers = findComposers();
+    this.composers = findArtistWithFunction(Function.COMPOSER);
     for (Person composer : this.composers) {
       this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
         .addProperty(RDF.type, CIDOC.E7_Activity)
@@ -123,6 +120,18 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
       model.add(composer.getModel());
     }
+
+    List<Person> librettists = findArtistWithFunction(Function.LIBRETTIST);
+    for (Person librettist : librettists) {
+      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
+        .addProperty(RDF.type, CIDOC.E7_Activity)
+        .addProperty(MUS.U31_had_function, "librettist")
+        .addProperty(CIDOC.P14_carried_out_by, librettist.asResource())
+      );
+
+      model.add(librettist.getModel());
+    }
+
   }
 
   public List<Person> getComposers() {
@@ -131,7 +140,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
   public List<String> getComposerUris() {
     return this.composers.stream()
-      .map(e -> e.getUri().toString())
+      .map(Artist::getUri)
       .collect(Collectors.toList());
   }
 
@@ -193,7 +202,18 @@ public class PF28_ExpressionCreation extends DoremusResource {
     return null;
   }
 
-  private List<Person> findComposers() {
+  public enum Function {
+    COMPOSER("230"),
+    LIBRETTIST("480");
+
+    private final String code;
+
+    Function(final String code) {
+      this.code = code;
+    }
+  }
+
+  private List<Person> findArtistWithFunction(Function function) {
     List<Person> composers = new ArrayList<>();
     if (record.isType("AIC:14")) return composers;
 
@@ -201,11 +221,11 @@ public class PF28_ExpressionCreation extends DoremusResource {
     if (!record.isTUM())
       // 700 is composer by default only for work records
       fields = fields.stream()
-        .filter(PF28_ExpressionCreation::isAComposer)
+        .filter(x -> x.hasSubfieldValue('4', function.code))
         .collect(Collectors.toList());
 
     fields.addAll(record.getDatafieldsByCode("701").stream()
-      .filter(PF28_ExpressionCreation::isAComposer)
+      .filter(x -> x.hasSubfieldValue('4', function.code))
       .collect(Collectors.toList())
     );
 
@@ -237,7 +257,4 @@ public class PF28_ExpressionCreation extends DoremusResource {
     return "http://data.doremus.org/period/" + local;
   }
 
-  private static boolean isAComposer(DataField field) {
-    return field != null && "230".equals(field.getString(4));
-  }
 }

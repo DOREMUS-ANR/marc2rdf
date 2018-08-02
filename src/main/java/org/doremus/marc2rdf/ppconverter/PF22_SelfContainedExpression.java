@@ -10,6 +10,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Utils;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
@@ -18,9 +19,11 @@ import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /***
@@ -61,10 +64,29 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     this.opusMemory = new ArrayList<>();
 
+    boolean titleFound = false;
     for (String title : getTitle()) {
-//      log(title);
-      this.resource.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
+      this.resource.addProperty(CIDOC.P102_has_title, title)
+        .addProperty(RDFS.label, title);
+      titleFound = true;
     }
+
+    for (String subTitle : getSubTitle())
+      this.resource.addProperty(MUS.U67_has_subtitle, subTitle);
+
+    for (String uniTitle : getUniformTitle("144")) {
+      this.resource.addProperty(MUS.U71_has_uniform_title, uniTitle);
+      if(!titleFound) this.resource.addProperty(RDFS.label, uniTitle);
+      titleFound = true;
+    }
+
+    for (String uniTitle : getUniformTitle("444")){
+      this.resource.addProperty(MUS.U68_has_variant_title, uniTitle);
+      if(!titleFound) this.resource.addProperty(RDFS.label, uniTitle);
+      titleFound = true;
+    }
+
+
     for (String catalog : getCatalog()) {
       // sometimes there is the opus number inside here!
       if (catalog.matches(Utils.opusHeaderRegex + ".*")) {
@@ -272,10 +294,6 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     List<String> titleList = new ArrayList<>();
 
     switch (record.getType()) {
-      case "AIC:14":
-        titleList = record.getDatafieldsByCode("444", 'a');
-        titleList.addAll(record.getDatafieldsByCode("144", 'a'));
-        break;
       case "UNI:100":
       case "UNI:44":
         titleList = record.getDatafieldsByCode("200", 'a');
@@ -287,6 +305,78 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     return titleList.stream()
       .map(String::trim)
       .filter(t -> !t.isEmpty())
+      .collect(Collectors.toList());
+  }
+
+  private List<String> getUniformTitle(String code) {
+    List<String> titleList = new ArrayList<>();
+    if (!record.isType("AIC:14")) return titleList;
+
+    List<DataField> fields = record.getDatafieldsByCode(code);
+    for (DataField field : fields) {
+      Stream<Character> mainCodes = "agc".chars().mapToObj(i -> (char) i);
+      Stream<Character> descrCodes = "rnkptu".chars().mapToObj(i -> (char) i);
+      Stream<Character> partCodes = "hi".chars().mapToObj(i -> (char) i);
+
+      boolean isAdaption = field.isCode('g') || field.isCode('c');
+      String qualif = null;
+
+      String version = field.getString('q');
+      if (version != null) version += ")";
+
+      List<String> s = Stream.of(field.getString('e'), version, field.getString('j'))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+      if (s.size() > 0)
+        qualif = "(" + String.join("; ", s) + ")";
+
+
+      List<String> main = mainCodes
+        .map(field::getString)
+        .filter(Objects::nonNull).collect(Collectors.toList());
+
+      List<String> descr = descrCodes
+        .map(field::getString)
+        .filter(Objects::nonNull).collect(Collectors.toList());
+
+      List<String> part = partCodes
+        .map(field::getString)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+
+
+      if (isAdaption) main.addAll(part);
+      main.addAll(descr);
+      if (qualif != null) main.add(qualif);
+      if (!isAdaption) main.addAll(part);
+
+      String t = String.join(". ", main)
+        .replaceAll("(?:(\\))\\.|\\.( \\())", "$1$2");
+
+      titleList.add(t);
+    }
+
+    return titleList.stream()
+      .map(String::trim)
+      .filter(t -> !t.isEmpty())
+      .collect(Collectors.toList());
+  }
+
+  private List<String> getSubTitle() {
+    List<String> titleList = new ArrayList<>();
+
+    switch (record.getType()) {
+      case "UNI:100":
+        titleList = record.getDatafieldsByCode("200", 'e');
+        break;
+      default:
+        return titleList;
+    }
+
+    return titleList.stream()
+      .map(String::trim)
+      .filter(t -> !t.isEmpty())
+      .map(t -> t.replaceAll("(?i)^ou ", ""))
       .collect(Collectors.toList());
   }
 
