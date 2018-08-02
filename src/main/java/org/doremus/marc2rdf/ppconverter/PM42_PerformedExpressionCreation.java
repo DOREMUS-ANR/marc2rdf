@@ -62,7 +62,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     this.M43_Performed_Expression = new PM43_PerformedExpression(identifier);
   }
 
-  public PM42_PerformedExpressionCreation(Record record)  {
+  public PM42_PerformedExpressionCreation(Record record) {
     super(record);
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
 
@@ -215,8 +215,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
               // Sometimes there is a list of comma-separated interpreters
               // they are not mops obviously
-              if (Character.isUpperCase(pt.codePointAt(0)))
-                continue;
+              if (Character.isUpperCase(pt.codePointAt(0))) continue;
 
               parsed = true;
 
@@ -250,8 +249,10 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
             }
             break;
           // FUNCTIONS without MoPs
-          case "195": // chef de chœur
           case "250": // chef d'orchestre
+            String temp = searchArtistInNotes(artist, record);
+            if (temp.contains("chef de choeur")) functionType = "195";
+          case "195": // chef de chœur
           case "274": // danseur
           case "303": // disc jockey
           case "550": // narrateur
@@ -286,16 +287,19 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
   private static String searchArtistInNotes(Artist artist, Record record) {
+    String fn = artist.getFullName().toLowerCase();
+
     List<String> fields = record.getDatafieldsByCode(200, 'f');
     fields.addAll(record.getDatafieldsByCode(200, 'g'));
-    for (String note : fields)
-      if (note.contains(artist.getFullName())) {
-        if (note.contains(";"))
-          return Arrays.stream(note.split(";"))
-            .filter(sub -> sub.contains(artist.getFullName()))
-            .findFirst().get();
-        return note;
+
+    for (String note : fields) {
+      if (note.toLowerCase().contains(fn)) {
+        if (!note.contains(";")) return note;
+        return Arrays.stream(note.split(";"))
+          .filter(sub -> sub.toLowerCase().contains(fn))
+          .findFirst().orElse(null);
       }
+    }
     return null;
   }
 
@@ -607,7 +611,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return this.F31_Performance.asResource();
   }
 
-  void linkWorkById(String workIdentifier)  {
+  void linkWorkById(String workIdentifier) {
     if (workIdentifier == null || workIdentifier.isEmpty())
       return;
 
@@ -630,7 +634,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     this.model.add(F31_Performance.getModel()).add(f25.getModel());
   }
 
-  private void linkNewWork()  {
+  private void linkNewWork() {
     PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
     PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
     PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
