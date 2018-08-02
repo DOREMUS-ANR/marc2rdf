@@ -35,7 +35,11 @@ public class PF14_IndividualWork extends DoremusResource {
 
   public PF14_IndividualWork add(PF50_ControlledAccessPoint accessPoint) {
     this.resource.addProperty(CIDOC.P1_is_identified_by, accessPoint.asResource());
-//    accessPoint.asResource().addProperty(model.createProperty(cidoc + "P1i_identifies"), F14);
+    return this;
+  }
+
+  public PF14_IndividualWork add(PF14_IndividualWork child) {
+    this.resource.addProperty(CIDOC.P148_has_component, child.asResource());
     return this;
   }
 

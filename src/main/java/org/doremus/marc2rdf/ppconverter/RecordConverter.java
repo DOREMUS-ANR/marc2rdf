@@ -124,6 +124,9 @@ public class RecordConverter {
       f42.add(f22).add(f15);
       f15.addProvenance(intermarcRes, provActivity);
       model.add(f42.getModel());
+    } else {
+      f15.getMainF14().add(f14);
+      f15.getMainF22().add(f22);
     }
 
     f15.add(f22).add(f14);

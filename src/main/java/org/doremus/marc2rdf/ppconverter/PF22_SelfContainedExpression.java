@@ -455,4 +455,9 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     return this;
   }
 
+  public PF22_SelfContainedExpression add(PF22_SelfContainedExpression child) {
+    this.resource.addProperty(FRBROO.R5_has_component, child.asResource());
+    return this;
+  }
+
 }
