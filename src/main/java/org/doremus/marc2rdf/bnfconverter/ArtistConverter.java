@@ -132,14 +132,14 @@ public class ArtistConverter {
     return getArtistsInfo(record, false);
   }
 
-  static List<Person> getArtistsInfo(Record record, boolean full) {
+  private static List<Person> getArtistsInfo(Record record, boolean full) {
     return record.getDatafieldsByCode("100").stream()
       .filter(field -> full || field.isCode('3'))
       .map(ArtistConverter::parseArtistField)
       .collect(Collectors.toList());
   }
 
-  public static Person parseArtistField(DataField field) {
+  static Person parseArtistField(DataField field) {
     String firstName = field.getString('m');
     String lastName = field.getString('a');
     if (firstName == null && lastName == null)
@@ -167,7 +167,7 @@ public class ArtistConverter {
     return new Person(firstName, lastName, birthDate, deathDate, lang);
   }
 
-  static List<String[]> getAlternateNames(Record record) {
+  private static List<String[]> getAlternateNames(Record record) {
     List<String[]> names = new ArrayList<>();
     for (DataField field : record.getDatafieldsByCode("400")) {
 

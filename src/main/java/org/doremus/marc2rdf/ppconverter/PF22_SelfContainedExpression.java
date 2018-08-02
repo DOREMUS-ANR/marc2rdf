@@ -62,7 +62,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     this.opusMemory = new ArrayList<>();
 
     for (String title : getTitle()) {
-      log(title);
+//      log(title);
       this.resource.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
     }
     for (String catalog : getCatalog()) {
@@ -132,9 +132,10 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     for (String castingString : getCasting()) {
       castingString = castingString.trim().replaceFirst("\\.$", "");
       String castingUri = this.uri + "/casting/" + (++castingNum);
-      PM6_Casting M6Casting = new PM6_Casting(castingString, castingUri, model);
+      PM6_Casting M6Casting = new PM6_Casting(castingString, castingUri);
 
       this.resource.addProperty(MUS.U13_has_casting, M6Casting.asResource());
+      this.model.add(M6Casting.getModel());
     }
 
   }
