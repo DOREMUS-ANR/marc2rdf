@@ -7,7 +7,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.ConstructURI;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.StanfordLemmatizer;
+import org.doremus.marc2rdf.main.E53_Place;
 import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -22,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class M42_PerformedExpressionCreation extends DoremusResource {
-  private final StanfordLemmatizer slem;
 
   private static final String performanceRegex = "([eé]xécution|représentation) ([^:]+)?:";
   public static final Pattern performancePattern = Pattern.compile(performanceRegex);
@@ -36,7 +35,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   private boolean isPremiere;
   private F28_ExpressionCreation f28;
   private Resource M44_Performed_Work, M43_Performed_Expression, F31_Performance;
-  private String place;
+  private E53_Place place;
   private TimeSpan timeSpan;
   private int countConsistOf;
 
@@ -81,14 +80,13 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression)
       .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work);
 
-    this.slem = StanfordLemmatizer.getDefaultLemmatizer();
     this.f28 = f28;
 
     parseNote(note);
 
     if (place != null) {
-      this.resource.addProperty(CIDOC.P7_took_place_at, place);
-      this.F31_Performance.addProperty(CIDOC.P7_took_place_at, place);
+      this.resource.addProperty(CIDOC.P7_took_place_at, place.asResource());
+      this.F31_Performance.addProperty(CIDOC.P7_took_place_at, place.asResource());
     }
 
     if (timeSpan != null) {
@@ -119,7 +117,9 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
       if (modifier != null) modifier = modifier.trim();
       if (modifier != null && modifier.startsWith("à ") && !modifier.startsWith("à l'occasion")) {
-        place = modifier.substring(2).replaceFirst("\\(.+\\)", "");
+        String pl = modifier.substring(2).replaceFirst("\\(.+\\)", "");
+        place = new E53_Place(pl);
+        if (!place.isGeonames()) place = null;
       }
 
       if (data.matches(numericDateRegex)) {
@@ -158,7 +158,10 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
         }
 
         String[] parts = data.split(",? ?" + longDate + " ?,?");
-        if (parts.length > 0) place = parts[0].trim();
+        if (parts.length > 0) {
+          place = new E53_Place(parts[0].trim());
+          if (!place.isGeonames()) place = null;
+        }
         String post = parts.length > 1 ? parts[1].trim() : "";
 
         Pattern pC = Pattern.compile("(?:sous la dir(?:\\.|ection) d['eu] ?|dir\\. : )([^)]+)");

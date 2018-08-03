@@ -289,7 +289,6 @@ public class Person extends Artist {
         "\")\n" : "") +
       "}";
 
-    System.out.println(sparql);
     return (Resource) Utils.queryDoremus(sparql, "s");
   }
 
