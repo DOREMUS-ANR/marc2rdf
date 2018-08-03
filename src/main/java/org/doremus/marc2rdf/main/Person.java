@@ -216,10 +216,10 @@ public class Person extends Artist {
       uncertain = true;
       d = d.substring(0, 3);
     }
-    if (d.replaceFirst("^-", "").length() > 4)
+    if (d.replaceFirst("^-", "").length() > 4) {
       // I have the info on the end date!
       ts = new TimeSpan(d.substring(0, 4), d.substring(4));
-    else ts = new TimeSpan(d);
+    } else ts = new TimeSpan(d);
 
     if (uncertain) ts.setQuality(TimeSpan.Precision.UNCERTAINTY);
     if (after) ts.setQuality(TimeSpan.Precision.AFTER);
@@ -273,23 +273,27 @@ public class Person extends Artist {
   }
 
   private Resource getPersonFromDoremus() {
-    String sparql =
-      "PREFIX ecrm: <" + CIDOC.getURI() + ">\n" +
-        "PREFIX foaf: <" + FOAF.getURI() + ">\n" +
-        "PREFIX prov: <" + PROV.getURI() + ">\n" +
-        "PREFIX schema: <" + Schema.getURI() + ">\n" +
-        "SELECT DISTINCT ?s " +
-        "FROM <http://data.doremus.org/bnf> " +
-        "WHERE { " +
-        "?s a ecrm:E21_Person; foaf:name \"" + this.getFullName() + "\"." +
-        (this.hasBirthDate() ? "?s schema:birthDate ?date. FILTER regex(str(?date), \"" + this.getBirthYear() +
-          "\")\n" : "") +
-        "}";
+    return getFromDoremus(this.getFullName(), this.getBirthYear());
+  }
 
+  public static Resource getFromDoremus(String name, String birthDate) {
+    String sparql = "PREFIX ecrm: <" + CIDOC.getURI() + ">\n" +
+      "PREFIX foaf: <" + FOAF.getURI() + ">\n" +
+      "PREFIX prov: <" + PROV.getURI() + ">\n" +
+      "PREFIX schema: <" + Schema.getURI() + ">\n" +
+      "SELECT DISTINCT ?s " +
+      "FROM <http://data.doremus.org/bnf> " +
+      "WHERE { " +
+      "?s a ecrm:E21_Person; foaf:name \"" + name + "\"." +
+      (birthDate != null ? "?s schema:birthDate ?date. FILTER regex(str(?date), \"" + birthDate +
+        "\")\n" : "") +
+      "}";
+
+    System.out.println(sparql);
     return (Resource) Utils.queryDoremus(sparql, "s");
   }
 
-  private Resource getPersonFromDoremus(String isni) {
+  private static Resource getPersonFromDoremus(String isni) {
     String sparql =
       "PREFIX owl: <" + OWL.getURI() + ">\n" +
         "SELECT DISTINCT * WHERE {" +

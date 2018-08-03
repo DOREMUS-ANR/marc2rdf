@@ -1,6 +1,7 @@
 package org.doremus.marc2rdf.main;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -11,6 +12,7 @@ import java.net.URISyntaxException;
 
 public class CorporateBody extends Artist {
   private String name;
+
   public CorporateBody(String name) throws NullPointerException {
     super();
     if (name == null) throw new RuntimeException("Missing artist name");
@@ -49,6 +51,18 @@ public class CorporateBody extends Artist {
     if (name == null) return null;
 
     return new CorporateBody(name.trim());
+  }
+
+  public static Resource getFromDoremus(String name) {
+    String sparql = "PREFIX rdfs: <" + RDFS.getURI() + ">\n" +
+      "PREFIX efrbroo: <" + FRBROO.getURI() + ">\n" +
+      "SELECT DISTINCT ?s " +
+      "WHERE { " +
+      "?s a efrbroo:F11_Corporate_Body; rdfs:label \"" + name + "\"." +
+      "}";
+
+    return (Resource) Utils.queryDoremus(sparql, "s");
+
   }
 
   @Override

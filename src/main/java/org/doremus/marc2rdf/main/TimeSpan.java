@@ -117,9 +117,14 @@ public class TimeSpan {
     this.startYear = this.startYear.replaceAll("[-.?]", "0");
 
     this.endQuality = computePrecision(this.endYear);
-    if (endQuality != null)
-      this.endYear = Math.min(Integer.parseInt(this.endYear.replaceAll("[-.?]", "9")), lastYear) + "";
+    if (endQuality != null) {
+      try {
+        int x = Integer.parseInt(this.endYear.replaceAll("[-.?]", "9"));
+        this.endYear = Math.min(x, lastYear) + "";
+      } catch (NumberFormatException e){
 
+      }
+    }
 
     this.model = ModelFactory.createDefaultModel();
     this.resource = null;

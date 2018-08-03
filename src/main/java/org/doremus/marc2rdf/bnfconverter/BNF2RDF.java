@@ -42,7 +42,6 @@ public class BNF2RDF extends AbstractConverter {
   }
 
   public Model convert(File file) throws FileNotFoundException {
-    if(!file.getName().startsWith("11926067")) return null;
     MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
 
     if (reader.getRecords() == null || reader.getRecords().size() == 0) {
@@ -52,18 +51,17 @@ public class BNF2RDF extends AbstractConverter {
     String extArk = null;
 
     for (Record r : reader.getRecords()) {
-//      // TODO implement mapping for notice of type BIB
-//      if (!r.isType("Authority")) {
-//        File dstDir = Paths.get("/Users/pasquale/Doremus/src/bnf", r.type).toFile();
-//        try {
-//          FileUtils.copyFileToDirectory(new File(file), dstDir);
-//        } catch (IOException e) {
-//          e.printStackTrace();
-//        }
-//
-//
-//        return null;
-//      } else if(true) return null;
+      // TODO implement mapping for notice of type BIB
+//      try {
+//        ControlField leader = r.getControlfieldByCode("leader");
+//        String code = leader.getData().charAt(r.isBIB() ? 22 : 9) + "";
+//        File dstDir = Paths.get("/Users/pasquale/Desktop/DOREMUSio/src/bnf2", r.getType(), code).toFile();
+//        FileUtils.copyFileToDirectory(file, dstDir);
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//      }
+//      if (true) return null;
+
 
       if (r.getType() == null) return null;
 

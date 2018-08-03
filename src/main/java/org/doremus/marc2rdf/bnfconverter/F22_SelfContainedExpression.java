@@ -8,7 +8,9 @@ import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.main.CorporateBody;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -20,7 +22,6 @@ import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +38,11 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
   private final static String DEDICACE_STRING = "(?i)(?:Sur l'édition, d|D)[ée]dicaces?(?: ?: ?)?(.+)";
   private final static Pattern DEDICACE_PATTERN = Pattern.compile(DEDICACE_STRING);
+  private final static String DEDICACE_PARSE_REGEX = "(?:dédicaces? (?:: )?|en souvenir |^)" +
+    "(?:[Ààa](?: la mémoire d[e'] ?| l'| )|aux? |pour |de )([^()\\n;]+)";
+  private final static Pattern DEDICACE_PARSE_PATTERN = Pattern.compile(DEDICACE_PARSE_REGEX, Pattern.CASE_INSENSITIVE);
+  private final static String DEDICACE_PARSE_SEPARATOR = "(,| et (?:à |aux? |l')?)";
+  private static final String TITLE_REGEX = "^(mad(?:ame|emoiselle)|Monsieur|m(?:lle|me|r.)|dr |(vi)?comte(?:sse)?|prince(?:sse)?|(archi)?duc(?:hesse)?|soprano)";
 
   public List<Literal> titles;
 
@@ -54,12 +60,37 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     int dedCount = 0;
     for (String dedication : getDedicace()) {
-      dedication = dedication.trim();
+      dedication = dedication.replaceAll("\\s+", " ").trim();
       String dedUri = this.uri + "/dedication/" + ++dedCount;
-      this.resource.addProperty(MUS.U44_has_dedication_statement, model.createResource(dedUri)
+      Resource ded = model.createResource(dedUri)
         .addProperty(RDF.type, MUS.M15_Dedication_Statement)
         .addProperty(RDFS.comment, dedication, "fr")
-        .addProperty(CIDOC.P3_has_note, dedication, "fr"));
+        .addProperty(CIDOC.P3_has_note, dedication, "fr");
+      this.resource.addProperty(MUS.U44_has_dedication_statement, ded);
+
+      Matcher m = DEDICACE_PARSE_PATTERN.matcher(dedication
+        .replaceAll("\"", "")
+        .replaceAll("\\([^(]+\\)", ""));
+      while (m.find()) {
+        String target = m.group(1)
+          .replaceAll("\\?\\[\\]", "")
+          .replaceAll(", ([^ A-Z]+.+)", "");
+        for (String t : target.split(DEDICACE_PARSE_SEPARATOR)) {
+          t = t.trim().replaceAll("^l[ae]", "");
+          if (t.contains("élève") || t.contains("mort") || t.contains("victimes") ||
+            t.matches("^(sa|son|ma|mon|de) .+"))
+            continue;
+          t = t.replaceAll(TITLE_REGEX, "").trim();
+          if (t.isEmpty()) continue;
+          Resource r = Person.getFromDoremus(t, null);
+          if (r == null) r = CorporateBody.getFromDoremus(t);
+
+          if (r != null){
+            ded.addProperty(CIDOC.P67_refers_to, r);
+            model.add(r.listProperties());
+          }
+        }
+      }
     }
 
     List<Literal> s444 = getTitle(444, true);
@@ -256,9 +287,9 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       while (m.find()) {
         String content = m.group(1);
-        if (content.startsWith("\""))
+        if (content.startsWith("\"") || content.startsWith("Dédicaces :")) {
           dedicaces.addAll(Arrays.asList(content.split(";")));
-        else dedicaces.add(ded);
+        } else dedicaces.add(ded);
       }
     }
     return dedicaces;
