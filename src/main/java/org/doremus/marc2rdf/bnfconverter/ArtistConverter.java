@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 public class ArtistConverter {
   public ArtistConverter(Record record, Model model) throws URISyntaxException {
+//    System.out.println(record.getIdentifier());
     List<Person> artists = getArtistsInfo(record, true);
 
     if (artists.size() == 0) {

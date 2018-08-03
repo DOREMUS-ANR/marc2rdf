@@ -54,9 +54,11 @@ public class GeoNames {
 
   public static Toponym query(String rawString, String country) {
     Toponym tp = null;
+    String key = rawString;
+    if (country != null && !country.isEmpty()) key += " (" + country + ")";
 
-    if (cache.containsKey(rawString)) {
-      int k = cache.get(rawString);
+    if (cache.containsKey(key)) {
+      int k = cache.get(key);
       if (k != -1) {
         tp = new Toponym();
         tp.setGeoNameId(k);
@@ -66,9 +68,7 @@ public class GeoNames {
 
     ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
 
-    if (country == null || country.isEmpty())
-      searchCriteria.setQ(rawString);
-    else searchCriteria.setQ(rawString + " (" + country + ")");
+    searchCriteria.setQ(key);
 
     searchCriteria.setMaxRows(1);
     searchCriteria.setLanguage("fr");
@@ -88,7 +88,7 @@ public class GeoNames {
         }
       }
 
-      addToCache(rawString, tp != null ? tp.getGeoNameId() : -1);
+      addToCache(key, tp != null ? tp.getGeoNameId() : -1);
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -105,7 +105,8 @@ public class Person extends Artist {
     }
 
     Toponym place_toponym = GeoNames.query(place, country);
-    E53_Place placeEntity = (place_toponym == null) ? new E53_Place(place) : new E53_Place(place);
+    if (place_toponym == null) GeoNames.query(place);
+    E53_Place placeEntity = new E53_Place(place);
 
     this.resource.addProperty(Schema.deathPlace, placeEntity.asResource());
     this.model.add(placeEntity.getModel());
