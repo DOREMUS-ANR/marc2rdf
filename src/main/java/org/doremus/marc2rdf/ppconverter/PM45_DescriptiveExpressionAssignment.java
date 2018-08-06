@@ -9,7 +9,7 @@ public class PM45_DescriptiveExpressionAssignment extends DoremusResource{
   public PM45_DescriptiveExpressionAssignment(Record record, String identifier) {
     super(record, identifier);
 //    this.resource.addProperty(RDF.type, MUS.M45_Descriptive_Expression_Assignment);
-    this.resource.addProperty(CIDOC.P14_carried_out_by, this.model.createResource(PP2RDF.organizationURI));
+    this.resource.addProperty(CIDOC.P14_carried_out_by, PP2RDF.PHILHARMONIE);
   }
 
   public PM45_DescriptiveExpressionAssignment add(PF22_SelfContainedExpression f22) {

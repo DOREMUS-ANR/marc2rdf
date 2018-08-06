@@ -11,6 +11,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class PM24_Track extends DoremusResource {
@@ -28,6 +29,17 @@ public class PM24_Track extends DoremusResource {
     this.resource.addProperty(RDF.type, MUS.M24_Track)
       .addProperty(DC.identifier, this.identifier)
       .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
+
+    switch (record.getType()) {
+      case "UNI:44":
+        this.resource
+          .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
+        break;
+      case "UNI:42":
+        this.resource.addProperty(MUS.U227_has_content_type, "performed music", "en")
+          .addProperty(MUS.U227_has_content_type, "sounds", "en");
+    }
+
 
     String rdaType = PP2RDF.guessType(record);
     if (rdaType != null)
@@ -64,7 +76,9 @@ public class PM24_Track extends DoremusResource {
 
   static String getDuration(Record record) {
     return record.getDatafieldsByCode(215, 'a').stream()
-      .filter(f -> f != null && !f.isEmpty() && f.matches(Utils.DURATION_REGEX))
+      .filter(Objects::nonNull)
+      .filter(f -> !f.isEmpty())
+      .filter(f -> f.matches(Utils.DURATION_REGEX))
       .findFirst().map(Utils::duration2iso)
       .orElse(null);
   }

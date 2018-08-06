@@ -37,7 +37,7 @@ public abstract class DoremusResource {
     if (this.className.startsWith("P")) {
       this.sourceDb = "pp";
       this.className = this.className.substring(1);
-      this.publisher = model.createResource(PP2RDF.organizationURI);
+      this.publisher = PP2RDF.PHILHARMONIE;
     } else
       this.publisher = model.createResource(BNF2RDF.organizationURI);
   }
@@ -81,7 +81,7 @@ public abstract class DoremusResource {
 
   public void addProvenance(Resource intermarcRes, Resource provActivity) {
     this.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.doremusURI))
+      .addProperty(PROV.wasAttributedTo, PP2RDF.DOREMUS)
       .addProperty(PROV.wasDerivedFrom, intermarcRes)
       .addProperty(PROV.wasGeneratedBy, provActivity);
   }

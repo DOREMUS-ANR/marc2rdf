@@ -13,40 +13,51 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PF31_Performance extends DoremusResource {
+  private PF25_PerformancePlan performancePlan;
   private List<PM43_PerformedExpression> playedWorks;
 
-  public PF31_Performance(Record record) throws URISyntaxException {
+  public PF31_Performance(Record record) {
     super(record);
     this.resource.addProperty(RDF.type, FRBROO.F31_Performance)
       .addProperty(CIDOC.P2_has_type, "concert")
       .addProperty(DC.identifier, getIdentifier());
 
-    PF25_PerformancePlan plan = new PF25_PerformancePlan(record);
-    this.add(plan);
+    boolean withPublic = true;
+
+    performancePlan = new PF25_PerformancePlan(record);
+    this.add(performancePlan);
 
     this.playedWorks = new ArrayList<>();
+    List<String> playedExpr = record.getDatafieldsByCode(449, '3');
+
     for (String track : getTracks()) {
       PM42_PerformedExpressionCreation m42 = new PM42_PerformedExpressionCreation(track);
       this.add(m42);
-      plan.add(m42);
+      m42.setConcert(this);
+      performancePlan.add(m42);
       playedWorks.add(m42.getExpression());
+      if (record.isType("UNI:2")) {
+        for (String pe : playedExpr) m42.linkWorkById(pe);
+        this.model.add(m42.getModel());
+      }
       // I intentionally have not added the models: they will be in the UNI44 record
     }
-    model.add(plan.getModel());
+    model.add(performancePlan.getModel());
 
     for (String title : record.getDatafieldsByCode(200, 'a')) {
+      if (title.contains("sans public")) withPublic = false;
+
       title = title.trim();
       this.resource.addProperty(CIDOC.P102_has_title, title)
         .addProperty(RDFS.label, title);
     }
-    for (String subtitle : record.getDatafieldsByCode(200, 'e')) {
-      subtitle = subtitle.trim();
-      this.resource.addProperty(MUS.U67_has_subtitle, subtitle);
+
+    for (String note : record.getDatafieldsByCode(200, 'e')) {
+      if (note.contains("sans public")) withPublic = false;
     }
 
     for (PM28_Individual_Performance ip : PM42_PerformedExpressionCreation.parseArtist(record, this.uri)) {
@@ -59,29 +70,46 @@ public class PF31_Performance extends DoremusResource {
     PM42_PerformedExpressionCreation.getMuseeMusique(record).forEach(note ->
       this.resource.addProperty(MUS.U193_used_historical_instruments, note));
 
-    for (DataField df : record.getDatafieldsByCode(610))
-      if (df.hasSubfieldValue('b', "03")) {//descripteur géographique
-        PM40_Context context = new PM40_Context(df.getString('a'));
+    for (DataField df : record.getDatafieldsByCode(610)) {
+      String value = df.getString('a').trim();
+      if (df.hasSubfieldValue('b', "03")) { //descripteur géographique
+        PM40_Context context = new PM40_Context(value);
         this.model.add(context.getModel());
         this.resource.addProperty(MUS.U65_has_geographical_context, context.asResource());
       }
+      this.resource.addProperty(MUS.U19_is_categorized_as, model.createResource()
+        .addProperty(RDF.type, MUS.M19_Categorization)
+        .addProperty(RDFS.label, value));
+    }
 
     // generic notes
     record.getDatafieldsByCode(300, 'a').stream()
-      .filter(n -> n.contains("prise de son"))
-      .filter(n -> n.contains("enregistré par"))
-      .filter(n -> n.contains("musée de la musique"))
-      .filter(n -> n.contains("collection"))
+      .filter(n -> !n.contains("prise de son"))
+      .filter(n -> !n.contains("enregistré par"))
+      .filter(n -> !n.contains("musée de la musique"))
+      .filter(n -> !n.contains("collection"))
       .forEach(this::addNote);
+
+
+    // conditions
+    if (record.isType("UNI:2"))
+      this.resource.addProperty(MUS.U89_occured_in_performance_conditions, "en intérieur", "fr")
+        .addProperty(MUS.U89_occured_in_performance_conditions, "dans les conditions du direct", "fr")
+        .addProperty(MUS.U89_occured_in_performance_conditions, "en public", "fr");
+    else if (record.isType("UNI:4"))
+      this.resource.addProperty(MUS.U89_occured_in_performance_conditions, "en direct", "fr")
+        .addProperty(MUS.U89_occured_in_performance_conditions, withPublic ? "en public" : "sans public", "fr");
   }
 
 
   public PF31_Performance(String identifier) {
     super(identifier);
+    this.performancePlan = null;
   }
 
   public PF31_Performance(String uri, String note, Model model) {
     super();
+    this.performancePlan = null;
     this.model = model;
     this.regenerateResource(uri);
     this.resource.addProperty(RDF.type, FRBROO.F31_Performance)
@@ -128,6 +156,8 @@ public class PF31_Performance extends DoremusResource {
   }
 
   public PF25_PerformancePlan getRelatedF25() {
-    return new PF25_PerformancePlan(getIdentifier(), true);
+    if (this.performancePlan == null)
+      this.performancePlan = new PF25_PerformancePlan(getIdentifier(), true);
+    return this.performancePlan;
   }
 }

@@ -10,14 +10,18 @@ import org.doremus.ontology.MUS;
 import java.net.URISyntaxException;
 
 public class PM40_Context extends DoremusResource {
-  public PM40_Context(String label) throws URISyntaxException {
+  public PM40_Context(String label) {
     super();
 
-    this.uri = ConstructURI.build("M40_Context", label).toString();
-    this.resource = model.createResource(this.uri);
+    try {
+      this.uri = ConstructURI.build("M40_Context", label).toString();
+      this.resource = model.createResource(this.uri);
+      this.resource.addProperty(RDF.type, MUS.M40_Context)
+        .addProperty(RDFS.label, label)
+        .addProperty(CIDOC.P1_is_identified_by, label);
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
 
-    this.resource.addProperty(RDF.type, MUS.M40_Context)
-      .addProperty(RDFS.label, label)
-      .addProperty(CIDOC.P1_is_identified_by, label);
   }
 }

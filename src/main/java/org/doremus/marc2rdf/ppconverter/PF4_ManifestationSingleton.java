@@ -8,11 +8,10 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 public class PF4_ManifestationSingleton extends DoremusResource {
-  public PF4_ManifestationSingleton(Record record, String identifier) throws URISyntaxException {
+  public PF4_ManifestationSingleton(Record record, String identifier) {
     super(record, identifier);
 
     this.resource

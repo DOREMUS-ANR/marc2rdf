@@ -10,22 +10,36 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PM46_SetOfTracks extends DoremusResource {
+  public PM46_SetOfTracks(String identifier) {
+    super(identifier);
+    this.resource.addProperty(RDF.type, MUS.M46_Set_of_Tracks)
+      .addProperty(DC.identifier, this.identifier);
+  }
 
-  public PM46_SetOfTracks(Record record) throws URISyntaxException {
+  public PM46_SetOfTracks(Record record) {
     super(record);
 
     this.resource.addProperty(RDF.type, MUS.M46_Set_of_Tracks)
       .addProperty(DC.identifier, this.identifier)
-      .addProperty(MUS.U227_has_content_type, "performed music", "en")
-      .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
+      .addProperty(MUS.U227_has_content_type, "performed music", "en");
+
+    switch (record.getType()) {
+      case "UNI:4":
+        this.resource.addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
+        break;
+      case "UNI:2":
+      case "UNI:42":
+        this.resource.addProperty(MUS.U227_has_content_type, "sounds", "en");
+    }
+
 
     for (String trackCode : getTracks()) {
-      PM24_Track track = new PM24_Track(trackCode);
+      DoremusResource track = record.isType("UNI:2") ?
+        new PM46_SetOfTracks(trackCode) : new PM24_Track(trackCode);
       this.resource.addProperty(FRBROO.R5_has_component, track.asResource());
       model.add(track.getModel());
     }
@@ -53,7 +67,13 @@ public class PM46_SetOfTracks extends DoremusResource {
   }
 
   private List<String> getTracks() {
-    return record.getDatafieldsByCode(462, 3);
+    List<String> tracks = record.getDatafieldsByCode(462, 3);
+    if (record.isType("UNI:42") && tracks.isEmpty()){
+      PM24_Track trk = new PM24_Track(record);
+      this.model.add(trk.getModel());
+      tracks.add(this.identifier);
+    }
+    return tracks;
   }
 
 

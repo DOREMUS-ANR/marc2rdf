@@ -29,7 +29,7 @@ public abstract class Artist {
 
   public void addProvenance(Resource intermarcRes, Resource provActivity) {
     this.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.doremusURI))
+      .addProperty(PROV.wasAttributedTo, PP2RDF.DOREMUS)
       .addProperty(PROV.wasDerivedFrom, intermarcRes)
       .addProperty(PROV.wasGeneratedBy, provActivity);
   }

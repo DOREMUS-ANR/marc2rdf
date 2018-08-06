@@ -5,10 +5,8 @@ import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URISyntaxException;
-
 public class PF26_Recording extends DoremusResource {
-  public PF26_Recording(Record record) throws URISyntaxException {
+  public PF26_Recording(Record record) {
     super(record);
     this.resource.addProperty(RDF.type, FRBROO.F26_Recording);
   }

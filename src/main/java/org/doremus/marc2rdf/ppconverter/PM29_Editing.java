@@ -9,22 +9,28 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
+import java.util.List;
 
 public class PM29_Editing extends DoremusResource {
   private int countActivity;
 
-  public PM29_Editing(Record record) throws URISyntaxException {
+  public PM29_Editing(Record record) {
     super(record);
     this.countActivity = 0;
     this.resource.addProperty(RDF.type, MUS.M29_Editing);
 
-    for (String producer : record.getDatafieldsByCode(911, 'a')) {
+    for (String producer : getProducers()) {
       producer = producer.trim();
-      if (producer.equals("Philharmonie de Paris"))
-        this.addProducer(model.createResource(PP2RDF.organizationURI));
+      if (producer.equals("Philharmonie de Paris")) this.addProducer(PP2RDF.PHILHARMONIE);
       else addProducer(new CorporateBody(producer));
     }
+  }
+
+  private List<String> getProducers() {
+    if (this.record.isType("UNI:4"))
+      return record.getDatafieldsByCode(911, 'a');
+    else //UNI:2
+      return record.getDatafieldsByCode(210, 'c');
   }
 
   private void addProducer(CorporateBody corporateBody) {
@@ -34,7 +40,7 @@ public class PM29_Editing extends DoremusResource {
 
   private void addProducer(Resource producer) {
     String activityUri = this.uri + "/activity/" + ++countActivity;
-    E7_Activity activity = new E7_Activity(activityUri, producer, "audio producer");
+    E7_Activity activity = new E7_Activity(activityUri, producer, "producteur (enregistrement phonographique)");
     this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
     this.model.add(activity.getModel());
   }

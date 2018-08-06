@@ -8,15 +8,17 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 public class PF29_RecordingEvent extends DoremusResource {
-  private final static String PLACE_REGEX = "(Cité de la musique|Salle Pleyel|Philharmonie de Paris|Grande Halle de la Villette)(?: \\((.+)\\))?";
+  private final static String PLACE_REGEX = "(Cité de la musique|Salle Pleyel|Philharmonie de Paris|Grande Halle de " +
+    "la Villette).*(?: \\((?:(\\d{2}h\\d{2}), )?(.+)\\))?";
   private final static Pattern PLACE_PATTERN = Pattern.compile(PLACE_REGEX);
 
   private int countActivity;
@@ -26,13 +28,13 @@ public class PF29_RecordingEvent extends DoremusResource {
   private TimeSpan timeSpan;
   private List<E53_Place> places;
 
-  public PF29_RecordingEvent(Record record) throws URISyntaxException {
+  public PF29_RecordingEvent(Record record) {
     super(record);
     this.countActivity = 0;
     this.places = new ArrayList<>();
 
     this.resource.addProperty(RDF.type, FRBROO.F29_Recording_Event)
-      .addProperty(CIDOC.P32_used_general_technique, "video");
+      .addProperty(CIDOC.P32_used_general_technique, record.isType("UNI:2") ? "audio" : "video");
 
     this.f26_recording = new PF26_Recording(record);
     this.f21_recording_work = new PF21_RecordingWork(record);
@@ -45,35 +47,47 @@ public class PF29_RecordingEvent extends DoremusResource {
 
     for (String note : record.getDatafieldsByCode(200, 'e'))
       this.addNote(note);
+
     for (String note : record.getDatafieldsByCode(300, 'e')) {
       if (note.contains("Prise de son") || note.contains("enregistré par"))
         this.addNote(note);
     }
 
-    for (String producer : record.getDatafieldsByCode(911, 'a')) {
+    String function = (record.isType("UNI:4")) ?
+      "producteur de vidéogramme" : "producteur (enregistrement phonographique)";
+
+    for (String producer : getProducers()) {
       producer = producer.trim();
       Resource prod;
-      if (producer.equals("Philharmonie de Paris"))
-        prod = model.createResource(PP2RDF.organizationURI);
-      else {
-        CorporateBody cb = new CorporateBody(producer);
-        prod = cb.asResource();
-        model.add(cb.getModel());
+      switch (producer) {
+        case "Philharmonie de Paris":
+          prod = PP2RDF.PHILHARMONIE;
+          break;
+        case "Radio France":
+          prod = PP2RDF.RADIO_FRANCE;
+          break;
+        default:
+          CorporateBody cb = new CorporateBody(producer);
+          prod = cb.asResource();
+          model.add(cb.getModel());
+          break;
       }
 
-      E7_Activity activity = new E7_Activity(this.uri + "/activity/" + ++countActivity, prod, "Producteur de vidéogramme");
+      E7_Activity activity = new E7_Activity(this.uri + "/activity/" + ++countActivity, prod, function);
       this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
       this.model.add(activity.getModel());
     }
 
-    List<DataField> editors = record.getDatafieldsByCode(700);
-    editors.addAll(record.getDatafieldsByCode(701));
-    for (DataField df : editors) {
-      if (!"300".equals(df.getString(4))) continue;
-      Person editor = Person.fromUnimarcField(df);
-      E7_Activity activity = new E7_Activity(this.uri + "/activity/" + ++countActivity, editor, "Réalisateur");
-      this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
-      this.model.add(activity.getModel());
+    if (record.isType("UNI:4")) {
+      List<DataField> editors = record.getDatafieldsByCode(700);
+      editors.addAll(record.getDatafieldsByCode(701));
+      for (DataField df : editors) {
+        if (!"300".equals(df.getString(4))) continue;
+        Person editor = Person.fromUnimarcField(df);
+        E7_Activity activity = new E7_Activity(this.uri + "/activity/" + ++countActivity, editor, "Réalisateur");
+        this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
+        this.model.add(activity.getModel());
+      }
     }
 
     timeSpan = getDate();
@@ -84,21 +98,48 @@ public class PF29_RecordingEvent extends DoremusResource {
     }
 
     computePlaces();
+
+  }
+
+  private List<String> getProducers() {
+    if (record.isType("UNI:4"))
+      return record.getDatafieldsByCode(911, 'a');
+
+    // UNI:2
+    for (String s : record.getDatafieldsByCode(300, 'a')) {
+      s = s.toLowerCase();
+      if (s.contains("france musique") || s.contains("Radio France"))
+        return Collections.singletonList("Radio France");
+    }
+    return record.getDatafieldsByCode(210, 'c').stream()
+      .map(String::toLowerCase)
+      .filter(s -> s.equals("Cité de la musique") || s.equals("Philharmonie de Paris"))
+      .collect(Collectors.toList());
   }
 
   private TimeSpan getDate() {
-    return TimeSpan.fromUnimarcField(record.getDatafieldByCode(981));
+    String time = null;
+    for (String note : record.getDatafieldsByCode(200, 'e')) {
+      Matcher m = PLACE_PATTERN.matcher(note);
+      if (!m.find()) continue;
+      time = m.group(2);
+      if (time != null) {
+        time = time.replace('h', ':');
+        break;
+      }
+    }
+
+    return TimeSpan.fromUnimarcField(record.getDatafieldByCode(981), time);
   }
 
 
-
-  private void computePlaces() throws URISyntaxException {
+  private void computePlaces() {
     for (String note : record.getDatafieldsByCode(200, 'e')) {
       Matcher m = PLACE_PATTERN.matcher(note);
       if (!m.find()) continue;
 
       String place = m.group(1),
-        room = m.group(2);
+        room = m.group(3);
 
       E53_Place p1 = new E53_Place(place);
       this.setPlace(p1);

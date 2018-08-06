@@ -70,6 +70,7 @@ public class E53_Place extends DoremusResource {
       .replaceAll("N\\. ?S[.)]", "Nova Scotia")
       .replaceAll("R\\. ?I[.)]", "Rhode Island")
       .replaceAll("Wash[.)]", "Washington")
+      .replaceAll("Wash[.)]", "Washington")
       .trim();
 
     Matcher m = TODAY_PATTERN.matcher(rawString);
@@ -91,7 +92,6 @@ public class E53_Place extends DoremusResource {
       uri = GeoNames.toURI(tp.getGeoNameId());
       this.name = tp.getName();
     } else {
-      System.out.println(rawString);
       try {
         uri = ConstructURI.build("E53_Place", rawString).toString();
       } catch (URISyntaxException e) {

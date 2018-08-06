@@ -1,6 +1,8 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.update.UpdateAction;
 import org.doremus.marc2rdf.main.AbstractConverter;
 import org.doremus.marc2rdf.marcparser.MarcXmlHandler;
@@ -32,8 +34,12 @@ public class PP2RDF extends AbstractConverter {
       .codeLabel("UnimarcSubfield")
       .typeLabel("type")
       .idlabel("id");
-  public static final String organizationURI = "http://data.doremus.org/organization/Philharmonie_de_Paris";
-  public static final String doremusURI = "http://data.doremus.org/organization/DOREMUS";
+  public static final Resource PHILHARMONIE = ResourceFactory.createResource(
+    "http://data.doremus.org/organization/Philharmonie_de_Paris");
+  public static final Resource DOREMUS = ResourceFactory.createResource(
+    "http://data.doremus.org/organization/DOREMUS");
+  public static final Resource RADIO_FRANCE = ResourceFactory.createResource(
+    "http://data.doremus.org/organization/Radio_France");
 
   public static final String dotSeparator = "(?<![^A-Z][A-Z]|[oO]p|Hob|réf|[èeé]d|dir|Mus|[Ss]t|sept)\\.";
   public static Map<String, String> FUNCTION_MAP = null;

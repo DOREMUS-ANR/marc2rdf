@@ -19,7 +19,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -48,8 +47,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private PF28_ExpressionCreation f28;
 
   private boolean isPremiere;
-  private PM44_PerformedWork M44_Performed_Work;
-  private PM43_PerformedExpression M43_Performed_Expression;
+  private final PM44_PerformedWork M44_Performed_Work;
+  private final PM43_PerformedExpression M43_Performed_Expression;
   private PF31_Performance F31_Performance;
   private E53_Place place;
   private TimeSpan timeSpan;
@@ -60,6 +59,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     super(identifier);
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
     this.M43_Performed_Expression = new PM43_PerformedExpression(identifier);
+    this.M44_Performed_Work = new PM44_PerformedWork(identifier);
+    this.connectTriplet();
   }
 
   public PM42_PerformedExpressionCreation(Record record) {
@@ -95,7 +96,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       this.resource.addProperty(MUS.U193_used_historical_instruments, note));
 
     if (searchInNote("commande de la Philharmonie de Paris") != null)
-      this.addCommand(PP2RDF.organizationURI);
+      this.addCommand(PP2RDF.PHILHARMONIE);
     if (searchInNote("commande de l'Ensemble intercontemporain") != null)
       this.addCommand(getEnsambleIntercontemporainUri());
 
@@ -138,6 +139,67 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     }
   }
 
+  public PM42_PerformedExpressionCreation(String note, String identifier, int i, PF28_ExpressionCreation f28) {
+    // Parse from a note of TUM
+    super(identifier);
+
+    this.place = null;
+    this.timeSpan = null;
+
+    this.f28 = f28;
+
+    //check if it is a Premiere
+    Pattern p = Pattern.compile(noPremiereRegex);
+    Matcher m = p.matcher(note);
+    isPremiere = !m.find();
+    char flag = isPremiere ? 'p' : 'f';
+
+    this.identifier += flag;
+    if (i >= 0)
+      this.identifier += i;
+
+    try {
+      this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier).toString();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+
+    this.resource = model.createResource(this.uri.toString())
+      .addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)
+      .addProperty(RDFS.comment, note)
+      .addProperty(CIDOC.P3_has_note, note);
+
+    String performanceUri = null;
+    try {
+      performanceUri = ConstructURI.build("pp", "F31_Performance", this.identifier).toString();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+
+    this.F31_Performance = new PF31_Performance(performanceUri, note, model);
+    this.F31_Performance.add(this);
+
+    this.M43_Performed_Expression = new PM43_PerformedExpression(this.identifier);
+    this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
+    this.connectTriplet();
+
+    parseNote(note);
+
+    if (place != null) {
+      this.resource.addProperty(CIDOC.P7_took_place_at, place.asResource());
+      this.F31_Performance.setPlace(place);
+      this.model.add(place.getModel());
+    }
+
+    if (timeSpan != null) {
+      timeSpan.setUri(this.F31_Performance.getUri() + "/interval");
+      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+      this.F31_Performance.setTime(timeSpan);
+      this.model.add(timeSpan.getModel());
+    }
+
+  }
+
 
   static Stream<String> getMuseeMusique(Record record) {
     Pattern p = Pattern.compile("(?i)(musée de la Musique|collection)");
@@ -147,9 +209,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
   static String getCastDetail(Record record) {
-    StringJoiner sj = new StringJoiner("; ");
-    record.getDatafieldsByCode(200, 'g').forEach(sj::add);
-    return sj.toString();
+    return String.join("; ", record.getDatafieldsByCode(200, 'g'));
   }
 
   public static List<PM28_Individual_Performance> parseArtist(Record record, String mainUri) {
@@ -313,64 +373,12 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return null;
   }
 
-  private void addCommand(String commander_uri) {
+  private void addCommand(Resource commander) {
     Resource activity = model.createResource(this.uri + "/activity/1")
       .addProperty(RDF.type, CIDOC.E7_Activity)
-      .addProperty(CIDOC.P14_carried_out_by, model.createResource(commander_uri))
+      .addProperty(CIDOC.P14_carried_out_by, model.createResource(commander))
       .addProperty(MUS.U31_had_function, "commanditaire", "fr");
     this.resource.addProperty(CIDOC.P9_consists_of, activity);
-  }
-
-  public PM42_PerformedExpressionCreation(String note, String identifier, int i, PF28_ExpressionCreation f28) throws URISyntaxException {
-    // Parse from a note of TUM
-    super(identifier);
-
-    this.place = null;
-    this.timeSpan = null;
-
-    this.f28 = f28;
-
-    //check if it is a Premiere
-    Pattern p = Pattern.compile(noPremiereRegex);
-    Matcher m = p.matcher(note);
-    isPremiere = !m.find();
-    char flag = isPremiere ? 'p' : 'f';
-
-    this.identifier += flag;
-    if (i >= 0)
-      this.identifier += i;
-
-    this.uri = ConstructURI.build(this.sourceDb, this.className, this.identifier).toString();
-
-    this.resource = model.createResource(this.uri.toString())
-      .addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)
-      .addProperty(RDFS.comment, note)
-      .addProperty(CIDOC.P3_has_note, note);
-
-    String performanceUri = ConstructURI.build("pp", "F31_Performance", this.identifier).toString();
-
-    this.F31_Performance = new PF31_Performance(performanceUri, note, model);
-    this.F31_Performance.add(this);
-
-    this.M43_Performed_Expression = new PM43_PerformedExpression(this.identifier);
-    this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
-    this.connectTriplet();
-
-    parseNote(note);
-
-    if (place != null) {
-      this.resource.addProperty(CIDOC.P7_took_place_at, place.asResource());
-      this.F31_Performance.setPlace(place);
-      this.model.add(place.getModel());
-    }
-
-    if (timeSpan != null) {
-      timeSpan.setUri(this.F31_Performance.getUri() + "/interval");
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-      this.F31_Performance.setTime(timeSpan);
-      this.model.add(timeSpan.getModel());
-    }
-
   }
 
   private void connectTriplet() {
@@ -624,8 +632,8 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       f14.addPremiere(this);
     }
 
-    this.F31_Performance.add(this);
-    PF25_PerformancePlan f25 = this.F31_Performance.getRelatedF25().add(this);
+    this.F31_Performance.add(f22);
+    PF25_PerformancePlan f25 = this.F31_Performance.getRelatedF25().add(f22);
 
     this.add(f22);
     f15.add(this);
@@ -659,14 +667,18 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return TimeSpan.fromUnimarcField(record.getDatafieldByCode(981));
   }
 
+  public void setConcert(PF31_Performance pf) {
+    if (this.F31_Performance == null) this.F31_Performance = pf;
+  }
+
   private static CorporateBody ensambleIntercontemporain = null;
 
-  private String getEnsambleIntercontemporainUri() {
+  private Resource getEnsambleIntercontemporainUri() {
     if (ensambleIntercontemporain == null) {
       ensambleIntercontemporain = new CorporateBody("Ensemble intercontemporain");
       model.add(ensambleIntercontemporain.getModel());
     }
-    return ensambleIntercontemporain.getUri();
+    return ensambleIntercontemporain.asResource();
   }
 
   private boolean isAnImprovisation() {

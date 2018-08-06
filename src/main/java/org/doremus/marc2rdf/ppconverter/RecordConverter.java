@@ -13,6 +13,8 @@ import org.doremus.ontology.PROV;
 
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 
 public class RecordConverter {
   private final Resource provActivity, intermarcRes;
@@ -50,8 +52,11 @@ public class RecordConverter {
         this.convertUNI100();
         break;
       case "UNI:4": // Concerts video
+      case "UNI:2": // Concerts audio
+//      case "UNI:42": // Concerts audio
         this.convertUNI4();
         break;
+//      case "UNI:62": // Concerts audio
       case "UNI:44": // Concerts video
         this.convertUNI44();
         break;
@@ -60,9 +65,11 @@ public class RecordConverter {
     }
   }
 
-  private void convertUNI4() throws URISyntaxException {
-    if (!"UNI4C".equals(record.getDatafieldsByCode("019", 'a').get(0)))
-      return;
+  private void convertUNI4() {
+    boolean isUni2 = "UNI2C".equals(getCode());
+    boolean isUni4 = "UNI4C".equals(getCode());
+
+    if (!isUni2 && !isUni4) return;
     this.converted = true;
 
     PM46_SetOfTracks tracks = new PM46_SetOfTracks(record);
@@ -73,9 +80,7 @@ public class RecordConverter {
     performance.setTime(recording.getTime());
     performance.setPlace(recording.getPlaces());
 
-    for (PM43_PerformedExpression exp : performance.getPlayedWorks()){
-      tracks.add(exp);
-    }
+    performance.getPlayedWorks().forEach(tracks::add);
 
     for (String supportId : record.getDatafieldsByCode(997, 3)) {
       PF4_ManifestationSingleton support = new PF4_ManifestationSingleton(record, supportId);
@@ -88,16 +93,20 @@ public class RecordConverter {
     editing.add(tracks).add(recording);
     recording.add(performance);
 
-    for (DoremusResource res : new DoremusResource[]{tracks, editing, recording, performance}) {
+    List<DoremusResource> usedRes = Arrays.asList(tracks, recording, performance, editing);
+    for (DoremusResource res : usedRes) {
       res.addProvenance(intermarcRes, provActivity);
       model.add(res.getModel());
     }
 
   }
 
+  private String getCode() {
+    return record.getDatafieldsByCode("019", 'a').get(0);
+  }
+
   private void convertUNI44() {
-    if (!"UNI44C".equals(record.getDatafieldsByCode("019", 'a').get(0)))
-      return;
+    if (!"UNI44C".equals(getCode()) && !"UNI62C".equals(getCode())) return;
     this.converted = true;
 
     PM24_Track track = new PM24_Track(record);
@@ -206,7 +215,7 @@ public class RecordConverter {
 
   private static Resource computeProvIntermarc(String identifier, Model model) {
     return model.createResource("http://data.doremus.org/source/philharmonie/" + identifier)
-      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(PP2RDF.organizationURI));
+      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, PP2RDF.PHILHARMONIE);
   }
 
   public boolean isConverted() {

@@ -121,7 +121,7 @@ public class TimeSpan {
       try {
         int x = Integer.parseInt(this.endYear.replaceAll("[-.?]", "9"));
         this.endYear = Math.min(x, lastYear) + "";
-      } catch (NumberFormatException e){
+      } catch (NumberFormatException e) {
 
       }
     }
@@ -325,6 +325,10 @@ public class TimeSpan {
   }
 
   public static TimeSpan fromUnimarcField(DataField df) {
+    return fromUnimarcField(df, null);
+  }
+
+  public static TimeSpan fromUnimarcField(DataField df, String time) {
     if (df == null || !df.isCode('a')) return null;
 
     // 981$a20110607
@@ -336,7 +340,8 @@ public class TimeSpan {
       d = date.substring(6);
 
     // 981$b20:30
-    String time = df.getString('b');
+    String t = df.getString('b');
+    if (t != null) time = t;
     return new TimeSpan(y, m, d, time);
   }
 }

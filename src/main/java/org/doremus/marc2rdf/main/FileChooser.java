@@ -60,7 +60,7 @@ public class FileChooser extends JPanel implements ActionListener {
         dir = file.getAbsolutePath().toString();
         getInsets();
         choosed = true;
-        System.out.println("Choosed Directory: " + dir);
+        System.out.println("Chosen Directory: " + dir);
         synchronized (this) {
           this.notify();
         }
