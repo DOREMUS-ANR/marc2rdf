@@ -12,3 +12,4 @@ http://data.doremus.org/ontology#U94_has_work_type,work_type
 http://data.doremus.org/ontology#U81_had_performer_status,performer_status
 http://data.doremus.org/ontology#U82_has_foreseen_performer_status,performer_status
 http://data.doremus.org/ontology#U89_occured_in_performance_conditions,performance_condition
+http://data.doremus.org/ontology#U95_has_hierarchical_level,level

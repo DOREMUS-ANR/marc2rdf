@@ -17,7 +17,6 @@ import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +25,9 @@ import java.util.stream.Stream;
 
 
 public class PM42_PerformedExpressionCreation extends DoremusResource {
+  private static final String SPECIFIC_COMMAND_REGEX = "(?i)commande des?(?: l['a])? ?" +
+    "(Cité de la musique|Philharmonie de  Paris|Ensemble intercontemporain|Cris de Paris)";
+  private static final Pattern SPECIFIC_COMMAND_PATTERN = Pattern.compile(SPECIFIC_COMMAND_REGEX);
   private static final String frenchCreationRegex = "(?i)(cr\u00e9ation fran\u00e7aise.*)";
   private static final String premiereRegex = "(?i)cr[eéè]ation mondiale";
   private static final String noPremiereRegex = frenchCreationRegex + "|(enregistrement (de )?jazz)|(1re reprise)";
@@ -53,7 +55,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private E53_Place place;
   private TimeSpan timeSpan;
 
-  private boolean hasWorkLinked = false;
+  public boolean hasWorkLinked = false;
 
   public PM42_PerformedExpressionCreation(String identifier) {
     super(identifier);
@@ -72,7 +74,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       this.F31_Performance = new PF31_Performance(concertIds.get(0));
 
     this.M43_Performed_Expression = new PM43_PerformedExpression(record);
-    this.M44_Performed_Work = new PM44_PerformedWork(this.identifier);
+    this.M44_Performed_Work = new PM44_PerformedWork(record);
     this.connectTriplet();
 
     String premiereNote = searchInNote(premiereRegex);
@@ -80,7 +82,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
     if (premiereNote != null) this.addNote(premiereNote);
 
-    String frenchPremiereNote = searchInNote(premiereRegex);
+    String frenchPremiereNote = searchInNote(frenchCreationRegex);
     if (frenchPremiereNote != null) this.addNote(frenchPremiereNote);
 
     timeSpan = getDate();
@@ -95,16 +97,13 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     getMuseeMusique(record).forEach(note ->
       this.resource.addProperty(MUS.U193_used_historical_instruments, note));
 
-    if (searchInNote("commande de la Philharmonie de Paris") != null)
-      this.addCommand(PP2RDF.PHILHARMONIE);
-    if (searchInNote("commande de l'Ensemble intercontemporain") != null)
-      this.addCommand(getEnsambleIntercontemporainUri());
+    this.addCommand(searchInNote(SPECIFIC_COMMAND_PATTERN, 1));
 
     for (String workId : record.getDatafieldsByCode(449, '3'))
       linkWorkById(workId);
 
     boolean shouldICreateAF22 = false;
-    if (!this.hasWorkLinked) {
+    if (!this.hasWorkLinked && !record.isType("UNI:62")) {
       // TODO Si 701$4 a une valeur autre que 230 et que cette valeur a pour contexte F28
       // dans le référentiel des fonctions, alors toujours créer un nouveau F22.
       // Puis, indiquer en M31 la valeur du référentiel qui correspond.
@@ -124,18 +123,27 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
       if (isAnImprovisation()) {
         // F25 Performance Plan R25i was performed by M42 Performed Expression Creation
-        PF25_PerformancePlan plan = new PF25_PerformancePlan(identifier);
+        PF25_PerformancePlan plan = new PF25_PerformancePlan(record);
         plan.setAsImprovisation();
-        model.add(plan.getModel());
+        PF25_PerformancePlan mainF25 = this.F31_Performance.getRelatedF25();
+        mainF25.add(plan);
+        model.add(plan.getModel()).add(mainF25.getModel());
       }
 
     }
 
-    if (shouldICreateAF22) linkNewWork();
+    if (shouldICreateAF22) linkNewWork(record);
 
     for (PM28_Individual_Performance ip : parseArtist(record, uri)) {
       this.resource.addProperty(CIDOC.P9_consists_of, ip.asResource());
       this.model.add(ip.getModel());
+    }
+
+    if (record.isType("UNI:42")) {
+      for (String s : record.getDatafieldsByCode(462, 3)) {
+        PM42_PerformedExpressionCreation pec = new PM42_PerformedExpressionCreation(s);
+        this.resource.addProperty(CIDOC.P9_consists_of, pec.asResource());
+      }
     }
   }
 
@@ -197,19 +205,20 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       this.F31_Performance.setTime(timeSpan);
       this.model.add(timeSpan.getModel());
     }
-
   }
 
+  private final static Pattern MUSEE_MUSIQUE_PATTERN = Pattern.compile("(?i)(musée de la Musique|collection)");
 
   static Stream<String> getMuseeMusique(Record record) {
-    Pattern p = Pattern.compile("(?i)(musée de la Musique|collection)");
-
     return record.getDatafieldsByCode(300, 'a').stream()
-      .filter(n -> p.matcher(n).find());
+      .filter(n -> MUSEE_MUSIQUE_PATTERN.matcher(n).find());
   }
 
   static String getCastDetail(Record record) {
-    return String.join("; ", record.getDatafieldsByCode(200, 'g'));
+    List<String> fields = record.getDatafieldsByCode(200, 'g');
+    if (record.getType().matches("UNI:[46]2C"))
+      fields.addAll(record.getDatafieldsByCode(200, 'f'));
+    return String.join("; ", fields);
   }
 
   public static List<PM28_Individual_Performance> parseArtist(Record record, String mainUri) {
@@ -244,22 +253,18 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
               genericMop = isAGroup ? CHORUSES : VOICE;
 
             String txt = searchArtistInNotes(artist, record);
-            String originalTxt = txt;
-            if (txt == null) txt = "";
 
-            String operaRole = null;
-            if (txt.contains("(")) { // Laurent Laberdesque, baryton (Figaro, valet du Comte Almaviva)
-              int start = txt.indexOf("("),
-                end = txt.indexOf(")");
-
-              operaRole = txt.substring(start + 1, end);
-              txt = txt.substring(0, start) + txt.substring(end);
-            }
-            List<String> parts = Arrays.asList(txt.split("(,| et )"));
+            List<String> parts = Utils.splitKeepBrackets(txt, "(,| et )");
 
             String toBeAdded = "";
             for (int i = 1; i < parts.size(); i++) {
               String pt = toBeAdded + parts.get(i).trim();
+
+              // Laurent Laberdesque, baryton (Figaro, valet du Comte Almaviva)
+              String[] x = Utils.extractBrackets(pt);
+              String operaRole = x[1];
+              pt = x[0];
+
               pt = pt.replaceAll("\\)", "").trim();
 
               toBeAdded = "";
@@ -290,11 +295,17 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
               Resource mop = VocabularyManager.searchInCategory(pt, "fr", "mop", true);
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
+
+              if (mop == null) {
+                mop = VocabularyManager.searchInCategory(operaRole, "fr", "mop", true);
+                if (mop != null) operaRole = null;
+              }
+
               if (mop == null && !pt.isEmpty())
-                log("Mop not found: " + pt + " | Full line: " + originalTxt, record);
+                log("Mop not found: " + pt + " | Full line: " + txt, record);
 
               Resource _mop = (mop != null) ? mop : genericMop;
-              ip.set(artist, _mop, null, operaRole, originalTxt, isPrincipal);
+              ip.set(artist, _mop, null, isInstrumentist ? null : operaRole, txt, isPrincipal);
               activityList.add(ip);
             }
 
@@ -303,7 +314,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
               if (isAGroup)
                 genericMop = guessMopFromArtist(artist, genericMop);
-              ip.set(artist, genericMop, null, operaRole, originalTxt, isPrincipal);
+              ip.set(artist, genericMop, null, null, txt, isPrincipal);
 
               activityList.add(ip);
             }
@@ -342,7 +353,6 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       return IAMLVoc.getConcept("oie");
     }
 
-
     return fallback;
   }
 
@@ -355,28 +365,32 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     for (String note : fields) {
       if (note.toLowerCase().contains(fn)) {
         if (!note.contains(";")) return note;
-        return Arrays.stream(note.split(";"))
+
+        return Utils.splitKeepBrackets(note, ";").stream()
           .filter(sub -> sub.toLowerCase().contains(fn))
-          .findFirst().orElse(null);
+          .findFirst().orElse("");
       }
     }
-    return null;
+    return "";
   }
 
-  private String searchInNote(String regex) {
-    Pattern p = Pattern.compile(regex);
-    List<String> fields = record.getDatafieldsByCode(200, 'a');
-    fields.addAll(record.getDatafieldsByCode(200, 'e'));
-
-    for (String note : fields)
-      if (p.matcher(note).find()) return note;
-    return null;
+  private void addCommand(String commander) {
+    if (commander == null) return;
+    if (commander.toLowerCase().equals("Philharmonie de Paris")) {
+      addCommand(PP2RDF.PHILHARMONIE);
+      return;
+    }
+    if (commander.toLowerCase().equals("Cris de Paris"))
+      commander = "les Cris de Paris";
+    CorporateBody cb = new CorporateBody(commander);
+    addCommand(cb.asResource());
+    model.add(cb.getModel());
   }
 
   private void addCommand(Resource commander) {
     Resource activity = model.createResource(this.uri + "/activity/1")
       .addProperty(RDF.type, CIDOC.E7_Activity)
-      .addProperty(CIDOC.P14_carried_out_by, model.createResource(commander))
+      .addProperty(CIDOC.P14_carried_out_by, commander)
       .addProperty(MUS.U31_had_function, "commanditaire", "fr");
     this.resource.addProperty(CIDOC.P9_consists_of, activity);
   }
@@ -642,7 +656,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     this.model.add(F31_Performance.getModel()).add(f25.getModel());
   }
 
-  private void linkNewWork() {
+  public void linkNewWork(Record record) {
     PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record);
     PF22_SelfContainedExpression f22 = new PF22_SelfContainedExpression(record);
     PF14_IndividualWork f14 = new PF14_IndividualWork(record.getIdentifier());
@@ -669,16 +683,6 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   public void setConcert(PF31_Performance pf) {
     if (this.F31_Performance == null) this.F31_Performance = pf;
-  }
-
-  private static CorporateBody ensambleIntercontemporain = null;
-
-  private Resource getEnsambleIntercontemporainUri() {
-    if (ensambleIntercontemporain == null) {
-      ensambleIntercontemporain = new CorporateBody("Ensemble intercontemporain");
-      model.add(ensambleIntercontemporain.getModel());
-    }
-    return ensambleIntercontemporain.asResource();
   }
 
   private boolean isAnImprovisation() {

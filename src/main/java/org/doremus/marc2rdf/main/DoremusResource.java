@@ -15,6 +15,9 @@ import org.doremus.ontology.PROV;
 import org.pmw.tinylog.Logger;
 
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class DoremusResource {
   protected String className;
@@ -122,5 +125,30 @@ public abstract class DoremusResource {
     this.uri = uri;
     if (this.resource != null)
       this.resource = ResourceUtils.renameResource(this.resource, uri);
+  }
+
+  protected String searchInNote(String regex, int group) {
+    return searchInNote(Pattern.compile(regex), group);
+  }
+
+  protected String searchInNote(String regex) {
+    return searchInNote(Pattern.compile(regex), -1);
+  }
+
+  protected String searchInNote(Pattern pattern, int group) {
+    if(record==null) return null;
+
+    List<String> fields = record.getDatafieldsByCode(200, 'a');
+    fields.addAll(record.getDatafieldsByCode(200, 'e'));
+
+    for (String note : fields) {
+      Matcher m = pattern.matcher(note);
+      if (m.find()) return group < 0 ? note : m.group(group);
+    }
+    return null;
+  }
+
+  public Record getRecord() {
+    return record;
   }
 }

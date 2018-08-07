@@ -51,18 +51,24 @@ public class RecordConverter {
       case "UNI:100": // Ouvres
         this.convertUNI100();
         break;
+      case "UNI:42": // Concerts audio
+        convertUNI42();
+        break;
       case "UNI:4": // Concerts video
       case "UNI:2": // Concerts audio
-//      case "UNI:42": // Concerts audio
         this.convertUNI4();
         break;
-//      case "UNI:62": // Concerts audio
+      case "UNI:62": // Concerts audio
       case "UNI:44": // Concerts video
         this.convertUNI44();
         break;
       default:
         System.out.println("Skipping not recognized PP notice type " + record.getType() + " for file " + record.getIdentifier());
     }
+  }
+
+  private String getCode() {
+    return record.getDatafieldsByCode("019", 'a').get(0);
   }
 
   private void convertUNI4() {
@@ -98,15 +104,21 @@ public class RecordConverter {
       res.addProvenance(intermarcRes, provActivity);
       model.add(res.getModel());
     }
-
   }
 
-  private String getCode() {
-    return record.getDatafieldsByCode("019", 'a').get(0);
+  private void convertUNI42() {
+    boolean isUni42 = "UNI42C".equals(getCode());
+    if (!isUni42) return;
+    this.converted = true;
+
+    PM46_SetOfTracks tracks = new PM46_SetOfTracks(record);
+    tracks.addProvenance(intermarcRes, provActivity);
+    if (tracks.recordAsATrack()) this.convertUNI44();
+    model.add(tracks.getModel());
   }
 
   private void convertUNI44() {
-    if (!"UNI44C".equals(getCode()) && !"UNI62C".equals(getCode())) return;
+    if (!getCode().matches("UNI(4[24]|62)C")) return;
     this.converted = true;
 
     PM24_Track track = new PM24_Track(record);
@@ -117,7 +129,6 @@ public class RecordConverter {
       res.addProvenance(intermarcRes, provActivity);
       model.add(res.getModel());
     }
-
   }
 
   private void convertUNI100() throws URISyntaxException {

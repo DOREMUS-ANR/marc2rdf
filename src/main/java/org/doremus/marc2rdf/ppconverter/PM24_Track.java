@@ -27,37 +27,26 @@ public class PM24_Track extends DoremusResource {
     super(record);
 
     this.resource.addProperty(RDF.type, MUS.M24_Track)
-      .addProperty(DC.identifier, this.identifier)
-      .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
+      .addProperty(DC.identifier, this.identifier);
 
-    switch (record.getType()) {
-      case "UNI:44":
-        this.resource
-          .addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
-        break;
-      case "UNI:42":
-        this.resource.addProperty(MUS.U227_has_content_type, "performed music", "en")
-          .addProperty(MUS.U227_has_content_type, "sounds", "en");
-    }
-
+    this.resource
+      .addProperty(MUS.U227_has_content_type, record.isType("UNI:44") ? "two-dimensional moving image" : "sounds", "en");
 
     String rdaType = PP2RDF.guessType(record);
-    if (rdaType != null)
-      this.resource.addProperty(MUS.U227_has_content_type, rdaType, "en");
-
+    if (rdaType != null) this.resource.addProperty(MUS.U227_has_content_type, rdaType, "en");
 
     for (String title : getTitles())
-      this.resource.addProperty(CIDOC.P102_has_title, title)
-        .addProperty(RDFS.label, title);
+      this.resource.addProperty(CIDOC.P102_has_title, title).addProperty(RDFS.label, title);
 
     String orderNum = getOrderNum();
     if (orderNum != null)
-      this.resource.addProperty(MUS.U10_has_order_number, orderNum, XSDDatatype.XSDint);
+      this.resource.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNum));
 
     String duration = getDuration(this.record);
     if (duration != null)
       this.resource.addProperty(MUS.U53_has_duration, duration, XSDDatatype.XSDdayTimeDuration);
   }
+
 
   private List<String> getTitles() {
     return record.getDatafieldsByCode(200, 'a').stream()
@@ -66,12 +55,13 @@ public class PM24_Track extends DoremusResource {
   }
 
   private String getOrderNum() {
-    for (String f : record.getDatafieldsByCode(856, 'x')) {
-      if (f == null || f.isEmpty()) continue;
-      int l = f.length();
-      return String.valueOf(Integer.parseInt(f.substring(l - 2)));
-    }
-    return null;
+    int _l = record.isType("UNI:44") ? 2 : 5;
+    return record.getDatafieldsByCode(856, 'g').stream()
+      .filter(Objects::nonNull)
+      .filter(f -> !f.isEmpty())
+      .findFirst()
+      .map(f -> String.valueOf(f.substring(f.length() - _l)))
+      .orElse(null);
   }
 
   static String getDuration(Record record) {

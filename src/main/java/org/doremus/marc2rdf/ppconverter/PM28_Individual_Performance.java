@@ -40,8 +40,8 @@ public class PM28_Individual_Performance extends DoremusResource {
     this.model.add(actor.getModel());
   }
 
-  public void setCharacter(String character) {
-    if (character == null || character.isEmpty()) return;
+  private void setCharacter(String character) {
+    if (character == null || character.isEmpty() || character.startsWith("collection")) return;
 
     String charUri = this.uri + "/character";
     boolean startsUppercase = Character.isUpperCase(character.codePointAt(0));

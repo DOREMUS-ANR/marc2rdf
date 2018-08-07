@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -140,17 +141,19 @@ public class PP2RDF extends AbstractConverter {
   }
 
 
+  private final static List<String> MUSIC_ROLES = Arrays.asList("195", "230", "250", "545", "721");
+
   public static String guessType(Record record) {
     List<String> funCodes = record.getDatafieldsByCode(700, 4);
     funCodes.addAll(record.getDatafieldsByCode(701, 4));
     funCodes.addAll(record.getDatafieldsByCode(702, 4));
     funCodes.addAll(record.getDatafieldsByCode(712, 4));
 
-    if (funCodes.size() == 1 && funCodes.get(0).equals("800"))
-      return "spoken word";
-    else if (funCodes.contains("195") || funCodes.contains("230") ||
-      funCodes.contains("545") || funCodes.contains("721"))
-      return "performed music";
+    for (String funCode : funCodes)
+      if (MUSIC_ROLES.contains(funCode)) return "performed music";
+
+    for (String funCode : funCodes)
+      if (Objects.equals(funCode, "800")) return "spoken word";
 
     return null;
   }

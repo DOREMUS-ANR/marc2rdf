@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.StatementImpl;
@@ -25,7 +26,7 @@ public class Utils {
     ".|h))?";
   public static final String opusSubnumberRegex = "(?i)(?:,? n(?:[o°.]| °)[s.]?)";
 
-  public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?$";
+  public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?(?: sec)?$";
   private final static Pattern DURATION_PATTERN = Pattern.compile(DURATION_REGEX);
   private final static String[] DURATION_UNITS = new String[]{null, "H", "M", "S"};
 
@@ -233,5 +234,35 @@ public class Utils {
   }
 
 
+  public static List<String> splitKeepBrackets(String text, String delimiter) {
+    List<String> p = new LinkedList<>(Arrays.asList(text.split(delimiter)));
+    while (p.stream().anyMatch(Utils::areBracketsUnbalancedIn)) {
+      String current, previous = p.get(0);
+      for (int i = 1; i < p.size(); i++) {
+        current = p.get(i);
+        if (areBracketsUnbalancedIn(previous)) {
+          String combo = previous + delimiter + current;
+          p.set(i - 1, combo);
+          p.remove(i);
+          break;
+        } else previous = current;
+      }
+    }
+    return p;
+  }
+
+  private static boolean areBracketsUnbalancedIn(String str) {
+    return StringUtils.countMatches(str, "(") != StringUtils.countMatches(str, ")");
+  }
+
+  public static String[] extractBrackets(String txt) {
+    if (!txt.contains("(") || !txt.contains(")"))
+      return new String[]{txt, null};
+
+    int start = txt.indexOf("("), end = txt.indexOf(")");
+    String content = txt.substring(start + 1, end);
+    txt = txt.substring(0, start) + txt.substring(end);
+    return new String[]{content.trim(), txt.trim()};
+  }
 }
 

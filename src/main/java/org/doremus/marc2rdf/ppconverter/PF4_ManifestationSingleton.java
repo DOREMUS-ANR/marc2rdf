@@ -20,6 +20,9 @@ public class PF4_ManifestationSingleton extends DoremusResource {
 
     record.getDatafieldsByCode(200, 'a')
       .forEach(this::addTitle);
+    record.getDatafieldsByCode(997, 'a')
+      .forEach(this::addNote);
+
   }
 
   private void addTitle(String title) {

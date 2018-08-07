@@ -50,7 +50,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
 
     if (record.isTUM()) convertUNI100(composers);
-    else if ("UNI:44".equals(record.getType())) convertUNI44();
+    else // UNI44, UNI2
+      convertUNI44();
   }
 
   private void convertUNI44() {
@@ -296,6 +297,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     switch (record.getType()) {
       case "UNI:100":
       case "UNI:44":
+      case "UNI:2":
         titleList = record.getDatafieldsByCode("200", 'a');
         break;
       default:

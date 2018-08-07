@@ -4,11 +4,9 @@ import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URISyntaxException;
-
 public class PF19_PublicationWork extends DoremusResource{
 
-  public PF19_PublicationWork(String identifier) throws URISyntaxException {
+  public PF19_PublicationWork(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, FRBROO.F19_Publication_Work);
   }

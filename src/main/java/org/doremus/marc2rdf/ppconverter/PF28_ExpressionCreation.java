@@ -36,7 +36,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
     this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
 
     if (record.isTUM()) convertUNI100();
-    else if ("UNI:44".equals(record.getType())) convertUNI44();
+    else if (record.getType().matches("UNI:4[42]")) convertUNI44();
   }
 
   private void convertUNI44() {
@@ -214,8 +214,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
   }
 
   private List<Person> findArtistWithFunction(Function function) {
-    List<Person> composers = new ArrayList<>();
-    if (record.isType("AIC:14")) return composers;
+    if (record.isType("AIC:14")) return new ArrayList<>();
 
     List<DataField> fields = record.getDatafieldsByCode("700");
     if (!record.isTUM())
@@ -229,12 +228,9 @@ public class PF28_ExpressionCreation extends DoremusResource {
       .collect(Collectors.toList())
     );
 
-    for (DataField field : fields)
-      composers.add(Person.fromUnimarcField(field));
-
-    for (Person p : composers) p.interlink();
-
-    return composers;
+    return fields.stream().map(Person::fromUnimarcField)
+      .peek(Person::interlink)
+      .collect(Collectors.toList());
   }
 
 

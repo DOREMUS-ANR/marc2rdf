@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PM46_SetOfTracks extends DoremusResource {
+  private boolean recordAsATrack = false;
+
   public PM46_SetOfTracks(String identifier) {
     super(identifier);
     this.resource.addProperty(RDF.type, MUS.M46_Set_of_Tracks)
@@ -69,8 +71,7 @@ public class PM46_SetOfTracks extends DoremusResource {
   private List<String> getTracks() {
     List<String> tracks = record.getDatafieldsByCode(462, 3);
     if (record.isType("UNI:42") && tracks.isEmpty()){
-      PM24_Track trk = new PM24_Track(record);
-      this.model.add(trk.getModel());
+      recordAsATrack = true;
       tracks.add(this.identifier);
     }
     return tracks;
@@ -80,5 +81,9 @@ public class PM46_SetOfTracks extends DoremusResource {
   public PM46_SetOfTracks add(PM43_PerformedExpression exp) {
     this.asResource().addProperty(MUS.U51_is_partial_or_full_recording_of, exp.asResource());
     return this;
+  }
+
+  public boolean recordAsATrack() {
+    return recordAsATrack;
   }
 }

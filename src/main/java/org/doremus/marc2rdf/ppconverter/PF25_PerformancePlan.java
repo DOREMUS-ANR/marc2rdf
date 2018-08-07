@@ -49,4 +49,9 @@ public class PF25_PerformancePlan extends DoremusResource {
     this.resource.addProperty(CIDOC.P9_consists_of, m42.asResource());
     return this;
   }
+
+  public PF25_PerformancePlan add(PF25_PerformancePlan subplan) {
+    this.resource.addProperty(FRBROO.R5_has_component, subplan.asResource());
+    return this;
+  }
 }

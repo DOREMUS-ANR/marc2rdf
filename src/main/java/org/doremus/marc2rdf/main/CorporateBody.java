@@ -27,7 +27,7 @@ public class CorporateBody extends Artist {
   }
 
   private void initResource() {
-    this.resource = model.createResource(this.uri.toString());
+    this.resource = model.createResource(this.uri);
 
     resource.addProperty(RDF.type, FRBROO.F11_Corporate_Body)
       .addProperty(RDFS.label, this.name)
@@ -58,11 +58,11 @@ public class CorporateBody extends Artist {
       "PREFIX efrbroo: <" + FRBROO.getURI() + ">\n" +
       "SELECT DISTINCT ?s " +
       "WHERE { " +
-      "?s a efrbroo:F11_Corporate_Body; rdfs:label \"" + name + "\"." +
+      "?s a efrbroo:F11_Corporate_Body; rdfs:label ?o\n" +
+      "FILTER (lcase(str(?o)) = \"" + name.toLowerCase() + "\") " +
       "}";
 
     return (Resource) Utils.queryDoremus(sparql, "s");
-
   }
 
   @Override

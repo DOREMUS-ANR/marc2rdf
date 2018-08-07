@@ -5,11 +5,9 @@ import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-import java.net.URISyntaxException;
-
 public class F25_PerformancePlan extends DoremusResource {
 
-  public F25_PerformancePlan(String identifier) throws URISyntaxException {
+  public F25_PerformancePlan(String identifier) {
     super(identifier);
 
     this.resource.addProperty(RDF.type, FRBROO.F25_Performance_Plan);
