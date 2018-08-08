@@ -254,7 +254,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
             String txt = searchArtistInNotes(artist, record);
 
-            List<String> parts = Utils.splitKeepBrackets(txt, "(,| et )");
+            List<String> parts = Utils.splitKeepBrackets(txt, "(,| et | & )");
 
             String toBeAdded = "";
             for (int i = 1; i < parts.size(); i++) {
@@ -295,8 +295,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
               Resource mop = VocabularyManager.searchInCategory(pt, "fr", "mop", true);
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
-
-              if (mop == null) {
+              if (mop == null && operaRole != null) {
                 mop = VocabularyManager.searchInCategory(operaRole, "fr", "mop", true);
                 if (mop != null) operaRole = null;
               }

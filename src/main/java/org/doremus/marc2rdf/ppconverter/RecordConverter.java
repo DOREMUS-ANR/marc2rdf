@@ -46,6 +46,9 @@ public class RecordConverter {
     intermarcRes = computeProvIntermarc(record.getIdentifier(), model);
     provActivity = computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
+//    if (Integer.parseInt(record.getIdentifier()) < 1000946) return;
+
+    System.out.println(record.getIdentifier());
     switch (record.getType()) {
       case "AIC:14": // TUM
       case "UNI:100": // Ouvres
@@ -67,15 +70,7 @@ public class RecordConverter {
     }
   }
 
-  private String getCode() {
-    return record.getDatafieldsByCode("019", 'a').get(0);
-  }
-
   private void convertUNI4() {
-    boolean isUni2 = "UNI2C".equals(getCode());
-    boolean isUni4 = "UNI4C".equals(getCode());
-
-    if (!isUni2 && !isUni4) return;
     this.converted = true;
 
     PM46_SetOfTracks tracks = new PM46_SetOfTracks(record);
@@ -107,8 +102,6 @@ public class RecordConverter {
   }
 
   private void convertUNI42() {
-    boolean isUni42 = "UNI42C".equals(getCode());
-    if (!isUni42) return;
     this.converted = true;
 
     PM46_SetOfTracks tracks = new PM46_SetOfTracks(record);
@@ -118,7 +111,6 @@ public class RecordConverter {
   }
 
   private void convertUNI44() {
-    if (!getCode().matches("UNI(4[24]|62)C")) return;
     this.converted = true;
 
     PM24_Track track = new PM24_Track(record);
@@ -167,7 +159,7 @@ public class RecordConverter {
   }
 
   private void addPerformances(PF22_SelfContainedExpression f22, PF14_IndividualWork f14,
-                               PF15_ComplexWork f15, PF28_ExpressionCreation f28) throws URISyntaxException {
+                               PF15_ComplexWork f15, PF28_ExpressionCreation f28) {
     int performanceCounter = 0;
     boolean hasPremiere = false;
     for (String performance : PM42_PerformedExpressionCreation.getPerformances(record)) {

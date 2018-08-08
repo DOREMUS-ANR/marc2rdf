@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -9,7 +10,6 @@ import org.apache.jena.vocabulary.RDFS;
 import org.doremus.isnimatcher.ISNIRecord;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
-import org.doremus.ontology.PROV;
 import org.doremus.ontology.Schema;
 import org.geonames.Toponym;
 
@@ -277,31 +277,38 @@ public class Person extends Artist {
     return getFromDoremus(this.getFullName(), this.getBirthYear());
   }
 
-  public static Resource getFromDoremus(String name, String birthDate) {
-    String sparql = "PREFIX ecrm: <" + CIDOC.getURI() + ">\n" +
-      "PREFIX foaf: <" + FOAF.getURI() + ">\n" +
-      "PREFIX prov: <" + PROV.getURI() + ">\n" +
-      "PREFIX schema: <" + Schema.getURI() + ">\n" +
-      "SELECT DISTINCT ?s " +
-      "FROM <http://data.doremus.org/bnf> " +
-      "WHERE { " +
-      "?s a ecrm:E21_Person; foaf:name \"" + name + "\"." +
-      (birthDate != null ? "?s schema:birthDate ?date. FILTER regex(str(?date), \"" + birthDate +
-        "\")\n" : "") +
-      "}";
+  private static final String NAME_SPARQL = "PREFIX ecrm: <" + CIDOC.getURI() + ">\n" +
+    "PREFIX foaf: <" + FOAF.getURI() + ">\n" +
+    "PREFIX schema: <" + Schema.getURI() + ">\n" +
+    "SELECT DISTINCT ?s " +
+    "FROM <http://data.doremus.org/bnf> " +
+    "WHERE { ?s a ecrm:E21_Person; foaf:name ?name. }";
+  private static final String NAME_DATE_SPARQL = "PREFIX ecrm: <" + CIDOC.getURI() + ">\n" +
+    "PREFIX foaf: <" + FOAF.getURI() + ">\n" +
+    "PREFIX schema: <" + Schema.getURI() + ">\n" +
+    "SELECT DISTINCT ?s " +
+    "FROM <http://data.doremus.org/bnf> " +
+    "WHERE { ?s a ecrm:E21_Person; foaf:name ?name. " +
+    "?s schema:birthDate ?date. FILTER regex(str(?date), ?birthDate) }";
 
-    return (Resource) Utils.queryDoremus(sparql, "s");
+  public static Resource getFromDoremus(String name, String birthDate) {
+    ParameterizedSparqlString pss = new ParameterizedSparqlString();
+    pss.setCommandText(birthDate != null ? NAME_DATE_SPARQL : NAME_SPARQL);
+    pss.setLiteral("name", name);
+    if (birthDate != null) pss.setLiteral("birthDate", birthDate);
+
+    return (Resource) Utils.queryDoremus(pss, "s");
   }
+
+  private static final String ISNI_SPARQL = "PREFIX owl: <" + OWL.getURI() + ">\n" +
+    "SELECT DISTINCT * WHERE { ?s owl:sameAs ?isni }";
 
   private static Resource getPersonFromDoremus(String isni) {
-    String sparql =
-      "PREFIX owl: <" + OWL.getURI() + ">\n" +
-        "SELECT DISTINCT * WHERE {" +
-        " ?s owl:sameAs <" + isni + "> }";
-
-    return (Resource) Utils.queryDoremus(sparql, "s");
+    ParameterizedSparqlString pss = new ParameterizedSparqlString();
+    pss.setCommandText(ISNI_SPARQL);
+    pss.setIri("isni", isni);
+    return (Resource) Utils.queryDoremus(pss, "s");
   }
-
 
   public void isniEnrich(ISNIRecord isni) {
     this.addPropertyResource(OWL.sameAs, isni.uri);

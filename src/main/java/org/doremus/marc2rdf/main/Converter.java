@@ -115,6 +115,7 @@ public class Converter {
       System.out.println("Input directory is empty");
       return;
     }
+    Arrays.sort(list);
 
 //    int i = 100;
     for (File file : list) {

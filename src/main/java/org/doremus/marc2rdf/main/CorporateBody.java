@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
@@ -53,16 +54,18 @@ public class CorporateBody extends Artist {
     return new CorporateBody(name.trim());
   }
 
-  public static Resource getFromDoremus(String name) {
-    String sparql = "PREFIX rdfs: <" + RDFS.getURI() + ">\n" +
-      "PREFIX efrbroo: <" + FRBROO.getURI() + ">\n" +
-      "SELECT DISTINCT ?s " +
-      "WHERE { " +
-      "?s a efrbroo:F11_Corporate_Body; rdfs:label ?o\n" +
-      "FILTER (lcase(str(?o)) = \"" + name.toLowerCase() + "\") " +
-      "}";
+  private static final String NAME_SPARQL = "PREFIX rdfs: <" + RDFS.getURI() + ">\n" +
+    "PREFIX efrbroo: <" + FRBROO.getURI() + ">\n" +
+    "SELECT DISTINCT ?s " +
+    "WHERE { ?s a efrbroo:F11_Corporate_Body; rdfs:label ?o. " +
+    "FILTER (lcase(str(?o)) = ?name) }";
 
-    return (Resource) Utils.queryDoremus(sparql, "s");
+  public static Resource getFromDoremus(String name) {
+    ParameterizedSparqlString pss = new ParameterizedSparqlString();
+    pss.setCommandText(NAME_SPARQL);
+    pss.setLiteral("name", name.toLowerCase());
+
+    return (Resource) Utils.queryDoremus(pss, "s");
   }
 
   @Override

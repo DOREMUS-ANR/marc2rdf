@@ -217,17 +217,15 @@ public class Utils {
   }
 
 
-  public static QuerySolution queryDoremus(String sparql) {
-    Query query = QueryFactory.create();
-    QueryFactory.parse(query, sparql, "", Syntax.syntaxSPARQL_11);
-    QueryExecution qexec = QueryExecutionFactory.sparqlService("http://data.doremus.org/sparql", query);
+  public static QuerySolution queryDoremus(ParameterizedSparqlString sparql) {
+    QueryExecution qexec = QueryExecutionFactory.sparqlService("http://data.doremus.org/sparql", sparql.toString());
     ResultSet r = qexec.execSelect();
     if (!r.hasNext()) return null;
     return r.next();
 
   }
 
-  public static RDFNode queryDoremus(String sparql, String var) {
+  public static RDFNode queryDoremus(ParameterizedSparqlString sparql, String var) {
     QuerySolution result = queryDoremus(sparql);
     if (result == null) return null;
     else return result.get(var);
@@ -262,7 +260,7 @@ public class Utils {
     int start = txt.indexOf("("), end = txt.indexOf(")");
     String content = txt.substring(start + 1, end);
     txt = txt.substring(0, start) + txt.substring(end);
-    return new String[]{content.trim(), txt.trim()};
+    return new String[]{txt.trim(), content.trim()};
   }
 }
 
