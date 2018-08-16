@@ -5,11 +5,11 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Attr;
-import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.PROV;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 
 public class BIBRecordConverter {
@@ -24,7 +24,7 @@ public class BIBRecordConverter {
   private F15_ComplexWork f15;
 
 
-  public BIBRecordConverter(Record record, Model model, String extArk) throws URISyntaxException {
+  public BIBRecordConverter(Record record, Model model, String extArk) {
     this.record = record;
     this.model = model;
 
@@ -35,13 +35,15 @@ public class BIBRecordConverter {
     intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
     provActivity = BNF2RDF.computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
-    for (DataField field : record.getDatafieldsByCode(143)) {
-      if (!field.isCode('a')) continue;
-      String subA = field.getSubfield('a').getData();
-      if (!"Traditions".equals(subA)) continue;
-      System.out.println(record.getIdentifier());
-      System.out.println(field);
-    }
+    if (BNF2RDF.getRecordCode(record).equals("g")) convertDAV();
+
+//    for (DataField field : record.getDatafieldsByCode(143)) {
+//      if (!field.isCode('a')) continue;
+//      String subA = field.getSubfield('a').getData();
+//      if (!"Traditions".equals(subA)) continue;
+//      System.out.println(record.getIdentifier());
+//      System.out.println(field);
+//    }
 //    // Instantiate work and expression
 //    f28 = new F28_ExpressionCreation(record);
 //    f22 = new F22_SelfContainedExpression(record, f28);
@@ -69,10 +71,21 @@ public class BIBRecordConverter {
 
   }
 
+  private void convertDAV() {
+    F3_ManifestationProductType manif = new F3_ManifestationProductType(record);
+    F24_PublicationExpression publicationExpression = new F24_PublicationExpression(record);
+    manif.add(publicationExpression);
+
+    for (DoremusResource r : Arrays.asList(manif, publicationExpression)) {
+      r.addProvenance(intermarcRes, provActivity);
+      this.model.add(r.getModel());
+    }
+  }
+
 
   private void addProvenanceTo(DoremusResource res) {
     res.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo, model.createResource(BNF2RDF.doremusURI))
+      .addProperty(PROV.wasAttributedTo,BNF2RDF.BnF)
       .addProperty(PROV.wasDerivedFrom, this.intermarcRes)
       .addProperty(PROV.wasGeneratedBy, this.provActivity);
   }

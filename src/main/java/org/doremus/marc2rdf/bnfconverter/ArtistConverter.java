@@ -104,7 +104,7 @@ public class ArtistConverter {
 
     // PROV-O tracing
     Resource intermarcRes = model.createResource("http://catalogue.bnf.fr/" + ark + ".intermarc")
-      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(BNF2RDF.organizationURI));
+      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, BNF2RDF.BnF);
 
     Resource provActivity = model.createResource(ConstructURI.build("bnf", "prov", record.getIdentifier()).toString())
       .addProperty(RDF.type, PROV.Activity).addProperty(RDF.type, PROV.Derivation)

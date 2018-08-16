@@ -1,6 +1,5 @@
 package org.doremus.marc2rdf.ppconverter;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
@@ -28,13 +27,15 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   private static final String SPECIFIC_COMMAND_REGEX = "(?i)commande des?(?: l['a])? ?" +
     "(Cité de la musique|Philharmonie de  Paris|Ensemble intercontemporain|Cris de Paris)";
   private static final Pattern SPECIFIC_COMMAND_PATTERN = Pattern.compile(SPECIFIC_COMMAND_REGEX);
+  private static final String INTERPRETER_REGEX = "(?<!(?:organis|rapport)é )par (.+)";
+  private static final Pattern INTERPRETER_PATTERN = Pattern.compile(INTERPRETER_REGEX);
   private static final String frenchCreationRegex = "(?i)(cr\u00e9ation fran\u00e7aise.*)";
   private static final String premiereRegex = "(?i)cr[eéè]ation mondiale";
   private static final String noPremiereRegex = frenchCreationRegex + "|(enregistrement (de )?jazz)|(1re reprise)";
   private static final String frenchUncertainDate = "(?:le |en )?(?:" + TimeSpan.frenchDayRegex + "? ?" + TimeSpan.frenchMonthRegex + "? )?(?:\\(\\?\\) )?(\\d{4})(?: ?\\?)?";
-  private static final String conductorRegex = "(?:(?:placé )?(?:sous|par) la dir(?:\\.|ection) d[e'u]|dirigé par|direction(?: :)?) ?((?:[A-Z]\\.)?[\\p{L} \\-']+)";
-  private static final String interpreterRegex = "(?<!(?:organis|rapport)é )par (.+)";
-  private static final String dedicataireRegex = "\\(?(?:l[ea]s? |son |sa )?(?:dédica|commandi)taires?(?: de l'oeuvre)?\\)?";
+  private static final String conductorRegex = "(?:(?:placé )?(?:sous|par) la dir(?:\\.|ection) d[e'u]|dirigé par|" +
+    "direction(?: :)?) ?([\\p{L} \\-']*(?:[A-Z]\\.)?[\\p{L} \\-']+)";
+  private static final String DEDICATAIRE_REGEX = "\\(?(?:l[ea]s? |son |sa )?(?:dédica|commandi)taires?(?: de l'oeuvre)?\\)?";
   private static final String composerRegex = "(le )?compositeur|l'auteur";
   private static final String noUppercase = "[^A-Z]+";
 
@@ -405,9 +406,13 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
   private void parseNote(String note) {
+    note = note.replaceAll("\\.$", "");
+
     int counter = 0;
     note = note.split("(;|((,| |, )(puis|parce) ))")[0].trim();
-    note = note.replaceAll(dedicataireRegex, "");
+    note = note.replaceAll(DEDICATAIRE_REGEX, "");
+    note = note.replaceAll(", , (au|à la)", " $1")
+      .replaceAll(", ,", ",").trim();
 
     // extract dates
     Pattern p = Pattern.compile(frenchUncertainDate);
@@ -443,13 +448,13 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     // extract interpreters
     List<Role> roles = new ArrayList<>();
     Pattern mopIntPattern = Pattern.compile("(.+) \\((.+)\\)");
-    p = Pattern.compile(interpreterRegex);
-    m = p.matcher(note);
+    m = INTERPRETER_PATTERN.matcher(note);
     if (m.find()) {
-      String interpreterString = m.group(1);
+      String interpreterString = m.group(1)
+        .replaceAll("^ ?:", "").trim();
 
       // unbalanced parenthesis
-      if (StringUtils.countMatches(interpreterString, "(") != StringUtils.countMatches(interpreterString, ")"))
+      if (!Utils.areQuotesBalanced(interpreterString))
         interpreterString = "";        // too complex
 
       // "ne fut pas créé par lui mais par Ilona Kurz-Stepanova"
@@ -462,7 +467,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       interpreterString = interpreterString.replaceFirst(", à .+", "").replaceFirst(",? dans .+", "").trim();
 
       String interpreter = "";
-      RDFNode mopMatch;
+      RDFNode mopMatch = null;
 
       for (String originalInterpreter : interpreterString.split("([,/]| et | avec )")) {
         String newInfo = originalInterpreter.replaceFirst("^(et|avec) ", "").trim();
@@ -473,12 +478,14 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
         }
         interpreter += newInfo;
 
-        if (StringUtils.countMatches(interpreter, "(") > StringUtils.countMatches(interpreter, ")")) {
+        if (!Utils.areQuotesBalanced(interpreter)) {
           interpreter += ", ";
           continue; // wait for close parenthesis
         }
 
-        mopMatch = VocabularyManager.searchInCategory(newInfo, "fr", "mop", true);
+        if (!(newInfo.startsWith("(") && newInfo.endsWith(")")) && Utils.areQuotesBalanced(newInfo))
+          mopMatch = VocabularyManager.searchInCategory(newInfo, "fr", "mop", true);
+
         if (mopMatch != null && !roles.isEmpty()) {
           // i should add this info to the previous one
           roles.get(roles.size() - 1).setFunction(mopMatch);

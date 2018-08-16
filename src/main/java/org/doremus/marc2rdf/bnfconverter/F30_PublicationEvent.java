@@ -2,15 +2,12 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.TimeSpan;
+import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,19 +25,24 @@ public class F30_PublicationEvent extends DoremusResource {
   private static final String regex3 = "Date d'édition : (?:(.+), )?(\\d{4})";
   private static final String textDateRegex = "(?:(1er|[\\d]{1,2}) )?(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)";
 
-  private final F28_ExpressionCreation f28;
+  private static int activityCount = 0;
+  private F28_ExpressionCreation f28;
 
-
-  public F30_PublicationEvent(String edition, Record record, F28_ExpressionCreation f28, int i) throws URISyntaxException {
+  public F30_PublicationEvent(String edition, Record record, F28_ExpressionCreation f28, int i) {
     super(record);
     this.f28 = f28;
 
     this.identifier = record.getIdentifier() + i;
     regenerateResource();
 
-    this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);
+    this.setClass(FRBROO.F30_Publication_Event);
     addNote(edition);
     parseNote(edition);
+  }
+
+  public F30_PublicationEvent(String identifier) {
+    super(identifier);
+    this.setClass(FRBROO.F30_Publication_Event);
   }
 
   private void parseNote(String note) {
@@ -89,29 +91,16 @@ public class F30_PublicationEvent extends DoremusResource {
       parseTime(year);
     }
 
-    addPublisher(publisher);
+    if ("l'auteur".equals(publisher)) // hypothesis: singular means only one author
+      addActivity(f28.getComposers().get(0), "publisher");
+    else addActivity(new CorporateBody(publisher), "publisher");
+
     if (city != null && !city.startsWith("dans ") && !city.contains("&")) {
-      city.replaceFirst("[.,:]^", "").trim();
-      this.resource.addProperty(CIDOC.P7_took_place_at, city);
+      city = city.replaceFirst("[.,:]^", "").trim();
+      E53_Place place = new E53_Place(city);
+      if (place.isGeonames())
+        this.addProperty(CIDOC.P7_took_place_at, place);
     }
-  }
-
-  private void addPublisher(String publisher) {
-    if (publisher == null) return;
-
-    Resource activity = model.createResource(this.uri + "/activity")
-      .addProperty(RDF.type, CIDOC.E7_Activity)
-      .addProperty(MUS.U31_had_function, model.createLiteral("editeur", "fr"));
-
-    if (publisher.equals("l'auteur")) // hypothesis: singular means only one author
-      activity.addProperty(CIDOC.P14_carried_out_by, f28.getComposers().get(0).asResource());
-    else // TODO uri of the publisher
-      activity.addProperty(CIDOC.P14_carried_out_by, model.createResource()
-        .addProperty(RDF.type, FRBROO.F11_Corporate_Body)
-        .addProperty(RDFS.label, publisher)
-        .addProperty(CIDOC.P131_is_identified_by, publisher));
-
-    this.resource.addProperty(CIDOC.P9_consists_of, activity);
   }
 
   private void parseTime(String year) {
@@ -163,5 +152,17 @@ public class F30_PublicationEvent extends DoremusResource {
       if ((edition.contains("éd.")) || (edition.contains("édition"))) return edition.split(";");
     }
     return new String[0];
+  }
+
+  public void addActivity(Artist agent, String function) {
+    if (agent == null) return;
+
+    Resource activity = model.createResource(this.uri + "/activity/" + ++activityCount)
+      .addProperty(RDF.type, CIDOC.E7_Activity)
+      .addProperty(MUS.U31_had_function, function)
+      .addProperty(CIDOC.P14_carried_out_by, agent.asResource());
+
+    this.addProperty(CIDOC.P9_consists_of, activity);
+    this.model.add(agent.getModel());
   }
 }

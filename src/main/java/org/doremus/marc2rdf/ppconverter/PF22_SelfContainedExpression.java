@@ -153,7 +153,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     int castingNum = 0;
 
     for (String castingString : getCasting()) {
-      castingString = castingString.trim().replaceFirst("\\.$", "");
+      castingString = castingString.trim()
+        .replaceFirst("\\.$", "");
       String castingUri = this.uri + "/casting/" + (++castingNum);
       PM6_Casting M6Casting = new PM6_Casting(castingString, castingUri);
 

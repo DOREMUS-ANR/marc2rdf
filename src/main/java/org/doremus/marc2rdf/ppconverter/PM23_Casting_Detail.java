@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 public class PM23_Casting_Detail {
   private final StanfordLemmatizer slem;
+  private final String GRADE_REGEX = "(.+) (I+|\\d)";
+  private final Pattern GRADE_PATTERN = Pattern.compile(GRADE_REGEX);
   String uri;
   String name;
 
@@ -40,17 +42,16 @@ public class PM23_Casting_Detail {
       .replaceAll("non spécifiée?", "")
       .replaceAll("\\(\\)", "")
       .trim()
-      .replaceAll("[.\\-/]$", "");
+      .replaceAll("[.\\-/]$", "")
+      .replaceAll("^[.\\-/]", "");
 
-
-    String gradeRegex = "(.+) (I+|\\d)";
-    if (name.matches(gradeRegex)) {// Violon II, soprano 1, soprano 2
-      Pattern grade = Pattern.compile(gradeRegex);
-      Matcher matcher = grade.matcher(name);
+    if (name.matches(GRADE_REGEX)) {// Violon II, soprano 1, soprano 2
+      Matcher matcher = GRADE_PATTERN.matcher(name);
       matcher.find();
 
       name = matcher.group(0);
     }
+    name = name.replaceAll("(premieres?|seconds?) ", "");
 
     this.nameComplete = name;
 

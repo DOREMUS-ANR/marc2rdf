@@ -46,9 +46,7 @@ public class RecordConverter {
     intermarcRes = computeProvIntermarc(record.getIdentifier(), model);
     provActivity = computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
-//    if (Integer.parseInt(record.getIdentifier()) < 1000946) return;
-
-    System.out.println(record.getIdentifier());
+    System.out.println(record.getIdentifier() + " | " + record.getType());
     switch (record.getType()) {
       case "AIC:14": // TUM
       case "UNI:100": // Ouvres
@@ -123,7 +121,7 @@ public class RecordConverter {
     }
   }
 
-  private void convertUNI100() throws URISyntaxException {
+  private void convertUNI100() {
     this.converted = true;
 
     PF28_ExpressionCreation f28 = new PF28_ExpressionCreation(record, identifier);
@@ -182,7 +180,7 @@ public class RecordConverter {
 
   }
 
-  private void addPrincepsPublication(PF22_SelfContainedExpression f22, PF14_IndividualWork f14) throws URISyntaxException {
+  private void addPrincepsPublication(PF22_SelfContainedExpression f22, PF14_IndividualWork f14) {
     String edition = PF30_PublicationEvent.getEditionPrinceps(record);
     if (edition == null) return;
 

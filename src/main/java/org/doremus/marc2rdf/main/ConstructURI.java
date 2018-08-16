@@ -87,6 +87,7 @@ public class ConstructURI {
       case "M46_Set_of_Tracks":
       case "M46_SetOfTracks":
       case "F4_ManifestationSingleton":
+      case "F3_ManifestationProductType":
         return "manifestation";
       case "M24_Track":
         return "track";

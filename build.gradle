@@ -27,6 +27,7 @@ dependencies {
         'org.apache.poi:poi-ooxml:3.14',
         'org.tinylog:tinylog:1.3.5',
         'com.openlinksw:virtjdbc4@jar',
+        'com.opencsv:opencsv:3.10',
         'xml-apis:xml-apis:1.4.01',
         'virtuoso.jena.driver:virt_jena3@jar',
         'edu.stanford.nlp:stanford-corenlp:3.6.0',
@@ -63,7 +64,20 @@ buildscript {
     }
 }
 
-task schemagen(dependsOn: ['schemagenFrbroo', 'schemagenCidoc', 'schemagenDoremus', 'schemagenProvO'])
+task schemagen(dependsOn: ['schemagenFrbroo', 'schemagenCidoc', 'schemagenDoremus', 'schemagenProvO', 
+                           'schemagenTime', 'schemagenCopyright'])
+
+task schemagenCopyright(type: UrlSchemaGen) {
+    input = uri('https://raw.githubusercontent.com/rhizomik/copyrightonto/master/RightsModel/copyrightonto-rightsmodel.ttl')
+    outputDirectory = file('src/main/java/')
+    packageName = 'org.doremus.ontology'
+    classNameSuffix = 'CRO'
+    ontology = true
+    inference = true
+    nostrict = true
+    nocomments = true
+    namespace = 'http://rhizomik.net/ontologies/copyrightonto#'
+}
 
 task schemagenProvO(type: UrlSchemaGen) {
     input = uri('http://www.w3.org/ns/prov')

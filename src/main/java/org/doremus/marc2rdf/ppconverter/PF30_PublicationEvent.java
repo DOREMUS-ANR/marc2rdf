@@ -9,7 +9,6 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +21,7 @@ public class PF30_PublicationEvent extends DoremusResource {
   private static final String noteRegex2 = "(?i)" + header2 + "s?[,.]?";
   private static final String noteRegex3 = "(?i)(?:[eé]dit|publi|imprim)[ée]{1,2}s? (.+)";
 
-  public PF30_PublicationEvent(String note, Record record, String identifier) throws URISyntaxException {
+  public PF30_PublicationEvent(String note, Record record, String identifier) {
     super(record, identifier);
 
     this.resource.addProperty(RDF.type, FRBROO.F30_Publication_Event);

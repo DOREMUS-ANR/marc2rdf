@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
+import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.PROV;
 
 public abstract class Artist {
@@ -44,4 +45,13 @@ public abstract class Artist {
     if (this.resource != null)
       this.resource = ResourceUtils.renameResource(this.resource, this.uri);
   }
+
+  public void addResidence(String data) {
+    if (data == null || data.isEmpty()) return;
+    E53_Place place = new E53_Place(data);
+    this.resource.addProperty(CIDOC.P74_has_current_or_former_residence, place.asResource());
+    this.model.add(place.getModel());
+  }
+
+  public abstract void addName(String trim);
 }

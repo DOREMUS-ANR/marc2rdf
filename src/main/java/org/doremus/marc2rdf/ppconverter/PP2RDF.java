@@ -67,6 +67,17 @@ public class PP2RDF extends AbstractConverter {
       // Skip TUMs (AIC:14). We will convert them contextually to UNI:100
       if (r.isType("AIC:14")) continue;
 
+      if (Integer.parseInt(r.getIdentifier()) < 1067688) return null;
+
+      RecordConverter mainRecord;
+      try {
+        mainRecord = new RecordConverter(r, model);
+        if (mainRecord.isConverted()) found = true;
+      } catch (URISyntaxException e) {
+        e.printStackTrace();
+        return model;
+      }
+
       // notice d'oeuvre: retrieve and convert TUM also
       if (r.isType("UNI:100")) {
         List<String> idTUMs = getIdTums(r);
@@ -75,22 +86,15 @@ public class PP2RDF extends AbstractConverter {
           continue;
         }
 
-        PF15_ComplexWork first = null;
+        PF15_ComplexWork first = mainRecord.getF15();
         for (String idTUM : idTUMs)
           try {
-            RecordConverter current = convertTum(idTUM.trim(), r.getIdentifier(), model, first);
-            first = current.getF15();
+            convertTum(idTUM.trim(), r.getIdentifier(), model, first);
           } catch (FileNotFoundException fe) {
             System.out.println("TUM specified but not found: notice " + r.getIdentifier() + ", tum " + idTUM);
           }
       }
 
-      try {
-        RecordConverter mainRecord = new RecordConverter(r, model);
-        if (mainRecord.isConverted()) found = true;
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-      }
     }
 
     if (!found) return null;

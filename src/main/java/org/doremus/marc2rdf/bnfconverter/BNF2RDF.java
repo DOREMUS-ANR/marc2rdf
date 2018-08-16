@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -21,8 +22,10 @@ import java.time.Instant;
 
 public class BNF2RDF extends AbstractConverter {
   public static final MarcXmlHandler.MarcXmlHandlerBuilder bnfXmlHandlerBuilder = new MarcXmlHandler.MarcXmlHandlerBuilder();
-  public static final String organizationURI = "http://data.doremus.org/organization/BnF";
-  public static final String doremusURI = "http://data.doremus.org/organization/DOREMUS";
+  public static final Resource BnF = ResourceFactory.createResource(
+    "http://data.doremus.org/organization/BnF");
+  public static final Resource DOREMUS = ResourceFactory.createResource(
+    "http://data.doremus.org/organization/DOREMUS");
 
   /******
    * Constants that represents the kind of record
@@ -82,14 +85,15 @@ public class BNF2RDF extends AbstractConverter {
     return model;
   }
 
+  static String getRecordCode(Record r) {
+    ControlField leader = r.getControlfieldByCode("leader");
+    return leader.getData().charAt(r.isBIB() ? 22 : 9) + "";
+  }
 
   private BIBRecordConverter convertBIB(Record r, String extArk) {
     BIBRecordConverter conv = null;
-    try {
-      conv = new BIBRecordConverter(r, model, extArk);
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
+    conv = new BIBRecordConverter(r, model, extArk);
+    somethingHasBeenConverted = true;
     return conv;
   }
 
@@ -119,9 +123,14 @@ public class BNF2RDF extends AbstractConverter {
     }
   }
 
-  static Resource computeProvActivity(String identifier, Resource intermarc, Model model) throws
-    URISyntaxException {
-    return model.createResource(ConstructURI.build("bnf", "prov", identifier).toString())
+  static Resource computeProvActivity(String identifier, Resource intermarc, Model model) {
+    String uri = null;
+    try {
+      uri = ConstructURI.build("bnf", "prov", identifier).toString();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+    return model.createResource(uri)
       .addProperty(RDF.type, PROV.Activity).addProperty(RDF.type, PROV.Derivation)
       .addProperty(PROV.used, intermarc)
       .addProperty(RDFS.comment, "Reprise et conversion de la notice MARC de la BnF", "fr")
@@ -131,7 +140,7 @@ public class BNF2RDF extends AbstractConverter {
 
   static Resource computeProvIntermarc(String ark, Model model) {
     return model.createResource("http://catalogue.bnf.fr/" + ark + ".intermarc")
-      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, model.createResource(BNF2RDF.organizationURI));
+      .addProperty(RDF.type, PROV.Entity).addProperty(PROV.wasAttributedTo, BnF);
   }
 
 

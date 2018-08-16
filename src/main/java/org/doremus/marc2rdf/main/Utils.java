@@ -22,11 +22,11 @@ public class Utils {
   private static Map<String, String> intermarcScriptMap;
   private static Map<String, String> intermarcMopMap;
 
-  public static final String opusHeaderRegex = "(?i)^(?:op(?:\\.|us| )|Oeuvre|WoO|Werk nr\\.?) ?(?:post(?:hume|h?\\" +
-    ".|h))?";
+  public static final String opusHeaderRegex = "(?i)^(?:op(?:\\.|us| )|Oeuvre|WoO|Werk nr\\.?) ?" +
+    "(?:post(?:hume|h?\\.|h))?";
   public static final String opusSubnumberRegex = "(?i)(?:,? n(?:[o°.]| °)[s.]?)";
 
-  public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?(?: sec)?$";
+  public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?(?: s(?:ec)?)?$";
   private final static Pattern DURATION_PATTERN = Pattern.compile(DURATION_REGEX);
   private final static String[] DURATION_UNITS = new String[]{null, "H", "M", "S"};
 
@@ -153,6 +153,17 @@ public class Utils {
     return map;
   }
 
+  public static boolean areQuotesBalanced(String[] parts) {
+    return Arrays.stream(parts)
+      .allMatch(Utils::areQuotesBalanced);
+  }
+
+  public static boolean areQuotesBalanced(String p) {
+    return (StringUtils.countMatches(p, "\"") % 2) == 0 &&
+        (StringUtils.countMatches(p, "(") % 2) == (StringUtils.countMatches(p, ")") % 2);
+  }
+
+
   public static String intermarcExtractLang(String data) {
     if (data == null || data.length() < 6) return null;
 
@@ -205,8 +216,10 @@ public class Utils {
 
 
   public static String duration2iso(String f) {
+    f = f.trim();
     Matcher m = DURATION_PATTERN.matcher(f);
-    m.find();
+    if (!m.find()) return null;
+
     StringBuilder duration = new StringBuilder("PT");
 
     for (int i = 1; i < DURATION_UNITS.length; i++)

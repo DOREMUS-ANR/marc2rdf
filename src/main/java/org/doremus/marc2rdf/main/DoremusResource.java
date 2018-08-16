@@ -1,9 +1,9 @@
 package org.doremus.marc2rdf.main;
 
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -42,7 +42,7 @@ public abstract class DoremusResource {
       this.className = this.className.substring(1);
       this.publisher = PP2RDF.PHILHARMONIE;
     } else
-      this.publisher = model.createResource(BNF2RDF.organizationURI);
+      this.publisher = BNF2RDF.BnF;
   }
 
   public DoremusResource(String identifier) {
@@ -102,14 +102,19 @@ public abstract class DoremusResource {
   }
 
   public void addNote(String text) {
+    addNote(text, "fr");
+  }
+
+  protected void addNote(String text, String lang) {
     if (text == null) return;
     text = text.trim();
     if (text.isEmpty()) return;
 
     this.resource
-      .addProperty(RDFS.comment, text, "fr")
-      .addProperty(CIDOC.P3_has_note, text, "fr");
+      .addProperty(RDFS.comment, text, lang)
+      .addProperty(CIDOC.P3_has_note, text, lang);
   }
+
 
   protected void log(String message) {
     Logger.info(record.getIdentifier() + " | " + message);
@@ -136,7 +141,7 @@ public abstract class DoremusResource {
   }
 
   protected String searchInNote(Pattern pattern, int group) {
-    if(record==null) return null;
+    if (record == null) return null;
 
     List<String> fields = record.getDatafieldsByCode(200, 'a');
     fields.addAll(record.getDatafieldsByCode(200, 'e'));
@@ -151,4 +156,53 @@ public abstract class DoremusResource {
   public Record getRecord() {
     return record;
   }
+
+  protected void setClass(OntClass _class) {
+    this.resource.addProperty(RDF.type, _class);
+  }
+
+  public DoremusResource addProperty(Property property, DoremusResource resource) {
+    if (resource != null) {
+      this.addProperty(property, resource.asResource());
+      this.model.add(resource.getModel());
+    }
+    return this;
+  }
+
+  public DoremusResource addProperty(Property property, Artist resource) {
+    if (resource != null) {
+      this.addProperty(property, resource.asResource());
+      this.model.add(resource.getModel());
+    }
+    return this;
+  }
+
+  public DoremusResource addProperty(Property property, Resource resource) {
+    if (resource != null) this.resource.addProperty(property, resource);
+    return this;
+  }
+
+  public DoremusResource addProperty(Property property, String literal) {
+    if (literal != null && !literal.isEmpty())
+      this.resource.addProperty(property, literal.trim());
+    return this;
+  }
+  public DoremusResource addProperty(Property property, String literal, String lang) {
+    if (literal != null && !literal.isEmpty())
+      this.resource.addProperty(property, literal.trim(), lang);
+    return this;
+  }
+
+  protected DoremusResource addProperty(Property property, Literal literal) {
+    if (literal != null)
+      this.resource.addProperty(property, literal);
+    return this;
+  }
+
+  protected DoremusResource addProperty(Property property, String literal, XSDDatatype datatype) {
+    if (literal != null && !literal.isEmpty())
+      this.resource.addProperty(property, literal.trim(), datatype);
+    return this;
+  }
+
 }

@@ -24,7 +24,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
   public PF28_ExpressionCreation(String identifier) {
     super(identifier);
-    this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
+    this.setClass(FRBROO.F28_Expression_Creation);
   }
 
   public PF28_ExpressionCreation(Record record) {
@@ -33,7 +33,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
   public PF28_ExpressionCreation(Record record, String identifier) {
     super(record, identifier);
-    this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
+    this.setClass(FRBROO.F28_Expression_Creation);
 
     if (record.isTUM()) convertUNI100();
     else if (record.getType().matches("UNI:4[42]")) convertUNI44();
@@ -217,7 +217,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
     if (record.isType("AIC:14")) return new ArrayList<>();
 
     List<DataField> fields = record.getDatafieldsByCode("700");
-    if (!record.isTUM())
+    if (!record.isTUM() && function == Function.COMPOSER)
       // 700 is composer by default only for work records
       fields = fields.stream()
         .filter(x -> x.hasSubfieldValue('4', function.code))

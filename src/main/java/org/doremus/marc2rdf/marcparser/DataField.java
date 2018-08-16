@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.marcparser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DataField extends Etiq {
 
@@ -53,34 +54,32 @@ public class DataField extends Etiq {
   /************
    * Recuperer une sous-zone d'une certaine zone
    *************/
+  public Subfield getSubfieldAt(int pos) {
+    if (this.subfields.size() < pos) return null;
+    return this.subfields.get(pos);
+  }
+
   public Subfield getSubfield(int c) {
     return getSubfield(String.valueOf(c).charAt(0));
   }
 
   public Subfield getSubfield(char code) {
-    for (Subfield subfield : this.subfields) {
-      if (subfield.getCode() == code)
-        return subfield;
-    }
-    return null;
+    return this.subfields.stream()
+      .filter(subfield -> subfield.getCode() == code)
+      .findFirst().orElse(null);
   }
 
   public List<Subfield> getSubfields(char code) {
-    List<Subfield> results = new ArrayList<>();
-    for (Subfield subfield : this.subfields) {
-      if (subfield.getCode() == code) results.add(subfield);
-    }
-    return results;
+    return this.subfields.stream()
+      .filter(subfield -> subfield.getCode() == code)
+      .collect(Collectors.toList());
   }
 
   /******************
    * Check if a certain subfield is present with a certain value
    *******************/
   public boolean hasSubfieldValue(char code, String value) {
-    for (Subfield s : getSubfields(code))
-      if (s.getData().equals(value))
-        return true;
-    return false;
+    return getSubfields(code).stream().anyMatch(s -> s.getData().equals(value));
   }
 
 
@@ -99,6 +98,16 @@ public class DataField extends Etiq {
     else return content;
   }
 
+  public List<String> getStrings(char code) {
+    return getSubfields(code).stream()
+      .map(Subfield::getData)
+      .map(String::trim)
+      .filter(x -> !x.isEmpty())
+      .collect(Collectors.toList());
+  }
+
+
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(super.toString());

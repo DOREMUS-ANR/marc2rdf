@@ -177,6 +177,7 @@ public class Converter {
       m.setNsPrefix("owl", OWL.getURI());
       m.setNsPrefix("time", Time.getURI());
       m.setNsPrefix("schema", Schema.getURI());
+      m.setNsPrefix("cro", CRO.getURI());
 
       VocabularyManager.string2uri(m);
 

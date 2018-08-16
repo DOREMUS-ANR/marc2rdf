@@ -4,6 +4,8 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.doremus.marc2rdf.main.CorporateBody;
+import org.doremus.marc2rdf.main.Person;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
@@ -69,7 +71,24 @@ public class Role {
   public Resource toM28IndividualPerformance(String uri) {
     if (actor == null && actorRes == null) return null;
 
-    if (actorRes == null) actorRes = model.createLiteral(actor.trim());
+    if (actorRes == null) {
+      String _actor = actor.toLowerCase();
+      if (_actor.equals("l'eic") || _actor.startsWith("les ") || _actor.contains("philarmo") || _actor.contains
+        ("orchestr") ||
+        _actor.contains("ensemble") || _actor.contains("membre") || _actor.contains("trio") ||
+        _actor.contains("quartet") || _actor.contains("quatuor") || _actor.contains("choeur")) {
+        actor = actor.replaceAll("^(l['+]|l[ae]s? )", "").trim();
+
+        CorporateBody c = new CorporateBody(actor);
+        c.interlink();
+        actorRes = c.asResource();
+        this.model.add(c.getModel());
+      } else {
+        Person x = new Person(actor);
+        x.interlink();
+        actorRes = x.asResource();
+      }
+    }
 
     Resource M28 = model.createResource(uri)
       .addProperty(RDF.type, MUS.M28_Individual_Performance)

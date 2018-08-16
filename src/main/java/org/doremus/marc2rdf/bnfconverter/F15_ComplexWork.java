@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.OWL;
-import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -13,7 +12,6 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,10 +20,10 @@ public class F15_ComplexWork extends DoremusResource {
   public F15_ComplexWork(Record record) {
     super(record);
 
-    this.resource.addProperty(RDF.type, FRBROO.F15_Complex_Work);
-    this.resource.addProperty(DC.identifier, record.getIdentifier());
+    this.setClass( FRBROO.F15_Complex_Work);
+    this.addProperty(DC.identifier, record.getIdentifier());
     String ark = record.getAttrByName("IDPerenne").getData();
-    if (ark != null) this.resource.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
+    if (ark != null) this.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
 
 
     parseDerivation();
@@ -85,21 +83,17 @@ public class F15_ComplexWork extends DoremusResource {
     Property predicate = versionContained ?
       MUS.U38_has_descriptive_expression : FRBROO.R40_has_representative_expression;
 
-    try {
-      DoremusResource assignment = versionContained ?
-        new M45_DescriptiveExpressionAssignment(record) :
-        new F42_Representative_Expression_Assignment(record);
+    DoremusResource assignment = versionContained ?
+      new M45_DescriptiveExpressionAssignment(record) :
+      new F42_Representative_Expression_Assignment(record);
 
-      assignment.asResource()
-        .addProperty(CIDOC.P141_assigned, f22.asResource())
-        .addProperty(CIDOC.P140_assigned_attribute_to, this.asResource());
+    assignment.asResource()
+      .addProperty(CIDOC.P141_assigned, f22.asResource())
+      .addProperty(CIDOC.P140_assigned_attribute_to, this.asResource());
 
-      this.model.add(assignment.getModel());
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
+    this.model.add(assignment.getModel());
 
-    this.resource.addProperty(predicate, f22.asResource());
+    this.addProperty(predicate, f22.asResource());
     return this;
   }
 
@@ -110,12 +104,12 @@ public class F15_ComplexWork extends DoremusResource {
   }
 
   public F15_ComplexWork add(F14_IndividualWork f14) {
-    this.resource.addProperty(FRBROO.R10_has_member, f14.asResource());
+    this.addProperty(FRBROO.R10_has_member, f14.asResource());
     return this;
   }
 
   public F15_ComplexWork add(M42_PerformedExpressionCreation performance) {
-    this.resource.addProperty(FRBROO.R10_has_member, performance.getWork())
+    this.addProperty(FRBROO.R10_has_member, performance.getWork())
       .addProperty(FRBROO.R13_is_realised_in, performance.getExpression());
     return this;
   }

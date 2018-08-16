@@ -49,8 +49,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
   public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) {
     super(record);
 
-    this.resource.addProperty(RDF.type, FRBROO.F22_Self_Contained_Expression);
-    this.resource.addProperty(DC.identifier, record.getIdentifier());
+    this.setClass(FRBROO.F22_Self_Contained_Expression);
+    this.addProperty(DC.identifier, record.getIdentifier());
 
     String ark = record.getAttrByName("IDPerenne").getData();
     if (ark != null)
@@ -85,7 +85,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
           Resource r = Person.getFromDoremus(t, null);
           if (r == null) r = CorporateBody.getFromDoremus(t);
 
-          if (r != null){
+          if (r != null) {
             ded.addProperty(CIDOC.P67_refers_to, r);
             model.add(r.listProperties());
           }
@@ -297,31 +297,32 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
   private List<Literal> getTitle(int code, boolean significativeWanted) {
     List<Literal> titleList = new ArrayList<>();
-
-
     List<DataField> titleFields = record.getDatafieldsByCode(code);
 
+    String DESCR_CHARS = "ejbtunpkqfcg";
 
     for (DataField field : titleFields) {
       if (!field.isCode('a')) continue;
 
-      StringBuilder title = new StringBuilder(field.getSubfield('a').getData().trim());
+      StringBuilder title = new StringBuilder(field.getString('a'));
       String language = null;
 
       if (title.length() == 0) continue;
 
       if (!isMeaningfulTitle(title.toString())) {
         if (significativeWanted) continue;
-        else
-          for (char c : new char[]{'e', 'j', 'b', 't', 'u', 'n', 'p', 'k', 'q', 'f', 'c', 'g'})
-            if (field.isCode(c)) title.append(". ").append(field.getSubfield(c).getData().trim());
+        else {
+          for (char c : DESCR_CHARS.toCharArray()) {
+            if (field.isCode(c)) title.append(". ").append(field.getString(c));
+          }
+        }
       }
 
-      if (field.isCode('h')) title.append(". ").append(field.getSubfield('h').getData().trim());
-      if (field.isCode('i')) title.append(". ").append(field.getSubfield('i').getData().trim());
+      if (field.isCode('h')) title.append(". ").append(field.getString('h'));
+      if (field.isCode('i')) title.append(". ").append(field.getString('i'));
 
       if (field.isCode('w'))
-        language = Utils.intermarcExtractLang(field.getSubfield('w').getData());
+        language = Utils.intermarcExtractLang(field.getString('w'));
 
       Literal titleLiteral = (language == null || language.isEmpty()) ?
         this.model.createLiteral(title.toString().trim()) :

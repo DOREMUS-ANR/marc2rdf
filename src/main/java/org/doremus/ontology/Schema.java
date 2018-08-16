@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 
 public class Schema {
 
+
   protected static final Property property(String uri) {
     return ResourceFactory.createProperty(NS, uri);
   }
@@ -20,4 +21,5 @@ public class Schema {
   public static final Property deathPlace = property("deathPlace");
   public static final Property birthDate = property("birthDate");
   public static final Property deathDate = property("deathDate");
+  public static final Property startTime = property("startTime");
 }

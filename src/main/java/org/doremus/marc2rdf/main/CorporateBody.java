@@ -47,7 +47,14 @@ public class CorporateBody extends Artist {
     return uri;
   }
 
+  @Override
+  public void addName(String name) {
+    resource.addProperty(RDFS.label, this.name)
+      .addProperty(CIDOC.P131_is_identified_by, name);
+  }
+
   public static CorporateBody fromUnimarcField(DataField field) {
+    if (field == null) return null;
     String name = field.getString('a');
     if (name == null) return null;
 
@@ -71,5 +78,12 @@ public class CorporateBody extends Artist {
   @Override
   public String getFullName() {
     return name;
+  }
+
+  public void interlink() {
+    Resource match = getFromDoremus(this.getName());
+    if (match != null) {
+      this.setUri(match.getURI());
+    }
   }
 }

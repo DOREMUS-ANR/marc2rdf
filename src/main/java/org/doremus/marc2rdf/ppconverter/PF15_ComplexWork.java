@@ -28,14 +28,14 @@ public class PF15_ComplexWork extends DoremusResource {
   public PF15_ComplexWork add(PF22_SelfContainedExpression f22) {
     if (record.isType("UNI:100")) {
       this.resource.addProperty(MUS.U38_has_descriptive_expression, f22.asResource());
-      if(mainF22==null) this.mainF22 = f22;
+      if (mainF22 == null) this.mainF22 = f22;
     }
     return this;
   }
 
   public PF15_ComplexWork add(PF14_IndividualWork f14) {
     this.resource.addProperty(FRBROO.R10_has_member, f14.asResource());
-    if(mainF14==null) this.mainF14 = f14;
+    if (mainF14 == null) this.mainF14 = f14;
     return this;
   }
 

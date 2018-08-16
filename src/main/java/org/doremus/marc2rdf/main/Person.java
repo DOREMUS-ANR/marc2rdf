@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class Person extends Artist {
+  private String fullName;
   private String firstName, lastName, birthDate, deathDate, lang;
   private String birthPlace, deathPlace;
   private TimeSpan timeSpan;
@@ -25,8 +26,8 @@ public class Person extends Artist {
     super();
     this.firstName = firstName;
     this.lastName = lastName;
-    this.birthDate = birthDate;
-    this.deathDate = deathDate;
+    this.birthDate = safeDate(birthDate);
+    this.deathDate = safeDate(deathDate);
     this.lang = lang;
 
     if (lastName == null) {
@@ -41,6 +42,11 @@ public class Person extends Artist {
     initResource();
   }
 
+  private String safeDate(String date) {
+    if (date == null || date.isEmpty() || date.contains("[")) return null;
+    return date;
+  }
+
   public Person(String firstName, String lastName, String birthDate) {
     this(firstName, lastName, birthDate, null, null);
   }
@@ -49,6 +55,22 @@ public class Person extends Artist {
     this(firstName, lastName, birthDate, null, lang);
   }
 
+  public Person(String fullName) {
+    super();
+    this.fullName = fullName;
+    this.firstName = null;
+    this.lastName = null;
+    this.birthDate = null;
+    this.deathDate = null;
+    this.lang = null;
+
+    try {
+      this.uri = ConstructURI.build("E21_Person", null, fullName, null).toString();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+    initResource();
+  }
 
   public String getFirstName() {
     return firstName;
@@ -118,9 +140,15 @@ public class Person extends Artist {
 
 
   public String getFullName() {
+    if (this.fullName != null) return this.fullName;
     String fullName = this.getLastName();
     if (this.getFirstName() != null) fullName = this.getFirstName() + " " + this.getLastName();
     return fullName;
+  }
+
+  @Override
+  public void addName(String name) {
+    this.resource.addProperty(FOAF.name, name);
   }
 
   public String getIdentification() {
@@ -229,7 +257,8 @@ public class Person extends Artist {
   }
 
   public static Person fromUnimarcField(DataField field) {
-    // for fields 700 and 701
+    if (field == null) return null;
+    // for fields 700, 701, 721
     String firstName = null, lastName = null, birthDate = null, deathDate = null;
     if (field.isCode('a'))  // surname
       lastName = field.getString('a').trim();

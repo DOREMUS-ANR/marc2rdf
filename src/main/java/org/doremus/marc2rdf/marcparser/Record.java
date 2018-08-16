@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.marcparser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Record {
 
@@ -55,15 +56,11 @@ public class Record {
   }
 
   public List<Etiq> getControlFields() {
-    List<Etiq> fields = new ArrayList<>();
-    fields.addAll(controlFields);
-    return fields;
+    return new ArrayList<>(controlFields);
   }
 
   public List<Etiq> getDataFields() {
-    List<Etiq> fields = new ArrayList<>();
-    fields.addAll(dataFields);
-    return fields;
+    return new ArrayList<>(dataFields);
   }
 
   public DataField getDatafieldByCode(int code) {
@@ -71,12 +68,7 @@ public class Record {
   }
 
   public DataField getDatafieldByCode(String code) {
-    for (DataField field : this.dataFields) {
-      if (field.getEtiq().equals(code)) {
-        return field;
-      }
-    }
-    return null;
+    return this.dataFields.stream().filter(field -> field.getEtiq().equals(code)).findFirst().orElse(null);
   }
 
   public List<DataField> getDatafieldsByCode(int code) {
@@ -84,13 +76,9 @@ public class Record {
   }
 
   public List<DataField> getDatafieldsByCode(String code) {
-    List<DataField> results = new ArrayList<>();
-    for (DataField field : this.dataFields) {
-      if (field.getEtiq().equals(code)) {
-        results.add(field);
-      }
-    }
-    return results;
+    return this.dataFields.stream()
+      .filter(field -> field.getEtiq().equals(code))
+      .collect(Collectors.toList());
   }
 
   public List<String> getDatafieldsByCode(int code, int subFieldCode) {
@@ -102,45 +90,38 @@ public class Record {
   }
 
   public List<String> getDatafieldsByCode(String code, char subFieldCode) {
-    List<String> results = new ArrayList<>();
-    for (DataField field : this.getDatafieldsByCode(code)) {
-      for (Subfield sf : field.getSubfields(subFieldCode))
-        results.add(sf.getData());
-    }
-    return results;
+    return this.getDatafieldsByCode(code).stream()
+      .flatMap(field -> field.getSubfields(subFieldCode).stream())
+      .map(Subfield::getData)
+      .collect(Collectors.toList());
   }
 
+  public String getDatafieldByCode(String code, char subFieldCode) {
+    return this.getDatafieldsByCode(code, subFieldCode)
+      .stream().findFirst().orElse(null);
+  }
+
+
   public ControlField getControlfieldByCode(String code) {
-    for (ControlField field : this.controlFields) {
-      if (field.getEtiq().equals(code)) {
-        return field;
-      }
-    }
-    return null;
+    return this.controlFields.stream()
+      .filter(field -> field.getEtiq().equals(code))
+      .findFirst().orElse(null);
   }
 
   public List<ControlField> getControlfieldsByCode(String code) {
-    List<ControlField> results = new ArrayList<>();
-    for (ControlField field : this.controlFields) {
-      if (field.getEtiq().equals(code)) {
-        results.add(field);
-      }
-    }
-    return results;
+    return this.controlFields.stream()
+      .filter(field -> field.getEtiq().equals(code))
+      .collect(Collectors.toList());
   }
 
   public Attr getAttrByName(String name) {
-    for (Attr at : this.attrList) {
-      if (at.getName().equals(name)) {
-        return at;
-      }
-    }
-    return null;
+    return this.attrList.stream()
+      .filter(at -> at.getName().equals(name))
+      .findFirst().orElse(null);
   }
 
   public List<Etiq> getAllData() {
-    List<Etiq> fields = new ArrayList<>();
-    fields.addAll(controlFields);
+    List<Etiq> fields = new ArrayList<>(controlFields);
     fields.addAll(dataFields);
     return fields;
   }
@@ -149,20 +130,12 @@ public class Record {
     return controlFields.size() + dataFields.size();
   }
 
-  /*******************
-   * Affichage final de la notice
-   ***************************/
+  @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    for (Etiq field : getControlFields()) {
-      sb.append(field.toString());
-      sb.append('\n');
-    }
-    for (Etiq field : getDataFields()) {
-      sb.append(field.toString());
-      sb.append('\n');
-    }
-    return sb.toString();
+    List<String> lines = getAllData().stream()
+      .map(Etiq::toString)
+      .collect(Collectors.toList());
+    return String.join("\n", lines);
   }
 
 }
