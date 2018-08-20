@@ -36,14 +36,10 @@ public class F28_ExpressionCreation extends DoremusResource {
     this.setClass(FRBROO.F28_Expression_Creation);
     this.composerCount = 0;
 
-    TimeSpan dateMachine = getDateMachine();
+    TimeSpan dateMachine = parseDateMachine();
     if (dateMachine != null) {
       dateMachine.setUri(this.uri + "/interval");
-      Resource dateRes = dateMachine.asResource();
-      if (dateRes != null) {
-        this.resource.addProperty(CIDOC.P4_has_time_span, dateMachine.asResource());
-        this.model.add(dateMachine.getModel());
-      }
+      this.addTimeSpan(dateMachine);
     }
 
     String dateText = getDateText();
@@ -134,10 +130,7 @@ public class F28_ExpressionCreation extends DoremusResource {
   }
 
 
-  /*************
-   * Date de creation de l'expression (Format machine)
-   ***********************/
-  private TimeSpan getDateMachine() {
+  private TimeSpan parseDateMachine() {
     for (ControlField field : record.getControlfieldsByCode("008")) {
       String fieldData = field.getData();
 

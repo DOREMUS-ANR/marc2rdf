@@ -53,6 +53,12 @@ public class CorporateBody extends Artist {
       .addProperty(CIDOC.P131_is_identified_by, name);
   }
 
+  @Override
+  public boolean hasName(String value) {
+    if (value == null) return false;
+    return this.getFullName().equalsIgnoreCase(value.trim());
+  }
+
   public static CorporateBody fromUnimarcField(DataField field) {
     if (field == null) return null;
     String name = field.getString('a');

@@ -151,6 +151,19 @@ public class Person extends Artist {
     this.resource.addProperty(FOAF.name, name);
   }
 
+  @Override
+  public boolean hasName(String value) {
+    if (value == null || value.isEmpty()) return false;
+    value = value.trim();
+
+    if (value.contains(", ")) {
+      String[] parts = value.split(", ");
+      if (parts[0].equalsIgnoreCase(this.getLastName()) && parts[1].equalsIgnoreCase(this.getFirstName()))
+        return true;
+    }
+    return value.equalsIgnoreCase(this.getFullName());
+  }
+
   public String getIdentification() {
     String identification = this.getLastName();
     if (this.getFirstName() != null) identification += ", " + this.getFirstName();

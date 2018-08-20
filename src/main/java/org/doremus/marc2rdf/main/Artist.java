@@ -48,10 +48,13 @@ public abstract class Artist {
 
   public void addResidence(String data) {
     if (data == null || data.isEmpty()) return;
+    data = data.trim().replaceAll("^\\[(.+)]$", "$1").trim();
     E53_Place place = new E53_Place(data);
     this.resource.addProperty(CIDOC.P74_has_current_or_former_residence, place.asResource());
     this.model.add(place.getModel());
   }
 
   public abstract void addName(String trim);
+
+  public abstract boolean hasName(String value);
 }

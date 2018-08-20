@@ -74,6 +74,11 @@ public class BIBRecordConverter {
   private void convertDAV() {
     F3_ManifestationProductType manif = new F3_ManifestationProductType(record);
     F24_PublicationExpression publicationExpression = new F24_PublicationExpression(record);
+    F30_PublicationEvent publicationEvent = new F30_PublicationEvent(record);
+    F19_PublicationWork publicationWork = new F19_PublicationWork(record);
+
+    publicationEvent.add(publicationExpression).add(publicationWork);
+    publicationWork.add(publicationExpression);
     manif.add(publicationExpression);
 
     for (DoremusResource r : Arrays.asList(manif, publicationExpression)) {
@@ -85,7 +90,7 @@ public class BIBRecordConverter {
 
   private void addProvenanceTo(DoremusResource res) {
     res.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo,BNF2RDF.BnF)
+      .addProperty(PROV.wasAttributedTo, BNF2RDF.BnF)
       .addProperty(PROV.wasDerivedFrom, this.intermarcRes)
       .addProperty(PROV.wasGeneratedBy, this.provActivity);
   }

@@ -3,15 +3,23 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.*;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.marc2rdf.marcparser.Subfield;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class F30_PublicationEvent extends DoremusResource {
+  private static final String UNKNOW_REGEX = "(?i)\\[?s\\. ?[lnd]\\.\\]?";
+
+
   // "1re éd. : Paris : Revue et gazette musicale [1er janvier 1848]"
   // "1re éd. : Paris : Choudens, ca 1886"
   // "1re édition : Paris : Durand, 1891"
@@ -43,6 +51,109 @@ public class F30_PublicationEvent extends DoremusResource {
   public F30_PublicationEvent(String identifier) {
     super(identifier);
     this.setClass(FRBROO.F30_Publication_Event);
+  }
+
+  public F30_PublicationEvent(Record record) {
+    super(record);
+    this.setClass(FRBROO.F30_Publication_Event);
+
+    if (record.isBIB()) parseBIB();
+  }
+
+  private void parseBIB() {
+    // publishers
+    List<Artist> publishers = record.getDatafieldsByCode(720).stream()
+      .map(Person::fromUnimarcField)
+      .collect(Collectors.toList());
+    publishers.addAll(record.getDatafieldsByCode(730).stream()
+      .map(CorporateBody::fromUnimarcField)
+      .collect(Collectors.toList()));
+
+    // publishers
+    record.getDatafieldsByCode(260).forEach(df -> parsePublisherField(df, publishers));
+
+    publishers.forEach(cb -> this.addActivity(cb, "publisher"));
+
+    // time
+    TimeSpan dateMachine = parseDateMachine();
+    if (dateMachine != null) {
+      dateMachine.setUri(this.uri + "/interval");
+      this.addTimeSpan(dateMachine);
+    }
+
+  }
+
+  private TimeSpan parseDateMachine() {
+    String data = record.getControlfieldByCode("008").getData();
+    char code = data.charAt(6);
+    String year = data.substring(8, 12);
+
+    switch (code) {
+      case 's':
+        return new TimeSpan(year);
+      case 'm':
+      case 'q':
+        String endYear = data.substring(13, 17);
+        return new TimeSpan(year, endYear);
+    }
+
+    return null;
+  }
+
+  public static List<String> parsePublisherField(DataField df) {
+    return parsePublisherField(df, new ArrayList<>());
+  }
+
+  private static List<String> parsePublisherField(DataField df, List<Artist> publishers) {
+    List<String> pubNotes = new ArrayList<>();
+    String current = null;
+    char previous = 'z';
+
+    String place = null;
+    boolean found = false;
+
+    for (Subfield s : df.getSubfields()) {
+      String value = s.getData();
+      switch (s.getCode()) {
+        case 'a':
+          if (value.matches(UNKNOW_REGEX)) break;
+          place = value;
+          if (current != null) pubNotes.add(current);
+          current = value;
+          break;
+        case 'b':
+          if (previous == 'a') current += " (" + value + ")";
+          break;
+        case 'c':
+          if (value.matches("\\[?distrib.+") || value.matches(UNKNOW_REGEX)) {
+            place = null;
+            break;
+          }
+
+          if (previous >= 'c') pubNotes.add(current);
+          else if (current == null) current = value;
+          else current += " : " + value;
+
+          found = true;
+
+          Artist cb = publishers.stream()
+            .filter(x -> x.hasName(value))
+            .findFirst().orElse(new CorporateBody(value));
+
+          cb.addResidence(place);
+          place = null;
+          publishers.add(cb);
+          break;
+        case 'd':
+          if (!found || value.matches(UNKNOW_REGEX)) break;
+          Matcher m = TimeSpan.YEAR_PATTERN.matcher(value);
+          if (!m.find()) continue;
+          current += ", " + m.group(0);
+      }
+      previous = s.getCode();
+    }
+    if (current != null) pubNotes.add(current);
+    return pubNotes;
   }
 
   private void parseNote(String note) {
@@ -131,27 +242,25 @@ public class F30_PublicationEvent extends DoremusResource {
     }
 
     timeSpan.setUri(this.uri + "/interval");
-    this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-    this.model.add(timeSpan.getModel());
+    this.addTimeSpan(timeSpan);
   }
 
 
   public F30_PublicationEvent add(F24_PublicationExpression expression) {
-    this.resource.addProperty(FRBROO.R24_created, expression.asResource());
+    this.addProperty(FRBROO.R24_created, expression);
     return this;
   }
 
   public F30_PublicationEvent add(F19_PublicationWork work) {
-    this.resource.addProperty(FRBROO.R19_created_a_realisation_of, work.asResource());
+    this.addProperty(FRBROO.R19_created_a_realisation_of, work);
     return this;
   }
 
   public static String[] getEditionPrinceps(Record record) {
     // search edition princeps in the record
-    for (String edition : record.getDatafieldsByCode("600", 'a')) {
-      if ((edition.contains("éd.")) || (edition.contains("édition"))) return edition.split(";");
-    }
-    return new String[0];
+    return record.getDatafieldsByCode("600", 'a').stream()
+      .filter(edition -> (edition.contains("éd.")) || (edition.contains("édition")))
+      .findFirst().map(edition -> edition.split(";")).orElse(new String[0]);
   }
 
   public void addActivity(Artist agent, String function) {

@@ -27,8 +27,6 @@ import java.util.stream.Stream;
 public class F24_PublicationExpression extends DoremusResource {
   private static final Pattern EXTRAIT_PATTERN = Pattern.compile("(extr(ait|\\.)|choix)", Pattern.CASE_INSENSITIVE);
 
-  private static final String UNKNOW_REGEX = "(?i)\\[?s\\. ?[lnd]\\.\\]?";
-
   private static final String SPONSOR_REGEX = "(soutien|parrainage|avec l'appui) d[ue]";
   private static final Pattern SPONSOR_PATTERN = Pattern.compile(SPONSOR_REGEX, Pattern.CASE_INSENSITIVE);
 
@@ -118,11 +116,12 @@ public class F24_PublicationExpression extends DoremusResource {
     // publication
     i = 0;
     for (DataField df : record.getDatafieldsByCode(260))
-      this.addStatement(this.uri + "/publication/" + ++i, parsePublicationField(df),
+      this.addStatement(this.uri + "/publication/" + ++i, F30_PublicationEvent.parsePublisherField(df),
         MUS.M160_Publication_Statement, MUS.U184_has_publication_statement);
+
     i = 0;
     for (DataField df : record.getDatafieldsByCode(270))
-      this.addStatement(this.uri + "/publication/" + ++i, parsePublicationField(df),
+      this.addStatement(this.uri + "/publication/" + ++i, F30_PublicationEvent.parsePublisherField(df),
         CIDOC.E33_Linguistic_Object, MUS.U186_has_printing_or_manufacture_statement);
 
 
@@ -398,31 +397,6 @@ public class F24_PublicationExpression extends DoremusResource {
       this.addProperty(CIDOC.P165_incorporates, material);
       this.model.add(material.getModel());
     }
-  }
-
-  public String parsePublicationField(DataField df) {
-    // hypothesis (checked in some samples), the a b c and d to take are always the first ones
-    String a = df.getString('a'),
-      b = df.getString('b'),
-      c = df.getString('c'),
-      d = df.getString('d');
-
-    if (c == null || c.matches("\\[?distrib.+")) return null;
-
-    String content = "";
-    if (a != null && !a.matches(UNKNOW_REGEX)) {
-      content += a;
-      if (b != null) content += " (" + b + ")";
-      content += " : ";
-
-    }
-    if (!c.matches(UNKNOW_REGEX)) content += c;
-
-    if (d != null && !c.matches(UNKNOW_REGEX)) {
-      content += ", " + d;
-    }
-    if (content.isEmpty()) return null;
-    return content;
   }
 
   private String parseEditionSupplement() {

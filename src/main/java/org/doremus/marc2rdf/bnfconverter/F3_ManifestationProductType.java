@@ -22,7 +22,6 @@ public class F3_ManifestationProductType extends DoremusResource {
   private static final String CARRIER_DURATION_REGEX = "(\\d+) ([^(]+) \\((.+)\\)";
   private static final Pattern CARRIER_DURATION_PATTERN = Pattern.compile(CARRIER_DURATION_REGEX);
   private static final String PSPEED_REGEX = "\\d{2} t";
-  private static final Pattern YEAR_PATTERN = Pattern.compile("\\d{4}");
   private static final Pattern DIMENSION_PATTERN = Pattern.compile("(\\d+(?:x\\d+)?) ?(.+)");
 
   public F3_ManifestationProductType(Record record) {
@@ -197,7 +196,7 @@ public class F3_ManifestationProductType extends DoremusResource {
 
     for (Subfield s : sf) {
       if (found && 'd' == s.getCode()) {
-        Matcher m = YEAR_PATTERN.matcher(s.getData());
+        Matcher m = TimeSpan.YEAR_PATTERN.matcher(s.getData());
         found = m.find();
         if (found) return m.group(0);
       } else if ('c' == s.getCode()) {

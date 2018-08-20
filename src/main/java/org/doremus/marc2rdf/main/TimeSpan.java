@@ -15,8 +15,10 @@ import org.doremus.ontology.Time;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class TimeSpan {
+  public static final Pattern YEAR_PATTERN = Pattern.compile("\\d{4}");
   private static final String UCT_DATE_REGEX = "\\d{4}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[1-2]\\d|3[0-1]))?)?(?:T" +
     "(?:[0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ?)?";
   public static final String frenchDayRegex = "(1er|[\\d]{1,2})";

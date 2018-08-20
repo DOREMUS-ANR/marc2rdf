@@ -21,6 +21,7 @@ public class DistributionRight extends DoremusResource {
     if (year != null && !year.isEmpty()) {
       TimeSpan ts = new TimeSpan(year);
       ts.setUri(this.uri + "/interval");
+      this.model.add(ts.getModel());
 
       this.addProperty(Schema.startTime, year)
         .addProperty(CIDOC.P141i_was_assigned_by, model.createResource(this.uri + "/assignment")
