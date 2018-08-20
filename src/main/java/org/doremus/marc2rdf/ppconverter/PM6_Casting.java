@@ -1,10 +1,7 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
 import java.util.ArrayList;
@@ -28,10 +25,9 @@ public class PM6_Casting extends DoremusResource {
     super();
     this.uri = uri;
 
-    this.resource = model.createResource(uri)
-      .addProperty(RDF.type, MUS.M6_Casting)
-      .addProperty(RDFS.comment, note)
-      .addProperty(CIDOC.P3_has_note, note);
+    this.resource = model.createResource(uri);
+    this.setClass(MUS.M6_Casting);
+    this.addNote(note);
 
     this.cDets = new ArrayList<>();
 
@@ -191,7 +187,7 @@ public class PM6_Casting extends DoremusResource {
           current.setAsVoice();
       }
 
-      this.resource.addProperty(MUS.U23_has_casting_detail, current.asResource(model));
+      this.addProperty(MUS.U23_has_casting_detail, current.asResource(model));
     }
   }
 

@@ -16,15 +16,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class F15_ComplexWork extends DoremusResource {
+  public F15_ComplexWork(String identifier) {
+    super(identifier);
+  }
 
   public F15_ComplexWork(Record record) {
     super(record);
 
-    this.setClass( FRBROO.F15_Complex_Work);
+    this.setClass(FRBROO.F15_Complex_Work);
     this.addProperty(DC.identifier, record.getIdentifier());
     String ark = record.getAttrByName("IDPerenne").getData();
     if (ark != null) this.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
-
 
     parseDerivation();
   }
@@ -73,10 +75,6 @@ public class F15_ComplexWork extends DoremusResource {
     return VocabularyManager.getVocabulary("derivation").findConcept(str, false);
   }
 
-  public F15_ComplexWork(String identifier) {
-    super(identifier);
-  }
-
   public F15_ComplexWork add(F22_SelfContainedExpression f22) {
     boolean versionContained = versionContained();
 
@@ -87,8 +85,7 @@ public class F15_ComplexWork extends DoremusResource {
       new M45_DescriptiveExpressionAssignment(record) :
       new F42_Representative_Expression_Assignment(record);
 
-    assignment.asResource()
-      .addProperty(CIDOC.P141_assigned, f22.asResource())
+    assignment.addProperty(CIDOC.P141_assigned, f22.asResource())
       .addProperty(CIDOC.P140_assigned_attribute_to, this.asResource());
 
     this.model.add(assignment.getModel());

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /***
  * Correspond à la description développée de l'expression représentative
@@ -102,10 +103,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
       this.resource.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
     this.titles = s444;
 
-    for (Literal title : ns444)
-      this.resource.addProperty(MUS.U68_has_variant_title, title);
-    for (Literal title : a144)
-      this.resource.addProperty(MUS.U71_has_uniform_title, title);
+    ns444.forEach(this::setVariantTitle);
+    a144.forEach(title -> this.addProperty(MUS.U71_has_uniform_title, title));
 
     if (s444.size() == 0) {
       a144.addAll(ns444);
@@ -193,52 +192,13 @@ public class F22_SelfContainedExpression extends DoremusResource {
         for (int i : range) this.resource.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
     }
 
-    List<M23_Casting_Detail> castDetails = new ArrayList<>();
-    for (String castingDetail : getCastMembers()) {
-      String mopCode = castingDetail.substring(0, 2);
-      String mopNum = castingDetail.substring(2, 4);
-
-      String iamlCode = Utils.itermarc2mop(mopCode);
-      if (iamlCode == null) log("Iaml code not found for mop: " + mopCode);
-      else castDetails.add(new M23_Casting_Detail(iamlCode, mopNum));
-    }
-    for (String castingDetail : getSoloists()) {
-      String mopCode = castingDetail.substring(0, 2);
-      String mopNum = castingDetail.substring(2, 4);
-      String iamlCode = Utils.itermarc2mop(mopCode);
-
-      if (iamlCode == null) log("Iaml code not found for mop: " + mopCode);
-      else
-        castDetails.add(new M23_Casting_Detail(iamlCode, mopNum, true));
-    }
-
-    List<String> castingNotes = getCasting();
-
-    // if I have the info about casting
-    if (castingNotes.size() > 0 || castDetails.size() > 0) {
-      String castingUri = this.uri + "/casting/1";
-      Resource M6Casting = model.createResource(castingUri);
-      M6Casting.addProperty(RDF.type, MUS.M6_Casting);
-
-      // casting notes
-      for (String castingString : castingNotes)
-        M6Casting.addProperty(CIDOC.P3_has_note, castingString)
-          .addProperty(RDFS.comment, castingString);
-
-      // casting details
-      int detailNum = 0;
-      for (M23_Casting_Detail detail : castDetails) {
-        Resource M23CastingDetail = detail.asResource(castingUri + "/detail/" + ++detailNum);
-        M6Casting.addProperty(MUS.U23_has_casting_detail, M23CastingDetail);
-        model.add(M23CastingDetail.getModel());
-      }
-
-      this.resource.addProperty(MUS.U13_has_casting, M6Casting);
-    }
+    M6_Casting casting = new M6_Casting(record, this.uri + "/casting/1");
+    if(casting.doesContainsInfo())
+      this.addProperty(MUS.U13_has_casting, casting);
 
     List<String> characters = record.getDatafieldsByCode("608", 'b');
     if (characters.size() > 0)
-      this.resource.addProperty(MUS.U33_has_set_of_characters,
+      this.addProperty(MUS.U33_has_set_of_characters,
         model.createResource(this.uri + "/character")
           .addProperty(RDF.type, MUS.M33_Set_of_Characters)
           .addProperty(CIDOC.P3_has_note, String.join("; ", characters)));
@@ -311,11 +271,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
       if (!isMeaningfulTitle(title.toString())) {
         if (significativeWanted) continue;
-        else {
-          for (char c : DESCR_CHARS.toCharArray()) {
-            if (field.isCode(c)) title.append(". ").append(field.getString(c));
-          }
-        }
+        for (char c : DESCR_CHARS.toCharArray())
+          if (field.isCode(c)) title.append(". ").append(field.getString(c));
       }
 
       if (field.isCode('h')) title.append(". ").append(field.getString('h'));
@@ -337,18 +294,11 @@ public class F22_SelfContainedExpression extends DoremusResource {
   private List<String> notMeaningfulTitles = null;
 
   private boolean isMeaningfulTitle(String title) {
-    if (notMeaningfulTitles == null) {
-      try {
-        loadNotMeaningfulTitles();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-
-    return !notMeaningfulTitles.stream().anyMatch(str -> str.trim().equals(title));
+    if (notMeaningfulTitles == null) loadNotMeaningfulTitles();
+    return notMeaningfulTitles.stream().noneMatch(str -> str.trim().equals(title));
   }
 
-  private void loadNotMeaningfulTitles() throws IOException {
+  private void loadNotMeaningfulTitles() {
     notMeaningfulTitles = new ArrayList<>();
     File file = new File(this.getClass().getClassLoader().getResource("notMeaningfulTitles.txt").getFile());
 
@@ -374,32 +324,26 @@ public class F22_SelfContainedExpression extends DoremusResource {
   }
 
   private List<String> getNote() {
-    List<String> notes = new ArrayList<>();
-
-    for (String note : record.getDatafieldsByCode("600", 'a')) {
-      if (!note.contains("éd.") && !note.contains("édition") &&
+    return record.getDatafieldsByCode("600", 'a').stream()
+      .filter(note -> !note.contains("éd.") && !note.contains("édition") &&
         !M42_PerformedExpressionCreation.performancePattern.matcher(note).find() &&
         !note.matches(DEDICACE_STRING) &&
         !note.matches(F28_ExpressionCreation.MOTIVATIONS_REGEX) &&
         !note.matches(F28_ExpressionCreation.INFLUENCE_REGEX) &&
-        !note.matches(F28_ExpressionCreation.DATE_REGEX_1) && !note.matches(F28_ExpressionCreation.DATE_REGEX_2)) {
-        notes.add(note.trim());
-      }
-    }
-    return notes;
+        !note.matches(F28_ExpressionCreation.DATE_REGEX_1) && !note.matches(F28_ExpressionCreation.DATE_REGEX_2))
+      .map(String::trim)
+      .collect(Collectors.toList());
   }
 
   private List<String> getKey() {
     List<String> keys = record.getDatafieldsByCode("444", 't');
     keys.addAll(record.getDatafieldsByCode("144", 't'));
-
     return keys;
   }
 
   private String getOrderNumber() {
     List<String> fields = record.getDatafieldsByCode("444", 'n');
     fields.addAll(record.getDatafieldsByCode("144", 'n'));
-
     if (fields.isEmpty()) return null;
 
     return fields.get(0).replaceFirst("No", "").trim();
@@ -410,7 +354,9 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     // search the code of the genre in the file
     for (ControlField field : record.getControlfieldsByCode("008")) {
-      String codeGenre = field.getData().substring(18, 21).replace(".", "").replace("#", "").trim().toLowerCase();
+      String codeGenre = field.getData().substring(18, 21)
+        .replace(".", "")
+        .replace("#", "").trim().toLowerCase();
 
       // special case
       if (codeGenre.isEmpty()) continue;
@@ -425,34 +371,26 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return genres;
   }
 
-  /***********************************
-   * Casting
-   ***********************************/
-  private List<String> getCasting() {
-    return record.getDatafieldsByCode("144", 'b');
-  }
-
-  private List<String> getCastMembers() {
-    return record.getDatafieldsByCode("048", 'a');
-  }
-
-  private List<String> getSoloists() {
-    return record.getDatafieldsByCode("048", 'b');
-  }
-
-
   public F22_SelfContainedExpression add(F30_PublicationEvent f30) {
-    this.resource.addProperty(MUS.U4_had_princeps_publication, f30.asResource());
+    this.addProperty(MUS.U4_had_princeps_publication, f30.asResource());
     return this;
   }
 
   public F22_SelfContainedExpression addPremiere(M42_PerformedExpressionCreation m42) {
-    this.resource.addProperty(MUS.U5_had_premiere, m42.getMainPerformance());
+    this.addProperty(MUS.U5_had_premiere, m42.getMainPerformance());
     return this;
   }
 
   public F22_SelfContainedExpression addMovement(F22_SelfContainedExpression movement) {
-    this.resource.addProperty(FRBROO.R5_has_component, movement.asResource());
+    this.addProperty(FRBROO.R5_has_component, movement.asResource());
     return this;
+  }
+
+  public void setTitle(Literal title) {
+    this.addProperty(CIDOC.P102_has_title, title);
+  }
+
+  public void setVariantTitle(Literal title) {
+    this.addProperty(MUS.U68_has_variant_title, title);
   }
 }

@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
  * Correspond à l'attribution d'identifiant pour l'oeuvre
  ***/
 public class F40_IdentifierAssignment extends DoremusResource {
-  public F40_IdentifierAssignment(Record record) throws URISyntaxException {
+  public F40_IdentifierAssignment(Record record) {
     super(record);
 
     this.resource.addProperty(RDF.type, FRBROO.F40_Identifier_Assignment);

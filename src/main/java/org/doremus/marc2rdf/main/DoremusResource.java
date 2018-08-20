@@ -97,6 +97,10 @@ public abstract class DoremusResource {
     return this.model;
   }
 
+  public String getUri() {
+    return uri;
+  }
+
   public String getIdentifier() {
     return this.identifier;
   }

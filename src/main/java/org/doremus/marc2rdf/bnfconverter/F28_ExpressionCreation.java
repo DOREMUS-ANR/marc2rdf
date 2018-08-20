@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.doremus.marc2rdf.main.Artist;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.main.TimeSpan;
@@ -27,12 +28,12 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   public F28_ExpressionCreation(String identifier) {
     super(identifier);
-    this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
+    this.setClass(FRBROO.F28_Expression_Creation);
   }
 
   public F28_ExpressionCreation(Record record) {
     super(record);
-    this.resource.addProperty(RDF.type, FRBROO.F28_Expression_Creation);
+    this.setClass(FRBROO.F28_Expression_Creation);
     this.composerCount = 0;
 
     TimeSpan dateMachine = getDateMachine();
@@ -123,13 +124,12 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   public F28_ExpressionCreation add(F22_SelfContainedExpression expression) {
     this.expression = expression;
-    this.resource.addProperty(FRBROO.R17_created, expression.asResource());
+    this.addProperty(FRBROO.R17_created, expression.asResource());
     return this;
   }
 
   public F28_ExpressionCreation add(F14_IndividualWork f14) {
-    this.resource.addProperty(FRBROO.R19_created_a_realisation_of, f14.asResource());
-//    f14.asResource().addProperty(model.createProperty(FRBROO.getURI() + "R19i_was_realised_through"), F28);
+    this.addProperty(FRBROO.R19_created_a_realisation_of, f14.asResource());
     return this;
   }
 
@@ -189,18 +189,16 @@ public class F28_ExpressionCreation extends DoremusResource {
   }
 
   private String getDateText() {
-    for (String date : record.getDatafieldsByCode("600", 'a')) {
-      if (date.matches(DATE_REGEX_1) || date.matches(DATE_REGEX_2))
-        return date;
-    }
-    return null;
+    return record.getDatafieldsByCode("600", 'a').stream()
+      .filter(date -> date.matches(DATE_REGEX_1) || date.matches(DATE_REGEX_2))
+      .findFirst().orElse(null);
   }
 
   public List<Person> getComposers() {
     return this.composers;
   }
 
-  private void addActivity(Person actor, String role) {
+  public void addActivity(Person actor, String role) {
     Resource activity = model.createResource(this.uri + "/activity/" + ++composerCount)
       .addProperty(RDF.type, CIDOC.E7_Activity)
       .addProperty(CIDOC.P14_carried_out_by, actor.asResource());
@@ -208,7 +206,7 @@ public class F28_ExpressionCreation extends DoremusResource {
     if (role != null)
       activity.addProperty(MUS.U31_had_function, model.createLiteral(role, "fr"));
 
-    this.resource.addProperty(CIDOC.P9_consists_of, activity);
+    this.addProperty(CIDOC.P9_consists_of, activity);
     model.add(actor.getModel());
   }
 
@@ -224,7 +222,6 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   public List<String> getComposerUris() {
     return this.composers.stream()
-      .map(e -> e.getUri())
-      .collect(Collectors.toList());
+      .map(Artist::getUri).collect(Collectors.toList());
   }
 }

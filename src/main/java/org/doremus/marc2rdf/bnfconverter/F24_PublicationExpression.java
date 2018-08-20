@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class F24_PublicationExpression extends DoremusResource {
+  private static final Pattern EXTRAIT_PATTERN = Pattern.compile("(extr(ait|\\.)|choix)", Pattern.CASE_INSENSITIVE);
+
   private static final String UNKNOW_REGEX = "(?i)\\[?s\\. ?[lnd]\\.\\]?";
 
   private static final String SPONSOR_REGEX = "(soutien|parrainage|avec l'appui) d[ue]";
@@ -190,6 +192,116 @@ public class F24_PublicationExpression extends DoremusResource {
       if (code == null || code.isEmpty()) df.getStrings('b');
       this.addProperty(MUS.U19_is_categorized_as, toBnFCategorizationUri(code));
     }
+
+    // label
+    Stream<M54_Label_Name> labelNames = record.getDatafieldsByCode(723).stream().map(M54_Label_Name::new);
+    labelNames.forEach(ln -> this.addProperty(MUS.U169_was_issued_under_label_name, ln));
+    for (DataField df : record.getDatafieldsByCode("028")) {
+      String label = df.getString('e');
+      if (label == null || label.isEmpty()) continue;
+      M54_Label_Name ln = labelNames.filter(l -> label.equals(l.getLabel())).findFirst().orElse(null);
+      if (ln == null) continue;
+      String _id = df.getString('a');
+
+
+      this.addProperty(CIDOC.P1_is_identified_by, model.createResource(this.uri + "/id/" + _id)
+        .addProperty(RDF.type, CIDOC.E42_Identifier)
+        .addProperty(CIDOC.P2_has_type, "Référence commerciale")
+        .addProperty(FRBROO.R8_consists_of, ln.asResource())
+        .addProperty(FRBROO.R8_consists_of, _id)
+        .addProperty(RDFS.label, _id)
+      );
+    }
+
+
+    // link to f22
+    List<DataField> fields = record.getDatafieldsByCode(144);
+    fields.addAll(record.getDatafieldsByCode(744));
+    fields.stream().filter(x -> x.isCode(3)).forEach(df -> {
+      String l = df.getString('l');
+      Property prop = EXTRAIT_PATTERN.matcher(l).find() ?
+        MUS.U59_has_partial_published_recording : MUS.U58i_is_full_published_recording_of;
+      String _id = df.getString(3);
+      F22_SelfContainedExpression f22 = new F22_SelfContainedExpression(_id);
+      f22.addProperty(prop, this);
+      this.model.add(f22.getModel());
+
+      if (l.toLowerCase().contains("arr.")) {
+        F14_IndividualWork derived = getDerivedWork();
+        derived.addProperty(FRBROO.R2_is_derivative_of, new F14_IndividualWork(_id));
+        F15_ComplexWork f15 = new F15_ComplexWork(_id);
+        f15.add(derived);
+        this.model.add(f15.getModel());
+      }
+    });
+  }
+
+  private F14_IndividualWork getDerivedWork() {
+    F22_SelfContainedExpression f22 = new F22_SelfContainedExpression(this.identifier + "d");
+    F28_ExpressionCreation f28 = new F28_ExpressionCreation(this.identifier + "d");
+    F14_IndividualWork f14 = new F14_IndividualWork(this.identifier + "d");
+
+    Resource assignment = model.createResource(f14.getUri() + "/derivation_assignment")
+      .addProperty(RDF.type, MUS.M39_Derivation_Type_Assignment)
+      .addProperty(CIDOC.P14_carried_out_by, BNF2RDF.BnF)
+      .addProperty(CIDOC.P41_classified, f14.asResource())
+      .addProperty(CIDOC.P41_classified, f22.asResource());
+
+
+    // title
+    List<Literal> titles = parseTitleField(record.getDatafieldByCode(245), true, false);
+    titles.forEach(f22::setTitle);
+    // title translation
+    titles = parseTitleField(record.getDatafieldByCode(247), true, false);
+    titles.forEach(f22::setVariantTitle);
+
+    // casting
+    M6_Casting casting = new M6_Casting(record, f22.getUri() + "/casting/1");
+    if (casting.doesContainsInfo()) this.addProperty(MUS.U13_has_casting, casting);
+
+    // composers and derivation type
+    record.getDatafieldsByCode(700)
+      .forEach(df -> {
+        Person person = ArtistConverter.parseArtistField(df);
+        String role = "arrangeur";
+        String deriv = null;
+
+        switch (df.getString(4)) {
+          case "0010":
+          case "0011":
+          case "0013":
+            role = "adaptateur";
+            deriv = "adaptation";
+            break;
+          case "0050":
+          case "0051":
+          case "0053":
+            deriv = "arrangement";
+            break;
+          case "0430":
+            role = "harmonisateur";
+            deriv = "harmonisation";
+            break;
+          case "0730":
+            role = "transcripteur";
+            deriv = "transcription";
+            break;
+          case "0780":
+            role = "orchestrateur";
+            deriv = "orchestration";
+        }
+
+        f28.addActivity(person, role);
+        if (deriv != null) {
+          f14.setDerivationType(deriv);
+          assignment.addProperty(CIDOC.P42_assigned, deriv);
+        }
+      });
+
+    f28.add(f22).add(f14);
+    f14.add(f22);
+    this.model.add(f28.getModel());
+    return f14;
   }
 
 
@@ -260,10 +372,10 @@ public class F24_PublicationExpression extends DoremusResource {
     if (code == null || code.isEmpty()) return null;
     code = code.trim();
     Resource r = model.createResource(BNF_CATEGORIZATION_NS + code);
-    model.createResource(this.uri+"/assignment/"+code)
-    .addProperty(RDF.type, CIDOC.E13_Attribute_Assignment)
-    .addProperty(CIDOC.P141_assigned, r)
-    .addProperty(CIDOC.P14_carried_out_by, BNF2RDF.BnF);
+    model.createResource(this.uri + "/assignment/" + code)
+      .addProperty(RDF.type, CIDOC.E13_Attribute_Assignment)
+      .addProperty(CIDOC.P141_assigned, r)
+      .addProperty(CIDOC.P14_carried_out_by, BNF2RDF.BnF);
     return r;
   }
 
