@@ -183,25 +183,22 @@ public abstract class DoremusResource {
   }
 
   public DoremusResource addProperty(Property property, String literal) {
-    if (literal != null && !literal.isEmpty())
-      this.resource.addProperty(property, literal.trim());
+    if (literal != null && !literal.isEmpty()) this.resource.addProperty(property, literal.trim());
     return this;
   }
+
   public DoremusResource addProperty(Property property, String literal, String lang) {
-    if (literal != null && !literal.isEmpty())
-      this.resource.addProperty(property, literal.trim(), lang);
+    if (literal != null && !literal.isEmpty()) this.resource.addProperty(property, literal.trim(), lang);
     return this;
   }
 
   protected DoremusResource addProperty(Property property, Literal literal) {
-    if (literal != null)
-      this.resource.addProperty(property, literal);
+    if (literal != null) this.resource.addProperty(property, literal);
     return this;
   }
 
   protected DoremusResource addProperty(Property property, String literal, XSDDatatype datatype) {
-    if (literal != null && !literal.isEmpty())
-      this.resource.addProperty(property, literal.trim(), datatype);
+    if (literal != null && !literal.isEmpty()) this.resource.addProperty(property, literal.trim(), datatype);
     return this;
   }
 
