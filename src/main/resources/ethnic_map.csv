@@ -1,0 +1,662 @@
+bnf_id,bnf_field,score,rameau_id,rameau_field
+38471794,$aTraditions$mOcéanie$mAustralie$eNyongaar,0.823,12045606,$aNyungar$gpeuple d'Australie
+43691917,$aTraditions$mOcéanie$mNouvelle-Calédonie$eKanak,1.0,11969392,$aKanak$gpeuple de Nouvelle-Calédonie
+42394386,$aTraditions$mAmérique centrale$mSuriname$eSaramaka,1.0,11973598,$aSaramaka$gpeuple du Suriname
+39065571,$aTraditions$mOcéanie$mNouvelle-Zélande$eMaoris,1.0,11954230,$aMaoris$gpeuple de Nouvelle-Zélande
+40969515,$aTraditions$mOcéanie$mNouvelle-Zélande$eMaoris,1.0,11954230,$aMaoris$gpeuple de Nouvelle-Zélande
+38471790,$aTraditions$mOcéanie$mAustralie$eNyongaar,0.823,12045606,$aNyungar$gpeuple d'Australie
+38551119,$aTraditions$mAfrique$mCameroun$eBalis,1.0,12384481,$aBali$gpeuple du Cameroun
+38432551,$aTraditions$mAsie$mÎles Philippines$eT'boli,1.0,13517278,$aT'boli$gpeuple des Philippines
+38553965,$aTraditions$mAfrique$mMadagascar$eAntandroy,1.0,12480058,$aAntandroy$gpeuple de Madagascar
+38972704,$aTraditions$mAfrique$mBurkina Faso$eBissa,0.877,13325394,$aBisa$gpeuple du Burkina Faso et du Ghana
+38559068,$aTraditions$mOcéanie$mPapouasie Nouvelle-Guinée$eHuli,1.0,12104084,$aHuli$gpeuple de Papouasie-Nouvelle-Guinée
+38398136-003,$aTraditions$mAfrique$mBurkina Faso$eGan,1.0,16257711,$aGan$gpeuple du Burkina Faso
+38556748,$aTraditions$mOcéanie$mPapouasie Nouvelle Guinée$eHuli,1.0,12104084,$aHuli$gpeuple de Papouasie-Nouvelle-Guinée
+38527947,$aTraditions$mAfrique$mMadagascar$eBetsimisaraka,1.0,11951982,$aBetsimisaraka$gpeuple de Madagascar
+41072828,$aTraditions$mAfrique$mMadagascar$eAntanosy,1.0,13185665,$aAntanosy$gpeuple de Madagascar
+38587257,$aTraditions$mOcéanie$mNouvelle Calédonie$eKanak,1.0,11969392,$aKanak$gpeuple de Nouvelle-Calédonie
+39995898,$aTraditions$mAsie$mRussie$mSibérie$eBouriates,1.0,11982642,$aBouriates$gpeuple de Sibérie
+41072745,$aTraditions$mAsie$mNépal$eNewar,1.0,11948667,$aNewar$gpeuple du Népal
+41052330,$aTraditions$mAsie$mInde$eSidis,0.877,15505318,$aSiddi$gpeuple de l'Inde
+38562811,$aTraditions$mAfrique du Nord$mAlgérie$mKabylie$eBerbères,0.9,11940990,$aKabyles$gpeuple berbère
+38427568,$aTraditions$mAfrique$ePeuls,1.0,11935469,$aPeuls$gpeuple d'Afrique
+42641133,$aTraditions$mAsie$mIndonésie$eToba Batak,1.0,11975089,$aToba Batak$gpeuple d'Indonésie
+41177410,$aTraditions$mAfrique$mMadagascar$eAntanosy,1.0,13185665,$aAntanosy$gpeuple de Madagascar
+38563102-001,$aTraditions$mOcéanie$mNouvelle-Zélande$eMaoris,1.0,11954230,$aMaoris$gpeuple de Nouvelle-Zélande
+38563102-010,$aTraditions$mOcéanie$mNouvelle-Zélande$eMaoris,1.0,11954230,$aMaoris$gpeuple de Nouvelle-Zélande
+38471830,$aTraditions$mOcéanie$mAustralie$eNyongaar,0.823,12045606,$aNyungar$gpeuple d'Australie
+39237320,$aTraditions$mAsie$mChine$eQiangs,1.0,12460130,$aQiang$gpeuple de Chine
+38540019,$aTraditions$mAfrique$mBurkina Faso$eGan,1.0,16257711,$aGan$gpeuple du Burkina Faso
+38439282-001,$aTraditions$mRépublique Centrafricaine$eDendi,1.0,13775467,$aDendi$gpeuple de la République centrafricaine
+38942118,$aTraditions$mAsie$mPhilippines$eT'boli,1.0,13517278,$aT'boli$gpeuple des Philippines
+39038877,$aTraditions$mAsie$mSibérie$eÉvenk,0.86,11982827,$aÉvènes$gpeuple de Sibérie
+39038877,$aTraditions$mAsie$mSibérie$eÉvenk,1.0,11982829,$aÉvenks$gpeuple de Sibérie
+39003211,$aTraditions$mAfrique$mMadagascar$eBara,1.0,11977716,$aBara$gpeuple de Madagascar
+38479258,$aTraditions$mOcéanie$mAustralie$eNyoongar,0.823,12045606,$aNyungar$gpeuple d'Australie
+42696025,$aTraditions$mOcéanie$mNouvelle-Zélande$eMaoris,1.0,11954230,$aMaoris$gpeuple de Nouvelle-Zélande
+42667369,$aTraditions$mAsie$mIran$eBakhtiari,0.94,11949209,$aBakhtiyari$gpeuple d'Iran
+42741611,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43828169,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38559024,$aTraditions$eArabes,1.0,11965850,$aArabes
+42753758-002,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+42753758-004,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+42753758-005,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+42753758-010,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+42753758-012,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+42753758-013,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43828157,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38479308,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43828208,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43828224,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43828218,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+39245180,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43828193,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43827459,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+39244512,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+44271597,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38510874,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38437969,$aTraditions$eTibétains,1.0,11955055,$aTibétains
+39139326,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38373749,$aTraditions$eArabes,1.0,11965850,$aArabes
+38563538,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38423685,$aTraditions$eTziganes,0.885,11933633,$aTsiganes
+41099044,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38535219,$aTraditions$eTziganes,0.885,11933633,$aTsiganes
+38430349,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38519862,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38475664,$aTraditions$eTziganes,0.885,11933633,$aTsiganes
+43828228,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38562250,$aTraditions$eArabes,1.0,11965850,$aArabes
+41052347,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43828215,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38563563,$aTraditions$eArabes,1.0,11965850,$aArabes
+38475113,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+43828199,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38481865,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38481913,$aTraditions$eJuifs,1.0,11932167,$aJuifs
+38421203,$aTraditions$mAsie$mTurquie$eTsiganes,1.0,11933633,$aTsiganes
+38427666,$aTraditions$mAmérique du Nord$eBrésil,1.0,11976818,$aBrésiliens
+42155205,$aTraditions$mAsie$mYémen$eJuifs,1.0,11932167,$aJuifs
+40137206,$aTraditions$mAsie$mRussie$eKalmoukes,0.925,11960156,$aKalmouks
+38504518,$aTraditions$mAmérique du Sud$eIncas,1.0,11976502,$aIncas
+38377791-001,$aTraditions$mEurope$eCeltes,1.0,11934107,$aCeltes
+41210702,$aTraditions$mAsie$eKurdes,1.0,11942456,$aKurdes
+40941897,$aTraditions$mAsie centrale$mRussie$eTadjikes,0.914,12155632,$aTadjiks
+42655314,$aTraditions$mEurope$eJuifs,1.0,11932167,$aJuifs
+42155167,$aTraditions$mAmérique du Sud$mAntilles néerlandaises$mCuraçao$eJuifs,1.0,11932167,$aJuifs
+38562298,$aTraditions$mEurope$mRoumanie$eTziganes,0.885,11933633,$aTsiganes
+41495181,$aTraditions$mAsie$mIran$eAzéris,1.0,12296714,$aAzéris
+40134861,$aTraditions$mAsie$mRussie$eSartes,0.854,13513653,$aSardes
+40194369,$aTraditions$mAfrique$eMandingues,1.0,11938611,$aMandingues
+40148941,$aTraditions$mAsie$eTibétains,1.0,11955055,$aTibétains
+42666126,$aTraditions$mAsie$mIran$eKurdes,1.0,11942456,$aKurdes
+38381990,$aTraditions$mAsie$mChine$mGansu$mXiahe$mAmdo$mLabrang$eTibétains,1.0,11955055,$aTibétains
+40065025,$aTraditions$mAsie$mRussie$mCaucase$eKabardes,1.0,13609545,$aKabardes
+38550809,$aTraditions$mEurope$mGrande-Bretagne$eceltes,1.0,11934107,$aCeltes
+42641200,$aTraditions$mAmérique du Nord$eInuits,1.0,11932136,$aInuits
+42641200-001,$aTraditions$mAmérique du Nord$mCanada$eInuits,1.0,11932136,$aInuits
+42641200-002,$aTraditions$mAmérique du Nord$mÉtats-Unis$mAlaska$eInuits,1.0,11932136,$aInuits
+38381589,$aTraditions$mAsie$mIrak$eJuifs,1.0,11932167,$aJuifs
+38421202,$aTraditions$mEurope$eJuifs,1.0,11932167,$aJuifs
+38617911,$aTraditions$mAmérique du Nord$mÉtats-Unis$eCajun,1.0,11938969,$aCajuns
+38573977,$aTraditions$mEurope$mEspagne$eJuifs,1.0,11932167,$aJuifs
+38524768,$aTraditions$mEurope$mEurope centrale$eJuifs,1.0,11932167,$aJuifs
+40197662,$aTraditions$mAsie$eTibétains,1.0,11955055,$aTibétains
+43762321,$aTraditions$mAsie$mChine$mXinjiang$eKirghizes,0.925,12009711,$aKirghiz
+38432491,$aTraditions$mEurope$mUkraine$eJuifs,1.0,11932167,$aJuifs
+43795780,$aTraditions$mAsie$mChine$mTibet$eTibétains,1.0,11955055,$aTibétains
+40125760,$aTraditions$mEurope$mItalie$mCalabre$eAlbanais,1.0,11960038,$aAlbanais
+38536812,$aTraditions$mEurope$eJuifs,1.0,11932167,$aJuifs
+40148215,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesse,1.0,13609496,$aTcherkesses
+41072897,$aTraditions$mAfrique du Nord$mTunisie$mDjerba$eJuifs,1.0,11932167,$aJuifs
+38512378,$aTraditions$mEurope$mHongrie$eTziganes,0.885,11933633,$aTsiganes
+38553495,$aTraditions$mAmérique du Nord$mÉtats-Unis$eCajun,1.0,11938969,$aCajuns
+42155213,$aTraditions$mAsie$mInde$mKerala$mCochin$eJuifs,1.0,11932167,$aJuifs
+38421201,$aTraditions$mEurope$eJuifs,1.0,11932167,$aJuifs
+41285737,$aTraditions$mAsie$mTurquie$ePomak,1.0,13554080,$aPomaks
+40083564,$aTraditions$mAfrique$mZaïre$mIturi$ePygmées,1.0,11979478,$aPygmées
+38454315,$aTraditions$mFrance$eBasques,1.0,13318303,$aBasques
+40070567,$aTraditions$mAmérique du Nord$mÉtats-Unis$mLouisiane$eCajuns,1.0,11938969,$aCajuns
+43762318,$aTraditions$mAsie$mChine$mXinjiang$eKazakh,1.0,12071732,$aKazakhs
+44220435,$aTraditions$mAsie$mTurquie$mIzmir$egrecs,1.0,11940385,$aGrecs
+38595603,$aTraditions$mEurope$mRoumanie$eTziganes,0.885,11933633,$aTsiganes
+40134867,$aTraditions$mAsie$mRussie$eSartes,0.854,13513653,$aSardes
+42429260,$aTraditions$mAfrique$mÉthiopie$eCoptes,1.0,11952206,$aCoptes
+43763577,$aTraditions$mEurope$mEspagne$eJuifs,1.0,11932167,$aJuifs
+40137201,$aTraditions$mAsie$mRussie$eKalmoukes,0.925,11960156,$aKalmouks
+42097627,$aTraditions$mAmérique du Nord$mCanada$eInuit,1.0,11932136,$aInuits
+38420681,$aTraditions$mFrance$eMarins,0.84,15064897,$aMorins
+40926558,$aTraditions$mHongrie$eTziganes,0.885,11933633,$aTsiganes
+39010844,$aTraditions$mAsie$eCambodge,0.925,15966646,$aCambodgiens
+38562115,$aTraditions$mAsie$mRussie$mSibérie$mTai'myr$eNganasan,0.933,14624382,$aNganassans
+42615127,$aTraditions$mEurope$eTziganes,0.885,11933633,$aTsiganes
+43884708,$aTraditions$mAfrique$mMaroc$eBerbères,1.0,13318623,$aBerbères
+40239123,$aTraditions$mEurope$eTziganes,0.885,11933633,$aTsiganes
+38440968,$aTraditions$mAmérique du Nord$mCanada$eInuit,1.0,11932136,$aInuits
+39692229,$aTraditions$mEurope$eCeltes,1.0,11934107,$aCeltes
+43795793,$aTraditions$mAsie$mChine$mTibet$eTibétains,1.0,11955055,$aTibétains
+39244329,$aTraditions$mAmérique de Nord$mÉtats-Unis$eIrlandais,1.0,12021855,$aIrlandais
+39244329,$aTraditions$mAmérique de Nord$mÉtats-Unis$eIrlandais,0.867,12414377,$aIslandais
+43762333,$aTraditions$mAsie$mChine$mXinjiang$eKazakh,1.0,12071732,$aKazakhs
+39022014,$aTraditions$mAmérique centrale$mHonduras$eGarifuna,1.0,12003569,$aGarifunas
+38551119,$aTraditions$mAfrique$mCameroun$eBalis,0.88,11960894,$aBalinais
+40134858,$aTraditions$mAsie$mRussie$eSartes,0.854,13513653,$aSardes
+38551253,$aTraditions$mEurope$mGrande-Bretagne$eceltes,1.0,11934107,$aCeltes
+42666123,$aTraditions$mAsie$mIran$eTadjiks,1.0,12155632,$aTadjiks
+39284792,$aTraditions$mAsie$ePakistan,1.0,12443861,$aPakistanais
+40064167,$aTraditions$mAsie$mRussie$mCaucase$eKabardes,1.0,13609545,$aKabardes
+39294740,$aTraditions$mAmérique$mÉtats-Unis$eCajuns,1.0,11938969,$aCajuns
+39244372,$aTraditions$mAmérique du Nord$mÉtats-Unis$eJuifs,1.0,11932167,$aJuifs
+38432433,$aTraditions$mEurope$eTziganes,0.885,11933633,$aTsiganes
+42664626,$aTraditions$mAfrique$mCôte d'Ivoire$eMandingues,1.0,11938611,$aMandingues
+38375047,$aTraditions$mAfrique$mMali$eMandingue,1.0,11938611,$aMandingues
+38420235,$aTraditions$mAfrique$mCentrafrique$ePygmées,1.0,11979478,$aPygmées
+38602776,$aTraditions$mFrance$mParis$eAveyronnais,1.0,15783754,$aAveyronnais
+38379084,$aTraditions$mAmérique du Sud$mPérou$eIncas,1.0,11976502,$aIncas
+38558588,$aTraditions$mEurope$eJuifs,1.0,11932167,$aJuifs
+43748350,$aTraditions$mEurope$mRoumanie$eTziganes,0.885,11933633,$aTsiganes
+38558987,$aTraditions$mAfrique$mGuinée$eMandingues,1.0,11938611,$aMandingues
+42349151,$aTraditions$mEurope$mRussie$eTziganes,0.885,11933633,$aTsiganes
+40065050,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+43828256,$aTraditions$mAsie$mTurquie$eArméniens,1.0,11936986,$aArméniens
+40064548,$aTraditions$mAsie$mRussie$mCaucase$eKabarde,1.0,13609545,$aKabardes
+41272508,$aTraditions$mEurope$eCroatie,0.9,11952213,$aCroates
+42669857,$aTraditions$mEurope$mHongrie$eTziganes,0.885,11933633,$aTsiganes
+38389017-013,$aTraditions$mAmérique du sud$mMexique$eNegritos,1.0,11945146,$aNégritos
+38389017-015,$aTraditions$mAmérique du nord$mCanada$eInuit,1.0,11932136,$aInuits
+38401986-001,$aTraditions$mAsie centrale$mTurkestan$eKirghizes,0.925,12009711,$aKirghiz
+38401986-002,$aTraditions$mAsie centrale$mTurkestan$eKirghizes,0.925,12009711,$aKirghiz
+38401986-003,$aTraditions$mAsie centrale$mTurkestan$eKazakhs,1.0,12071732,$aKazakhs
+38475948,$aTraditions$mEurope$eItaliens,1.0,11939213,$aItaliens
+38373637,$aTraditions$mEurope$mPays Bas$mAmsterdam$eJuifs,1.0,11932167,$aJuifs
+38448607-001,$aTraditions$mAmérique$mCanada$eQuébec,1.0,11974658,$aQuébécois
+38448607-002,$aTraditions$mAmérique$mCanada$eQuébec,1.0,11974658,$aQuébécois
+38448607-008,$aTraditions$mAmérique$mEtats Unis$mLouisiane$eCajun,1.0,11938969,$aCajuns
+38448607-009,$aTraditions$mAmérique$mEtats Unis$mLouisiane$eCajun,1.0,11938969,$aCajuns
+38448607-010,$aTraditions$mAmérique$mEtats Unis$mLouisiane$eCajun,1.0,11938969,$aCajuns
+38448607-011,$aTraditions$mAmérique$mEtats Unis$mLouisiane$eCajun,1.0,11938969,$aCajuns
+38448607-012,$aTraditions$mAmérique$mEtats Unis$mLouisiane$eCajun,1.0,11938969,$aCajuns
+41285340,$aTraditions$mAsie$mTurquie$eJuifs,1.0,11932167,$aJuifs
+43711178,$aTraditions$mEurope$mRussie$eTziganes,0.885,11933633,$aTsiganes
+43578176,$aTraditions$mAfrique$mZambie$eTonga,0.88,12454014,$aTongiens
+41361763,$aTraditions$mFrance$eCeltes,1.0,11934107,$aCeltes
+38409713,$aTraditions$mEurope$eTsiganes,1.0,11933633,$aTsiganes
+38543197,$aTraditions$mEurope$mHongrie$eTziganes,0.885,11933633,$aTsiganes
+42666807,$aTraditions$mAsie$mIran$eAzeris,1.0,12296714,$aAzéris
+38609988,$aTraditions$mAsie$eKurdes,1.0,11942456,$aKurdes
+38372115,$aTraditions$mEurope$eCeltes,1.0,11934107,$aCeltes
+41037374,$aTraditions$mEurope$mRoumanie$eTziganes,0.885,11933633,$aTsiganes
+40065733,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+41023329,$aTraditions$mEurope$mRoumanie$eTsiganes,1.0,11933633,$aTsiganes
+38476060,$aTraditions$mEurope$mRoumanie$eTsiganes,1.0,11933633,$aTsiganes
+40224853,$aTraditions$mAfrique$mZambie$eTonga,0.88,12454014,$aTongiens
+41073318,$aTraditions$mEurope$mSerbie$eTsiganes,1.0,11933633,$aTsiganes
+38394094,$aTraditions$mFrance$eMarins,0.84,15064897,$aMorins
+40064015,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+40134838,$aTraditions$mAsie$mRussie$eSartes,0.854,13513653,$aSardes
+42196014,$aTraditions$mEurope$eCroatie,0.9,11952213,$aCroates
+38471646,$aTraditions$mAsie$eKurdes,1.0,11942456,$aKurdes
+42196028,$aTraditions$mEurope$eYougoslavie,0.94,11955069,$aYougoslaves
+40134743,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesse,1.0,13609496,$aTcherkesses
+42058948,$aTraditions$mAmérique$eFrançais,1.0,11954111,$aFrancs
+42058948,$aTraditions$mAmérique$eFrançais,1.0,13318318,$aFrançais
+38544370,$aTraditions$mFrance$eMarins,0.84,15064897,$aMorins
+43828250,$aTraditions$mAsie$mTurquie$eArméniens,1.0,11936986,$aArméniens
+38519261,$aTraditions$mEurope$eTsiganes,1.0,11933633,$aTsiganes
+38379080,$aTraditions$mAmérique du Sud$mPérou$eIncas,1.0,11976502,$aIncas
+38441750,$aTraditions$mAsie$mChine$mDehra Dun$eTibétains,1.0,11955055,$aTibétains
+38964944,$aTraditions$mEurope$etziganes,0.885,11933633,$aTsiganes
+43802268,$aTraditions$mAmérique du Nord$mÉtats-Unis$eGrecs,1.0,11940385,$aGrecs
+43578165,$aTraditions$mAfrique$mZambie$eTonga,0.88,12454014,$aTongiens
+42284079,$aTraditions$mEurope$eTzigane,0.885,11933633,$aTsiganes
+42666008,$aTraditions$mAsie$mIran$eAzéris,1.0,12296714,$aAzéris
+40141888,$aTraditions$mAsie$mRussie$mCaucase$eOssètes,1.0,12282327,$aOssètes
+42666829,$aTraditions$mAsie$mIran$eTurkmènes,1.0,11941128,$aTurkmènes
+44241138,$aTraditions$mAfrique$mCentrafrique$eBantu,0.9,11939629,$aBantous
+42424661,$aTraditions$mAsie$mIran$eKurdes,1.0,11942456,$aKurdes
+38475604,$aTraditions$mAmérique du Nord$mÉtats-Unis$eCajuns,1.0,11938969,$aCajuns
+42265894,$aTraditions$mEurope centrale$eJuifs,1.0,11932167,$aJuifs
+40148679,$aTraditions$mEurope$eNorvège,0.914,11945171,$aNorvégiens
+40065714,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+39022279,$aTraditions$mAmérique du Nord$mCanada$eInuit,1.0,11932136,$aInuits
+38518588,$aTraditions$mAmérique Centrale$eMayas,1.0,11932445,$aMayas
+43762406,$aTraditions$mAsie$mChine$mXinjiang$eMongols,1.0,11970810,$aMongols
+43762406,$aTraditions$mAsie$mChine$mXinjiang$eMongols,0.914,14487566,$aMongoles
+40064557,$aTraditions$mAsie$mRussie$mCaucase$eKabardes,1.0,13609545,$aKabardes
+38453205,$aTraditions$mAfrique$mMali$eMandingue,1.0,11938611,$aMandingues
+42174698,$aTraditions$mAsie$eJapon,0.834,11937972,$aLapons
+42174698,$aTraditions$mAsie$eJapon,1.0,11974155,$aJaponais
+39205904,$aTraditions$mAmérique du Nord$mÉtats-Unis$eIrlandais,1.0,12021855,$aIrlandais
+39205904,$aTraditions$mAmérique du Nord$mÉtats-Unis$eIrlandais,0.867,12414377,$aIslandais
+42666825,$aTraditions$mAsie$mIran$eKurdes,1.0,11942456,$aKurdes
+40064153,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesse,1.0,13609496,$aTcherkesses
+38438936,$aTraditions$mEurope centrale$eJuifs,1.0,11932167,$aJuifs
+38433863,$aTraditions$mEurope$eTzigane,0.885,11933633,$aTsiganes
+40134758,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesse,1.0,13609496,$aTcherkesses
+42155246,$aTraditions$mEurope$mEspagne$eJuifs,1.0,11932167,$aJuifs
+38475605,$aTraditions$mAmérique du Nord$mÉtats-Unis$eCajuns,1.0,11938969,$aCajuns
+40134772,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesse,1.0,13609496,$aTcherkesses
+41023319,$aTraditions$mEurope$mBalkans$eTsiganes,1.0,11933633,$aTsiganes
+38528919,$aTraditions$mAsie$eKurdes,1.0,11942456,$aKurdes
+38528931,$aTraditions$mAfrique du Nord$mAlgérie$eBerbères,1.0,13318623,$aBerbères
+42549934,$aTraditions$mAfrique du Nord$mMaroc$eBerbères,1.0,13318623,$aBerbères
+38559058,$aTraditions$mAfrique$mMali$eMandingues,1.0,11938611,$aMandingues
+42667318,$aTraditions$mAsie$mIran$eAzéris,1.0,12296714,$aAzéris
+38454232,$aTraditions$mFrance$eBasques,1.0,13318303,$aBasques
+43604794,$aTraditions$mAsie$mInde$mLadakh$eTibétains,1.0,11955055,$aTibétains
+38529964,$aTraditions$mEurope$mEurope centrale$eJuifs,1.0,11932167,$aJuifs
+38466915,$aTraditions$mEurope$mRoumanie$eTsiganes,1.0,11933633,$aTsiganes
+38472009,$aTraditions$mAmérique du Sud$eIncas,1.0,11976502,$aIncas
+42453004,$aTraditions$mAsie$mSyrie$eKurdes,1.0,11942456,$aKurdes
+42420015,$aTraditions$mAsie$mTurquie$eOttomans,1.0,13332610,$aOttomans
+40224889,$aTraditions$mAfrique$mMalawi$eTonga,0.88,12454014,$aTongiens
+38972696,$aTraditions$mAfrique$mTchad$eSara,0.873,12552442,$aSabras
+39055018,$aTraditions$mAmérique du Nord$mÉtats-Unis$mLouisiane$eCajuns,1.0,11938969,$aCajuns
+39939637,$aTraditions$mPapouasie-Nouvelle Guinée$ePapous,1.0,11941599,$aPapous
+42666173,$aTraditions$mIran$eArabes,1.0,11965850,$aArabes
+38562811,$aTraditions$mAfrique du Nord$mAlgérie$mKabylie$eBerbères,1.0,13318623,$aBerbères
+40065064,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+42696045,$aTraditions$mAsie$mSyrie$eKurdes,1.0,11942456,$aKurdes
+42155269,$aTraditions$mAsie$mTurquie$ejuifs,1.0,11932167,$aJuifs
+39295135,$aTraditions$mAsie$mTurquie$mAnatolie$eKurdes,1.0,11942456,$aKurdes
+42196034,$aTraditions$mEurope$eYougoslavie,0.94,11955069,$aYougoslaves
+38590467,$aTraditions$mEurope$mBelgique$eFlamands,1.0,13318968,$aFlamands
+40065706,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+39958583,$aTraditions$mAfrique du Nord$mMaroc$eJuifs,1.0,11932167,$aJuifs
+40064550,$aTraditions$mAsie$mRussie$mCaucase$eKabardes,1.0,13609545,$aKabardes
+41072755,$aTraditions$mAfrique$mGambie$eMandingues,1.0,11938611,$aMandingues
+40063997,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+41495106,$aTraditions$mAsie$mIran$eKurdes,1.0,11942456,$aKurdes
+41177406,$aTraditions$mAsie$mOuzbékistan$eTadjiks,1.0,12155632,$aTadjiks
+38399584-012,$aTraditions$mFrance$mCamargue$eGitans,1.0,11959587,$aBédouins
+42653250,$aTraditions$mÉtats-unis$eItaliens,1.0,11939213,$aItaliens
+43780335,$aTraditions$mAsie$mIran$eKurdes,1.0,11942456,$aKurdes
+38590512,$aTraditions$mFrance$mParis$eAveyronnais,1.0,15783754,$aAveyronnais
+40064592,$aTraditions$mAsie$mRussie$mCaucase$eKabarde,1.0,13609545,$aKabardes
+38606480,$aTraditions$mEurope$eTziganes,0.885,11933633,$aTsiganes
+38475603,$aTraditions$mAmérique du Nord$mÉtats-Unis$eCajuns,1.0,11938969,$aCajuns
+38476452,$aTraditions$mAfrique$mMali$eMandingues,1.0,11938611,$aMandingues
+38476491,$aTraditions$mAsie$mRussie$eNenec,0.86,13545209,$aNenets
+41037381,$aTraditions$mEurope$mRoumanie$eTziganes,0.885,11933633,$aTsiganes
+38437624,$aTraditions$mAsie$mSyrie$eKurdes,1.0,11942456,$aKurdes
+41072756,$aTraditions$mAsie$mKoweit$eBédouins,1.0,11959587,$aBédouins
+42665938,$aTraditions$mAsie$mIran$eTadjiks,1.0,12155632,$aTadjiks
+40925199,$aTraditions$mEurope$eGrèce,0.88,11940385,$aGrecs
+38511755,$aTraditions$mAmérique du Nord$eIrlandais,1.0,12021855,$aIrlandais
+38511755,$aTraditions$mAmérique du Nord$eIrlandais,0.867,12414377,$aIslandais
+38373406,$aTraditions$mAsie$mChine$mGansu$mXiahe$mAmdo$mLabrang$eTibétains,1.0,11955055,$aTibétains
+40065076,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+38449304,$aTraditions$mEurope$mHongrie$eCroates,1.0,11952213,$aCroates
+40222346,$aTraditions$mEurope$eTziganes,0.885,11933633,$aTsiganes
+38452903-002,$aTraditions$mEurope$mRussie$eTzigane,0.885,11933633,$aTsiganes
+38452903-005,$aTraditions$mEurope$mMoldavie$eTzigane,0.885,11933633,$aTsiganes
+38452903-009,$aTraditions$mEurope$mMoldavie$eTzigane,0.885,11933633,$aTsiganes
+38452903-012,$aTraditions$mEurope$mMacédoine$eTzigane,0.885,11933633,$aTsiganes
+38452903-013,$aTraditions$mEurope$mHongrie$eTzigane,0.885,11933633,$aTsiganes
+38452903-014,$aTraditions$mEurope$mMoravie$eTzigane,0.885,11933633,$aTsiganes
+38452903-016,$aTraditions$mRoumanie$eTzigane,0.885,11933633,$aTsiganes
+38452903-017,$aTraditions$mSlovaquie$eTzigane,0.885,11933633,$aTsiganes
+38452903-018,$aTraditions$mIrlande$eTzigane,0.885,11933633,$aTsiganes
+40237763,$aTraditions$mEurope$mItalie$eJuifs,1.0,11932167,$aJuifs
+42615399,$aTraditions$mEurope$mFrance$eJuifs,1.0,11932167,$aJuifs
+42615399-001,$aTraditions$mFrance$mComtat Venaissin$eJuifs,1.0,11932167,$aJuifs
+38370245,$aTraditions$mEurope$mRussie$eJuifs,1.0,11932167,$aJuifs
+38576321,$aTraditions$mAmérique du Nord$mEtats-Unis$mLouisiane$eAcadiens,1.0,11936670,$aAcadiens
+38520869,$aTraditions$mEurope$mEspagne$eJuifs,1.0,11932167,$aJuifs
+38607329,$aTraditions$mEurope$eJuifs,1.0,11932167,$aJuifs
+40197683,$aTraditions$mOcéanie$mNouvelle-Zélande$emarins,0.84,15064897,$aMorins
+38451698,$aTraditions$mAsie$mTadjikistan$mChine$mXinjiang$eTadjiks,1.0,12155632,$aTadjiks
+42155184,$aTraditions$mEurope$mEspagne$ejuifs,1.0,11932167,$aJuifs
+38559005,$aTraditions$mAfrique du Nord$mMaroc$eBerbères,1.0,13318623,$aBerbères
+38475458,$aTraditions$mAfrique du Nord$mMaroc$eBerbères,1.0,13318623,$aBerbères
+43618069,$aTraditions$mAmérique du Nord$mÉtats-Unis$mLouisiane$eCajuns,1.0,11938969,$aCajuns
+38484106,$aTraditions$mEurope$eJuifs,1.0,11932167,$aJuifs
+38510997,$aTraditions$mAfrique$mGuinée$eMandingues,1.0,11938611,$aMandingues
+38618340,$aTraditions$mEurope$eYougoslavie,0.94,11955069,$aYougoslaves
+43657226,$aTraditions$mFrance$mProvence$eJuifs,1.0,11932167,$aJuifs
+40137583,$aTraditions$mAsie$mRussie$mCaucase$eTatars de Crimée,1.0,12156179,$aTatars de Crimée
+42514259,$aTraditions$mEurope$eJuifs,1.0,11932167,$aJuifs
+41366067,$aTraditions$mEurope$eYougoslavie,0.94,11955069,$aYougoslaves
+38573836,$aTraditions$mEurope$mRoumanie$eHongrois,1.0,11976771,$aHongrois
+42669430,$aTraditions$mAfrique$mCongo$ePygmées,1.0,11979478,$aPygmées
+41228678,$aTraditions$mAfrique$mCentreafrique$ePygmées,1.0,11979478,$aPygmées
+43795788,$aTraditions$mAsie$mChine$mTibet$eTibétains,1.0,11955055,$aTibétains
+43629670,$aTraditions$mAfrique$mSahara$eBédouins,1.0,11959587,$aBédouins
+43748271,$aTraditions$mAmérique du Nord$mÉtats-Unis$mLouisiane$eCajuns,1.0,11938969,$aCajuns
+42667385,$aTraditions$mAsie$mIran$eAzéris,1.0,12296714,$aAzéris
+43628624,$aTraditions$mAmérique du Nord$mÉtats-Unis$eItaliens,1.0,11939213,$aItaliens
+42666138,$aTraditions$mAsie$mIran$eAzéris,1.0,12296714,$aAzéris
+38479507,$aTraditions$mAfrique$mZaïre$eMongo,0.9,11970810,$aMongols
+38479711,$aTraditions$mEurope$mHongrie$eTsiganes,1.0,11933633,$aTsiganes
+38601160,$aTraditions$mAfrique$emandingues,1.0,11938611,$aMandingues
+40137209,$aTraditions$mAsie$mRussie$eKalmoukes,0.925,11960156,$aKalmouks
+38430498,$aTraditions$mFrance$eMarins,0.84,15064897,$aMorins
+40134728,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesse,1.0,13609496,$aTcherkesses
+40149476,$aTraditions$mEurope$eNorvège,0.914,11945171,$aNorvégiens
+38466225,$aTraditions$mEurope$mRoumanie$eTsiganes,1.0,11933633,$aTsiganes
+43595279,$aTraditions$mFrance$eCorse,1.0,13318909,$aCorses
+43825899,$aTraditions$mAsie$mTurquie$eRoms,1.0,11940503,$aRomains
+38549946,$aTraditions$mAmérique du Nord$eMarins,0.84,15064897,$aMorins
+41495164,$aTraditions$mAsie$mIran$eAzéris,1.0,12296714,$aAzéris
+43795799,$aTraditions$mAsie$mChine$mTibet$eTibétains,1.0,11955055,$aTibétains
+38440750,$aTraditions$mAsie$mYemen$eJuifs yemenites,1.0,12005391,$aJuifs yéménites
+42421386,$aTraditions$mAsie$mInde$eTibétains,1.0,11955055,$aTibétains
+39985637,$aTraditions$mFrance$eAveyron,0.925,15783754,$aAveyronnais
+42667380,$aTraditions$mAsie$mIran$eKurdes,1.0,11942456,$aKurdes
+40000063,$aTraditions$mAfrique$eMandingues,1.0,11938611,$aMandingues
+42640844,$aTraditions$mAsie$mIran$mKhorasan$eAzeris,1.0,12296714,$aAzéris
+38530857,$aTraditions$mAfrique$mMadagascar$eMalgaches,1.0,11932406,$aMalgaches
+42196042,$aTraditions$mEurope$eHongrie,1.0,11976771,$aHongrois
+43563895,$aTraditions$mAsie$mTurquie$eOttoman,1.0,13332610,$aOttomans
+40064134,$aTraditions$mAsie$mRussie$mCaucase$eTcherkesses,1.0,13609496,$aTcherkesses
+38512174,$aTraditions$mEurope$mGrande Bretagne$eIrlandais,1.0,12021855,$aIrlandais
+38512174,$aTraditions$mEurope$mGrande Bretagne$eIrlandais,0.867,12414377,$aIslandais
+39065578,$aTraditions$mEurope$mHongrie$eTziganes,0.885,11933633,$aTsiganes
+38482956,$aTraditions$mAmérique centrale$eGárifuna,1.0,12003569,$aGarifunas
+41176433,$aTraditions$mEurope$mRussie$eTsiganes,1.0,11933633,$aTsiganes
+38605711,$aTraditions$mEurope$mHongrie$eTsiganes,1.0,11933633,$aTsiganes
+40137197,$aTraditions$mAsie$mRussie$eKalmoukes,0.925,11960156,$aKalmouks
+39021931,$aTraditions$mEurope$mHongrie$eTziganes,0.885,11933633,$aTsiganes
+38573818,$aTraditions$mAsie$mIran$eKurdes,1.0,11942456,$aKurdes
+42020537,$aTraditions$mAsie$mNépal$eTibétains,1.0,11955055,$aTibétains
+43795771,$aTraditions$mAsie$mChine$mTibet$eTibétains,1.0,11955055,$aTibétains
+42641190,$aTraditions$mEurope$mHongrie$eTsiganes,1.0,11933633,$aTsiganes
+43762312,$aTraditions$mAsie$mChine$mXinjiang$eKazakh,1.0,12071732,$aKazakhs
+38595620,$aTraditions$mEurope$mHongrie$eTziganes,0.885,11933633,$aTsiganes
+38559028,$aTraditions$mAsie$mRussie$eNenec,0.86,13545209,$aNenets
+40941911,$aTraditions$mAsie centrale$mRussie$eTadjikes,0.914,12155632,$aTadjiks
+39245349,$aTraditions$mAmérique de Nord$mÉtats-Unis$eIrlandais,1.0,12021855,$aIrlandais
+39245349,$aTraditions$mAmérique de Nord$mÉtats-Unis$eIrlandais,0.867,12414377,$aIslandais
+43905430,$aTraditions$mAmérique centrale$mMexique$eMaya,1.0,11932445,$aMayas
+38472859,$aTraditions$mEurope$mHongrie$eTsiganes,1.0,11933633,$aTsiganes
+42762833,$aTraditions$mAsie$mIran$ekurdes,1.0,11942456,$aKurdes
+42155234,$aTraditions$mEurope$mItalie$eJuifs,1.0,11932167,$aJuifs
+43795806,$aTraditions$mAsie$mChine$mSichuan$eQiang,1.0,12460130,$aQiang$gpeuple de Chine
+42695285,$aTraditions$mAfrique$mAfrique du Sud$eZoulous,1.0,11948763,$aZoulous$gpeuple d'Afrique
+41073209,$aTraditions$mAfrique$mTanzanie$eGogo,1.0,13514558,$aGogo$gpeuple d'Afrique
+39132000,$aTraditions$mAmérique latine$mBolivie$eQuechua,1.0,11955020,$aQuechua$gIndiens
+42429299,$aTraditions$mAmérique$mBolivie$eAymara,1.0,11934071,$aAymara$gIndiens
+41335636,$aTraditions$mAsie$eBouriates,1.0,11982642,$aBouriates$gpeuple de Sibérie
+41073220,$aTraditions$mAfrique$mNiger$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+39065763,$aTraditions$mAmérique centrale$mCaraïbes$mTrinité-et-Tobago$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+43799542,$aTraditions$mAsie$mCambodge$eJarai,1.0,12317929,$aJaraï$gpeuple d'Asie du Sud-Est
+40097933,$aTraditions$mAfrique$mGhana$eLobi,1.0,11936963,$aLobi$gpeuple d'Afrique
+43793537,$aTraditions$mAmérique du Nord$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+41150610,$aTraditions$mAfrique$mGuinée$ePeuls,1.0,11935469,$aPeuls$gpeuple d'Afrique
+43799742,$aTraditions$mAsie$mLaos$eAkha,1.0,11963538,$aAkha$gpeuple d'Asie
+40944318,$aTraditions$mAfrique du Nord$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+43629724,$aTraditions$mOcéanie$mNouvelle-Guinée$mPapouasie$eDani,1.0,11973505,$aDani$gpeuple d'Indonésie
+38379026,$aTraditions$mAfrique du Nord$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+43800432,$aTraditions$mAsie$mVietnam$eHmong,1.0,11954235,$aHmong$gpeuple d'Asie
+38964935,$aTraditions$mAmérique du Nord$eHopis,1.0,11948133,$aHopi$gIndiens
+38456842,$aTraditions$mAmérique du Nord$mÉtats-Unis$eNavajo,1.0,11941592,$aNavajo$gIndiens
+43795742,$aTraditions$mAsie$mChine$mYunan$eLisu,1.0,12067628,$aLisu$gpeuple d'Asie
+42427710,$aTraditions$mAsie$mChine$eOuïgour,1.0,12114703,$aOuïgours$gpeuple turc
+41386992,$aTraditions$mAsie$mOuzbékistan$eKarakalpaks,1.0,14479527,$aKarakalpak$gpeuple turc
+41072840,$aTraditions$mAfrique$mMali$mBaninko$eBambara,1.0,11959584,$aBambara$gpeuple d'Afrique
+38445778,$aTraditions$mAmérique Centrale$mCuba$eYoruba,1.0,11939949,$aYoruba$gpeuple d'Afrique
+43795637,$aTraditions$mAsie$mChine$mGuizhou$eDong,1.0,12260095,$aDong$gpeuple de Chine
+42567718,$aTraditions$mAfrique$mZimbabwe$eNdebélé,1.0,11950250,$aNdebele$gpeuple d'Afrique
+43801463,$aTraditions$mAsie$mCambodge$eBrao,1.0,11963430,$aBrao$gpeuple d'Asie du Sud-Est
+39175985,$aTraditions$mAsie$mCambodge$eKhmers,1.0,12125130,$aKhmers$gpeuple d'Asie du Sud-Est
+41378282,$aTraditions$mAfrique$mCôte d'Ivoire$eBaoulé,1.0,11943140,$aBaoulé$gpeuple d'Afrique
+38574985,$aTraditions$mAfrique$mNigeria$eYoruba,1.0,11939949,$aYoruba$gpeuple d'Afrique
+38475872,$aTraditions$mAmérique du Nord$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+38396965,$aTraditions$mAmérique du Nord$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+43799778,$aTraditions$mAsie$mLaos$eLao,1.0,13553883,$aLao$gpeuple d'Asie du Sud-Est
+38374921,$aTraditions$mAfrique$mMali$eBambara,1.0,11959584,$aBambara$gpeuple d'Afrique
+38578159,$aTraditions$mAfrique$mBurkina Faso$eMossi,1.0,11945127,$aMossi$gpeuple d'Afrique
+42727181,$aTraditions$mAsie$mJapon$eAïnous,1.0,11965984,$aAïnous$gpeuple d'Asie
+43760685,$aTraditions$mAsie$mChine$mYunan$eYao,1.0,11962613,$aYao$gpeuple d'Asie
+43760685,$aTraditions$mAsie$mChine$mYunan$eYao,1.0,12260321,$aYao$gpeuple du Malawi, du Mozambique et de Tanzanie
+40224953,$aTraditions$mAfrique$mAfrique du Sud$eNguni,1.0,11967280,$aNguni$gpeuple d'Afrique
+43800420,$aTraditions$mAsie$mVietnam$eHmong,1.0,11954235,$aHmong$gpeuple d'Asie
+38479496,$aTraditions$mAfrique$mZaïre$mHaut-Uele$eMangbetu,1.0,12295795,$aMangbetu$gpeuple d'Afrique
+40169237,$aTraditions$mAfrique$mGuinée$ePeuls,1.0,11935469,$aPeuls$gpeuple d'Afrique
+38558883,$aTraditions$mAfrique$mGuinée$mBagataï$eBagas,1.0,13513780,$aBaga$gpeuple d'Afrique
+38551119,$aTraditions$mAfrique$mCameroun$eBalis,1.0,14503622,$aBali$gpeuple de la République démocratique du Congo
+41060852,$aTraditions$mAsie$mJapon$eAïnous,1.0,11965984,$aAïnous$gpeuple d'Asie
+43800435,$aTraditions$mAsie$mVietnam$eYao,1.0,11962613,$aYao$gpeuple d'Asie
+43800435,$aTraditions$mAsie$mVietnam$eYao,1.0,12260321,$aYao$gpeuple du Malawi, du Mozambique et de Tanzanie
+42543284,$aTraditions$mAfrique$mMali$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+38432657,$aTraditions$mAmérique du Nord$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+41072885,$aTraditions$mAfrique$mBurkina Faso$mKénédougou$mOuolonkoto$eSénoufo,1.0,11938737,$aSénoufo$gpeuple d'Afrique
+43799547,$aTraditions$mAsie$mCambodge$eKhmer,1.0,12125130,$aKhmers$gpeuple d'Asie du Sud-Est
+41333646,$aTraditions$mAmérique$mBolivie$eQuechua,1.0,11955020,$aQuechua$gIndiens
+40121460,$aTraditions$mAmérique du Nord$eNavajos,1.0,11941592,$aNavajo$gIndiens
+43760492,$aTraditions$mAsie$mChine$mGuizhou$eShui,1.0,12474713,$aShui$gpeuple de Chine
+42696039,$aTraditions$mAfrique du Nord$mAlgérie$eKabyles,1.0,11940990,$aKabyles$gpeuple berbère
+40217870,$aTraditions$mAfrique$mZaïre$mHaut-Uele$eMangbetu,1.0,12295795,$aMangbetu$gpeuple d'Afrique
+43800526,$aTraditions$mAsie$mVietnam$eThai,1.0,13553894,$aThaï$gpeuple d'Asie du Sud-Est
+42695999,$aTraditions$mAmérique du Nord$eHopis,1.0,11948133,$aHopi$gIndiens
+38564890,$aTraditions$mAfrique$mGuinée$eSoussous,1.0,12409167,$aSoussou$gpeuple d'Afrique
+43762355,$aTraditions$mAsie$mChine$mYunan$eWa,1.0,17050165,$aWa$gpeuple d'Asie
+43760556,$aTraditions$mAsie$mChine$mGuizhou$eShui,1.0,12474713,$aShui$gpeuple de Chine
+38559522,$aTraditions$mAmérique du Nord$eCheyennes,1.0,11985120,$aCheyennes$gIndiens
+42429007,$aTraditions$mAsie$mJapon$eAïnous,1.0,11965984,$aAïnous$gpeuple d'Asie
+38617409,$aTraditions$mAfrique$mOuganda$eGanda,1.0,12050073,$aGanda$gpeuple d'Afrique
+38438297,$aTraditions$mAfrique$mSoudan$eIngenassa$eBerta,1.0,11974539,$aBerta$gpeuple d'Afrique
+40217859,$aTraditions$mAfrique$mZaïre$eTshokwe,1.0,11948472,$aTshokwe$gpeuple d'Afrique
+41059643,$aTraditions$mAfrique$mCongo$eShi,1.0,11959585,$aShi$gpeuple d'Afrique
+43799737,$aTraditions$mAsie$mLaos$eAkha,1.0,11963538,$aAkha$gpeuple d'Asie
+41488945,$aTraditions$mAfrique$mMali$eTouareg,1.0,13318388,$aTouaregs$gpeuple berbère
+43800531,$aTraditions$mAsie$mVietnam$eHmong,1.0,11954235,$aHmong$gpeuple d'Asie
+39004471,$aTraditions$mAfrique$mTanzanie$eHadzas,1.0,14402854,$aHadza$gpeuple d'Afrique
+43799537,$aTraditions$mAsie$mCambodge$eJarai,1.0,12317929,$aJaraï$gpeuple d'Asie du Sud-Est
+42666184,$aTraditions$mAsie$mIran$eOuïgours,1.0,12114703,$aOuïgours$gpeuple turc
+43800519,$aTraditions$mAsie$mVietnam$eLu,1.0,13547433,$aLü$gpeuple d'Asie
+41073282,$aTraditions$mAfrique$mSénégal$ePeuls,1.0,11935469,$aPeuls$gpeuple d'Afrique
+38530781,$aTraditions$mAsie$mNépal$eGaïnés,1.0,14505143,$aGaine$gcaste du Népal
+38386495-002,$aTraditions$mAsie$eBengali,1.0,11943171,$aBengalis$gpeuple d'Asie du Sud
+38389017-003,$aTraditions$mAfrique$mRépublique centrafricaine$eNgbaka,1.0,11981614,$aNgbaka$gpeuple d'Afrique
+38389017-004,$aTraditions$mAfrique$mRépublique centrafricaine$eBanda,1.0,11959075,$aBanda$gpeuple d'Afrique
+38389017-006,$aTraditions$mAfrique$mCôte d'Ivoire$eBaoulé,1.0,11943140,$aBaoulé$gpeuple d'Afrique
+38389017-012,$aTraditions$mAmérique du sud$mBrésil$eBororo,1.0,11940862,$aBororo$gIndiens
+38389017-012,$aTraditions$mAmérique du sud$mBrésil$eBororo,1.0,11965897,$aBororo$gpeuple d'Afrique
+39038773,$aTraditions$mAfrique$mÉthiopie$eKonso,1.0,14418013,$aKonso$gpeuple d'Afrique
+38559521,$aTraditions$mAmérique du Nord$eSioux,1.0,11947851,$aSioux$gIndiens
+43762343,$aTraditions$mAsie$mChine$mYunan$eAkha,1.0,11963538,$aAkha$gpeuple d'Asie
+38563680,$aTraditions$mAsie$mSibérie$mKamtchatka$eKoriaks,1.0,13751996,$aKoriaks$gpeuple de Sibérie
+40224880,$aTraditions$mAfrique$mCongo$eKanyok,1.0,12037240,$aKanyok$gpeuple d'Afrique
+43578176,$aTraditions$mAfrique$mZambie$eTonga,1.0,12268316,$aTonga$gpeuple de Zambie et du Zimbabwe
+42222281,$aTraditions$mAfrique$mNiger$ePeuls,1.0,11935469,$aPeuls$gpeuple d'Afrique
+42317574,$aTraditions$mAfrique du Nord$mAlgérie$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+41072823,$aTraditions$mAsie$mViêt Nam$eHmong,1.0,11954235,$aHmong$gpeuple d'Asie
+40217872,$aTraditions$mAfrique$mRwanda$eTwa,1.0,11938676,$aTwa$gpeuple d'Afrique
+41059640,$aTraditions$mAfrique$mGhana$eLobi,1.0,11936963,$aLobi$gpeuple d'Afrique
+38483823,$aTraditions$mAfrique$mMali$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+43795687,$aTraditions$mAsie$mChine$mGuizhou$eDong,1.0,12260095,$aDong$gpeuple de Chine
+38558996,$aTraditions$mAfrique$mMali$eBambara,1.0,11959584,$aBambara$gpeuple d'Afrique
+39053504,$aTraditions$mAmérique du Nord$mÉtats-Unis$eNavajo,1.0,11941592,$aNavajo$gIndiens
+41128240,$aTraditions$mAsie$mTaïwan$eHakka,1.0,12479603,$aHakka$gpeuple de Chine
+41073278,$aTraditions$mAsie$mInde du Sud$mKerala$ePulluvan,1.0,17012605,$aPulluvan$gcaste de l'Inde
+43800440,$aTraditions$mAsie$mVietnam$eYao,1.0,11962613,$aYao$gpeuple d'Asie
+43800440,$aTraditions$mAsie$mVietnam$eYao,1.0,12260321,$aYao$gpeuple du Malawi, du Mozambique et de Tanzanie
+40224853,$aTraditions$mAfrique$mZambie$eTonga,1.0,12268316,$aTonga$gpeuple de Zambie et du Zimbabwe
+43762390,$aTraditions$mAsie$mChine$mYunan$eHani,1.0,12474689,$aHani$gpeuple d'Asie
+38559518,$aTraditions$mAmérique du Nord$mEtats-Unis$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+38553753,$aTraditions$mAfrique$mCentrafrique$eBanda,1.0,11959075,$aBanda$gpeuple d'Afrique
+38398136-002,$aTraditions$mAfrique$mBurkina Faso$eBirifor,1.0,12316325,$aBirifor$gpeuple d'Afrique
+38398136-005,$aTraditions$mAfrique$mBurkina Faso$eDian,1.0,13610710,$aDian$gpeuple d'Afrique
+38398136-007,$aTraditions$mAfrique$mBurkina Faso$eLobi,1.0,11936963,$aLobi$gpeuple d'Afrique
+43762391,$aTraditions$mAsie$mChine$mYunan$eHani,1.0,12474689,$aHani$gpeuple d'Asie
+41072749,$aTraditions$mAsie$mInde$mBastar$eGond,1.0,11940697,$aGond$gpeuple de l'Inde
+39074964,$aTraditions$mAmérique Centrale$mCaraïbes$mGrenade$eYorubas,1.0,11939949,$aYoruba$gpeuple d'Afrique
+41439391,$aTraditions$mAsie$mOuzbékistan$eKarakalpaks,1.0,14479527,$aKarakalpak$gpeuple turc
+40217863,$aTraditions$mAfrique$mZaïre$eTshokwe,1.0,11948472,$aTshokwe$gpeuple d'Afrique
+38378836,$aTraditions$mAsie$mChine$mGuangdong$eHakkas,1.0,12479603,$aHakka$gpeuple de Chine
+38563526,$aTraditions$mAfrique$mCameroun$ePeuls,1.0,11935469,$aPeuls$gpeuple d'Afrique
+39004488,$aTraditions$mAsie$eOuïgours,1.0,12114703,$aOuïgours$gpeuple turc
+43578165,$aTraditions$mAfrique$mZambie$eTonga,1.0,12268316,$aTonga$gpeuple de Zambie et du Zimbabwe
+38483940,$aTraditions$mAfrique$mCôte d'Ivoire$eBaoulé,1.0,11943140,$aBaoulé$gpeuple d'Afrique
+43760584,$aTraditions$mAsie$mChine$mYunan$eBai,1.0,15601078,$aBai$gpeuple de Chine
+38456827,$aTraditions$mAmérique du Nord$mÉtats-Unis$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+43762378,$aTraditions$mAsie$mChine$mYunan$eWa,1.0,17050165,$aWa$gpeuple d'Asie
+38509477,$aTraditions$mAfrique du Nord$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+39168194,$aTraditions$mAfrique$eTouareg,1.0,13318388,$aTouaregs$gpeuple berbère
+38617418,$aTraditions$mAfrique$mShaba$eTshokwe,1.0,11948472,$aTshokwe$gpeuple d'Afrique
+38972699,$aTraditions$mAfrique$mDahomey$eFon,1.0,11983014,$aFon$gpeuple d'Afrique
+41059478,$aTraditions$mAsie$mIndonésie$mSumatra$eBatak,1.0,11983453,$aBatak$gpeuple d'Indonésie
+38476466,$aTraditions$mAfrique$mCentrafrique$eBanda,1.0,11959075,$aBanda$gpeuple d'Afrique
+43799717,$aTraditions$mAsie$mLaos$eKhmu,1.0,12101148,$aKhmu$gpeuple d'Asie
+40021156,$aTraditions$mAmérique du Nord$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+39103499,$aTraditions$mAfrique du Nord$mAlgérie$eKabyles,1.0,11940990,$aKabyles$gpeuple berbère
+38562813,$aTraditions$mAfrique$mAfrique centrale$eKongo,1.0,11987532,$aKongo$gpeuple d'Afrique
+38562813-001,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-001,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-002,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-002,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-003,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-003,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-004,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-004,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-012,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-012,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-013,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-013,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-014,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-014,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-018,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-018,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-024,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-024,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562813-025,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38562813-025,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38562185,$aTraditions$mAfrique$mGuinée$eSoussous,1.0,12409167,$aSoussou$gpeuple d'Afrique
+43800473,$aTraditions$mAsie$mVietnam$eGiay,1.0,13319925,$aGiay$gpeuple d'Asie
+38559098,$aTraditions$mOcéanie$mNouvelle-Guinée$eKanak,1.0,11969392,$aKanak$gpeuple de Nouvelle-Calédonie
+43795703,$aTraditions$mAsie$mChine$mGuizhou$eDong,1.0,12260095,$aDong$gpeuple de Chine
+38559516,$aTraditions$mAmérique du Nord$mÉtats-Unis$eindiens,1.0,11934239,$aIndiens$gde l'Inde
+42454218,$aTraditions$mAmérique du Sud$mBrésil$mAmazonie$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+43760562,$aTraditions$mAsie$mChine$mYunan$eBai,1.0,15601078,$aBai$gpeuple de Chine
+41303846,$aTraditions$mAsie$mNord-Vietnam$eHmong,1.0,11954235,$aHmong$gpeuple d'Asie
+38429224-001,$aTraditions$mAmérique du Sud$mBolivie$eQuechuas,1.0,11955020,$aQuechua$gIndiens
+38429224-002,$aTraditions$mAmérique du Sud$mBolivie$eAymaras,1.0,11934071,$aAymara$gIndiens
+39007013,$aTraditions$mAmérique centrale$mCuba$eYoruba,1.0,11939949,$aYoruba$gpeuple d'Afrique
+38562812,$aTraditions$mAfrique$mAfrique du Sud$eZoulous,1.0,11948763,$aZoulous$gpeuple d'Afrique
+38539382,$aTraditions$mAfrique$mGuinée$eBagas,1.0,13513780,$aBaga$gpeuple d'Afrique
+43638696,$aTraditions$mAfrique$mBurkina Faso$eGouin,1.0,12018112,$aGouin$gpeuple d'Afrique
+41439361,$aTraditions$mAsie$mSibérie$eAltaïens,1.0,12441687,$aAltaïens$gpeuple turc
+40217852,$aTraditions$mAfrique$mZaïre$eYaka,1.0,11949666,$aYaka$gpeuple d'Afrique
+38562145,$aTraditions$mAfrique$mAfrique du Sud$mTransvaal$mKwaNdébélé$eNdébélé,1.0,11950250,$aNdebele$gpeuple d'Afrique
+38560034,$aTraditions$mAsie$mIndonésie$mBornéo$eDayaks,1.0,11967188,$aDayak$gpeuple d'Asie du Sud-Est
+38373398-001,$aTraditions$mAfrique$mCameroun$mMonts Mandara$mDibon$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+38373398-004,$aTraditions$mAfrique$mCameroun$mMonts Mandara$mDibon$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+38373398-005,$aTraditions$mAfrique$mCameroun$mMonts Mandara$mDibon$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+38373398-006,$aTraditions$mAfrique$mCameroun$mMonts Mandara$mDibon$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+38373398-008,$aTraditions$mAfrique$mCameroun$mGambour$eMoundang,1.0,11957944,$aMoundang$gpeuple d'Afrique
+38373398-009,$aTraditions$mAfrique$mCameroun$mSaouringwa$eToupouri,1.0,12134761,$aToupouri$gpeuple d'Afrique
+38373398-010,$aTraditions$mAfrique$mCameroun$mBololo Midjivin$eGuiziga,1.0,12482193,$aGuiziga$gpeuple d'Afrique
+38373398-011,$aTraditions$mAfrique$mCameroun$mBololo Midjivin$eGuiziga,1.0,12482193,$aGuiziga$gpeuple d'Afrique
+38373398-012,$aTraditions$mAfrique$mCameroun$mBololo Midjivin$eGuiziga,1.0,12482193,$aGuiziga$gpeuple d'Afrique
+38373398-013,$aTraditions$mAfrique$mCameroun$mGolompoui$eToupouri,1.0,12134761,$aToupouri$gpeuple d'Afrique
+38373398-016,$aTraditions$mAfrique$mCameroun$mMonts Mandara$mDibon$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+38373398-017,$aTraditions$mAfrique$mCameroun$mMonts Mandara$mVendelar$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+38373398-018,$aTraditions$mAfrique$mCameroun$mMonts Mandara$mVendelar$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+38373398-019,$aTraditions$mAfrique$mCameroun$mMonts Mandara$mDibon$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+43762404,$aTraditions$mAsie$mChine$mYunan$eWa,1.0,17050165,$aWa$gpeuple d'Asie
+41072751,$aTraditions$mAfrique$mRépublique centrafricaine$eGbaya,1.0,11954115,$aGbaya$gpeuple d'Afrique
+41303845,$aTraditions$mAsie$mLaos$eBrao,1.0,11963430,$aBrao$gpeuple d'Asie du Sud-Est
+39103510,$aTraditions$mAfrique du Nord$eKabyles,1.0,11940990,$aKabyles$gpeuple berbère
+40224889,$aTraditions$mAfrique$mMalawi$eTonga,1.0,12268316,$aTonga$gpeuple de Zambie et du Zimbabwe
+38972696,$aTraditions$mAfrique$mTchad$eSara,1.0,11945862,$aSara$gpeuple d'Afrique
+39022290,$aTraditions$mAmérique du Nord$mÉtats-Unis$eNavajo,1.0,11941592,$aNavajo$gIndiens
+40152623,$aTraditions$mAmérique du Sud$mChili$eMapuches,1.0,12382490,$aMapuche$gIndiens
+38556746,$aTraditions$mAfrique$mBénin$eBariba,1.0,11941822,$aBariba$gpeuple d'Afrique
+38483816,$aTraditions$mAfrique$mGabon$eFang,1.0,11963545,$aFang$gpeuple d'Afrique
+43612911,$aTraditions$mAfrique$mMali$eBambara,1.0,11959584,$aBambara$gpeuple d'Afrique
+43840131,$aTraditions$mAmérique du Sud$mBolivie$eQuechuas,1.0,11955020,$aQuechua$gIndiens
+38473065,$aTraditions$mAfrique du Nord$eKabyles,1.0,11940990,$aKabyles$gpeuple berbère
+41128249,$aTraditions$mAfrique$mOuganda$eAcholi,1.0,11983700,$aAcholi$gpeuple d'Afrique
+41072769,$aTraditions$mAfrique$mMali$eDogon,1.0,11947256,$aDogon$gpeuple d'Afrique
+41285826,$aTraditions$mAsie$mTurquie$eYörük,1.0,12121037,$aYörük$gpeuple turc
+38432373,$aTraditions$mAfrique$mCôte d'Ivoire$mPays Wè$eGuéré,1.0,13537200,$aGuéré$gpeuple d'Afrique
+38456838,$aTraditions$mAmérique du Nord$mÉtats-Unis$eYurok,1.0,12293954,$aYurok$gIndiens
+38527227,$aTraditions$mAmérique centrale$eYoruba,1.0,11939949,$aYoruba$gpeuple d'Afrique
+38436316,$aTraditions$mAfrique$mPays Wè$eGuéré,1.0,13537200,$aGuéré$gpeuple d'Afrique
+38478858,$aTraditions$mAfrique$mZaïre$eEkonda,1.0,12086490,$aEkonda$gpeuple d'Afrique
+38392957,$aTraditions$mAmérique du Nord$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+40217842,$aTraditions$mAfrique$mTchad$mTibesti$eTeda,1.0,15540851,$aTeda$gpeuple d'Afrique
+38479563,$aTraditions$mAfrique$mZaïre$mIturi$eEfe,1.0,12256018,$aEfe$gpeuple d'Afrique
+41072795,$aTraditions$mAfrique du Sud$eXhosa,1.0,12652127,$aXhosa$gpeuple d'Afrique
+38555880,$aTraditions$mAsie$mCambodge$eKhmers,1.0,12125130,$aKhmers$gpeuple d'Asie du Sud-Est
+42114197,$aTraditions$mAmérique centrale$mAntilles$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+38559512,$aTraditions$mAmérique du Nord$mÉtats-Unis$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+43762403,$aTraditions$mAsie$mChine$mYunan$eWa,1.0,17050165,$aWa$gpeuple d'Asie
+38479589,$aTraditions$mAfrique$mRwanda$eTwa,1.0,11938676,$aTwa$gpeuple d'Afrique
+38578330,$aTraditions$mAfrique$mBénin$eYoruba,1.0,11939949,$aYoruba$gpeuple d'Afrique
+42567707,$aTraditions$mBénin$eYoruba,1.0,11939949,$aYoruba$gpeuple d'Afrique
+41055210,$aTraditions$mAfrique$mBénin$eYoruba,1.0,11939949,$aYoruba$gpeuple d'Afrique
+43795760,$aTraditions$mAsie$mChine$mYunan$eLahu,1.0,16686616,$aLahu$gpeuple d'Asie
+38562521,$aTraditions$mAfrique$mMauritanie$eNemadi,1.0,16978329,$aNemadi$gpeuple d'Afrique
+42641194,$aTraditions$mAfrique$mMali$eDogons,1.0,11947256,$aDogon$gpeuple d'Afrique
+38504470,$aTraditions$mAmérique du Sud$eAymaras,1.0,11934071,$aAymara$gIndiens
+42633106,$aTraditions$mAfrique du Nord$eTouareg,1.0,13318388,$aTouaregs$gpeuple berbère
+38573773,$aTraditions$mAfrique$mCameroun$eOuldémé,1.0,12098479,$aOuldémé$gpeuple d'Afrique
+42767970,$aTraditions$mAfrique$mZimbabwe$eShona,1.0,11937479,$aShona$gpeuple d'Afrique
+41052554,$aTraditions$mAsie$eIndiens,1.0,11934239,$aIndiens$gde l'Inde
+38562873,$aTraditions$mAmérique$mGuyane$eWayanas,1.0,11950999,$aWayana$gIndiens
+41073217,$aTraditions$mAfrique$mNiger$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+38402163,$aTraditions$mAsie$mRussie$eTchouktches,1.0,13517896,$aTchouktches$gpeuple de Sibérie
+43800413,$aTraditions$mAsie$mVietnam$eHmong,1.0,11954235,$aHmong$gpeuple d'Asie
+43760517,$aTraditions$mAsie$mChine$mGuizhou$eDong,1.0,12260095,$aDong$gpeuple de Chine
+38610695,$aTraditions$mAfrique$mErythrée$eTigrinya,1.0,12324547,$aTigrinya$gpeuple d'Afrique
+38439282-001,$aTraditions$mRépublique Centrafricaine$eDendi,1.0,13775442,$aDendi$gpeuple du Bénin, du Niger et du Nigeria
+38439282-002,$aTraditions$mRépublique Centrafricaine$eNzakara,1.0,11959224,$aNzakara$gpeuple d'Afrique
+38439282-010,$aTraditions$mRépublique centrafricaine$eGbaya,1.0,11954115,$aGbaya$gpeuple d'Afrique
+38439282-011,$aTraditions$mRépublique centrafricaine$eNgbaka,1.0,11981614,$aNgbaka$gpeuple d'Afrique
+38563629,$aTraditions$mAfrique$mCentrafrique$eBanda,1.0,11959075,$aBanda$gpeuple d'Afrique
+38479473,$aTraditions$mAfrique$mGabon$eFang,1.0,11963545,$aFang$gpeuple d'Afrique
+42699846,$aTraditions$mAsie$mCambodge$eKhmers,1.0,12125130,$aKhmers$gpeuple d'Asie du Sud-Est
+38508498,$aTraditions$mAfrique$mMali$eDogons,1.0,11947256,$aDogon$gpeuple d'Afrique
+38479507,$aTraditions$mAfrique$mZaïre$eMongo,1.0,11994994,$aMongo$gpeuple d'Afrique
+43799558,$aTraditions$mAsie$mCambodge$eBrao,1.0,11963430,$aBrao$gpeuple d'Asie du Sud-Est
+38560085,$aTraditions$mAfrique$mAfrique centrale$eKongo,1.0,11987532,$aKongo$gpeuple d'Afrique
+38560085-002,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-002,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-004,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-004,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-005,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-005,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-007,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-007,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-008,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-008,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-010,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-010,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-012,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-012,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-013,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-013,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-016,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-016,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-017,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-017,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-020,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-020,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-022,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-022,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-026,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-026,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-028,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-028,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+38560085-029,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,12345608,$aYombe$gpeuple des Congo et d'Angola
+38560085-029,$aTraditions$mAfrique$mAfrique centrale$eYombe,1.0,14613847,$aYombe$gpeuple de Zambie et du Malawi
+42429268,$aTraditions$mAfrique$mTanzanie$eNgoni,1.0,11982260,$aNgoni$gpeuple d'Afrique
+38387068,$aTraditions$mAfrique$mBurkina-Faso$ePeuls,1.0,11935469,$aPeuls$gpeuple d'Afrique
+40030413,$aTraditions$mAfrique$mGabon$eMyène,1.0,12216839,$aMyènè$gpeuple d'Afrique
+38405581,$aTraditions$mAsie$mChine$mLijiang$eNaxis,1.0,11980064,$aNaxi$gpeuple de Chine
+43629703,$aTraditions$mOcéanie$mNouvelle-Guinée$mPapouasie$eDani,1.0,11973505,$aDani$gpeuple d'Indonésie
+38562108,$aTraditions$mAfrique$mMali$eDogons,1.0,11947256,$aDogon$gpeuple d'Afrique
+38562861,$aTraditions$mAsie$mPakistan$eBaloutches,1.0,11974515,$aBaloutches$gpeuple d'Asie
+42699841,$aTraditions$mAsie$mCambodge$eKhmer,1.0,12125130,$aKhmers$gpeuple d'Asie du Sud-Est
+38404110,$aTraditions$mAmérique du Sud$mGuyane$eWayãpi,1.0,11945278,$aWayãpi$gIndiens
+42498847,$aTraditions$mAsie$mChine$mXinjiang$eOuïgours,1.0,12114703,$aOuïgours$gpeuple turc
+43843511,$aTraditions$mAfrique$mMali$eTouaregs,1.0,13318388,$aTouaregs$gpeuple berbère
+42699840,$aTraditions$mAsie$mCambodge$eKhmer,1.0,12125130,$aKhmers$gpeuple d'Asie du Sud-Est
+38432070-001,$aTraditions$mURSS$eYakoutes,1.0,12187804,$aYakoutes$gpeuple turc
+38432070-005,$aTraditions$mAsie$mURSS$eBouriates,1.0,11982642,$aBouriates$gpeuple de Sibérie
+40957140,$aTraditions$mAfrique$mSénégal$eWolofs,1.0,11937593,$aWolof$gpeuple d'Afrique
+43795837,$aTraditions$mAsie$mCambodge$eJarai,1.0,12317929,$aJaraï$gpeuple d'Asie du Sud-Est
+42428982,$aTraditions$mAsie$mChine$mYunnan$eNaxi,1.0,11980064,$aNaxi$gpeuple de Chine
+40166093,$aTraditions$mAfrique$mMali$ePeuls,1.0,11935469,$aPeuls$gpeuple d'Afrique

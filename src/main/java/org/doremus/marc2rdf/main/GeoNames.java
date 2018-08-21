@@ -1,5 +1,7 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.geonames.*;
 
 import java.io.File;
@@ -15,7 +17,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class GeoNames {
-  public static final String NAME = "http://www.geonames.org/ontology#name";
+  public static final Property NAME = ResourceFactory.createProperty("http://www.geonames.org/ontology#name");
 
   static Map<String, Integer> cache; // cache String -> idGeoNames
   public static String destFolder;
@@ -53,6 +55,10 @@ public class GeoNames {
   }
 
   public static Toponym query(String rawString, String country) {
+    return query(rawString, country, null);
+  }
+
+  public static Toponym query(String rawString, String country, String continent) {
     Toponym tp = null;
     String key = rawString;
     if (country != null && !country.isEmpty()) key += " (" + country + ")";
@@ -73,6 +79,8 @@ public class GeoNames {
     searchCriteria.setMaxRows(1);
     searchCriteria.setLanguage("fr");
     searchCriteria.setFeatureClass(FeatureClass.P);
+    if (continent != null && !continent.isEmpty())
+      searchCriteria.setContinentCode(continent);
 
     try {
       ToponymSearchResult searchResult = WebService.search(searchCriteria);

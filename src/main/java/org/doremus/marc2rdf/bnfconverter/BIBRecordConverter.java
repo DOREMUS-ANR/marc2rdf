@@ -73,13 +73,21 @@ public class BIBRecordConverter {
 
   private void convertDAV() {
     F3_ManifestationProductType manif = new F3_ManifestationProductType(record);
+
     F24_PublicationExpression publicationExpression = new F24_PublicationExpression(record);
     F30_PublicationEvent publicationEvent = new F30_PublicationEvent(record);
     F19_PublicationWork publicationWork = new F19_PublicationWork(record);
 
+    F17_AggregationWork aggregationWork = new F17_AggregationWork(record);
+    M46_SetOfTracks tracks = new M46_SetOfTracks(record);
+
+    publicationExpression.getTitles().forEach(tracks::addTitle);
+    publicationExpression.getParallelTitles().forEach(tracks::addParallelTitle);
+
     publicationEvent.add(publicationExpression).add(publicationWork);
     publicationWork.add(publicationExpression);
     manif.add(publicationExpression);
+    aggregationWork.add(tracks);
 
     for (DoremusResource r : Arrays.asList(manif, publicationExpression)) {
       r.addProvenance(intermarcRes, provActivity);

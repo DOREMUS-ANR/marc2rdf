@@ -1,6 +1,5 @@
 package org.doremus.marc2rdf.main;
 
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.ontology.CIDOC;
 import org.geonames.Toponym;
@@ -17,6 +16,10 @@ public class E53_Place extends DoremusResource {
   private String name;
 
   public E53_Place(String rawString) {
+    this(rawString, null);
+  }
+
+  public E53_Place(String rawString, String continent) {
     super();
 
     rawString = rawString.trim()
@@ -86,7 +89,7 @@ public class E53_Place extends DoremusResource {
     this.name = null;
 
 
-    tp = GeoNames.query(rawString);
+    tp = GeoNames.query(rawString, null, continent);
     if (tp != null) {
       // simply download the file
       uri = GeoNames.toURI(tp.getGeoNameId());
@@ -100,19 +103,19 @@ public class E53_Place extends DoremusResource {
     }
 
     this.regenerateResource(uri);
-    this.resource.addProperty(RDF.type, CIDOC.E53_Place)
-      .addProperty(RDFS.label, rawString.replaceAll("\\(.+\\)", "").trim(), "fr")
+    this.setClass(CIDOC.E53_Place);
+
+    this.addProperty(RDFS.label, rawString.replaceAll("\\(.+\\)", ""), "fr")
       .addProperty(CIDOC.P1_is_identified_by, rawString, "fr");
 
     if (this.name != null) {
-      this.resource.addProperty(RDFS.label, this.name, "en")
-        .addProperty(model.createProperty(GeoNames.NAME), this.name);
+      this.addProperty(RDFS.label, this.name, "en")
+        .addProperty(GeoNames.NAME, this.name);
     }
-
   }
 
   public void addSurroundingPlace(E53_Place external) {
-    this.resource.addProperty(CIDOC.P89_falls_within, external.asResource());
+    this.addProperty(CIDOC.P89_falls_within, external);
   }
 
   public boolean isGeonames() {

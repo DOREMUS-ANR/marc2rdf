@@ -4,6 +4,7 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
@@ -37,6 +38,8 @@ public class F24_PublicationExpression extends DoremusResource {
   private static final Pattern AWARD_PATTERN = Pattern.compile(AWARD_REGEX, Pattern.CASE_INSENSITIVE);
 
   private static final String BNF_CATEGORIZATION_NS = "http://data.doremus.org/vocabulary/categorization/bnf/";
+  private List<Literal> titles;
+  private List<Literal> parallelTitles;
   private int countResp = 0;
 
   public F24_PublicationExpression(String identifier) {
@@ -52,12 +55,13 @@ public class F24_PublicationExpression extends DoremusResource {
     parseAdditionalMaterial();
 
     // titles
-    titleFromField(245, false).forEach(title -> {
+    titles = titleFromField(245, false).peek(title -> {
       this.addProperty(MUS.U167_has_title_proper, title);
       this.addProperty(RDFS.label, title);
-    });
-    titleFromField(247, false).forEach(
-      title -> this.addProperty(MUS.U168_has_parallel_title, title));
+    }).collect(Collectors.toList());
+    parallelTitles = titleFromField(247, false).peek(
+      title -> this.addProperty(MUS.U168_has_parallel_title, title))
+      .collect(Collectors.toList());
     record.getDatafieldsByCode(245, 'e').forEach(title -> this.addProperty(MUS.U67_has_subtitle, title));
     titleFromField(750, true).forEach(title -> this.addProperty(MUS.U68_has_variant_title, title));
     titleFromField(751, true).forEach(title -> this.addProperty(MUS.U68_has_variant_title, title));
@@ -186,11 +190,14 @@ public class F24_PublicationExpression extends DoremusResource {
       this.addProperty(MUS.U203_has_summary_or_abstract, s);
 
     // categorization
-    for (DataField df : record.getDatafieldsByCode(640)) {
-      String code = df.getString('a');
-      if (code == null || code.isEmpty()) df.getStrings('b');
-      this.addProperty(MUS.U19_is_categorized_as, toBnFCategorizationUri(code));
-    }
+    parseCategorization(record)
+      .peek(r -> this.addProperty(MUS.U19_is_categorized_as, r))
+      .forEach(r -> model.createResource(this.uri + "/assignment/" + r.getLocalName())
+        .addProperty(RDF.type, CIDOC.E13_Attribute_Assignment)
+        .addProperty(CIDOC.P141_assigned, r)
+        .addProperty(CIDOC.P14_carried_out_by, BNF2RDF.BnF)
+      );
+
 
     // label
     Stream<M54_Label_Name> labelNames = record.getDatafieldsByCode(723).stream().map(M54_Label_Name::new);
@@ -233,6 +240,15 @@ public class F24_PublicationExpression extends DoremusResource {
         this.model.add(f15.getModel());
       }
     });
+  }
+
+  static Stream<Resource> parseCategorization(Record record) {
+    return record.getDatafieldsByCode(640).stream()
+      .map(df -> {
+        String code = df.getString('a');
+        if (code == null || code.isEmpty()) code = df.getString('b');
+        return code;
+      }).map(F24_PublicationExpression::toBnFCategorizationUri);
   }
 
   private F14_IndividualWork getDerivedWork() {
@@ -367,15 +383,10 @@ public class F24_PublicationExpression extends DoremusResource {
     }
   }
 
-  private Resource toBnFCategorizationUri(String code) {
+  private static Resource toBnFCategorizationUri(String code) {
     if (code == null || code.isEmpty()) return null;
     code = code.trim();
-    Resource r = model.createResource(BNF_CATEGORIZATION_NS + code);
-    model.createResource(this.uri + "/assignment/" + code)
-      .addProperty(RDF.type, CIDOC.E13_Attribute_Assignment)
-      .addProperty(CIDOC.P141_assigned, r)
-      .addProperty(CIDOC.P14_carried_out_by, BNF2RDF.BnF);
-    return r;
+    return ResourceFactory.createResource(BNF_CATEGORIZATION_NS + code);
   }
 
   private void parseAdditionalMaterial() {
@@ -602,4 +613,11 @@ public class F24_PublicationExpression extends DoremusResource {
     return this;
   }
 
+  public List<Literal> getTitles() {
+    return titles;
+  }
+
+  public List<Literal> getParallelTitles() {
+    return parallelTitles;
+  }
 }
