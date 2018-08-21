@@ -2,13 +2,10 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Attr;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.ontology.PROV;
 
-import java.net.URISyntaxException;
 import java.util.Arrays;
 
 
@@ -80,6 +77,7 @@ public class BIBRecordConverter {
 
     F17_AggregationWork aggregationWork = new F17_AggregationWork(record);
     M46_SetOfTracks tracks = new M46_SetOfTracks(record);
+    F28_ExpressionCreation aggregationEvent = new F28_ExpressionCreation(record);
 
     publicationExpression.getTitles().forEach(tracks::addTitle);
     publicationExpression.getParallelTitles().forEach(tracks::addParallelTitle);
@@ -88,6 +86,7 @@ public class BIBRecordConverter {
     publicationWork.add(publicationExpression);
     manif.add(publicationExpression);
     aggregationWork.add(tracks);
+    aggregationEvent.add(aggregationWork).add(tracks);
 
     for (DoremusResource r : Arrays.asList(manif, publicationExpression)) {
       r.addProvenance(intermarcRes, provActivity);
@@ -96,14 +95,7 @@ public class BIBRecordConverter {
   }
 
 
-  private void addProvenanceTo(DoremusResource res) {
-    res.asResource().addProperty(RDF.type, PROV.Entity)
-      .addProperty(PROV.wasAttributedTo, BNF2RDF.BnF)
-      .addProperty(PROV.wasDerivedFrom, this.intermarcRes)
-      .addProperty(PROV.wasGeneratedBy, this.provActivity);
-  }
-
-  private void addPerformances() throws URISyntaxException {
+  private void addPerformances() {
     int performanceCounter = 0;
 
     for (String performance : M42_PerformedExpressionCreation.getPerformances(record)) {
@@ -124,7 +116,7 @@ public class BIBRecordConverter {
     }
   }
 
-  private void addPrincepsPublication() throws URISyntaxException {
+  private void addPrincepsPublication() {
     int pubCounter = 0;
 
     for (String edition : F30_PublicationEvent.getEditionPrinceps(record)) {

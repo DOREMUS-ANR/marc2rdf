@@ -36,18 +36,27 @@ public class F28_ExpressionCreation extends DoremusResource {
     this.setClass(FRBROO.F28_Expression_Creation);
     this.composerCount = 0;
 
+    if (record.isTUM()) parseTum();
+    if (record.isBIB()) parseBib();
+  }
+
+  private void parseBib() {
+    record.getDatafieldsByCode(700).stream()
+      .map(ArtistConverter::parseArtistField)
+      .forEach(person -> addActivity(person, "collecteur"));
+  }
+
+  private void parseTum() {
     TimeSpan dateMachine = parseDateMachine();
     if (dateMachine != null) {
       dateMachine.setUri(this.uri + "/interval");
       this.addTimeSpan(dateMachine);
     }
 
-    String dateText = getDateText();
-    if (dateText != null) this.resource.addProperty(CIDOC.P3_has_note, dateText);
+    this.addNote(getDateText());
 
     this.composers = ArtistConverter.getArtistsInfo(record);
-    for (Person composer : composers)
-      addActivity(composer, "compositeur");
+    composers.forEach(composer -> addActivity(composer, "compositeur"));
 
     // text authors
     List<DataField> tAut = this.record.getDatafieldsByCode(322);
@@ -82,12 +91,11 @@ public class F28_ExpressionCreation extends DoremusResource {
       }
 
       addActivity(author, role);
-
     }
 
     int motivationCount = 0;
     for (String mot : getMotivations()) {
-      this.resource.addProperty(CIDOC.P17_was_motivated_by,
+      this.addProperty(CIDOC.P17_was_motivated_by,
         model.createResource(this.uri + "/motivation/" + ++motivationCount)
           .addProperty(RDF.type, CIDOC.E1_CRM_Entity)
           .addProperty(RDFS.label, mot, "fr")
@@ -102,13 +110,12 @@ public class F28_ExpressionCreation extends DoremusResource {
       if (!insp.isCode(3)) return;
 
       F15_ComplexWork targetWork = new F15_ComplexWork(insp.getSubfield('3').getData());
-
-      this.resource.addProperty(CIDOC.P15_was_influenced_by, targetWork.asResource());
+      this.addProperty(CIDOC.P15_was_influenced_by, targetWork);
     }
 
     int influenceCount = 0;
     for (String infl : getInfluences()) {
-      this.resource.addProperty(CIDOC.P15_was_influenced_by,
+      this.addProperty(CIDOC.P15_was_influenced_by,
         model.createResource(this.uri + "/influence/" + ++influenceCount)
           .addProperty(RDF.type, CIDOC.E1_CRM_Entity)
           .addProperty(RDFS.label, infl, "fr")
@@ -116,19 +123,6 @@ public class F28_ExpressionCreation extends DoremusResource {
       );
     }
   }
-
-
-  public F28_ExpressionCreation add(F22_SelfContainedExpression expression) {
-    this.expression = expression;
-    this.addProperty(FRBROO.R17_created, expression.asResource());
-    return this;
-  }
-
-  public F28_ExpressionCreation add(F14_IndividualWork f14) {
-    this.addProperty(FRBROO.R19_created_a_realisation_of, f14.asResource());
-    return this;
-  }
-
 
   private TimeSpan parseDateMachine() {
     for (ControlField field : record.getControlfieldsByCode("008")) {
@@ -216,5 +210,26 @@ public class F28_ExpressionCreation extends DoremusResource {
   public List<String> getComposerUris() {
     return this.composers.stream()
       .map(Artist::getUri).collect(Collectors.toList());
+  }
+
+  public F28_ExpressionCreation add(F17_AggregationWork f17) {
+    this.addProperty(FRBROO.R19_created_a_realisation_of, f17.asResource());
+    return this;
+  }
+
+  public F28_ExpressionCreation add(F22_SelfContainedExpression expression) {
+    this.expression = expression;
+    this.addProperty(FRBROO.R17_created, expression);
+    return this;
+  }
+
+  public F28_ExpressionCreation add(F14_IndividualWork f14) {
+    this.addProperty(FRBROO.R19_created_a_realisation_of, f14);
+    return this;
+  }
+
+  public F28_ExpressionCreation add(M46_SetOfTracks tracks) {
+    this.addProperty(FRBROO.R17_created, tracks);
+    return this;
   }
 }

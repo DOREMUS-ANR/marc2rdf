@@ -39,7 +39,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   private TimeSpan timeSpan;
   private int countConsistOf;
 
-  public M42_PerformedExpressionCreation(String note, Record record, F28_ExpressionCreation f28, int i) throws URISyntaxException {
+  public M42_PerformedExpressionCreation(String note, Record record, F28_ExpressionCreation f28, int i) {
     super(record);
 
     this.place = null;
@@ -58,9 +58,14 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
     addNote(note);
 
-    String performanceUri = ConstructURI.build("bnf", "F31_Performance", this.identifier).toString();
-    String expressionUri = ConstructURI.build("bnf", "M43_PerformedExpression", this.identifier).toString();
-    String workUri = ConstructURI.build("bnf", "M44_PerformedWork", this.identifier).toString();
+    String performanceUri = null, expressionUri = null, workUri = null;
+    try {
+      performanceUri = ConstructURI.build("bnf", "F31_Performance", this.identifier).toString();
+      expressionUri = ConstructURI.build("bnf", "M43_PerformedExpression", this.identifier).toString();
+      workUri = ConstructURI.build("bnf", "M44_PerformedWork", this.identifier).toString();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
 
     this.F31_Performance = model.createResource(performanceUri)
       .addProperty(RDF.type, FRBROO.F31_Performance)
