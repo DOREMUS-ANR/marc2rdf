@@ -1,7 +1,6 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -33,25 +32,20 @@ public class PF29_RecordingEvent extends DoremusResource {
     this.countActivity = 0;
     this.places = new ArrayList<>();
 
-    this.resource.addProperty(RDF.type, FRBROO.F29_Recording_Event)
-      .addProperty(CIDOC.P32_used_general_technique, record.isType("UNI:2") ? "audio" : "video");
+    this.setClass(FRBROO.F29_Recording_Event);
+    this.addProperty(CIDOC.P32_used_general_technique, record.isType("UNI:2") ? "audio" : "video");
 
     this.f26_recording = new PF26_Recording(record);
     this.f21_recording_work = new PF21_RecordingWork(record);
-    this.resource.addProperty(FRBROO.R21_created, f26_recording.asResource())
-      .addProperty(FRBROO.R22_created_a_realisation_of, f21_recording_work.asResource());
-    this.f21_recording_work.asResource()
-      .addProperty(FRBROO.R13_is_realised_in, f26_recording.asResource());
-    model.add(f26_recording.getModel());
+    this.addProperty(FRBROO.R21_created, f26_recording);
+    this.addProperty(FRBROO.R22_created_a_realisation_of, f21_recording_work);
+    this.f21_recording_work.addProperty(FRBROO.R13_is_realised_in, f26_recording);
 
+    record.getDatafieldsByCode(200, 'e').forEach(this::addNote);
 
-    for (String note : record.getDatafieldsByCode(200, 'e'))
-      this.addNote(note);
-
-    for (String note : record.getDatafieldsByCode(300, 'e')) {
-      if (note.contains("Prise de son") || note.contains("enregistré par"))
-        this.addNote(note);
-    }
+    record.getDatafieldsByCode(300, 'e').stream()
+      .filter(note -> note.contains("Prise de son") || note.contains("enregistré par"))
+      .forEach(this::addNote);
 
     String function = (record.isType("UNI:4")) ?
       "producteur de vidéogramme" : "producteur (enregistrement phonographique)";
@@ -74,8 +68,7 @@ public class PF29_RecordingEvent extends DoremusResource {
       }
 
       E7_Activity activity = new E7_Activity(this.uri + "/activity/" + ++countActivity, prod, function);
-      this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
-      this.model.add(activity.getModel());
+      this.addProperty(CIDOC.P9_consists_of, activity);
     }
 
     if (record.isType("UNI:4")) {
@@ -85,20 +78,17 @@ public class PF29_RecordingEvent extends DoremusResource {
         if (!"300".equals(df.getString(4))) continue;
         Person editor = Person.fromUnimarcField(df);
         E7_Activity activity = new E7_Activity(this.uri + "/activity/" + ++countActivity, editor, "Réalisateur");
-        this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
-        this.model.add(activity.getModel());
+        this.addProperty(CIDOC.P9_consists_of, activity);
       }
     }
 
     timeSpan = getDate();
     if (timeSpan != null) {
       this.timeSpan.setUri(this.uri + "/time");
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-      this.model.add(timeSpan.getModel());
+      this.addTimeSpan(timeSpan);
     }
 
     computePlaces();
-
   }
 
   private List<String> getProducers() {
@@ -157,13 +147,13 @@ public class PF29_RecordingEvent extends DoremusResource {
   }
 
   public PF29_RecordingEvent add(PF31_Performance performance) {
-    this.resource.addProperty(FRBROO.R20_recorded, performance.asResource());
+    this.addProperty(FRBROO.R20_recorded, performance);
     return this;
   }
 
   public PF29_RecordingEvent add(PF4_ManifestationSingleton support) {
     this.resource.addProperty(FRBROO.R18_created, support.asResource());
-    support.asResource().addProperty(CIDOC.P128_carries, this.getRecording().asResource());
+    support.addProperty(CIDOC.P128_carries, this.getRecording());
     return this;
   }
 
@@ -173,8 +163,7 @@ public class PF29_RecordingEvent extends DoremusResource {
   }
 
   public void setPlace(E53_Place place) {
-    this.model.add(place.getModel());
-    this.resource.addProperty(CIDOC.P7_took_place_at, place.asResource());
+    this.addProperty(CIDOC.P7_took_place_at, place);
     this.places.add(place);
   }
 

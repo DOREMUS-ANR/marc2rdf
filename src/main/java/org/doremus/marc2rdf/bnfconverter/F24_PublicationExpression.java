@@ -387,7 +387,7 @@ public class F24_PublicationExpression extends BIBDoremusResource {
 
 
   public F24_PublicationExpression add(F22_SelfContainedExpression expression) {
-    this.resource.addProperty(CIDOC.P165_incorporates, expression.asResource());
+    this.addProperty(CIDOC.P165_incorporates, expression);
     return this;
   }
 

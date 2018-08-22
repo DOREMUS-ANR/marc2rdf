@@ -1,7 +1,6 @@
 package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.CorporateBody;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -17,7 +16,7 @@ public class PM29_Editing extends DoremusResource {
   public PM29_Editing(Record record) {
     super(record);
     this.countActivity = 0;
-    this.resource.addProperty(RDF.type, MUS.M29_Editing);
+    this.setClass(MUS.M29_Editing);
 
     for (String producer : getProducers()) {
       producer = producer.trim();
@@ -41,22 +40,21 @@ public class PM29_Editing extends DoremusResource {
   private void addProducer(Resource producer) {
     String activityUri = this.uri + "/activity/" + ++countActivity;
     E7_Activity activity = new E7_Activity(activityUri, producer, "producteur (enregistrement phonographique)");
-    this.resource.addProperty(CIDOC.P9_consists_of, activity.asResource());
-    this.model.add(activity.getModel());
+    this.addProperty(CIDOC.P9_consists_of, activity);
   }
 
   public PM29_Editing add(PM46_SetOfTracks tracks) {
-    this.resource.addProperty(FRBROO.R17_created, tracks.asResource());
+    this.addProperty(FRBROO.R17_created, tracks);
     return this;
   }
 
   public PM29_Editing add(PF29_RecordingEvent recordingEvt) {
-    this.resource.addProperty(MUS.U29_edited, recordingEvt.getRecording().asResource());
+    this.addProperty(MUS.U29_edited, recordingEvt.getRecording());
     return this;
   }
 
   public PM29_Editing add(PF4_ManifestationSingleton support) {
-    this.resource.addProperty(FRBROO.R18_created, support.asResource());
+    this.addProperty(FRBROO.R18_created, support);
     return this;
   }
 }

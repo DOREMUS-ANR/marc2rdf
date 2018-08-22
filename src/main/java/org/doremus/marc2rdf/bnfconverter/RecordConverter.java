@@ -5,8 +5,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 
-import java.net.URISyntaxException;
-
 
 public class RecordConverter {
   public final Resource provActivity, intermarcRes;
@@ -19,7 +17,7 @@ public class RecordConverter {
   private F15_ComplexWork f15;
 
 
-  public RecordConverter(Record record, Model model) throws URISyntaxException {
+  public RecordConverter(Record record, Model model) {
     this.record = record;
     this.model = model;
 
@@ -53,7 +51,7 @@ public class RecordConverter {
 
   }
 
-  private void addPerformances() throws URISyntaxException {
+  private void addPerformances() {
     int performanceCounter = 0;
 
     for (String performance : M42_PerformedExpressionCreation.getPerformances(record)) {
@@ -74,7 +72,7 @@ public class RecordConverter {
     }
   }
 
-  private void addPrincepsPublication() throws URISyntaxException {
+  private void addPrincepsPublication() {
     int pubCounter = 0;
 
     for (String edition : F30_PublicationEvent.getEditionPrinceps(record)) {

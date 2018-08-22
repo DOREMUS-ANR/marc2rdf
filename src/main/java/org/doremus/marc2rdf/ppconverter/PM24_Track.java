@@ -2,7 +2,6 @@ package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.vocabulary.DC;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Utils;
@@ -19,32 +18,27 @@ public class PM24_Track extends DoremusResource {
   public PM24_Track(String identifier) {
     super(identifier);
 
-    this.resource.addProperty(RDF.type, MUS.M24_Track)
-      .addProperty(DC.identifier, this.identifier);
+    this.setClass(MUS.M24_Track);
+    this.addProperty(DC.identifier, this.identifier);
   }
 
   public PM24_Track(Record record) {
-    super(record);
+    this(record.getIdentifier());
+    this.record = record;
 
-    this.resource.addProperty(RDF.type, MUS.M24_Track)
-      .addProperty(DC.identifier, this.identifier);
+    this.addProperty(MUS.U227_has_content_type, record.isType("UNI:44") ?
+      "two-dimensional moving image" : "sounds", "en");
 
-    this.resource
-      .addProperty(MUS.U227_has_content_type, record.isType("UNI:44") ? "two-dimensional moving image" : "sounds", "en");
-
-    String rdaType = PP2RDF.guessType(record);
-    if (rdaType != null) this.resource.addProperty(MUS.U227_has_content_type, rdaType, "en");
+    this.addProperty(MUS.U227_has_content_type, PP2RDF.guessType(record), "en");
 
     for (String title : getTitles())
-      this.resource.addProperty(CIDOC.P102_has_title, title).addProperty(RDFS.label, title);
+      this.addProperty(CIDOC.P102_has_title, title).addProperty(RDFS.label, title);
 
     String orderNum = getOrderNum();
     if (orderNum != null)
-      this.resource.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNum));
+      this.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNum));
 
-    String duration = getDuration(this.record);
-    if (duration != null)
-      this.resource.addProperty(MUS.U53_has_duration, duration, XSDDatatype.XSDdayTimeDuration);
+    this.addProperty(MUS.U53_has_duration, getDuration(this.record), XSDDatatype.XSDdayTimeDuration);
   }
 
 
@@ -75,7 +69,7 @@ public class PM24_Track extends DoremusResource {
 
 
   public PM24_Track add(PM43_PerformedExpression expression) {
-    this.resource.addProperty(MUS.U51_is_partial_or_full_recording_of, expression.asResource());
+    this.addProperty(MUS.U51_is_partial_or_full_recording_of, expression);
     return this;
   }
 }

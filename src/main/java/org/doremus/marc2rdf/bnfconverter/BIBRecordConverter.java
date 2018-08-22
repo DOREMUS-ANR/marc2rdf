@@ -3,7 +3,6 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.marcparser.Attr;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -17,14 +16,14 @@ public class BIBRecordConverter {
   private final String ark;
   public Resource provActivity, intermarcRes;
   private Model model;
-  private Record record;
+  private Record record, mainRecord;
 
-  public BIBRecordConverter(Record record, Model model, String extArk) {
+  public BIBRecordConverter(Record record, Model model, Record mainRecord) {
     this.record = record;
     this.model = model;
 
-    Attr arkField = record.getAttrByName("IDPerenne");
-    this.ark = (arkField == null) ? extArk : arkField.getData();
+    this.mainRecord = (mainRecord == null) ? this.record : mainRecord;
+    this.ark = this.mainRecord.getAttrByName("IDPerenne").getData();
 
     // PROV-O tracing
     intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
@@ -63,7 +62,6 @@ public class BIBRecordConverter {
     aggregationWork.add(tracks);
     aggregationEvent.add(aggregationWork).add(tracks);
 
-
     switch (getCase(record)) {
       case 1:
         convertInner(null, 0);
@@ -84,6 +82,16 @@ public class BIBRecordConverter {
 
   private void convertInner(DataField df, int i) {
     M46_SetOfTracks sot = new M46_SetOfTracks(record, df, i);
+
+    M29_Editing editing = new M29_Editing(mainRecord, this.mainRecord.getIdentifier());
+    F26_Recording recording = new F26_Recording(record, mainRecord);
+    F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record);
+    F21_RecordingWork recordingWork = new F21_RecordingWork(record);
+
+    recordingEvent.add(recording).add(recordingWork);
+    recordingWork.add(recording);
+    editing.add(sot);
+
   }
 
 

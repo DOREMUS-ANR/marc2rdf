@@ -1,0 +1,31 @@
+package org.doremus.marc2rdf.bnfconverter;
+
+import org.apache.jena.vocabulary.RDF;
+import org.doremus.marc2rdf.main.Artist;
+import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.TimeSpan;
+import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.Schema;
+
+public abstract class AbstractRight extends DoremusResource {
+
+  public AbstractRight(String uri, Artist holder, String year) {
+    super();
+    this.regenerateResource(uri);
+
+    this.addProperty(CIDOC.P75i_is_possessed_by, holder);
+
+    if (year != null && !year.isEmpty()) {
+      TimeSpan ts = new TimeSpan(year);
+      ts.setUri(this.uri + "/interval");
+      this.model.add(ts.getModel());
+
+      this.addProperty(Schema.startTime, year)
+        .addProperty(CIDOC.P141i_was_assigned_by, model.createResource(this.uri + "/assignment")
+          .addProperty(RDF.type, CIDOC.E13_Attribute_Assignment)
+          .addProperty(CIDOC.P4_has_time_span, ts.asResource()));
+    }
+
+  }
+
+}

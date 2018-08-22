@@ -55,7 +55,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
     String ark = record.getAttrByName("IDPerenne").getData();
     if (ark != null)
-      this.resource.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
+      this.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
 
     this.titles = new ArrayList<>();
 
@@ -67,7 +67,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
         .addProperty(RDF.type, MUS.M15_Dedication_Statement)
         .addProperty(RDFS.comment, dedication, "fr")
         .addProperty(CIDOC.P3_has_note, dedication, "fr");
-      this.resource.addProperty(MUS.U44_has_dedication_statement, ded);
+      this.addProperty(MUS.U44_has_dedication_statement, ded);
 
       Matcher m = DEDICACE_PARSE_PATTERN.matcher(dedication
         .replaceAll("\"", "")
@@ -100,7 +100,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     a144.addAll(getTitle(144, false));
 
     for (Literal title : s444)
-      this.resource.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
+      this.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
     this.titles = s444;
 
     ns444.forEach(this::setVariantTitle);
@@ -109,7 +109,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     if (s444.size() == 0) {
       a144.addAll(ns444);
       if (a144.size() > 0) {
-        this.resource.addProperty(RDFS.label, a144.get(0));
+        this.addProperty(RDFS.label, a144.get(0));
         this.titles.add(a144.get(0));
       }
     }
@@ -154,7 +154,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       } else log("Not parsable catalog: " + catalog);
 
 
-      this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
+      this.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
     }
 
     String opus = getOpus();
@@ -172,7 +172,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
       Literal label = model.createLiteral(key, "fr");
       String keyUri = this.uri + "/key/" + Junidecode.unidecode(key).toLowerCase().replaceAll(" ", "_");
 
-      this.resource.addProperty(MUS.U11_has_key,
+      this.addProperty(MUS.U11_has_key,
         model.createResource(keyUri)
           .addProperty(RDF.type, MUS.M4_Key)
           .addProperty(CIDOC.P1_is_identified_by, label)
@@ -181,15 +181,15 @@ public class F22_SelfContainedExpression extends DoremusResource {
     }
 
     List<Resource> genreList = getGenre();
-    for (Resource genre : genreList) this.resource.addProperty(MUS.U12_has_genre, genre);
+    for (Resource genre : genreList) this.addProperty(MUS.U12_has_genre, genre);
 
     String orderNumber = getOrderNumber();
     if (orderNumber != null) {
       List<Integer> range = Utils.toRange(orderNumber);
       if (range == null)
-        this.resource.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNumber));
+        this.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNumber));
       else
-        for (int i : range) this.resource.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
+        for (int i : range) this.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
     }
 
     M6_Casting casting = new M6_Casting(record, this.uri + "/casting/1");
@@ -372,7 +372,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
   }
 
   public F22_SelfContainedExpression add(F30_PublicationEvent f30) {
-    this.addProperty(MUS.U4_had_princeps_publication, f30.asResource());
+    this.addProperty(MUS.U4_had_princeps_publication, f30);
     return this;
   }
 
@@ -382,7 +382,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
   }
 
   public F22_SelfContainedExpression addMovement(F22_SelfContainedExpression movement) {
-    this.addProperty(FRBROO.R5_has_component, movement.asResource());
+    this.addProperty(FRBROO.R5_has_component, movement);
     return this;
   }
 

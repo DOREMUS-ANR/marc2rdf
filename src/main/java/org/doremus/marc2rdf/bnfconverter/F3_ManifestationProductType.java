@@ -215,7 +215,6 @@ public class F3_ManifestationProductType extends DoremusResource {
 
     if (distributor == null) return null;
 
-
     // search for residence
     DataField df = record.getDatafieldByCode(260);
     List<Subfield> sf = df.getSubfields();

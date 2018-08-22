@@ -15,3 +15,7 @@ http://data.doremus.org/ontology#U89_occured_in_performance_conditions,performan
 http://data.doremus.org/ontology#U95_has_hierarchical_level,level
 http://data.doremus.org/ontology#CLU217_should_have_playing_speed,playing_speed
 http://data.doremus.org/ontology#U214_has_colour_content,color_content
+http://data.doremus.org/ontology#U219_used_object_of_type_for_mixing,recording_equipment
+http://data.doremus.org/ontology#U218_used_object_of_type_for_mastering,recording_equipment
+http://data.doremus.org/ontology#U225_used_sound_spatialization_technique,spatialization
+http://data.doremus.org/ontology#U192_used_noise_reduction_technique,noise_reduction

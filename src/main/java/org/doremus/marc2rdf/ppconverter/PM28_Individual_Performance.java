@@ -14,7 +14,7 @@ public class PM28_Individual_Performance extends DoremusResource {
   public PM28_Individual_Performance(String baseUri, int id) {
     super();
     regenerateResource(baseUri + "/" + id);
-    this.resource.addProperty(RDF.type, MUS.M28_Individual_Performance);
+    this.setClass(MUS.M28_Individual_Performance);
   }
 
   public void set(Artist actor, String mop, String function, String character, String note, boolean isPrincipal) {
@@ -36,8 +36,7 @@ public class PM28_Individual_Performance extends DoremusResource {
   }
 
   public void setActor(Artist actor) {
-    this.resource.addProperty(CIDOC.P14_carried_out_by, actor.asResource());
-    this.model.add(actor.getModel());
+    this.addProperty(CIDOC.P14_carried_out_by, actor);
   }
 
   private void setCharacter(String character) {
@@ -58,7 +57,7 @@ public class PM28_Individual_Performance extends DoremusResource {
         .addProperty(CIDOC.P3_has_note, text, "fr");
     }
 
-    this.resource.addProperty(MUS.U27_performed_character, charResource);
+    this.addProperty(MUS.U27_performed_character, charResource);
   }
 
   public void setFunctionByCode(String code) {
@@ -71,7 +70,7 @@ public class PM28_Individual_Performance extends DoremusResource {
       .addProperty(RDF.type, MUS.M31_Actor_Function)
       .addProperty(RDFS.label, label, "fr")
       .addProperty(CIDOC.P1_is_identified_by, label, "fr");
-    this.resource.addProperty(MUS.U31_had_function, function);
+    this.addProperty(MUS.U31_had_function, function);
   }
 
   public void setAsPrincipal() {
@@ -80,6 +79,6 @@ public class PM28_Individual_Performance extends DoremusResource {
       .addProperty(RDF.type, MUS.M49_Performer_Status)
       .addProperty(RDFS.label, label, "fr")
       .addProperty(CIDOC.P1_is_identified_by, label, "fr");
-    this.resource.addProperty(MUS.U81_had_performer_status, status);
+    this.addProperty(MUS.U81_had_performer_status, status);
   }
 }

@@ -36,6 +36,7 @@ public class BNF2RDF extends AbstractConverter {
 
   private static boolean modifiedOut = false;
   private boolean somethingHasBeenConverted;
+  private Record mainRecord;
 
 
   public BNF2RDF() {
@@ -51,8 +52,7 @@ public class BNF2RDF extends AbstractConverter {
       System.out.println("Exception occurred parsing file " + file);
     }
 
-    String extArk = null;
-
+    mainRecord =null;
     for (Record r : reader.getRecords()) {
 //      try {
 //        ControlField leader = r.getControlfieldByCode("leader");
@@ -68,8 +68,8 @@ public class BNF2RDF extends AbstractConverter {
       if (r.getType() == null) return null;
 
       if (r.isBIB()) {
-        BIBRecordConverter conv = convertBIB(r, extArk);
-        if (extArk == null) extArk = conv.getArk();
+        convertBIB(r, mainRecord);
+        if (mainRecord == null) mainRecord = r;
       } else convertAuthority(r);
     }
 
@@ -89,10 +89,9 @@ public class BNF2RDF extends AbstractConverter {
     return leader.getData().charAt(r.isBIB() ? 22 : 9) + "";
   }
 
-  private BIBRecordConverter convertBIB(Record r, String extArk) {
-    BIBRecordConverter conv = new BIBRecordConverter(r, model, extArk);
+  private void convertBIB(Record r, Record upperRecord) {
+    new BIBRecordConverter(r, model, upperRecord);
     somethingHasBeenConverted = true;
-    return conv;
   }
 
   private void convertAuthority(Record r) {

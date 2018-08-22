@@ -57,7 +57,7 @@ public class F15_ComplexWork extends DoremusResource {
     if (match == null) match = searchDerivationMatch(derivType.split(" ")[0]);
     if (match == null) return;
 
-    this.resource.addProperty(FRBROO.R2_is_derivative_of, targetWork.asResource())
+    this.addProperty(FRBROO.R2_is_derivative_of, targetWork)
       .addProperty(MUS.U47_has_derivation_type, match);
   }
 
@@ -85,12 +85,12 @@ public class F15_ComplexWork extends DoremusResource {
       new M45_DescriptiveExpressionAssignment(record) :
       new F42_Representative_Expression_Assignment(record);
 
-    assignment.addProperty(CIDOC.P141_assigned, f22.asResource())
-      .addProperty(CIDOC.P140_assigned_attribute_to, this.asResource());
+    assignment.addProperty(CIDOC.P141_assigned, f22)
+      .addProperty(CIDOC.P140_assigned_attribute_to, this);
 
     this.model.add(assignment.getModel());
 
-    this.addProperty(predicate, f22.asResource());
+    this.addProperty(predicate, f22);
     return this;
   }
 
@@ -101,7 +101,7 @@ public class F15_ComplexWork extends DoremusResource {
   }
 
   public F15_ComplexWork add(F14_IndividualWork f14) {
-    this.addProperty(FRBROO.R10_has_member, f14.asResource());
+    this.addProperty(FRBROO.R10_has_member, f14);
     return this;
   }
 

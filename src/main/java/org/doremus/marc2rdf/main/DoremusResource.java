@@ -114,8 +114,7 @@ public abstract class DoremusResource {
     text = text.trim();
     if (text.isEmpty()) return;
 
-    this.resource
-      .addProperty(RDFS.comment, text, lang)
+    this.addProperty(RDFS.comment, text, lang)
       .addProperty(CIDOC.P3_has_note, text, lang);
   }
 
