@@ -1,25 +1,18 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.Utils;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
+import org.doremus.marc2rdf.marcparser.Subfield;
 import org.doremus.marc2rdf.ppconverter.PM43_PerformedExpression;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
 import java.util.Objects;
 
-public class M46_SetOfTracks extends DoremusResource {
-  private boolean recordAsATrack = false;
-
-  public M46_SetOfTracks(String identifier) {
-    super(identifier);
-    this.setClass(MUS.M46_Set_of_Tracks);
-    this.addProperty(DC.identifier, this.identifier);
-  }
+public class M46_SetOfTracks extends BIBDoremusResource {
 
   public M46_SetOfTracks(Record record) {
     super(record);
@@ -27,6 +20,8 @@ public class M46_SetOfTracks extends DoremusResource {
     this.setClass(MUS.M46_Set_of_Tracks);
     this.addProperty(DC.identifier, this.identifier)
       .addProperty(MUS.U227_has_content_type, "performed music", "en");
+
+    parseTitleAndStatements(false);
 
     record.getDatafieldsByCode(143).stream()
       .map(M40_Context::fromField)
@@ -43,17 +38,76 @@ public class M46_SetOfTracks extends DoremusResource {
       );
   }
 
+  public M46_SetOfTracks(Record record, DataField datafield, int i) {
+    // Expression globale résultant d'un editing
+    super(record.getIdentifier() + i);
+    this.record = record;
+
+    this.setClass(MUS.M46_Set_of_Tracks);
+    this.addProperty(DC.identifier, this.identifier)
+      .addProperty(MUS.U227_has_content_type, "performed music", "en");
+
+    int _case = BIBRecordConverter.getCase(record);
+
+    String field1 = record.getControlfieldByCode("001").getData();
+
+    if (_case == 1) {
+      parseDuration();
+      parseISRCId();
+      titleFromField(245, false).forEach(this::addTitle);
+    }
+
+    if (_case == 2) {
+      // order number
+      String num = field1.substring(13, 16);
+      if (record.getLevel() == 2) num = field1.substring(16, 19);
+      this.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(num));
+
+      // title and statements
+      parseTitleAndStatements(false);
+      parseResponsibilities(false);
+      parseCastStatement();
+
+      // duration
+      parseDuration();
+
+      // id ISRC
+      parseISRCId();
+    }
+
+    if (_case == 3) {
+      // title
+      parseTitleField(datafield, true, true)
+        .forEach(title -> this.addProperty(CIDOC.P102_has_title, title));
+    }
+  }
+
+  private void parseISRCId() {
+    for (DataField df : record.getDatafieldsByCode("030")) {
+      String current = null;
+      for (Subfield sf : df.getSubfields()) {
+        switch (sf.getCode()) {
+          case 'a':
+            if (current != null) this.addComplexIdentifier(current, "ISRC", null);
+            current = sf.getData().trim();
+            break;
+          case 'b':
+            //noinspection StringConcatenationInLoop
+            current += " (" + sf.getData().trim() + ")";
+        }
+      }
+      if (current != null) this.addComplexIdentifier(current, "ISRC", null);
+    }
+  }
+
+  private void parseDuration() {
+    record.getDatafieldsByCode(245, 't')
+      .forEach(duration -> this.addProperty(MUS.U53_has_duration, Utils.duration2iso(duration)));
+  }
+
   public M46_SetOfTracks add(PM43_PerformedExpression exp) {
     this.asResource().addProperty(MUS.U51_is_partial_or_full_recording_of, exp.asResource());
     return this;
   }
 
-  public void addTitle(Literal title) {
-    this.addProperty(MUS.U167_has_title_proper, title);
-    this.addProperty(RDFS.label, title);
-  }
-
-  public void addParallelTitle(Literal title) {
-    this.addProperty(MUS.U168_has_parallel_title, title);
-  }
 }

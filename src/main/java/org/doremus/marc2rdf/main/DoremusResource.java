@@ -196,12 +196,12 @@ public abstract class DoremusResource {
     return this;
   }
 
-  protected DoremusResource addProperty(Property property, Literal literal) {
+  public DoremusResource addProperty(Property property, Literal literal) {
     if (literal != null) this.resource.addProperty(property, literal);
     return this;
   }
 
-  protected DoremusResource addProperty(Property property, String literal, XSDDatatype datatype) {
+  public DoremusResource addProperty(Property property, String literal, XSDDatatype datatype) {
     if (literal != null && !literal.isEmpty()) this.resource.addProperty(property, literal.trim(), datatype);
     return this;
   }

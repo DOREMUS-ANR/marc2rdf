@@ -45,6 +45,7 @@ public class MarcXmlHandler implements ContentHandler {
   private String CODE;
   private String TYPE;
   private String ID;
+  private String LEVEL;
   private String IND1;
   private String IND2;
 
@@ -87,6 +88,7 @@ public class MarcXmlHandler implements ContentHandler {
     elementMap.put(attrLabel, ATTR);
     this.IND1 = "ind1";
     this.IND2 = "ind2";
+    this.LEVEL = "Niv";
     this.useControlField = true;
   }
 
@@ -117,8 +119,10 @@ public class MarcXmlHandler implements ContentHandler {
           id = idNotice + '-' + id;
           type = typeNotice;
         }
-
         this.record = new Record(type, id);
+        if (this.LEVEL != null)
+          record.setLevel(attrs.getValue(LEVEL));
+
         recordInProgress.add(this.record);
         break;
       case CONTROLFIELD:

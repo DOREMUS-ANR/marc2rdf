@@ -4,9 +4,13 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Attr;
+import org.doremus.marc2rdf.marcparser.ControlField;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class BIBRecordConverter {
@@ -14,12 +18,6 @@ public class BIBRecordConverter {
   public Resource provActivity, intermarcRes;
   private Model model;
   private Record record;
-
-  private F22_SelfContainedExpression f22;
-  public F28_ExpressionCreation f28;
-  private F14_IndividualWork f14;
-  private F15_ComplexWork f15;
-
 
   public BIBRecordConverter(Record record, Model model, String extArk) {
     this.record = record;
@@ -32,39 +30,19 @@ public class BIBRecordConverter {
     intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
     provActivity = BNF2RDF.computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
-    if (BNF2RDF.getRecordCode(record).equals("g")) convertDAV();
+    if (BNF2RDF.getRecordCode(record).equals("g"))
+      if (isANL(record)) convertANL();
+      else convertDAV();
+  }
 
-//    for (DataField field : record.getDatafieldsByCode(143)) {
-//      if (!field.isCode('a')) continue;
-//      String subA = field.getSubfield('a').getData();
-//      if (!"Traditions".equals(subA)) continue;
-//      System.out.println(record.getIdentifier());
-//      System.out.println(field);
-//    }
-//    // Instantiate work and expression
-//    f28 = new F28_ExpressionCreation(record);
-//    f22 = new F22_SelfContainedExpression(record, f28);
-//    f14 = new F14_IndividualWork(record);
-//    f15 = new F15_ComplexWork(record);
-////    F40_IdentifierAssignment f40 = new F40_IdentifierAssignment(record);
-//    M45_DescriptiveExpressionAssignment f42 = new M45_DescriptiveExpressionAssignment(record);
-//
-//    f28.add(f22).add(f14);
-//    f15.add(f22).add(f14);
-//    f14.add(f22);
-////    f40.add(f22).add(f14).add(f15);
-//    f42.add(f22).add(f15);
-//
-//    addPrincepsPublication();
-//    addPerformances();
-//    linkToMovements();
-//
-//
-//
-//    for (DoremusResource res : new DoremusResource[]{f22, f28, f15, f14, f42}) {
-//      addProvenanceTo(res);
-//      model.add(res.getModel());
-//    }
+  public static boolean isANL(Record record) {
+    ControlField leader = record.getControlfieldByCode("leader");
+    return leader.getData().charAt(8) == 'd';
+  }
+
+  private void convertANL() {
+    M46_SetOfTracks tracks = new M46_SetOfTracks(record, null, 0);
+    // TODO fields 331
 
   }
 
@@ -79,73 +57,69 @@ public class BIBRecordConverter {
     M46_SetOfTracks tracks = new M46_SetOfTracks(record);
     F28_ExpressionCreation aggregationEvent = new F28_ExpressionCreation(record);
 
-    publicationExpression.getTitles().forEach(tracks::addTitle);
-    publicationExpression.getParallelTitles().forEach(tracks::addParallelTitle);
-
     publicationEvent.add(publicationExpression).add(publicationWork);
     publicationWork.add(publicationExpression);
     manif.add(publicationExpression);
     aggregationWork.add(tracks);
     aggregationEvent.add(aggregationWork).add(tracks);
 
-    for (DoremusResource r : Arrays.asList(manif, publicationExpression)) {
+
+    switch (getCase(record)) {
+      case 1:
+        convertInner(null, 0);
+        break;
+      case 3:
+        int i = 0;
+        convertInner(record.getDatafieldByCode(144), i);
+        for (DataField df : record.getDatafieldsByCode(744)) convertInner(df, ++i);
+    }
+
+
+    for (DoremusResource r : Arrays.asList(manif, publicationExpression, publicationEvent, publicationWork,
+      aggregationEvent, aggregationWork, tracks)) {
       r.addProvenance(intermarcRes, provActivity);
       this.model.add(r.getModel());
     }
   }
 
-
-  private void addPerformances() {
-    int performanceCounter = 0;
-
-    for (String performance : M42_PerformedExpressionCreation.getPerformances(record)) {
-      M42_PerformedExpressionCreation m42 = new M42_PerformedExpressionCreation(performance, record, f28, ++performanceCounter);
-      F25_PerformancePlan f25 = new F25_PerformancePlan(m42.getIdentifier());
-
-      m42.add(f25).add(f22);
-      f25.add(f22);
-      f15.add(m42);
-
-      if (m42.isPremiere()) {
-        f14.addPremiere(m42);
-        f22.addPremiere(m42);
-      }
-
-      model.add(m42.getModel());
-      model.add(f25.getModel());
-    }
+  private void convertInner(DataField df, int i) {
+    M46_SetOfTracks sot = new M46_SetOfTracks(record, df, i);
   }
 
-  private void addPrincepsPublication() {
-    int pubCounter = 0;
 
-    for (String edition : F30_PublicationEvent.getEditionPrinceps(record)) {
+  private static final List<String> CONDUCTOR_CODES = Arrays.asList("1080", "1040");
 
-      F30_PublicationEvent f30 = new F30_PublicationEvent(edition.trim(), record, f28, ++pubCounter);
-      F24_PublicationExpression f24 = new F24_PublicationExpression(f30.getIdentifier());
-      F19_PublicationWork f19 = new F19_PublicationWork(f30.getIdentifier());
+  public static int getCase(Record record) {
+    if (isANL(record)) return 2;
 
-      f30.add(f24).add(f19);
-      f19.add(f24);
-      f24.add(f22);
+    // case 1 or case 3
+    if (record.getDatafieldsByCode(744).size() == 0)
+      if (record.getDatafieldsByCode(144).size() > 0)
+        return 1;
+      else return -1;
 
-      if (pubCounter > 1) {
-        f14.add(f30);
-        f22.add(f30);
-      }
+    List<DataField> z101 = record.getDatafieldsByCode(101);
+    List<DataField> z111 = record.getDatafieldsByCode(111);
+    List<DataField> z701 = record.getDatafieldsByCode(701);
+    List<DataField> z711 = record.getDatafieldsByCode(711);
+    List<DataField> z100 = record.getDatafieldsByCode(100);
 
-      model.add(f24.getModel());
-      model.add(f30.getModel());
-      model.add(f19.getModel());
-    }
+    z101.addAll(z701); // person
+    z111.addAll(z711); // ensemble
+
+    if (z101.size() > 1) return -1;
+    if (z101.size() > 0 && z100.size() == 0) return -1;
+
+    // conductors should not be counted
+    z101 = z101.stream().filter(x -> {
+      String code = x.getString('4');
+      return !CONDUCTOR_CODES.contains(code);
+    }).collect(Collectors.toList());
+
+    z101.addAll(z111);
+    return z101.size() > 1 ? -1 : 3;
   }
 
-  private void linkToMovements() {
-    for (String code : record.getDatafieldsByCode("302", '3')) {
-      f14.addMovement(new F14_IndividualWork(code));
-      f22.addMovement(new F22_SelfContainedExpression(code));
-    }
-  }
 
   public Model getModel() {
     return model;

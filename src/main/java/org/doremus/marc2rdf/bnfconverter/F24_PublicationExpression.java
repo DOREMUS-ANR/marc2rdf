@@ -1,31 +1,25 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.ontology.OntClass;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Person;
-import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
-import org.doremus.marc2rdf.marcparser.Subfield;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class F24_PublicationExpression extends DoremusResource {
+public class F24_PublicationExpression extends BIBDoremusResource {
   private static final Pattern EXTRAIT_PATTERN = Pattern.compile("(extr(ait|\\.)|choix)", Pattern.CASE_INSENSITIVE);
 
   private static final String SPONSOR_REGEX = "(soutien|parrainage|avec l'appui) d[ue]";
@@ -38,9 +32,6 @@ public class F24_PublicationExpression extends DoremusResource {
   private static final Pattern AWARD_PATTERN = Pattern.compile(AWARD_REGEX, Pattern.CASE_INSENSITIVE);
 
   private static final String BNF_CATEGORIZATION_NS = "http://data.doremus.org/vocabulary/categorization/bnf/";
-  private List<Literal> titles;
-  private List<Literal> parallelTitles;
-  private int countResp = 0;
 
   public F24_PublicationExpression(String identifier) {
     super(identifier);
@@ -55,50 +46,12 @@ public class F24_PublicationExpression extends DoremusResource {
     parseAdditionalMaterial();
 
     // titles
-    titles = titleFromField(245, false).peek(title -> {
-      this.addProperty(MUS.U167_has_title_proper, title);
-      this.addProperty(RDFS.label, title);
-    }).collect(Collectors.toList());
-    parallelTitles = titleFromField(247, false).peek(
-      title -> this.addProperty(MUS.U168_has_parallel_title, title))
-      .collect(Collectors.toList());
-    record.getDatafieldsByCode(245, 'e').forEach(title -> this.addProperty(MUS.U67_has_subtitle, title));
-    titleFromField(750, true).forEach(title -> this.addProperty(MUS.U68_has_variant_title, title));
-    titleFromField(751, true).forEach(title -> this.addProperty(MUS.U68_has_variant_title, title));
-
-    // title statements
-    titleFromField(245, true).forEach(this::addTitleStatement);
-    titleFromField(247, true).forEach(title -> addTitleStatement(title, true));
-
-    // title auxiliary info
-    for (DataField dataField : record.getDatafieldsByCode(245)) {
-      List<Literal> literals = extractResponsibilities(dataField, true);
-      for (Literal literal : literals) {
-        this.addStatement(this.uri + "/responsibility/" + ++countResp, literal, MUS.M157_Statement_of_Responsibility,
-          MUS.U172_has_statement_of_responsibility_relating_to_title);
-      }
-    }
-    for (DataField dataField : record.getDatafieldsByCode(247)) {
-      List<Literal> literals = extractResponsibilities(dataField);
-      for (Literal literal : literals) {
-        this.addStatement(this.uri + "/responsibility/" + ++countResp, literal, MUS.M157_Statement_of_Responsibility,
-          MUS.U173_has_parallel_statement_of_responsibility_relating_to_title);
-      }
-    }
-
-
-    // cast statement
-    String note = record.getDatafieldsByCode(245, 'j').stream().findFirst().orElse(null);
-    Stream<String> annotation = record.getDatafieldsByCode(313).stream()
-      .filter(df -> df.isCode('k'))
-      .map(df -> df.getString('k') + " : " + String.join(" ; " + df.getStrings('a')));
-    this.addStatement(this.uri + "/cast/1", note, MUS.M155_Cast_Statement, MUS.U174_has_cast_statement, annotation);
-
-    note = record.getDatafieldsByCode(247, 'j').stream().findFirst().orElse(null);
-    this.addStatement(this.uri + "/cast/2", note, MUS.M155_Cast_Statement, MUS.U175_has_parallel_cast_statement);
+    parseTitleAndStatements(true);
+    parseResponsibilities(true);
+    parseCastStatement();
 
     // edition
-    note = record.getDatafieldsByCode(250, 'a').stream().findFirst().orElse(null);
+    String note = record.getDatafieldsByCode(250, 'a').stream().findFirst().orElse(null);
     List<String> annotations = record.getDatafieldsByCode(351, 'a');
     annotations.add(parseEditionSupplement());
     this.addStatement(this.uri + "/edition/1", note, MUS.M159_Edition_Statement, MUS.U176_has_edition_statement,
@@ -116,7 +69,6 @@ public class F24_PublicationExpression extends DoremusResource {
       this.addStatement(this.uri + "/edition/" + ++i, n, MUS.M159_Edition_Statement, p);
     }
 
-
     // publication
     i = 0;
     for (DataField df : record.getDatafieldsByCode(260))
@@ -128,14 +80,14 @@ public class F24_PublicationExpression extends DoremusResource {
       this.addStatement(this.uri + "/publication/" + ++i, F30_PublicationEvent.parsePublisherField(df),
         CIDOC.E33_Linguistic_Object, MUS.U186_has_printing_or_manufacture_statement);
 
-
     // other titles
+    record.getDatafieldsByCode(245, 'e')
+      .forEach(title -> this.addProperty(MUS.U67_has_subtitle, title));
     titleFromField(290, false)
       .forEach(x -> this.addProperty(MUS.U224_has_title_proper_of_multipart_monograph, x));
     Property p = (record.getDatafieldByCode(395) == null) ?
       MUS.U221_has_title_proper_of_series : MUS.U222_has_title_proper_of_sub_series;
-    titleFromField(295, false)
-      .forEach(x -> this.addProperty(p, x));
+    titleFromField(295, false).forEach(x -> this.addProperty(p, x));
 
 
     // illustrative content
@@ -209,14 +161,7 @@ public class F24_PublicationExpression extends DoremusResource {
       if (ln == null) continue;
       String _id = df.getString('a');
 
-
-      this.addProperty(CIDOC.P1_is_identified_by, model.createResource(this.uri + "/id/" + _id)
-        .addProperty(RDF.type, CIDOC.E42_Identifier)
-        .addProperty(CIDOC.P2_has_type, "Référence commerciale")
-        .addProperty(FRBROO.R8_consists_of, ln.asResource())
-        .addProperty(FRBROO.R8_consists_of, _id)
-        .addProperty(RDFS.label, _id)
-      );
+      this.addComplexIdentifier(_id, "Référence commerciale", ln);
     }
 
 
@@ -440,184 +385,10 @@ public class F24_PublicationExpression extends DoremusResource {
     return sb.toString();
   }
 
-  private void addStatement(String uri, Object text, OntClass _class, Property property) {
-    addStatement(uri, text, _class, property, (Stream<String>) null);
-  }
-
-  private void addStatement(String uri, Object text, OntClass _class, Property property, List<String> annotation) {
-    addStatement(uri, text, _class, property, annotation.stream());
-  }
-
-  private void addStatement(String uri, Object text, OntClass _class, Property property, Stream<String> annotation) {
-    if (text == null) return;
-    Literal l = null;
-    if (text instanceof String) l = model.createLiteral((String) text);
-    else if (text instanceof Literal) l = (Literal) text;
-
-
-    Resource resource = model.createResource(uri)
-      .addProperty(RDF.type, _class)
-      .addProperty(RDFS.comment, l);
-
-    if (annotation != null)
-      annotation.filter(Objects::nonNull).forEach(a -> resource.addProperty(MUS.U50_has_annotation, a));
-    this.addProperty(property, resource);
-  }
-
-
-  private List<Literal> extractResponsibilities(DataField df) {
-    return extractResponsibilities(df, false);
-  }
-
-  @SuppressWarnings("StringConcatenationInLoop")
-  private List<Literal> extractResponsibilities(DataField df, boolean secondaryParsing) {
-    List<Literal> list = new ArrayList<>();
-
-    String language = null;
-    String current = null;
-    boolean secondaryDone = false;
-    boolean aOk = false;
-    for (Subfield sf : df.getSubfields()) {
-      String value = sf.getData();
-      switch (sf.getCode()) {
-        case 'a':
-          aOk = true;
-          break;
-        case 'd':
-          break;
-        case 'f':
-          if (current != null) list.add(model.createLiteral(current, language));
-          current = value;
-          break;
-        case 'g':
-          current += ", " + value;
-          if (secondaryParsing && aOk)
-            if (!secondaryDone) {
-              secondaryDone = true;
-              this.addStatement(this.uri + "/responsibility/" + ++countResp, current, MUS.M157_Statement_of_Responsibility,
-                MUS.U178_has_statement_of_responsibility_relating_to_edition);
-            } else
-              this.addStatement(this.uri + "/responsibility/" + ++countResp, current, MUS.M157_Statement_of_Responsibility,
-                MUS.U179_has_parallel_statement_of_responsibility_relating_to_edition);
-
-          break;
-        case 'w':
-          language = Utils.intermarcExtractLang(value);
-        default:
-          aOk = false;
-      }
-    }
-    if (current != null) {
-      list.add(model.createLiteral(current, language));
-      if (secondaryParsing && aOk)
-        if (!secondaryDone)
-          this.addStatement(this.uri + "/responsibility/" + ++countResp, current, MUS.M157_Statement_of_Responsibility,
-            MUS.U178_has_statement_of_responsibility_relating_to_edition);
-        else
-          this.addStatement(this.uri + "/responsibility/" + ++countResp, current, MUS.M157_Statement_of_Responsibility,
-            MUS.U179_has_parallel_statement_of_responsibility_relating_to_edition);
-    }
-    return list;
-  }
-
-  private void addTitleStatement(Literal title) {
-    addTitleStatement(title, false);
-  }
-
-  private void addTitleStatement(Literal title, boolean asParallel) {
-    Resource titleStatement = model.createResource(this.uri + "/title")
-      .addProperty(RDF.type, MUS.M156_Title_Statement)
-      .addProperty(RDFS.comment, title);
-
-    if (!asParallel) {
-      List<String> notes = record.getDatafieldsByCode(300, 'a');
-      notes.addAll(record.getDatafieldsByCode(350, 'a'));
-      notes.stream()
-        .filter(s -> s.toLowerCase().startsWith("titre"))
-        .filter(s -> s.toLowerCase().contains("titre restitué") ||
-          (!s.contains("compositeur") && !s.contains("interprète")))
-        .forEach(s -> titleStatement.addProperty(MUS.U50_has_annotation, s));
-
-      record.getDatafieldsByCode(750).stream()
-        .filter(x -> x.isCode('k'))
-        .map(x -> parseTitleField(x, true, true))
-        .flatMap(List::stream)
-        .forEach(s -> titleStatement.addProperty(MUS.U50_has_annotation, s));
-    }
-    this.addProperty(
-      asParallel ? MUS.U171_has_parallel_title_statement : MUS.U170_has_title_statement,
-      titleStatement);
-  }
-
-  private List<Literal> parseTitleField(DataField df, boolean parseE, boolean parseK) {
-    List<Literal> list = new ArrayList<>();
-
-    char lastCode = 0;
-    String currentTitle = null, language = null, currentK = null;
-
-    for (Subfield sf : df.getSubfields()) {
-      String value = sf.getData();
-      switch (sf.getCode()) {
-        case 'k':
-          if (parseK) currentK = value;
-          break;
-        case 'a':
-        case 'b':
-        case 'c':
-          if (currentTitle != null) {
-            if (currentK != null) currentTitle = currentK + " \"" + currentTitle + "\"";
-            currentK = null;
-            list.add(model.createLiteral(currentTitle, language));
-          }
-          currentTitle = value
-            .replaceAll("\\|", "")
-            .replaceAll("\\.{3} ?\\[etc\\.] ?$", "")
-            .replaceAll("^(?i)(suivi d[e']|pr[eèé]c[eèé]d[eèé][eèé]? d[e']|avec)", "")
-            .replaceAll("\\s+", " ");
-          break;
-        case 'e':
-          if (parseE)
-            currentTitle += " : " + value;
-          break;
-        case 'h':
-          currentTitle += ". " + value;
-          break;
-        case 'i':
-          currentTitle += (lastCode == 'h' ? ", " : ". ") + value;
-          break;
-        case 'w':
-          language = Utils.intermarcExtractLang(value);
-      }
-      lastCode = sf.getCode();
-      if (currentTitle != null) {
-        if (currentK != null) currentTitle = currentK + " \"" + currentTitle + "\"";
-        list.add(model.createLiteral(currentTitle, language));
-      }
-    }
-    return list;
-  }
-
-  private Stream<Literal> titleFromField(int field, boolean parseE) {
-    return titleFromField(record.getDatafieldsByCode(field), parseE);
-  }
-
-  private Stream<Literal> titleFromField(List<DataField> dfs, boolean parseE) {
-    return dfs.stream()
-      .map(df -> parseTitleField(df, parseE, false))
-      .flatMap(List::stream);
-  }
-
 
   public F24_PublicationExpression add(F22_SelfContainedExpression expression) {
     this.resource.addProperty(CIDOC.P165_incorporates, expression.asResource());
     return this;
   }
 
-  public List<Literal> getTitles() {
-    return titles;
-  }
-
-  public List<Literal> getParallelTitles() {
-    return parallelTitles;
-  }
 }

@@ -11,6 +11,7 @@ public class Record {
   private List<Attr> attrList;
   private String id;
   private String type;
+  private int level;
 
   public Record(String type, String id) {
     controlFields = new ArrayList<>();
@@ -18,6 +19,7 @@ public class Record {
     attrList = new ArrayList<>();
     this.type = type;
     this.id = id;
+    this.level = 0;
   }
 
   public String getIdentifier() {
@@ -138,4 +140,16 @@ public class Record {
     return String.join("\n", lines);
   }
 
+  void setLevel(String value) {
+    if (value == null) return;
+    try {
+      this.level = Integer.parseInt(value);
+    } catch (NumberFormatException nfe) {
+      // do nothing
+    }
+  }
+
+  public int getLevel() {
+    return level;
+  }
 }

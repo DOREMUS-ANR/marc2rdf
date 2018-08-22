@@ -22,7 +22,7 @@ public class M167_PublicationFragment extends DoremusResource {
 
     Resource titleRespStatement = model.createResource(this.uri + "/title_responsibility")
       .addProperty(RDF.type, MUS.M158_Title_and_Statement_of_Responsibility)
-      .addProperty(RDFS.comment, ts);
+      .addProperty(RDFS.comment, tsr);
     this.addProperty(MUS.U220_has_title_and_statement_of_responsibility,  titleRespStatement);
 
     Resource titleStatement = model.createResource(this.uri + "/title")
@@ -33,7 +33,7 @@ public class M167_PublicationFragment extends DoremusResource {
 
     Resource respStatement = model.createResource(this.uri + "/responsibility")
       .addProperty(RDF.type, MUS.M157_Statement_of_Responsibility)
-      .addProperty(RDFS.comment, ts);
+      .addProperty(RDFS.comment, sr);
     this.addProperty(MUS.U172_has_statement_of_responsibility_relating_to_title, respStatement);
     titleRespStatement.addProperty(CIDOC.P148_has_component, respStatement);
 

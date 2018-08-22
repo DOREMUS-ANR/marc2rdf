@@ -54,7 +54,6 @@ public class BNF2RDF extends AbstractConverter {
     String extArk = null;
 
     for (Record r : reader.getRecords()) {
-      // TODO implement mapping for notice of type BIB
 //      try {
 //        ControlField leader = r.getControlfieldByCode("leader");
 //        String code = leader.getData().charAt(r.isBIB() ? 22 : 9) + "";
@@ -91,8 +90,7 @@ public class BNF2RDF extends AbstractConverter {
   }
 
   private BIBRecordConverter convertBIB(Record r, String extArk) {
-    BIBRecordConverter conv = null;
-    conv = new BIBRecordConverter(r, model, extArk);
+    BIBRecordConverter conv = new BIBRecordConverter(r, model, extArk);
     somethingHasBeenConverted = true;
     return conv;
   }
