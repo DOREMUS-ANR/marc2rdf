@@ -19,8 +19,8 @@ public class F29_RecordingEvent extends BIBDoremusResource {
   private final TimeSpan timeSpan;
   private final E53_Place place;
 
-  public F29_RecordingEvent(Record record, Record mainRecord) {
-    super(record, mainRecord);
+  public F29_RecordingEvent(Record record, Record mainRecord, int i) {
+    super(record, mainRecord, i);
     this.setClass(FRBROO.F29_Recording_Event);
 
     getDatafieldsByCodeFull(352, 'a').stream()

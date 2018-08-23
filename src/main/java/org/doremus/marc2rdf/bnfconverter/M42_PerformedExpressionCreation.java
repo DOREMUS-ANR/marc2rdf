@@ -1,6 +1,5 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
@@ -16,10 +15,10 @@ import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class M42_PerformedExpressionCreation extends DoremusResource {
 
@@ -34,7 +33,9 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
   private boolean isPremiere;
   private F28_ExpressionCreation f28;
-  private Resource M44_Performed_Work, M43_Performed_Expression, F31_Performance;
+  private M43_PerformedExpression expression;
+  private M44_PerformedWork work;
+  private Resource F31_Performance;
   private E53_Place place;
   private TimeSpan timeSpan;
   private int countConsistOf;
@@ -55,14 +56,14 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
     this.identifier = record.getIdentifier() + flag;
     regenerateResource();
-    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
+
+
+    this.setClass(MUS.M42_Performed_Expression_Creation);
     addNote(note);
 
-    String performanceUri = null, expressionUri = null, workUri = null;
+    String performanceUri = null;
     try {
       performanceUri = ConstructURI.build("bnf", "F31_Performance", this.identifier).toString();
-      expressionUri = ConstructURI.build("bnf", "M43_PerformedExpression", this.identifier).toString();
-      workUri = ConstructURI.build("bnf", "M44_PerformedWork", this.identifier).toString();
     } catch (URISyntaxException e) {
       e.printStackTrace();
     }
@@ -73,33 +74,28 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       .addProperty(RDFS.comment, note)
       .addProperty(CIDOC.P9_consists_of, this.resource);
 
-    this.M43_Performed_Expression = model.createResource(expressionUri)
-      .addProperty(RDF.type, MUS.M43_Performed_Expression);
-    for (Literal title : f28.expression.titles)
-      this.M43_Performed_Expression.addProperty(RDFS.label, title);
+    this.expression = new M43_PerformedExpression(this.identifier);
+    f28.expression.titles.forEach(title -> this.expression.addProperty(RDFS.label, title));
 
-    this.M44_Performed_Work = model.createResource(workUri)
-      .addProperty(RDF.type, MUS.M44_Performed_Work)
-      .addProperty(FRBROO.R9_is_realised_in, this.M43_Performed_Expression);
+    this.work = new M44_PerformedWork(this.identifier);
+    this.work.add(this.expression);
 
-    this.resource.addProperty(FRBROO.R17_created, this.M43_Performed_Expression)
-      .addProperty(FRBROO.R19_created_a_realisation_of, this.M44_Performed_Work);
+    this.addProperty(FRBROO.R17_created, this.expression)
+      .addProperty(FRBROO.R19_created_a_realisation_of, this.work);
 
     this.f28 = f28;
 
     parseNote(note);
 
     if (place != null) {
-      this.resource.addProperty(CIDOC.P7_took_place_at, place.asResource());
+      this.addProperty(CIDOC.P7_took_place_at, place);
       this.F31_Performance.addProperty(CIDOC.P7_took_place_at, place.asResource());
     }
 
     if (timeSpan != null) {
       timeSpan.setUri(this.F31_Performance.getURI() + "/interval");
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+      this.addTimeSpan(timeSpan);
       this.F31_Performance.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-
-      this.model.add(timeSpan.getModel());
     }
   }
 
@@ -229,12 +225,12 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
   }
 
-  public Resource getExpression() {
-    return M43_Performed_Expression;
+  public M43_PerformedExpression getExpression() {
+    return expression;
   }
 
-  public Resource getWork() {
-    return M44_Performed_Work;
+  public M44_PerformedWork getWork() {
+    return work;
   }
 
   public M42_PerformedExpressionCreation add(F25_PerformancePlan plan) {
@@ -243,19 +239,15 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   }
 
   public M42_PerformedExpressionCreation add(F22_SelfContainedExpression f22) {
-    this.M43_Performed_Expression.addProperty(MUS.U54_is_performed_expression_of, f22.asResource());
+    this.expression.addProperty(MUS.U54_is_performed_expression_of, f22);
     this.F31_Performance.addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
     return this;
   }
 
   public static List<String> getPerformances(Record record) {
-    List<String> notes = new ArrayList<>();
-
-    for (String note : record.getDatafieldsByCode("600", 'a')) {
-      if (performancePattern.matcher(note).find())
-        notes.add(note);
-    }
-    return notes;
+    return record.getDatafieldsByCode("600", 'a').stream()
+      .filter(note -> performancePattern.matcher(note).find())
+      .collect(Collectors.toList());
   }
 
   public boolean isPremiere() {

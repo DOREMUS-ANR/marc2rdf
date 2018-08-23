@@ -164,8 +164,8 @@ public class F24_PublicationExpression extends BIBDoremusResource {
       this.addComplexIdentifier(_id, "Référence commerciale", ln);
     }
 
-
     // link to f22
+    // FIXME move
     List<DataField> fields = record.getDatafieldsByCode(144);
     fields.addAll(record.getDatafieldsByCode(744));
     fields.stream().filter(x -> x.isCode(3)).forEach(df -> {

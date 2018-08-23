@@ -40,7 +40,7 @@ public class BIBRecordConverter {
   }
 
   private void convertANL() {
-    M46_SetOfTracks tracks = new M46_SetOfTracks(record, null, 0);
+    convertInner(null, 0);
     // TODO fields 331
 
   }
@@ -72,7 +72,6 @@ public class BIBRecordConverter {
         for (DataField df : record.getDatafieldsByCode(744)) convertInner(df, ++i);
     }
 
-
     for (DoremusResource r : Arrays.asList(manif, publicationExpression, publicationEvent, publicationWork,
       aggregationEvent, aggregationWork, tracks)) {
       r.addProvenance(intermarcRes, provActivity);
@@ -83,16 +82,19 @@ public class BIBRecordConverter {
   private void convertInner(DataField df, int i) {
     M46_SetOfTracks sot = new M46_SetOfTracks(record, df, i);
 
-    M29_Editing editing = new M29_Editing(mainRecord, this.mainRecord.getIdentifier());
-    F26_Recording recording = new F26_Recording(record, mainRecord);
-    F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record, mainRecord);
-    recording.getProducers().forEach(p->recordingEvent.addProducer(p));
-    F21_RecordingWork recordingWork = new F21_RecordingWork(record);
+    M29_Editing editing = new M29_Editing(mainRecord, this.mainRecord.getIdentifier() + i);
+    F26_Recording recording = new F26_Recording(record, mainRecord, i);
+    F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record, mainRecord, i);
+    recording.getProducers().forEach(recordingEvent::addProducer);
+    F21_RecordingWork recordingWork = new F21_RecordingWork(record, i);
 
     recordingEvent.add(recording).add(recordingWork);
     recordingWork.add(recording);
     editing.add(sot);
 
+    M43_PerformedExpression performedExpression = new M43_PerformedExpression(record, record.getIdentifier() + i, df);
+    M44_PerformedWork performedWork = new M44_PerformedWork(record, record.getIdentifier() + i, df);
+    performedWork.add(performedExpression);
   }
 
 

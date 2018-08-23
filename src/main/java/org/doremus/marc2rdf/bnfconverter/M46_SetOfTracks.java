@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -11,6 +12,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class M46_SetOfTracks extends BIBDoremusResource {
 
@@ -23,10 +25,7 @@ public class M46_SetOfTracks extends BIBDoremusResource {
 
     parseTitleAndStatements(false);
 
-    record.getDatafieldsByCode(143).stream()
-      .map(M40_Context::fromField)
-      .filter(Objects::nonNull)
-      .peek(x -> this.addProperty(MUS.U65_has_geographical_context, x.getGeoContext()))
+    parseContext(record).peek(x -> this.addProperty(MUS.U65_has_geographical_context, x.getGeoContext()))
       .forEach(x -> this.addProperty(MUS.U64_has_cultural_context, x));
 
     F24_PublicationExpression.parseCategorization(record)
@@ -36,6 +35,12 @@ public class M46_SetOfTracks extends BIBDoremusResource {
         .addProperty(CIDOC.P141_assigned, r)
         .addProperty(CIDOC.P14_carried_out_by, BNF2RDF.BnF)
       );
+  }
+
+  static Stream<M40_Context> parseContext(Record record) {
+    return record.getDatafieldsByCode(143).stream()
+      .map(M40_Context::fromField)
+      .filter(Objects::nonNull);
   }
 
   public M46_SetOfTracks(Record record, DataField datafield, int i) {
@@ -78,7 +83,7 @@ public class M46_SetOfTracks extends BIBDoremusResource {
     if (_case == 3) {
       // title
       parseTitleField(datafield, true, true)
-        .forEach(title -> this.addProperty(CIDOC.P102_has_title, title));
+        .forEach(title -> this.addProperty(CIDOC.P102_has_title, title).addProperty(RDFS.label, title));
     }
   }
 

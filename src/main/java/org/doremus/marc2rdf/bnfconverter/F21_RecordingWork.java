@@ -1,12 +1,11 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 
-public class F21_RecordingWork extends DoremusResource {
-  public F21_RecordingWork(Record record) {
-    super(record);
+public class F21_RecordingWork extends BIBDoremusResource {
+  public F21_RecordingWork(Record record, int i) {
+    super(record, null, i);
     this.setClass(FRBROO.F21_Recording_Work);
   }
 

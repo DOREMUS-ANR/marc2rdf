@@ -33,8 +33,9 @@ abstract class BIBDoremusResource extends DoremusResource {
     super(record);
   }
 
-  public BIBDoremusResource(Record record, Record mainRecord) {
-    super(record);
+  public BIBDoremusResource(Record record, Record mainRecord, int i) {
+    super(record.getIdentifier() + i);
+    this.record = record;
     this.mainRecord = mainRecord;
   }
 

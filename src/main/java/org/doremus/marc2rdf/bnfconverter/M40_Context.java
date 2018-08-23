@@ -21,16 +21,17 @@ import java.util.List;
 public class M40_Context extends DoremusResource {
   private static List<ContextMap> list = null;
   private List<E53_Place> places;
+  private String label;
 
   public M40_Context(DataField df) {
     super();
+    places = new ArrayList<>();
 
     String continent = null;
     List<String> placeChain = df.getStrings('m');
     if (placeChain.size() > 1)
       continent = guessContinent(placeChain.remove(0));
 
-    places = new ArrayList<>();
     E53_Place previous = null;
     for (String p : placeChain) {
       E53_Place place = new E53_Place(p, null, continent);
@@ -41,14 +42,14 @@ public class M40_Context extends DoremusResource {
       } else break;
     }
 
-    String label = df.getString('e');
+    this.label = df.getString('e');
     this.uri = getRameauUri(df.toString());
 
     if (this.uri != null) {
       this.resource = model.createResource(this.uri);
     } else {
       try {
-        this.regenerateResource(ConstructURI.build("M40_Context", "").toString());
+        this.regenerateResource(ConstructURI.build("M40_Context", label).toString());
       } catch (URISyntaxException e) {
         e.printStackTrace();
       }
@@ -72,7 +73,8 @@ public class M40_Context extends DoremusResource {
   }
 
   public static M40_Context fromField(DataField df) {
-    if (!"Traditions".equals(df.getString('a'))) return null;
+    String value = df.getString('a');
+    if (!"Traditions".equals(value)) return null;
     return new M40_Context(df);
   }
 
@@ -108,19 +110,17 @@ public class M40_Context extends DoremusResource {
     return list;
   }
 
+  @SuppressWarnings({"ConstantConditions", "unchecked"})
   private static void init() {
     ClassLoader cl = ClassLoader.getSystemClassLoader();
-    @SuppressWarnings("ConstantConditions")
     File csv = new File(cl.getResource("ethnic_map.csv").getFile());
-
     try {
-      //noinspection unchecked
       list = new CsvToBeanBuilder(new FileReader(csv)).withType(ContextMap.class).build().parse();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
-  }
 
+  }
 
   private static class ContextMap {
     private static final String RAMEAU_BASE = "http://data.bnf.fr/ark:/12148/cb%%%z";

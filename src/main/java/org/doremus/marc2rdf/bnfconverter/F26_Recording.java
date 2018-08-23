@@ -16,8 +16,8 @@ import java.util.stream.Stream;
 public class F26_Recording extends BIBDoremusResource {
   private final List<Artist> producers;
 
-  public F26_Recording(Record record, Record mainRecord) {
-    super(record, mainRecord);
+  public F26_Recording(Record record, Record mainRecord, int num) {
+    super(record, mainRecord, num);
     this.setClass(FRBROO.F26_Recording);
 
     // history
