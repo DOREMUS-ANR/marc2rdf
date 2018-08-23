@@ -85,7 +85,8 @@ public class BIBRecordConverter {
 
     M29_Editing editing = new M29_Editing(mainRecord, this.mainRecord.getIdentifier());
     F26_Recording recording = new F26_Recording(record, mainRecord);
-    F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record);
+    F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record, mainRecord);
+    recording.getProducers().forEach(p->recordingEvent.addProducer(p));
     F21_RecordingWork recordingWork = new F21_RecordingWork(record);
 
     recordingEvent.add(recording).add(recordingWork);

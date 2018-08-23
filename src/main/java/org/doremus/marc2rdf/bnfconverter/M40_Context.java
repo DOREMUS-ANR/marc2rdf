@@ -33,7 +33,7 @@ public class M40_Context extends DoremusResource {
     places = new ArrayList<>();
     E53_Place previous = null;
     for (String p : placeChain) {
-      E53_Place place = new E53_Place(p, continent);
+      E53_Place place = new E53_Place(p, null, continent);
       if (place.isGeonames()) {
         places.add(place);
         if (previous != null) place.addSurroundingPlace(previous);

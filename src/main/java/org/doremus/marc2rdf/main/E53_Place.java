@@ -15,13 +15,60 @@ public class E53_Place extends DoremusResource {
   private Toponym tp;
   private String name;
 
-  public E53_Place(String rawString) {
-    this(rawString, null);
+  public E53_Place() {
+    super();
   }
 
-  public E53_Place(String rawString, String continent) {
+  public E53_Place(String rawString) {
+    this(rawString, null, null);
+  }
+
+  public E53_Place(String rawString, String countryCode, String continent) {
     super();
 
+    rawString = cleanString(rawString);
+    this.name = null;
+
+    tp = GeoNames.query(rawString, countryCode, continent);
+    if (tp != null) {
+      // simply download the file
+      uri = GeoNames.toURI(tp.getGeoNameId());
+      this.name = tp.getName();
+    } else {
+      try {
+        uri = ConstructURI.build("E53_Place", rawString).toString();
+      } catch (URISyntaxException e) {
+        e.printStackTrace();
+      }
+    }
+
+    this.regenerateResource(uri);
+    this.setClass(CIDOC.E53_Place);
+
+    this.addProperty(RDFS.label, rawString.replaceAll("\\(.+\\)", ""), "fr")
+      .addProperty(CIDOC.P1_is_identified_by, rawString, "fr");
+
+    if (this.name != null) {
+      this.addProperty(RDFS.label, this.name, "en")
+        .addProperty(GeoNames.NAME, this.name);
+    }
+  }
+
+  public static E53_Place withUri(String uri) {
+    E53_Place p = new E53_Place();
+    p.regenerateResource(uri);
+    return p;
+  }
+
+  public void addSurroundingPlace(E53_Place external) {
+    this.addProperty(CIDOC.P89_falls_within, external);
+  }
+
+  public boolean isGeonames() {
+    return this.tp != null;
+  }
+
+  private String cleanString(String rawString) {
     rawString = rawString.trim()
       .replaceAll("\\?", "")
       .replaceAll("\\( ?\\)", "")
@@ -84,41 +131,6 @@ public class E53_Place extends DoremusResource {
       else
         rawString = content;
     }
-    rawString = rawString.replaceAll("[?\\[\\]]", "").trim();
-
-    this.name = null;
-
-
-    tp = GeoNames.query(rawString, null, continent);
-    if (tp != null) {
-      // simply download the file
-      uri = GeoNames.toURI(tp.getGeoNameId());
-      this.name = tp.getName();
-    } else {
-      try {
-        uri = ConstructURI.build("E53_Place", rawString).toString();
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-      }
-    }
-
-    this.regenerateResource(uri);
-    this.setClass(CIDOC.E53_Place);
-
-    this.addProperty(RDFS.label, rawString.replaceAll("\\(.+\\)", ""), "fr")
-      .addProperty(CIDOC.P1_is_identified_by, rawString, "fr");
-
-    if (this.name != null) {
-      this.addProperty(RDFS.label, this.name, "en")
-        .addProperty(GeoNames.NAME, this.name);
-    }
-  }
-
-  public void addSurroundingPlace(E53_Place external) {
-    this.addProperty(CIDOC.P89_falls_within, external);
-  }
-
-  public boolean isGeonames() {
-    return this.tp != null;
+    return rawString.replaceAll("[?\\[\\]]", "").trim();
   }
 }

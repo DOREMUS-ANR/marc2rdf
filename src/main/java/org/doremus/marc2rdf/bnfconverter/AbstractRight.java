@@ -8,11 +8,13 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.Schema;
 
 public abstract class AbstractRight extends DoremusResource {
+  private final Artist holder;
 
   public AbstractRight(String uri, Artist holder, String year) {
     super();
     this.regenerateResource(uri);
 
+    this.holder = holder;
     this.addProperty(CIDOC.P75i_is_possessed_by, holder);
 
     if (year != null && !year.isEmpty()) {
@@ -28,4 +30,7 @@ public abstract class AbstractRight extends DoremusResource {
 
   }
 
+  public Artist getHolder() {
+    return this.holder;
+  }
 }

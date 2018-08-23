@@ -11,6 +11,7 @@ import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.MUS;
 import org.doremus.ontology.PROV;
 import org.pmw.tinylog.Logger;
 
@@ -20,6 +21,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class DoremusResource {
+  private int activityCount;
+
   protected String className;
   protected String sourceDb;
 
@@ -36,6 +39,7 @@ public abstract class DoremusResource {
     this.className = this.getClass().getSimpleName();
     this.sourceDb = "bnf";
     this.resource = null;
+    this.activityCount = 0;
 
     if (this.className.startsWith("P")) {
       this.sourceDb = "pp";
@@ -209,5 +213,17 @@ public abstract class DoremusResource {
     if(timeSpan!=null&& timeSpan.asResource()!= null)
     this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
     this.model.add(timeSpan.getModel());
+  }
+
+  public void addActivity(Artist agent, String function) {
+    if (agent == null) return;
+
+    Resource activity = model.createResource(this.uri + "/activity/" + ++activityCount)
+      .addProperty(RDF.type, CIDOC.E7_Activity)
+      .addProperty(MUS.U31_had_function, function)
+      .addProperty(CIDOC.P14_carried_out_by, agent.asResource());
+
+    this.addProperty(CIDOC.P9_consists_of, activity);
+    this.model.add(agent.getModel());
   }
 }

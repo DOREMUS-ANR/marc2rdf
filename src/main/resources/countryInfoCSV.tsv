@@ -1,4 +1,4 @@
-iso	alpha2	iso alpha3	iso numeric	fips code	name	capital	areaInSqKm	population	continent	languages	currency	geonameId
+isoalpha2	iso alpha3	iso numeric	fips code	name	capital	areaInSqKm	population	continent	languages	currency	geonameId
 AD	AND	020	AN	Andorra	Andorra la Vella	468.0	84000	EU	ca	EUR	3041565
 AE	ARE	784	AE	Emirati Arabi Uniti	Abu Dhabi	82880.0	4975593	AS	ar-AE,fa,en,hi,ur	AED	290557
 AF	AFG	004	AF	Afghanistan	Kabul	647500.0	29121286	AS	fa-AF,ps,uz-AF,tk	AFN	1149361

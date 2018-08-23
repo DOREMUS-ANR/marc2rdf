@@ -1,14 +1,11 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.marcparser.Subfield;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
-import org.doremus.ontology.MUS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +15,6 @@ import java.util.stream.Collectors;
 
 public class F30_PublicationEvent extends DoremusResource {
   private static final String UNKNOW_REGEX = "(?i)\\[?s\\. ?[lnd]\\.\\]?";
-
-
   // "1re éd. : Paris : Revue et gazette musicale [1er janvier 1848]"
   // "1re éd. : Paris : Choudens, ca 1886"
   // "1re édition : Paris : Durand, 1891"
@@ -33,7 +28,6 @@ public class F30_PublicationEvent extends DoremusResource {
   private static final String regex3 = "Date d'édition : (?:(.+), )?(\\d{4})";
   private static final String textDateRegex = "(?:(1er|[\\d]{1,2}) )?(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)";
 
-  private static int activityCount = 0;
   private F28_ExpressionCreation f28;
 
   public F30_PublicationEvent(String edition, Record record, F28_ExpressionCreation f28, int i) {
@@ -261,17 +255,5 @@ public class F30_PublicationEvent extends DoremusResource {
     return record.getDatafieldsByCode("600", 'a').stream()
       .filter(edition -> (edition.contains("éd.")) || (edition.contains("édition")))
       .findFirst().map(edition -> edition.split(";")).orElse(new String[0]);
-  }
-
-  public void addActivity(Artist agent, String function) {
-    if (agent == null) return;
-
-    Resource activity = model.createResource(this.uri + "/activity/" + ++activityCount)
-      .addProperty(RDF.type, CIDOC.E7_Activity)
-      .addProperty(MUS.U31_had_function, function)
-      .addProperty(CIDOC.P14_carried_out_by, agent.asResource());
-
-    this.addProperty(CIDOC.P9_consists_of, activity);
-    this.model.add(agent.getModel());
   }
 }

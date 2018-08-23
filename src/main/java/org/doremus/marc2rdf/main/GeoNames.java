@@ -61,10 +61,27 @@ public class GeoNames {
   public static Toponym query(String rawString, String country, String continent) {
     Toponym tp = null;
     String key = rawString;
-    if (country != null && !country.isEmpty()) key += " (" + country + ")";
 
-    if (cache.containsKey(key)) {
-      int k = cache.get(key);
+    if (country != null && !country.isEmpty())
+      if (country.length() > 2) {
+        key += " (" + country + ")";
+        country = null;
+      }
+
+    ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
+
+    String cacheKey = key;
+    if(country!=null) {
+      try {
+        cacheKey += "|" + country;
+        searchCriteria.setCountryCode(country);
+      } catch (InvalidParameterException e) {
+        e.printStackTrace();
+      }
+    }
+
+    if (cache.containsKey(cacheKey)) {
+      int k = cache.get(cacheKey);
       if (k != -1) {
         tp = new Toponym();
         tp.setGeoNameId(k);
@@ -72,7 +89,6 @@ public class GeoNames {
       return tp;
     }
 
-    ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
 
     searchCriteria.setQ(key);
 
@@ -96,7 +112,7 @@ public class GeoNames {
         }
       }
 
-      addToCache(key, tp != null ? tp.getGeoNameId() : -1);
+      addToCache(cacheKey, tp != null ? tp.getGeoNameId() : -1);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -162,5 +178,15 @@ public class GeoNames {
     String geonamesFolder = Paths.get(outputFolderPath, "place", "geonames").toString();
     new File(geonamesFolder).mkdirs();
     setDestFolder(geonamesFolder);
+  }
+
+  public static String getCountryUri(String countryCode) {
+    int countryId = Integer.parseInt(countries.get(countryCode));
+    if (!cache.containsKey(countryCode)) {
+      //  save the country also
+      downloadRdf(countryId);
+      addToCache(countryCode, countryId);
+    }
+    return toURI(countryId);
   }
 }

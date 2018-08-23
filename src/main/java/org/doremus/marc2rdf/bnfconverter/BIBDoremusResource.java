@@ -33,6 +33,11 @@ abstract class BIBDoremusResource extends DoremusResource {
     super(record);
   }
 
+  public BIBDoremusResource(Record record, Record mainRecord) {
+    super(record);
+    this.mainRecord = mainRecord;
+  }
+
 
   protected void parseTitleAndStatements(boolean forPublishing) {
     titleFromField(245, false).forEach(this::addTitle);

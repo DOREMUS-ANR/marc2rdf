@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class F26_Recording extends BIBDoremusResource {
-  public F26_Recording(Record record, Record mainRecord) {
-    super(record);
-    this.mainRecord = mainRecord;
-    this.setClass(FRBROO.F26_Recording);
+  private final List<Artist> producers;
 
+  public F26_Recording(Record record, Record mainRecord) {
+    super(record, mainRecord);
+    this.setClass(FRBROO.F26_Recording);
 
     // history
     getDatafieldsByCodeFull(317, 'a').stream()
@@ -31,11 +31,11 @@ public class F26_Recording extends BIBDoremusResource {
 
     // producer rights
     String year = getRightYear();
-    List<Artist> producers = getDatafieldsByCodeFull(722).stream()
+    producers = getDatafieldsByCodeFull(722).stream()
       .filter(df -> "3160".equals(df.getString(4)))
       .map(ArtistConverter::parseArtistField)
       .collect(Collectors.toList());
-    producers.addAll(getDatafieldsByCodeFull(722).stream()
+    producers.addAll(getDatafieldsByCodeFull(732).stream()
       .filter(df -> "3160".equals(df.getString(4)))
       .map(CorporateBody::fromUnimarcField)
       .collect(Collectors.toList()));
@@ -51,6 +51,7 @@ public class F26_Recording extends BIBDoremusResource {
         if (!x.toLowerCase().contains("prod.")) continue;
         String prodUri = this.uri + "/producer_right/" + ++i;
         ProducersRights pr = new ProducersRights(prodUri, x, year);
+        producers.add(pr.getHolder());
         this.addProperty(CIDOC.P104_is_subject_to, pr);
       }
     }
@@ -71,4 +72,7 @@ public class F26_Recording extends BIBDoremusResource {
     return txt.substring(1, 5);
   }
 
+  public List<Artist> getProducers() {
+    return producers;
+  }
 }

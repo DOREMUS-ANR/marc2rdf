@@ -33,7 +33,6 @@ public class M29_Editing extends DoremusResource {
 
     if (field280c.contains("dolby") || field280c.contains("dbx"))
       this.addProperty(MUS.U192_used_noise_reduction_technique, "Dual-ended systems", "en");
-
   }
 
   public M29_Editing add(M46_SetOfTracks tracks) {
