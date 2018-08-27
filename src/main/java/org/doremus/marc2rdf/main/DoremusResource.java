@@ -210,8 +210,9 @@ public abstract class DoremusResource {
   }
 
   public void addTimeSpan(TimeSpan timeSpan) {
-    if(timeSpan!=null&& timeSpan.asResource()!= null)
-    this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
+    if (timeSpan == null || timeSpan.asResource() == null) return;
+    if (!timeSpan.hasUri()) timeSpan.setUri(this.uri + "/interval");
+    this.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
     this.model.add(timeSpan.getModel());
   }
 
@@ -226,4 +227,5 @@ public abstract class DoremusResource {
     this.addProperty(CIDOC.P9_consists_of, activity);
     this.model.add(agent.getModel());
   }
+
 }

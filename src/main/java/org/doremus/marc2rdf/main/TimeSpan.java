@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.marcparser.DataField;
@@ -54,6 +55,10 @@ public class TimeSpan {
     return ts;
   }
 
+  public boolean hasUri() {
+    return this.uri != null;
+  }
+
 
   public enum Precision {
     CERTAINTY("certain"),
@@ -98,6 +103,11 @@ public class TimeSpan {
   }
 
   public TimeSpan(String startYear, String startMonth, String startDay, String endYear, String endMonth, String endDay) {
+    this.model = ModelFactory.createDefaultModel();
+    this.resource = null;
+    this.uri = null;
+    this.label = null;
+
     this.startYear = safeString(startYear);
     this.startMonth = safeString(frenchMonthToNumber(startMonth));
     this.startDay = safeString(startDay);
@@ -127,11 +137,6 @@ public class TimeSpan {
 
       }
     }
-
-    this.model = ModelFactory.createDefaultModel();
-    this.resource = null;
-    this.uri = null;
-    this.label = null;
   }
 
   private Precision computePrecision(String date) {
@@ -166,6 +171,7 @@ public class TimeSpan {
 
   public void setUri(String uri) {
     this.uri = uri;
+    if (this.resource != null) this.resource = ResourceUtils.renameResource(this.resource, uri);
   }
 
   public void setStartMonth(String month) {

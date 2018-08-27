@@ -34,15 +34,69 @@ public class BIBRecordConverter {
       else convertDAV();
   }
 
+  public BIBRecordConverter(Record record, Model model, BIBRecordConverter mainRecordConv, DataField df, int i) {
+    // inner
+    this.record = record;
+    this.model = model;
+    this.mainRecord = mainRecordConv.getRecord();
+
+    this.ark = this.mainRecord.getAttrByName("IDPerenne").getData();
+
+    // PROV-O tracing
+    intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
+    provActivity = BNF2RDF.computeProvActivity(record.getIdentifier(), intermarcRes, model);
+
+    M46_SetOfTracks sot = new M46_SetOfTracks(record, df, i);
+
+    F26_Recording recording = new F26_Recording(record, mainRecord, i);
+    F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record, mainRecord, i);
+    recording.getProducers().forEach(recordingEvent::addProducer);
+    F21_RecordingWork recordingWork = new F21_RecordingWork(record, i);
+
+    recordingEvent.add(recording).add(recordingWork);
+    recordingWork.add(recording);
+//    editing.add(sot);
+
+    M43_PerformedExpression performedExpression = new M43_PerformedExpression(record, record.getIdentifier() + i, df);
+    M44_PerformedWork performedWork = new M44_PerformedWork(record, record.getIdentifier() + i, df);
+    M42_PerformedExpressionCreation performedExpressionCreation = new M42_PerformedExpressionCreation(record,
+      record.getIdentifier() + i);
+
+    F31_Performance performance = new F31_Performance(record, record.getIdentifier() + i);
+    F25_PerformancePlan performancePlan = new F25_PerformancePlan(record.getIdentifier() + i, df);
+
+    recordingEvent.addTimeSpan(performance.getTime());
+    recordingEvent.setPlace(performance.getPlace());
+    performedExpressionCreation.addTimeSpan(performance.getTime());
+    performedExpressionCreation.setPlace(performance.getPlace());
+    performedExpressionCreation.setGeoContext(performance.getGeoContext());
+
+    performedExpressionCreation.add(performedExpression).add(performedWork);
+    performedWork.add(performedExpression);
+    performance.add(performedExpressionCreation).add(performancePlan);
+    recordingEvent.add(performance);
+
+    for (DoremusResource r : Arrays.asList(sot, recording, recordingEvent, performedExpression,
+      performance)) {
+      r.addProvenance(intermarcRes, provActivity);
+      this.model.add(r.getModel());
+    }
+
+  }
+
+  private Record getRecord() {
+    return record;
+  }
+
   public static boolean isANL(Record record) {
     ControlField leader = record.getControlfieldByCode("leader");
     return leader.getData().charAt(8) == 'd';
   }
 
   private void convertANL() {
-    convertInner(null, 0);
+    BIBRecordConverter conv = new BIBRecordConverter(record, model, this, null, 0);
     // TODO fields 331
-
+    // TODO Niv=2
   }
 
   private void convertDAV() {
@@ -62,39 +116,26 @@ public class BIBRecordConverter {
     aggregationWork.add(tracks);
     aggregationEvent.add(aggregationWork).add(tracks);
 
+    M29_Editing editing = new M29_Editing(record);
+
+    System.out.println(getCase(record));
     switch (getCase(record)) {
       case 1:
-        convertInner(null, 0);
+        new BIBRecordConverter(record, model, this, null, 0);
         break;
       case 3:
         int i = 0;
-        convertInner(record.getDatafieldByCode(144), i);
-        for (DataField df : record.getDatafieldsByCode(744)) convertInner(df, ++i);
+        BIBRecordConverter conv = new BIBRecordConverter(record, model, this, record.getDatafieldByCode(144), 0);
+        for (DataField df : record.getDatafieldsByCode(744)) {
+          conv = new BIBRecordConverter(record, model, this, record.getDatafieldByCode(144), 0);
+        }
     }
 
     for (DoremusResource r : Arrays.asList(manif, publicationExpression, publicationEvent, publicationWork,
-      aggregationEvent, aggregationWork, tracks)) {
+      aggregationEvent, aggregationWork, tracks, editing)) {
       r.addProvenance(intermarcRes, provActivity);
       this.model.add(r.getModel());
     }
-  }
-
-  private void convertInner(DataField df, int i) {
-    M46_SetOfTracks sot = new M46_SetOfTracks(record, df, i);
-
-    M29_Editing editing = new M29_Editing(mainRecord, this.mainRecord.getIdentifier() + i);
-    F26_Recording recording = new F26_Recording(record, mainRecord, i);
-    F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record, mainRecord, i);
-    recording.getProducers().forEach(recordingEvent::addProducer);
-    F21_RecordingWork recordingWork = new F21_RecordingWork(record, i);
-
-    recordingEvent.add(recording).add(recordingWork);
-    recordingWork.add(recording);
-    editing.add(sot);
-
-    M43_PerformedExpression performedExpression = new M43_PerformedExpression(record, record.getIdentifier() + i, df);
-    M44_PerformedWork performedWork = new M44_PerformedWork(record, record.getIdentifier() + i, df);
-    performedWork.add(performedExpression);
   }
 
 

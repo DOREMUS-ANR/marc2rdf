@@ -47,12 +47,7 @@ public class F28_ExpressionCreation extends DoremusResource {
   }
 
   private void parseTum() {
-    TimeSpan dateMachine = parseDateMachine();
-    if (dateMachine != null) {
-      dateMachine.setUri(this.uri + "/interval");
-      this.addTimeSpan(dateMachine);
-    }
-
+    this.addTimeSpan(parseDateMachine());
     this.addNote(getDateText());
 
     this.composers = ArtistConverter.getArtistsInfo(record);

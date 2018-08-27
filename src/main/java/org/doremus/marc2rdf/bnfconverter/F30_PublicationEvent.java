@@ -69,12 +69,7 @@ public class F30_PublicationEvent extends DoremusResource {
     publishers.forEach(cb -> this.addActivity(cb, "publisher"));
 
     // time
-    TimeSpan dateMachine = parseDateMachine();
-    if (dateMachine != null) {
-      dateMachine.setUri(this.uri + "/interval");
-      this.addTimeSpan(dateMachine);
-    }
-
+    this.addTimeSpan(parseDateMachine());
   }
 
   private TimeSpan parseDateMachine() {
@@ -235,7 +230,6 @@ public class F30_PublicationEvent extends DoremusResource {
       }
     }
 
-    timeSpan.setUri(this.uri + "/interval");
     this.addTimeSpan(timeSpan);
   }
 

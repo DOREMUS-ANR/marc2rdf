@@ -18,7 +18,7 @@ public class CorporateBody extends Artist {
     super();
     if (name == null) throw new RuntimeException("Missing artist name");
 
-    this.name = name;
+    this.name = name.replaceAll("^\\[(.+)]$", "$1");
     try {
       this.uri = ConstructURI.build("F11_CorporateBody", name).toString();
     } catch (URISyntaxException e) {
@@ -86,6 +86,7 @@ public class CorporateBody extends Artist {
     return name;
   }
 
+  @Override
   public void interlink() {
     Resource match = getFromDoremus(this.getName());
     if (match != null) {

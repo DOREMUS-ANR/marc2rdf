@@ -1,0 +1,224 @@
+function,mop,mopLabel,code,label,245abbr,245label,isLabelFun
+,,,,,acc.,accompagnement,TRUE
+,vso,soprano,,,dessus,dessus,TRUE
+,,,,,réal.,réalisation,TRUE
+narrateur,,,,,récitant,récitant,TRUE
+,,,1720,Claquettes,,,TRUE
+,,,1777,Sculptures et environnements sonores,,,TRUE
+acteur,,,1010,Acteur,,,TRUE
+acteur,,,1011,Acteur présumé,,,TRUE
+acteur,,,1013,Acteur prétendu,,,TRUE
+,,,1017,Humoriste,,,TRUE
+,,,1020,Artiste de cirque,,,TRUE
+,,,1830,Siffleur,,,TRUE
+,,,1837,Bruits corporels,,,TRUE
+bruiteur,,,1840,Bruitages,,,TRUE
+disc jockey,,,1850,Disc jockey,,,TRUE
+remixeur,,,1860,Remixeur,,,TRUE
+chef d'orchestre,,,1040,Direction d'orchestre,dir.,chef d´orchestre,TRUE
+danseur,,,1060,Danse,,,TRUE
+chef de choeur,,,1080,Direction de chœur,chef de choeur,chef de choeur,TRUE
+mime,,,1090,Mime,,,TRUE
+,mui,instrument – unspecified,1100,Instrumentiste,,,TRUE
+,mui,instrument – unspecified,1101,Instrumentiste présumé,,,TRUE
+,mui,instrument – unspecified,1103,Instrumentiste prétendu,,,TRUE
+,mui,instrument – unspecified,1108,Instrumentiste (musique ethnique),,,TRUE
+interprète,,,1990,Interprète,,,TRUE
+,,,9990,Fonction indéterminée,,,TRUE
+,vun,voice - unspecified,1030,Chant,chant,chant,TRUE
+,vun,voice - unspecified,1031,Chanteur présumé,,,TRUE
+,vun,voice - unspecified,1033,Chanteur prétendu,,,TRUE
+,vun,voice - unspecified,1039,Chant (sons traités par l'électronique),,,TRUE
+,vre,reciting voice,1110,Voix parlée,V,voix,FALSE
+,vre,reciting voice,1119,Voix parlée (sons traités par l'électronique),,,FALSE
+,vso,soprano,1120,Soprano,S,,FALSE
+,vso,soprano,1129,Soprano (sons traités par l'électronique),,,FALSE
+,vct,countertenor,,,sopraniste,sopraniste,FALSE
+,vms,mezzosoprano,1130,Mezzo-soprano,MS,mezzo-soprano,FALSE
+,vms,mezzosoprano,1139,Mezzo-soprano (sons traités par l'électronique),,,FALSE
+,val,alto,1140,Alto (voix),A,"alto, contralto (tessiture)",FALSE
+,val,alto,1149,Alto (voix ; sons traités par l'électronique),,,FALSE
+,vte,tenor,1150,Ténor,T,ténor,FALSE
+,vte,tenor,1159,Ténor (sons traités par l'électronique),,,FALSE
+,vbr,baritone,1160,Baryton (voix),BAR,baryton,FALSE
+,vbr,baritone,1169,Baryton (voix ; sons traités par l'électronique),,,FALSE
+,vbr,baritone,1170,Baryton-basse,BAR B,baryton basse,FALSE
+,vbr,baritone,1179,Baryton-basse (sons traités par l'électronique),,,FALSE
+,vbs,bass,1180,Basse (voix),B,basse (tessiture),FALSE
+,vbs,bass,1189,Basse (voix ; sons traités par l'électronique),,,FALSE
+,vct,countertenor,1190,Contre-ténor,CT,contreténor,FALSE
+,vhc,haute-contre,1197,Haute-contre,HC,haute-contre,FALSE
+,vct,countertenor,1199,Contre-ténor (sons traités par l'électronique),,,FALSE
+,vbs,bass,,,BContre,basse-contre,FALSE
+,vbr,baritone,,,BTaille,basse-taille,FALSE
+,vso,soprano,,,C,cantus,FALSE
+,vso,soprano,,,D,"déchant, discantus",FALSE
+,vcv,child voice,1200,Voix chantée d'enfant,,,FALSE
+,svl,violin,1210,Violon,vl,violon,FALSE
+,sun,"strings, bowed – unspecified",1217,Cordes frottées (divers),,,FALSE
+,sun__y,"strings, bowed – ethnic",1218,Cordes frottées (musique ethnique),,,FALSE
+,svl,violin,1219,Violon électrique,vl électr.,violon électrique,FALSE
+,sva,viola,1220,Alto (instrument),alto,alto (instr.),FALSE
+,sva,viola,1229,Alto (instrument ; traité par l'électronique),,,FALSE
+,svc,cello,1230,Violoncelle,vlc,violoncelle,FALSE
+,svc,cello,1239,Violoncelle électrique,vlc électr.,violoncelle électrique,FALSE
+,sdb,double bass,1240,Contrebasse,cb,contrebasse,FALSE
+,sdb,double bass,1249,Contrebasse électrique,cb électr.,contrebasse électrique,FALSE
+,wdb,double bassoon,,,cbasson,contrebasson,FALSE
+,svgf,basse de viola,1250,Basse de viole,,,FALSE
+,svg,viola da gamba,1257,Viole,vle,violle,FALSE
+,,,1258,Cordophones divers (musique ethnique),,,FALSE
+,svd,viola d’amore,1260,Viole d'amour,,,FALSE
+,svg,viola da gamba,,,viole de gambe,viole de gambe,FALSE
+,szz,"strings, bowed – other",1268,Hardingfele,,,FALSE
+,tha,harp,1270,Harpe,hrp,harpe,FALSE
+,tha,harp,1277,Harpes (diverses),,,FALSE
+,tha,harp,1278,Harpes (musique ethnique),,,FALSE
+,tgu,guitar,1280,Guitare,guit.,guitare,FALSE
+,tgu,guitar,1287,Guitares (diverses),,,FALSE
+,tgu,guitar,1288,Guitares (musique ethnique),,,FALSE
+,tgu,electric guitar,1289,Guitare électrique,électr.,électrique,FALSE
+,tgu__r,guitar,1290,Guitare basse,guit. b,guitare basse,FALSE
+,tguf_r,electric bass guitar,1299,Guitare basse électrique,électr.,électrique,FALSE
+,thg,hawaiian guitar,1300,Guitare hawaïenne,,,FALSE
+,tgu,guitar,1309,Pedal steel guitar,,,FALSE
+,tlu,lute,1310,Luth,,,FALSE
+,tlu,lute,1317,Luths (divers),,,FALSE
+,tlu,lute,1318,Luths (musique ethnique),,,FALSE
+,tth,theorbo,1320,Théorbe,,,FALSE
+,tma,mandolin,1330,Mandoline,,,FALSE
+,tun,"strings, plucked – unspecified",1337,Instruments à plectre (divers),,,FALSE
+,tvi,vihuela,1340,Vihuela,,,FALSE
+,tbj,banjo,1350,Banjo,bjo,banjo,FALSE
+,tun,"strings, plucked – unspecified",1357,Cordes pincées (divers),,,FALSE
+,tun__y,"strings, plucked – ethnique",1358,Cordes pincées (musique ethnique),,,FALSE
+,tzi,zither,1360,Cithare,,,FALSE
+,tzi,zither,1367,Cithares (diverses),,,FALSE
+,tzi,zither,1368,Cithares (musique ethnique),,,FALSE
+,pci,cimbalom,1370,Cymbalum,,,FALSE
+,,,1377,Cordes frappées (divers),,,FALSE
+,,,1378,Cordes frappées (musique ethnique),,,FALSE
+,wfl,flute,1380,Flûte,fl.,flûte,FALSE
+,wun,woodwind – unspecified,1387,Bois (divers),,,FALSE
+,wun__y,woodwind – ethnique,1388,Flûtes (musique ethnique),,,FALSE
+,wfl,flute,1389,Flûte (sons traités par l'électronique),,,FALSE
+,wpi,piccolo,1390,Piccolo,picc.,piccolo,FALSE
+,wpi,piccolo,,,flûte piccolo,fl. picc.,FALSE
+,wre,recorder,1400,Flûte à bec,fl. à bec,flûte à bec,FALSE
+,wre,recorder,1407,Flûtes à bec (diverses),,,FALSE
+,wpp,panpipes,1410,Flûte de Pan,,,FALSE
+,wpp,panpipes,1418,Flûtes de Pan (musique ethnique),,,FALSE
+,wsa,saxophone,,,saxo sopranino,saxophone sopranino,FALSE
+,wfl,flute,,,fl. sopranino,flûte sopranino,FALSE
+,wre,recorder,,,fl. à bec sopranino,flûte à bec sopranino,FALSE
+,wcl,clarinet,1420,Clarinette,clar.,clarinette,FALSE
+,,,1427,Instruments à anche (divers),,,FALSE
+,,,1428,Instruments à anche (musique ethnique),,,FALSE
+,wob,oboe,1430,Hautbois,htb,hautbois,FALSE
+,woa,oboe d’amore,,,htb d´amour,hautbois d´amour,FALSE
+,mwd,wind instrument,1437,Instruments à vent (divers),,,FALSE
+,mwd,wind instrument,1438,Instruments à vent divers (musique ethnique),,,FALSE
+,weh,english horn,1440,Cor anglais,,,FALSE
+,wsa,saxophone,1450,Saxophone,saxo,saxophone,FALSE
+,ely,lyricon,1459,Lyricon,,,FALSE
+,wba,bassoon,1460,Basson,,,FALSE
+,btr,trumpet,1470,Trompette,trp,trompette,FALSE
+,bun,brass – unspecified,1477,Cuivres (divers),,,FALSE
+,bun__y,brass - ethnique,1478,Trompes (musique ethnique),,,FALSE
+,bvb,valved bugle,1480,Bugle,,,FALSE
+,bco,cornet,1490,Cornet à pistons,cnt à pistons,cornet à pistons,FALSE
+,bct,cornett,1500,Cornet à bouquin,cnt à bouquin,cornet à bouquin,FALSE
+,bho,horn,1510,Cor,,,FALSE
+,btb,trombone,1520,Trombone,trb,trombone,FALSE
+,btb,trombone,1527,Trombones (divers),,,FALSE
+,btu,tuba,1530,Tuba,,,FALSE
+,btu,tuba,1537,Tubas (divers),,,FALSE
+,mmi,mirliton,1540,Mirliton,,,FALSE
+,mha,harmonica,1550,Harmonica,hrmca,harmonica,FALSE
+,,,1557,Instruments à anche libre (divers),,,FALSE
+,,,1558,Instruments à anche libre (musique ethnique),,,FALSE
+,kpf,piano,1560,Piano,p,piano,FALSE
+,kun,keyboard - unspecified,,,clavier,clavier (musique classique),FALSE
+,kun,keyboard - unspecified,,,,instrument à clavier,FALSE
+,kun,keyboard - unspecified,,,claviers,"claviers (jazz, rock)",FALSE
+,kun,keyboard - unspecified,1567,Claviers (divers),,,FALSE
+,kpf__r,electric piano,1569,Piano électrique,électr.,électrique,FALSE
+,kfp,fortepiano,1570,Pianoforte,pf,piano-forte,FALSE
+,khp,harpsichord,1580,Clavecin,clav.,clavecin,FALSE
+,khp,harpsichord,1587,Clavecins (divers),,,FALSE
+,kor,organ,1590,Orgue,org.,orgue,FALSE
+,kor,organ,,,org. pos.,orgue positif,FALSE
+,kor,organ,1597,Orgues (divers),,,FALSE
+,kor,organ,1598,Orgue (musique ethnique),,,FALSE
+,kor__r,electric organ,1599,Orgue électronique,,,FALSE
+,mbo,barrel organ,1600,Orgue mécanique,,,FALSE
+,mbo,barrel organ,1607,Orgues mécaniques (divers),,,FALSE
+,khm,harmonium,1610,Harmonium,,,FALSE
+,kcl,clavichord,1620,Clavicorde,,,FALSE
+,kac,accordion,1630,Accordéon,acrdn,accordéon chromatique,FALSE
+,kac,accordion,,,acrdn diato.,accordéon diatonique,FALSE
+,kac,accordion,1637,Accordéons (divers),,,FALSE
+,kac,accordion,1638,Accordéon (musique ethnique),,,FALSE
+,sun,"strings, bowed – unspecified",,,vièle à archet,vièle à archet,FALSE
+,mhg,hurdy-gurdy,1640,Vielle à roue,vielle,vielle à roue,FALSE
+,mhg,hurdy-gurdy,1649,Vielle à roue électrique,vielle électr.,vielle à roue électrique,FALSE
+,pds,drums,1650,Batterie,batt.,batterie,FALSE
+,pds,drums,1651,Batterie (interprète présumé),,,FALSE
+,pds,drums,1653,Batterie (interprète prétendu),,,FALSE
+,pun,percussion – unspecified,1657,Membranophones (divers),,,FALSE
+,pun__y,percussion – ethnique,1658,Membranophones (musique ethnique),,,FALSE
+,pds,drums,1659,Batterie électrique,électr.,électrique,FALSE
+,pdr,drum,1660,Tambour,tamb.,tambour,FALSE
+,pun,percussion – unspecified,1667,Percussions,perc.,percussions,FALSE
+,pun__y,percussion – ethnique,1668,Percussions (musique ethnique),,,FALSE
+,pti,timpani,1670,Timbales,timb.,timbales,FALSE
+,pxy,xylophone,1680,Xylophone,xyl.,xylophone,FALSE
+,pxy,xylophone,1688,Xylophones (musique ethnique),,,FALSE
+,pmb,marimba,1690,Marimba,,,FALSE
+,pvi,vibraphone,1700,Vibraphone,vibr.,vibraphone,FALSE
+,pme,metallophone,1707,Métallophones (divers),,,FALSE
+,kca,carillon,1710,Carillon,,,FALSE
+,pun,percussion – unspecified,1717,Idiophones par percussion (divers),,,FALSE
+,pun__y,percussion – ethnique,1718,Idiophones par percussion (musique ethnique),,,FALSE
+,,,1728,Idiophones secoués (musique ethnique),,,FALSE
+,mjh,jew’s harp,1730,Guimbarde,,,FALSE
+,mjh,jew’s harp,1738,Guimbarde (musique ethnique),,,FALSE
+,,,1738,Idiophones pincés (musique ethnique),,,FALSE
+,mgh,glassharmonica,1740,Harmonica de verre,,,FALSE
+,,,1747,Cristallophones,,,FALSE
+,,,1748,Idiophones frottés (musique ethnique),,,FALSE
+,ema,ondes Martenot,1750,Ondes Martenot,,,FALSE
+,esy,synthetizer,1760,Synthétiseur,synth.,synthétiseur,FALSE
+,eun,electronic – non specified,1767,Instrument électronique,,,FALSE
+,eun,electronic – non specified,1770,Instrument électronique (non autonome),,,FALSE
+,oun,orchestra – unspecified,1780,Orchestre,orch.,orchestre,FALSE
+,oie,instrumental ensemble,1787,Ensembles (divers),,,FALSE
+,oie,instrumental ensemble,1790,Ensemble instrumental,ens. instr.,ensemble instrumental,FALSE
+,oie,instrumental ensemble,1797,Groupe instrumental,groupe instr.,groupe instrumental,FALSE
+,oie,instrumental ensemble,1798,Ensemble instrumental (musique ethnique),,,FALSE
+,cun,choir - unspecified,,,choeur,choeur (musique classique),FALSE
+,cun,choir - unspecified,,,choeurs,"choeurs (jazz, rock, variétés)",FALSE
+,cmi,mixed choir,1800,Chœur mixte,,,FALSE
+,czz,choir other,1807,Chœur à voix égales,,,FALSE
+,cve,vocal ensemble,1810,Ensemble vocal,ens voc.,ensemble vocal,FALSE
+,cve,vocal ensemble,1817,Groupe vocal,groupe voc.,vocal,FALSE
+,cve,vocal ensemble,1818,Ensemble vocal (musique ethnique),,,FALSE
+,oiv,vocal and instrumental ensemble,1820,Ensemble vocal et instrumental,ens voc. et. instr.,ensemble vocal et instrumental,FALSE
+,oiv,vocal and instrumental ensemble,1827,Groupe vocal et instrumental,groupe voc. et instr.,groupe vocal et instrumental,FALSE
+,oiv,vocal and instrumental ensemble,1828,Ensemble vocal et instrumental (musique ethnique),,,FALSE
+,ost,string orchestra,1870,Ensemble de cordes,,,FALSE
+,ost,string orchestra,1878,Ensemble de cordes (musique ethnique),,,FALSE
+,owi,wind orchestra,1880,Ensemble à vent,,,FALSE
+,owi,wind orchestra,1888,Ensemble à vent (musique ethnique),,,FALSE
+,owi,wind orchestra,1890,Ensemble de cuivres,,,FALSE
+,owi,wind orchestra,1898,Ensemble de cuivres (musique ethnique),,,FALSE
+,kpf,piano,1900,Piano à 4 mains,,,FALSE
+,kfp,fortepiano,1910,Pianoforte à 4 mains,,,FALSE
+,kce,celesta,1920,Célesta,,,FALSE
+,wbp,bagpipe,1930,Cornemuse,,,FALSE
+,wbp,bagpipe,1937,Cornemuses (diverses),,,FALSE
+,wbp,bagpipe,1938,Cornemuses (musique ethnique),,,FALSE
+,,,1940,Washboard,,,FALSE
+,,,1947,Idiophones raclés (divers),,,FALSE
+,,,1948,Idiophones raclés (musique ethnique),,,FALSE
+musicien (interprète),,,1980,Interprète (autre),,,TRUE

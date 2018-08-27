@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.Utils;
+import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -44,11 +45,8 @@ public class M43_PerformedExpression extends BIBDoremusResource {
 
 
     // language
-    String field8 = record.getControlfieldByCode("008").getData();
-    String langCode = field8.substring(31, 34);
-    if (langCode.matches("m(mm|ul)")) langCode = record.getDatafieldByCode("041", 'a');
-    if (!langCode.equals("zxx") && !langCode.equals("und"))
-      this.addProperty(CIDOC.P72_has_language, Utils.toISO2Lang(langCode));
+    this.addProperty(CIDOC.P72_has_language, Utils.toISO2Lang(parseLanguage()));
+
 
     // categorization
     F24_PublicationExpression.parseCategorization(record)
@@ -67,6 +65,17 @@ public class M43_PerformedExpression extends BIBDoremusResource {
       .peek(x -> this.addProperty(MUS.U12_has_genre, x.getSubGenre()))
       .flatMap(x -> x.getContext().stream())
       .forEach(ctx -> this.addProperty(MUS.U63_has_religious_context, ctx));
+  }
+
+  private String parseLanguage() {
+    ControlField field8 = record.getControlfieldByCode("008");
+    if(field8==null) return null;
+
+    String langCode = field8.getData().substring(31, 34);
+    if (langCode.matches("m(mm|ul)")) langCode = record.getDatafieldByCode("041", 'a');
+    if (langCode.equals("zxx") || langCode.equals("und")) return null;
+    return langCode;
+
   }
 
   @Override

@@ -19,17 +19,18 @@ public class M167_PublicationFragment extends DoremusResource {
     String ts = concatFields(df, "aehi");
     String sr = concatFields(df, "fgj");
 
+    System.out.println("-- " + ts);
 
     Resource titleRespStatement = model.createResource(this.uri + "/title_responsibility")
       .addProperty(RDF.type, MUS.M158_Title_and_Statement_of_Responsibility)
       .addProperty(RDFS.comment, tsr);
-    this.addProperty(MUS.U220_has_title_and_statement_of_responsibility,  titleRespStatement);
-
+    this.addProperty(MUS.U220_has_title_and_statement_of_responsibility, titleRespStatement);
     Resource titleStatement = model.createResource(this.uri + "/title")
       .addProperty(RDF.type, MUS.M156_Title_Statement)
       .addProperty(RDFS.comment, ts);
-    this.addProperty(MUS.U170_has_title_statement, titleStatement);
     titleRespStatement.addProperty(CIDOC.P148_has_component, titleStatement);
+    this.addProperty(MUS.U170_has_title_statement, titleStatement);
+    this.addProperty(RDFS.label, ts);
 
     Resource respStatement = model.createResource(this.uri + "/responsibility")
       .addProperty(RDF.type, MUS.M157_Statement_of_Responsibility)
@@ -37,7 +38,7 @@ public class M167_PublicationFragment extends DoremusResource {
     this.addProperty(MUS.U172_has_statement_of_responsibility_relating_to_title, respStatement);
     titleRespStatement.addProperty(CIDOC.P148_has_component, respStatement);
 
-    for(String n: df.getStrings('n'))
+    for (String n : df.getStrings('n'))
       this.addProperty(MUS.U195_has_order_or_location_indication, n);
   }
 
@@ -51,7 +52,7 @@ public class M167_PublicationFragment extends DoremusResource {
     for (Subfield sf : df.getSubfields()) {
       String value = sf.getData().trim();
 
-      if(!filter.contains(sf.getCode() + ""))
+      if (!filter.contains(sf.getCode() + ""))
         continue;
 
       switch (sf.getCode()) {
@@ -78,7 +79,8 @@ public class M167_PublicationFragment extends DoremusResource {
           text.append(value);
           break;
         case 'j':
-          text.append("fgj".contains("" + previous) ? "; " : " / ");
+          if (text.length() != 0)
+            text.append("fgj".contains("" + previous) ? "; " : " / ");
           text.append(value);
           break;
         case 'l':

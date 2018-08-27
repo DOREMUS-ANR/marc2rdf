@@ -15,6 +15,7 @@ import org.doremus.ontology.MUS;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +46,9 @@ public class F24_PublicationExpression extends BIBDoremusResource {
     // additional material
     parseAdditionalMaterial();
 
+    System.out.println(identifier);
+    titleFromField(245, false).findFirst().ifPresent(System.out::println);
+
     // titles
     parseTitleAndStatements(true);
     parseResponsibilities(true);
@@ -72,13 +76,15 @@ public class F24_PublicationExpression extends BIBDoremusResource {
     // publication
     i = 0;
     for (DataField df : record.getDatafieldsByCode(260))
-      this.addStatement(this.uri + "/publication/" + ++i, F30_PublicationEvent.parsePublisherField(df),
-        MUS.M160_Publication_Statement, MUS.U184_has_publication_statement);
+      for (String x : F30_PublicationEvent.parsePublisherField(df))
+        this.addStatement(this.uri + "/publication/" + ++i, x,
+          MUS.M160_Publication_Statement, MUS.U184_has_publication_statement);
 
     i = 0;
     for (DataField df : record.getDatafieldsByCode(270))
-      this.addStatement(this.uri + "/publication/" + ++i, F30_PublicationEvent.parsePublisherField(df),
-        CIDOC.E33_Linguistic_Object, MUS.U186_has_printing_or_manufacture_statement);
+      for (String x : F30_PublicationEvent.parsePublisherField(df))
+        this.addStatement(this.uri + "/publication/" + ++i, x,
+          CIDOC.E33_Linguistic_Object, MUS.U186_has_printing_or_manufacture_statement);
 
     // other titles
     record.getDatafieldsByCode(245, 'e')
@@ -133,7 +139,7 @@ public class F24_PublicationExpression extends BIBDoremusResource {
     // fragments
     i = 0;
     for (DataField df : record.getDatafieldsByCode(331)) {
-      M167_PublicationFragment fragment = new M167_PublicationFragment(this.identifier + "/fragment/" + i, df);
+      M167_PublicationFragment fragment = new M167_PublicationFragment(this.uri + "/fragment/" + ++i, df);
       this.addProperty(CIDOC.P148_has_component, fragment);
     }
 
@@ -152,12 +158,15 @@ public class F24_PublicationExpression extends BIBDoremusResource {
 
 
     // label
-    Stream<M54_Label_Name> labelNames = record.getDatafieldsByCode(723).stream().map(M54_Label_Name::new);
-    labelNames.forEach(ln -> this.addProperty(MUS.U169_was_issued_under_label_name, ln));
+    Supplier<Stream<M54_Label_Name>> labelNames =
+      () -> record.getDatafieldsByCode(723).stream().map(M54_Label_Name::new);
+    labelNames.get().forEach(ln -> this.addProperty(MUS.U169_was_issued_under_label_name, ln));
     for (DataField df : record.getDatafieldsByCode("028")) {
       String label = df.getString('e');
       if (label == null || label.isEmpty()) continue;
-      M54_Label_Name ln = labelNames.filter(l -> label.equals(l.getLabel())).findFirst().orElse(null);
+      M54_Label_Name ln = labelNames.get()
+        .filter(l -> label.equals(l.getLabel()))
+        .findFirst().orElse(null);
       if (ln == null) continue;
       String _id = df.getString('a');
 
@@ -168,23 +177,26 @@ public class F24_PublicationExpression extends BIBDoremusResource {
     // FIXME move
     List<DataField> fields = record.getDatafieldsByCode(144);
     fields.addAll(record.getDatafieldsByCode(744));
-    fields.stream().filter(x -> x.isCode(3)).forEach(df -> {
-      String l = df.getString('l');
-      Property prop = EXTRAIT_PATTERN.matcher(l).find() ?
-        MUS.U59_has_partial_published_recording : MUS.U58i_is_full_published_recording_of;
-      String _id = df.getString(3);
-      F22_SelfContainedExpression f22 = new F22_SelfContainedExpression(_id);
-      f22.addProperty(prop, this);
-      this.model.add(f22.getModel());
+    fields.stream()
+      .filter(x -> x.isCode(3))
+      .filter(x -> x.isCode('l'))
+      .forEach(df -> {
+        String l = df.getString('l');
+        Property prop = EXTRAIT_PATTERN.matcher(l).find() ?
+          MUS.U59_has_partial_published_recording : MUS.U58i_is_full_published_recording_of;
+        String _id = df.getString(3);
+        F22_SelfContainedExpression f22 = new F22_SelfContainedExpression(_id);
+        f22.addProperty(prop, this);
+        this.model.add(f22.getModel());
 
-      if (l.toLowerCase().contains("arr.")) {
-        F14_IndividualWork derived = getDerivedWork();
-        derived.addProperty(FRBROO.R2_is_derivative_of, new F14_IndividualWork(_id));
-        F15_ComplexWork f15 = new F15_ComplexWork(_id);
-        f15.add(derived);
-        this.model.add(f15.getModel());
-      }
-    });
+        if (l.toLowerCase().contains("arr.")) {
+          F14_IndividualWork derived = getDerivedWork();
+          derived.addProperty(FRBROO.R2_is_derivative_of, new F14_IndividualWork(_id));
+          F15_ComplexWork f15 = new F15_ComplexWork(_id);
+          f15.add(derived);
+          this.model.add(f15.getModel());
+        }
+      });
   }
 
   static Stream<Resource> parseCategorization(Record record) {

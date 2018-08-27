@@ -252,7 +252,7 @@ public class Utils {
       for (int i = 1; i < p.size(); i++) {
         current = p.get(i);
         if (areBracketsUnbalancedIn(previous)) {
-          String combo = previous + delimiter + current;
+          String combo = previous + ", " + current;
           p.set(i - 1, combo);
           p.remove(i);
           break;

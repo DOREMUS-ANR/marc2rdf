@@ -11,9 +11,8 @@ import java.util.regex.Pattern;
 public class M29_Editing extends DoremusResource {
   private static final Pattern SPARS_PATTERN = Pattern.compile("[AD]{3}");
 
-  public M29_Editing(Record record, String identifier) {
-    super(identifier);
-    this.record = record;
+  public M29_Editing(Record record) {
+    super(record);
     this.setClass(MUS.M29_Editing);
 
 

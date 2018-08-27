@@ -1,20 +1,16 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.doremus.marc2rdf.main.ConstructURI;
-import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.E53_Place;
-import org.doremus.marc2rdf.main.TimeSpan;
+import org.doremus.marc2rdf.main.*;
+import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.string2vocabulary.VocabularyManager;
 
-import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,10 +31,11 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   private F28_ExpressionCreation f28;
   private M43_PerformedExpression expression;
   private M44_PerformedWork work;
-  private Resource F31_Performance;
+  private F31_Performance mainPerformance;
   private E53_Place place;
   private TimeSpan timeSpan;
   private int countConsistOf;
+  private List<M28_Individual_Performance> individualPerformances;
 
   public M42_PerformedExpressionCreation(String note, Record record, F28_ExpressionCreation f28, int i) {
     super(record);
@@ -57,22 +54,12 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.identifier = record.getIdentifier() + flag;
     regenerateResource();
 
-
     this.setClass(MUS.M42_Performed_Expression_Creation);
     addNote(note);
 
-    String performanceUri = null;
-    try {
-      performanceUri = ConstructURI.build("bnf", "F31_Performance", this.identifier).toString();
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
-
-    this.F31_Performance = model.createResource(performanceUri)
-      .addProperty(RDF.type, FRBROO.F31_Performance)
-      .addProperty(CIDOC.P3_has_note, note)
-      .addProperty(RDFS.comment, note)
-      .addProperty(CIDOC.P9_consists_of, this.resource);
+    this.mainPerformance = new F31_Performance(this.identifier);
+    this.mainPerformance.addNote(note);
+    this.mainPerformance.add(this);
 
     this.expression = new M43_PerformedExpression(this.identifier);
     f28.expression.titles.forEach(title -> this.expression.addProperty(RDFS.label, title));
@@ -80,24 +67,92 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.work = new M44_PerformedWork(this.identifier);
     this.work.add(this.expression);
 
-    this.addProperty(FRBROO.R17_created, this.expression)
-      .addProperty(FRBROO.R19_created_a_realisation_of, this.work);
+    this.add(this.expression).add(this.work);
 
     this.f28 = f28;
 
     parseNote(note);
 
-    if (place != null) {
-      this.addProperty(CIDOC.P7_took_place_at, place);
-      this.F31_Performance.addProperty(CIDOC.P7_took_place_at, place.asResource());
+    this.addProperty(CIDOC.P7_took_place_at, place);
+    this.mainPerformance.setPlace(place);
+
+    this.mainPerformance.addTimeSpan(timeSpan);
+    this.addTimeSpan(timeSpan);
+  }
+
+  public M42_PerformedExpressionCreation(Record record, String identifier) {
+    super(identifier);
+    this.record = record;
+    this.countConsistOf = 0;
+
+    this.setClass(MUS.M42_Performed_Expression_Creation);
+
+    this.individualPerformances = new ArrayList<>();
+    record.getDatafieldsByCode(111).forEach(df -> parsePerformer(df, false));
+    record.getDatafieldsByCode(711).forEach(df -> parsePerformer(df, false));
+    record.getDatafieldsByCode(101).forEach(df -> parsePerformer(df, true));
+    record.getDatafieldsByCode(701).forEach(df -> parsePerformer(df, true));
+
+    // specific instrument
+    for (String txt : record.getDatafieldsByCode(314, 'i')) {
+      if (txt.contains(";")) {
+        this.addProperty(MUS.U193_used_historical_instruments, txt);
+        continue;
+      }
+      FunctionPerformerMap fpm = FunctionPerformerMap.getFrom245(txt);
+      if (fpm == null) continue;
+      Resource mop = fpm.getMop();
+      if (mop == null) continue;
+      M28_Individual_Performance target = individualPerformances.stream()
+        .filter(ip -> ip.hasMop(mop))
+        .findFirst().orElse(null);
+      if (target == null) {
+        target = new M28_Individual_Performance(this.uri + "/" + ++countConsistOf);
+        target.setMoP(mop);
+        M28_Individual_Performance ensemble = individualPerformances.stream()
+          .filter(M28_Individual_Performance::isEnsemble)
+          .findFirst().orElse(null);
+        if (ensemble != null) ensemble.add(target);
+      }
+      target.setSpecificMop(txt);
     }
 
-    if (timeSpan != null) {
-      timeSpan.setUri(this.F31_Performance.getURI() + "/interval");
-      this.addTimeSpan(timeSpan);
-      this.F31_Performance.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-    }
+    // cast detail
+    StringBuilder castDetail = new StringBuilder(
+      String.join(" ; ", record.getDatafieldsByCode(245, 'j')));
+    if (!castDetail.toString().isEmpty()) castDetail.append(". ");
+    record.getDatafieldsByCode(313).stream()
+      .map(df -> {
+        String d = df.getString('k') + " : ";
+        List<String> a = df.getStrings('a').stream()
+          .filter(txt -> !txt.matches("(?i).*détail d(es interprètes|u personnel).*"))
+          .collect(Collectors.toList());
+        if (a.size() < 1) return "";
+        return d + String.join(" ; ", a) + ". ";
+      }).forEachOrdered(castDetail::append);
+    this.addProperty(MUS.U205_has_cast_detail, castDetail.toString());
+
+    // handwritten score
+    // FIXME attach to F22 through F4>P128>F22
+    DataField df = record.getDatafieldsByCode(325).stream().findFirst().orElse(null);
+    F4_Manifestation_Singleton ms = new F4_Manifestation_Singleton(df);
+
   }
+
+  private void parsePerformer(DataField df, boolean isPerson) {
+    Artist agent = isPerson ? ArtistConverter.parseArtistField(df) : CorporateBody.fromUnimarcField(df);
+    FunctionPerformerMap function = FunctionPerformerMap.get(df.getString(4));
+    String character = df.getString(9);
+
+    M28_Individual_Performance ip = new M28_Individual_Performance(this.uri + "/" + ++countConsistOf);
+    ip.setAgent(agent);
+    ip.setFunction(function.getFunction());
+    ip.setMoP(function.getMop());
+    ip.setCharacter(character);
+
+    this.individualPerformances.add(ip);
+  }
+
 
   private void parseNote(String note) {
     // to complex case: 1re exécution : Festival de Bordeaux, 8 juin 1969, par Jean Guillou, puis Zwolle (Pays-Bas), 18 juin 1969, par Charles de Wolff
@@ -181,8 +236,8 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
               role = mI.group(2);
             for (String intpt : interpreter.split("(,| et) ")) {
               // groups starts normally with lowercase, i.e. les Wiener Sängerknaben
-              if (intpt.matches("^[a-z].+")) addRole(intpt, null);
-              else addRole(intpt, role);
+              if (intpt.matches("^[a-z].+")) addIndividualPerformance(intpt, null);
+              else addIndividualPerformance(intpt, role);
             }
           }
         }
@@ -190,39 +245,28 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       } else System.out.println("Not parsed note on record " + record.getIdentifier() + " : " + data);
     }
 
-    if (conductor != null) addRole(conductor, "conductor");
+    if (conductor != null) addIndividualPerformance(conductor, "conductor");
   }
 
-  private void addRole(String actor, String role) {
-    actor = actor.trim();
-    if (actor.isEmpty()) return;
+  private void addIndividualPerformance(String agentName, String role) {
+    agentName = agentName.trim();
+    if (agentName.isEmpty()) return;
 
-    RDFNode actorRes;
-    if (actor.equals("compositeur") || actor.equals("le compositeur")) {
-      actorRes = f28.getComposers().get(0).asResource();
-    } else actorRes = model.createLiteral(actor);
+    Artist agent = agentName.equals("compositeur") || agentName.equals("le compositeur") ?
+      f28.getComposers().get(0) : Artist.fromString(agentName);
 
-    Resource M28 = model.createResource(this.uri + "/" + ++countConsistOf)
-      .addProperty(RDF.type, MUS.M28_Individual_Performance)
-      .addProperty(CIDOC.P14_carried_out_by, actorRes);
+    M28_Individual_Performance ip = new M28_Individual_Performance(this.uri + "/" + ++countConsistOf);
+    ip.setAgent(agent);
 
-    this.resource.addProperty(CIDOC.P9_consists_of, M28);
-
-    if (role == null) {
-      // TODO compare with the casting
-      return;
-    }
+    if (role == null) return;
 
     role = role.trim();
     for (String r : role.split(" et ")) {
-      if (r.equals("conductor") || r.equals("direction"))
-        M28.addProperty(MUS.U31_had_function, model.createLiteral("conductor", "en"));
-      else {
-        Resource mopMatch = VocabularyManager.searchInCategory(r, "fr", "mop", true);
-        if (mopMatch != null) M28.addProperty(MUS.U1_used_medium_of_performance, mopMatch);
-      }
+      if (r.equals("conductor") || r.equals("direction")) ip.setFunction("conductor");
+      else ip.setMoP(VocabularyManager.searchInCategory(r, "fr", "mop", true));
     }
 
+    this.addProperty(CIDOC.P9_consists_of, ip);
   }
 
   public M43_PerformedExpression getExpression() {
@@ -234,15 +278,28 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   }
 
   public M42_PerformedExpressionCreation add(F25_PerformancePlan plan) {
-    this.F31_Performance.addProperty(FRBROO.R25_performed, plan.asResource());
+    this.mainPerformance.add(plan);
     return this;
   }
 
   public M42_PerformedExpressionCreation add(F22_SelfContainedExpression f22) {
     this.expression.addProperty(MUS.U54_is_performed_expression_of, f22);
-    this.F31_Performance.addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
+    this.mainPerformance.add(f22);
     return this;
   }
+
+  public M42_PerformedExpressionCreation add(M43_PerformedExpression performedExpression) {
+    this.addProperty(FRBROO.R17_created, performedExpression);
+    this.expression = performedExpression;
+    return this;
+  }
+
+  public M42_PerformedExpressionCreation add(M44_PerformedWork performedWork) {
+    this.addProperty(FRBROO.R19_created_a_realisation_of, performedWork);
+    this.work = performedWork;
+    return this;
+  }
+
 
   public static List<String> getPerformances(Record record) {
     return record.getDatafieldsByCode("600", 'a').stream()
@@ -254,7 +311,16 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     return isPremiere;
   }
 
-  public Resource getMainPerformance() {
-    return this.F31_Performance;
+  public F31_Performance getMainPerformance() {
+    return this.mainPerformance;
   }
+
+  public void setPlace(E53_Place place) {
+    this.addProperty(CIDOC.P7_took_place_at, place);
+  }
+
+  public void setGeoContext(E53_Place geoContext) {
+    this.addProperty(MUS.U65_has_geographical_context, geoContext);
+  }
+
 }

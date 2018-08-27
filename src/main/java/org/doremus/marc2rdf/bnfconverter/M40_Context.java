@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.doremus.marc2rdf.main.ConstructURI;
@@ -43,6 +44,7 @@ public class M40_Context extends DoremusResource {
     }
 
     this.label = df.getString('e');
+    if (label == null || label.isEmpty()) return;
     this.uri = getRameauUri(df.toString());
 
     if (this.uri != null) {
@@ -58,6 +60,12 @@ public class M40_Context extends DoremusResource {
         .addProperty(CIDOC.P1_is_identified_by, label);
     }
     this.addProperty(SKOS.related, getGeoContext());
+  }
+
+  @Override
+  public Resource asResource() {
+    if (resource != null) return null;
+    else return super.asResource();
   }
 
   private static String getRameauUri(String txt) {
@@ -122,7 +130,8 @@ public class M40_Context extends DoremusResource {
 
   }
 
-  private static class ContextMap {
+  @SuppressWarnings("WeakerAccess") // requires to be public for the CSV conversion
+  public static class ContextMap {
     private static final String RAMEAU_BASE = "http://data.bnf.fr/ark:/12148/cb%%%z";
     @CsvBindByName(column = "bnf_id")
     private String bnfId;

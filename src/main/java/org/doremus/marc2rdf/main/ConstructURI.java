@@ -66,6 +66,7 @@ public class ConstructURI {
       case "M44_PerformedWork":
       case "F21_RecordingWork":
       case "F20_PerformanceWork":
+      case "F17_AggregationWork":
         return "work";
       case "F24_PublicationExpression":
         return "publication";
@@ -75,6 +76,7 @@ public class ConstructURI {
         return "performance";
       case "E21_Person":
       case "F11_CorporateBody":
+      case "M54_Label_Name":
         return "artist";
       case "E4_Period":
         return "period";

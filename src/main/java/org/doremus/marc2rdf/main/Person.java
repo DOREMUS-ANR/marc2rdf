@@ -57,7 +57,7 @@ public class Person extends Artist {
 
   public Person(String fullName) {
     super();
-    this.fullName = fullName;
+    this.fullName = fullName.trim();
     this.firstName = null;
     this.lastName = null;
     this.birthDate = null;
@@ -287,6 +287,7 @@ public class Person extends Artist {
     return new Person(firstName, lastName, birthDate, deathDate, null);
   }
 
+  @Override
   public void interlink() {
     // 1. search in doremus by name/date
     Resource match = getPersonFromDoremus();

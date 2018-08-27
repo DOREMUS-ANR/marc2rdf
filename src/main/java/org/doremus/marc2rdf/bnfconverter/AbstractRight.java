@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.Artist;
 import org.doremus.marc2rdf.main.DoremusResource;
@@ -22,7 +23,7 @@ public abstract class AbstractRight extends DoremusResource {
       ts.setUri(this.uri + "/interval");
       this.model.add(ts.getModel());
 
-      this.addProperty(Schema.startTime, year)
+      this.addProperty(Schema.startTime, year, XSDDatatype.XSDgYear)
         .addProperty(CIDOC.P141i_was_assigned_by, model.createResource(this.uri + "/assignment")
           .addProperty(RDF.type, CIDOC.E13_Attribute_Assignment)
           .addProperty(CIDOC.P4_has_time_span, ts.asResource()));

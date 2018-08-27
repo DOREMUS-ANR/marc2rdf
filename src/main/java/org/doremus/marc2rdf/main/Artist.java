@@ -54,7 +54,30 @@ public abstract class Artist {
     this.model.add(place.getModel());
   }
 
-  public abstract void addName(String trim);
+  public abstract void addName(String name);
 
   public abstract boolean hasName(String value);
+
+  protected abstract void interlink();
+
+
+  public static Artist fromString(String txt) {
+    if (txt == null) return null;
+
+    Artist artist;
+    String _txt = txt.toLowerCase();
+    if (_txt.equals("l'eic") || _txt.startsWith("les ") || _txt.contains("philarmo") || _txt.contains
+      ("orchestr") ||
+      _txt.contains("ensemble") || _txt.contains("membre") || _txt.contains("trio") ||
+      _txt.contains("quartet") || _txt.contains("quatuor") || _txt.contains("choeur")) {
+      txt = txt.replaceAll("^(l['+]|l[ae]s? )", "").trim();
+
+      artist = new CorporateBody(txt);
+    } else artist = new Person(txt);
+
+    artist.interlink();
+    return artist;
+
+  }
+
 }
