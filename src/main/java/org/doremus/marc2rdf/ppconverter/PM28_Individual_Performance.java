@@ -81,4 +81,8 @@ public class PM28_Individual_Performance extends DoremusResource {
       .addProperty(CIDOC.P1_is_identified_by, label, "fr");
     this.addProperty(MUS.U81_had_performer_status, status);
   }
+
+  public void setSolo() {
+    this.addProperty(MUS.U32_had_responsibility, "soloist");
+  }
 }

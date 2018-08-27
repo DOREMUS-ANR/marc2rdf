@@ -135,16 +135,11 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
     if (shouldICreateAF22) linkNewWork(record);
 
-    for (PM28_Individual_Performance ip : parseArtist(record, uri)) {
-      this.resource.addProperty(CIDOC.P9_consists_of, ip.asResource());
-      this.model.add(ip.getModel());
-    }
+    for (PM28_Individual_Performance ip : parseArtist(record, uri)) this.addProperty(CIDOC.P9_consists_of, ip);
 
     if (record.isType("UNI:42")) {
-      for (String s : record.getDatafieldsByCode(462, 3)) {
-        PM42_PerformedExpressionCreation pec = new PM42_PerformedExpressionCreation(s);
-        this.resource.addProperty(CIDOC.P9_consists_of, pec.asResource());
-      }
+      for (String s : record.getDatafieldsByCode(462, 3))
+        this.addProperty(CIDOC.P9_consists_of, new PM42_PerformedExpressionCreation(s));
     }
   }
 
@@ -173,7 +168,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
       e.printStackTrace();
     }
 
-    this.resource = model.createResource(this.uri.toString())
+    this.resource = model.createResource(this.uri)
       .addProperty(RDF.type, MUS.M42_Performed_Expression_Creation)
       .addProperty(RDFS.comment, note)
       .addProperty(CIDOC.P3_has_note, note);
@@ -296,6 +291,11 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
               Resource mop = VocabularyManager.searchInCategory(pt, "fr", "mop", true);
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
+              if (operaRole.contains("soliste")) {
+                ip.setSolo();
+                operaRole = operaRole.replace("soliste", "").trim();
+                if (operaRole.isEmpty()) operaRole = null;
+              }
               if (mop == null && operaRole != null) {
                 mop = VocabularyManager.searchInCategory(operaRole, "fr", "mop", true);
                 if (mop != null) operaRole = null;

@@ -82,12 +82,7 @@ public class PF29_RecordingEvent extends DoremusResource {
       }
     }
 
-    timeSpan = getDate();
-    if (timeSpan != null) {
-      this.timeSpan.setUri(this.uri + "/time");
-      this.addTimeSpan(timeSpan);
-    }
-
+    this.addTimeSpan(getDate());
     computePlaces();
   }
 
