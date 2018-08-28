@@ -7,7 +7,6 @@ import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.marcparser.Subfield;
-import org.doremus.marc2rdf.ppconverter.PM43_PerformedExpression;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.MUS;
 
@@ -110,8 +109,8 @@ public class M46_SetOfTracks extends BIBDoremusResource {
       .forEach(duration -> this.addProperty(MUS.U53_has_duration, Utils.duration2iso(duration)));
   }
 
-  public M46_SetOfTracks add(PM43_PerformedExpression exp) {
-    this.asResource().addProperty(MUS.U51_is_partial_or_full_recording_of, exp.asResource());
+  public M46_SetOfTracks add(M43_PerformedExpression exp) {
+    this.addProperty(MUS.U51_is_partial_or_full_recording_of, exp);
     return this;
   }
 

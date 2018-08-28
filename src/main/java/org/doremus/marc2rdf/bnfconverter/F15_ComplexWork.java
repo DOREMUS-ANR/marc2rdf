@@ -106,8 +106,18 @@ public class F15_ComplexWork extends DoremusResource {
   }
 
   public F15_ComplexWork add(M42_PerformedExpressionCreation performance) {
-    this.addProperty(FRBROO.R10_has_member, performance.getWork())
-      .addProperty(FRBROO.R13_is_realised_in, performance.getExpression());
+    this.add(performance.getWork());
+    this.add(performance.getExpression());
+    return this;
+  }
+
+  public F15_ComplexWork add(M43_PerformedExpression performedExpression) {
+    this.addProperty(FRBROO.R13_is_realised_in, performedExpression);
+    return this;
+  }
+
+  public F15_ComplexWork add(M44_PerformedWork performedWork) {
+    this.addProperty(FRBROO.R10_has_member, performedWork);
     return this;
   }
 }

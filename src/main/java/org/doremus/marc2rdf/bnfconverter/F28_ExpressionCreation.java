@@ -25,6 +25,7 @@ public class F28_ExpressionCreation extends DoremusResource {
   private List<Person> composers;
   private int composerCount;
   public F22_SelfContainedExpression expression;
+  private F14_IndividualWork work;
 
   public F28_ExpressionCreation(String identifier) {
     super(identifier);
@@ -219,6 +220,7 @@ public class F28_ExpressionCreation extends DoremusResource {
   }
 
   public F28_ExpressionCreation add(F14_IndividualWork f14) {
+    this.work = f14;
     this.addProperty(FRBROO.R19_created_a_realisation_of, f14);
     return this;
   }
@@ -226,5 +228,18 @@ public class F28_ExpressionCreation extends DoremusResource {
   public F28_ExpressionCreation add(M46_SetOfTracks tracks) {
     this.addProperty(FRBROO.R17_created, tracks);
     return this;
+  }
+
+  public F28_ExpressionCreation add(F4_Manifestation_Singleton manuscript) {
+    this.addProperty(FRBROO.R18_created, manuscript);
+    return this;
+  }
+
+  public F14_IndividualWork getWork() {
+    return work;
+  }
+
+  public F22_SelfContainedExpression getExpression() {
+    return expression;
   }
 }

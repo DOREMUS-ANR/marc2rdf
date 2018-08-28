@@ -30,11 +30,11 @@ public class PM46_SetOfTracks extends DoremusResource {
 
     switch (record.getType()) {
       case "UNI:4":
-        this.resource.addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
+        this.addProperty(MUS.U227_has_content_type, "two-dimensional moving image", "en");
         break;
       case "UNI:2":
       case "UNI:42":
-        this.resource.addProperty(MUS.U227_has_content_type, "sounds", "en");
+        this.addProperty(MUS.U227_has_content_type, "sounds", "en");
     }
 
 
@@ -70,7 +70,7 @@ public class PM46_SetOfTracks extends DoremusResource {
 
 
   public PM46_SetOfTracks add(PM43_PerformedExpression exp) {
-    this.asResource().addProperty(MUS.U51_is_partial_or_full_recording_of, exp.asResource());
+    this.addProperty(MUS.U51_is_partial_or_full_recording_of, exp);
     return this;
   }
 

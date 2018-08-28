@@ -7,6 +7,8 @@ import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
 public class F14_IndividualWork extends DoremusResource {
+  private F22_SelfContainedExpression expression;
+
   public F14_IndividualWork(Record record) {
     super(record);
     this.setClass(FRBROO.F14_Individual_Work);
@@ -18,6 +20,7 @@ public class F14_IndividualWork extends DoremusResource {
   }
 
   public F14_IndividualWork add(F22_SelfContainedExpression expression) {
+    if (this.expression == null) this.expression = expression;
     this.addProperty(FRBROO.R9_is_realised_in, expression);
     return this;
   }
@@ -38,5 +41,9 @@ public class F14_IndividualWork extends DoremusResource {
 
   public void setDerivationType(String derivation) {
     this.addProperty(MUS.U47_has_derivation_type, derivation);
+  }
+
+  public F22_SelfContainedExpression getExpression() {
+    return expression;
   }
 }

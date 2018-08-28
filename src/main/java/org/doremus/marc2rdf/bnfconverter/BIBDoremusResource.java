@@ -4,6 +4,7 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
@@ -107,7 +108,7 @@ abstract class BIBDoremusResource extends DoremusResource {
       titleStatement);
   }
 
-  protected List<Literal> parseTitleField(DataField df, boolean parseE, boolean parseK) {
+  public static List<Literal> parseTitleField(DataField df, boolean parseE, boolean parseK) {
     List<Literal> list = new ArrayList<>();
 
     char lastCode = 0;
@@ -125,7 +126,7 @@ abstract class BIBDoremusResource extends DoremusResource {
           if (currentTitle != null) {
             if (currentK != null) currentTitle = currentK + " \"" + currentTitle + "\"";
             currentK = null;
-            list.add(model.createLiteral(currentTitle, language));
+            list.add(ResourceFactory.createLangLiteral(currentTitle, language));
           }
           currentTitle = value
             .replaceAll("\\|", "")
@@ -149,7 +150,7 @@ abstract class BIBDoremusResource extends DoremusResource {
       lastCode = sf.getCode();
       if (currentTitle != null) {
         if (currentK != null) currentTitle = currentK + " \"" + currentTitle + "\"";
-        list.add(model.createLiteral(currentTitle, language));
+        list.add(ResourceFactory.createLangLiteral(currentTitle, language));
       }
     }
     return list;

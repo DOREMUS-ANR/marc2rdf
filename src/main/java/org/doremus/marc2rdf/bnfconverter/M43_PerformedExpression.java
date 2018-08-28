@@ -89,4 +89,8 @@ public class M43_PerformedExpression extends BIBDoremusResource {
   }
 
 
+  public M43_PerformedExpression add(F22_SelfContainedExpression f22) {
+    this.addProperty(MUS.U54_is_performed_expression_of, f22);
+    return this;
+  }
 }

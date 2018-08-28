@@ -45,7 +45,6 @@ public class M6_Casting extends DoremusResource {
     this.containsInfo = true;
   }
 
-
   private List<M23_Casting_Detail> parseCastingDetail() {
     return record.getDatafieldsByCode("048").stream()
       .flatMap(df -> df.getSubfields().stream())

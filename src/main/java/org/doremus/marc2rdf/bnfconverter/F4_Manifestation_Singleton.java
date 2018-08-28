@@ -18,7 +18,7 @@ public class F4_Manifestation_Singleton extends BIBDoremusResource {
     this(df.getString('u'));
 
     this.addProperty(CIDOC.P2_has_type, "score");
-    this.addProperty(CIDOC.P2_has_type, "handwritten score");
+    this.addProperty(CIDOC.P2_has_type, "manuscript");
 
     // title
     String title = df.getString(df.isCode('a') ? 'a' : 'k');
@@ -41,5 +41,10 @@ public class F4_Manifestation_Singleton extends BIBDoremusResource {
       if (place != null) actorX.addResidence(place);
       this.addProperty(CIDOC.P49_has_former_or_current_keeper, actorX);
     }
+  }
+
+  public F4_Manifestation_Singleton add(F22_SelfContainedExpression f22) {
+    this.addProperty(CIDOC.P128_carries, f22);
+    return this;
   }
 }

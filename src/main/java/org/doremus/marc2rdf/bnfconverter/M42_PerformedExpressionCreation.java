@@ -131,12 +131,6 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
         return d + String.join(" ; ", a) + ". ";
       }).forEachOrdered(castDetail::append);
     this.addProperty(MUS.U205_has_cast_detail, castDetail.toString());
-
-    // handwritten score
-    // FIXME attach to F22 through F4>P128>F22
-    DataField df = record.getDatafieldsByCode(325).stream().findFirst().orElse(null);
-    F4_Manifestation_Singleton ms = new F4_Manifestation_Singleton(df);
-
   }
 
   private void parsePerformer(DataField df, boolean isPerson) {
@@ -300,6 +294,10 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     return this;
   }
 
+  public M42_PerformedExpressionCreation add(F4_Manifestation_Singleton manuscript) {
+    this.addProperty(CIDOC.P16_used_specific_object, manuscript);
+    return this;
+  }
 
   public static List<String> getPerformances(Record record) {
     return record.getDatafieldsByCode("600", 'a').stream()
