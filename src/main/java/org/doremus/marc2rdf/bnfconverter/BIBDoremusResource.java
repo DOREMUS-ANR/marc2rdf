@@ -12,10 +12,7 @@ import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.marcparser.Subfield;
-import org.doremus.ontology.CIDOC;
-import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
-import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +20,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 abstract class BIBDoremusResource extends DoremusResource {
-  protected Record mainRecord;
   private int countResp = 0;
 
   public BIBDoremusResource(String identifier) {
@@ -33,13 +29,6 @@ abstract class BIBDoremusResource extends DoremusResource {
   public BIBDoremusResource(Record record) {
     super(record);
   }
-
-  public BIBDoremusResource(Record record, Record mainRecord, int i) {
-    super(record.getIdentifier() + i);
-    this.record = record;
-    this.mainRecord = mainRecord;
-  }
-
 
   protected void parseTitleAndStatements(boolean forPublishing) {
     titleFromField(245, false).forEach(this::addTitle);
@@ -256,39 +245,5 @@ abstract class BIBDoremusResource extends DoremusResource {
     this.addProperty(MUS.U168_has_parallel_title, title);
   }
 
-  protected void addComplexIdentifier(String identifier, String type) {
-    this.addComplexIdentifier(identifier, type, null);
-  }
 
-  protected void addComplexIdentifier(String identifier, String type, DoremusResource issuer) {
-    if (identifier == null) return;
-
-    Resource typeRes = VocabularyManager.searchInCategory(type, "fr", "id", false);
-
-    Resource idRes = model.createResource(this.uri + "/id/" + identifier)
-      .addProperty(RDF.type, CIDOC.E42_Identifier)
-      .addProperty(CIDOC.P2_has_type, typeRes)
-      .addProperty(FRBROO.R8_consists_of, identifier)
-      .addProperty(RDFS.label, identifier);
-
-    if (issuer != null) idRes.addProperty(FRBROO.R8_consists_of, issuer.asResource());
-
-    this.addProperty(CIDOC.P1_is_identified_by, idRes);
-  }
-
-  protected List<String> getDatafieldsByCodeFull(int code, char subcode) {
-    return getDatafieldsByCodeFull(String.valueOf(code), subcode);
-  }
-
-  protected List<String> getDatafieldsByCodeFull(String code, char subcode) {
-    List<String> list = record.getDatafieldsByCode(code, subcode);
-    if (list.size() == 0 && mainRecord != null) list = mainRecord.getDatafieldsByCode(code, subcode);
-    return list;
-  }
-
-  protected List<DataField> getDatafieldsByCodeFull(int code) {
-    List<DataField> list = record.getDatafieldsByCode(code);
-    if (list.size() == 0 && mainRecord != null) list = mainRecord.getDatafieldsByCode(code);
-    return list;
-  }
 }

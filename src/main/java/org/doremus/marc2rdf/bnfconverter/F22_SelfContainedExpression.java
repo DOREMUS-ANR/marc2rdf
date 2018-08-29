@@ -50,7 +50,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
   public F22_SelfContainedExpression(Record record) {
     super(record);
     this.setClass(FRBROO.F22_Self_Contained_Expression);
-    if (!BIBRecordConverter.isANL(record)) return;
+    if (!record.isANL()) return;
 
     // title
     List<Literal> titles = BIBDoremusResource.parseTitleField(record.getDatafieldByCode(245), true, false);

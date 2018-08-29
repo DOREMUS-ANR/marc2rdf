@@ -34,12 +34,17 @@ public class F28_ExpressionCreation extends DoremusResource {
   }
 
   public F28_ExpressionCreation(Record record) {
-    super(record);
-    this.setClass(FRBROO.F28_Expression_Creation);
+    this(record, record.getIdentifier());
+  }
+
+  public F28_ExpressionCreation(Record record, String identifier) {
+    this(identifier);
+    this.record = record;
+
     this.composerCount = 0;
 
     if (record.isTUM()) parseTum();
-    else if (BIBRecordConverter.isANL(record)) parseANL();
+    else if (record.isANL()) parseANL();
     else if (record.isBIB()) parseBib();
   }
 

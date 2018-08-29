@@ -38,9 +38,9 @@ public class M46_SetOfTracks extends BIBDoremusResource {
   }
 
 
-  public M46_SetOfTracks(Record record, DataField datafield, int i) {
+  public M46_SetOfTracks(Record record, DataField datafield, String identifier) {
     // Expression globale résultant d'un editing
-    super(record.getIdentifier() + i);
+    super(identifier);
     this.record = record;
 
     this.setClass(MUS.M46_Set_of_Tracks);

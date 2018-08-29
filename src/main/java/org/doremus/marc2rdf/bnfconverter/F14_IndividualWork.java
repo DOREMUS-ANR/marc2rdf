@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
+import org.apache.jena.rdf.model.Resource;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -39,11 +40,15 @@ public class F14_IndividualWork extends DoremusResource {
     this.addProperty(CIDOC.P148_has_component, movement);
   }
 
+  public F22_SelfContainedExpression getExpression() {
+    return expression;
+  }
+
   public void setDerivationType(String derivation) {
     this.addProperty(MUS.U47_has_derivation_type, derivation);
   }
 
-  public F22_SelfContainedExpression getExpression() {
-    return expression;
+  public void setDerivationType(Resource derivation) {
+    this.addProperty(MUS.U47_has_derivation_type, derivation);
   }
 }

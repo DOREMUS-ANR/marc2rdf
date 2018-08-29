@@ -11,8 +11,10 @@ import org.doremus.marc2rdf.bnfconverter.BNF2RDF;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.ppconverter.PP2RDF;
 import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 import org.doremus.ontology.PROV;
+import org.doremus.string2vocabulary.VocabularyManager;
 import org.pmw.tinylog.Logger;
 
 import java.net.URISyntaxException;
@@ -226,6 +228,26 @@ public abstract class DoremusResource {
 
     this.addProperty(CIDOC.P9_consists_of, activity);
     this.model.add(agent.getModel());
+  }
+
+  protected void addComplexIdentifier(String identifier, String type) {
+    this.addComplexIdentifier(identifier, type, null);
+  }
+
+  protected void addComplexIdentifier(String identifier, String type, DoremusResource issuer) {
+    if (identifier == null) return;
+
+    Resource typeRes = VocabularyManager.searchInCategory(type, "fr", "id", false);
+
+    Resource idRes = model.createResource(this.uri + "/id/" + identifier)
+      .addProperty(RDF.type, CIDOC.E42_Identifier)
+      .addProperty(CIDOC.P2_has_type, typeRes)
+      .addProperty(FRBROO.R8_consists_of, identifier)
+      .addProperty(RDFS.label, identifier);
+
+    if (issuer != null) idRes.addProperty(FRBROO.R8_consists_of, issuer.asResource());
+
+    this.addProperty(CIDOC.P1_is_identified_by, idRes);
   }
 
 }

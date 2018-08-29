@@ -27,6 +27,7 @@ public class E53_Place extends DoremusResource {
     super();
 
     rawString = cleanString(rawString);
+    if (rawString.equals("Cité de la musique (Paris)")) rawString = "Cité de la musique";
     this.name = null;
 
     tp = GeoNames.query(rawString, countryCode, continent);

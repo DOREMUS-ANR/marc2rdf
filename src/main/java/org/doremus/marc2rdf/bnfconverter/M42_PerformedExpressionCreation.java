@@ -88,10 +88,10 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     this.setClass(MUS.M42_Performed_Expression_Creation);
 
     this.individualPerformances = new ArrayList<>();
-    record.getDatafieldsByCode(111).forEach(df -> parsePerformer(df, false));
-    record.getDatafieldsByCode(711).forEach(df -> parsePerformer(df, false));
-    record.getDatafieldsByCode(101).forEach(df -> parsePerformer(df, true));
-    record.getDatafieldsByCode(701).forEach(df -> parsePerformer(df, true));
+    record.getDatafieldsByCodePropagate(111).forEach(df -> parsePerformer(df, false));
+    record.getDatafieldsByCodePropagate(711).forEach(df -> parsePerformer(df, false));
+    record.getDatafieldsByCodePropagate(101).forEach(df -> parsePerformer(df, true));
+    record.getDatafieldsByCodePropagate(701).forEach(df -> parsePerformer(df, true));
 
     // specific instrument
     for (String txt : record.getDatafieldsByCode(314, 'i')) {
@@ -116,6 +116,8 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
       }
       target.setSpecificMop(txt);
     }
+
+    individualPerformances.forEach(ip -> this.addProperty(CIDOC.P9_consists_of, ip));
 
     // cast detail
     StringBuilder castDetail = new StringBuilder(

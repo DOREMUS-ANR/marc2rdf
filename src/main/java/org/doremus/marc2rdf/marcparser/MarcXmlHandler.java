@@ -8,10 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/*************
- * Met chaque objet en haut de la pile
- ********************/
-
 public class MarcXmlHandler implements ContentHandler {
 
   private String idNotice;
@@ -31,9 +27,6 @@ public class MarcXmlHandler implements ContentHandler {
    ******/
   private List<Record> recordInProgress;
 
-  /******
-   * Constantes representant chaque type de balise
-   ******/
   private static final int RECORD = 1;
   private static final int CONTROLFIELD = 2;
   private static final int DATAFIELD = 3;
@@ -56,9 +49,6 @@ public class MarcXmlHandler implements ContentHandler {
 
   private boolean bDATA;
 
-  /*****************************
-   * Constructeur
-   **************************************/
   public MarcXmlHandler(String recordLabel, String datafieldLabel, String subfieldLabel,
                         String tagLabel, String codeLabel, String typeLabel, String idlabel) {
     this.recordList = new ArrayList<>();
@@ -116,13 +106,14 @@ public class MarcXmlHandler implements ContentHandler {
         } else {
           //sub records id
           //it should depend from the main one
-          id = idNotice + '-' + id;
+          id = recordInProgress.get(recordInProgress.size() - 1).getIdentifier() + '-' + id;
           type = typeNotice;
         }
         this.record = new Record(type, id);
         if (this.LEVEL != null)
           record.setLevel(attrs.getValue(LEVEL));
 
+        recordList.add(this.record);
         recordInProgress.add(this.record);
         break;
       case CONTROLFIELD:
@@ -175,11 +166,6 @@ public class MarcXmlHandler implements ContentHandler {
     }
   }
 
-  public void characters(char[] ch, int start, int length) {
-    if (bDATA)
-      buffer.append(new String(ch, start, length)); // Récupérer le contenu de la balise "data"
-  }
-
   public void endElement(String uri, String name, String qName) {
     String realName = (name.length() == 0) ? qName : name;
     Integer elementType = elementMap.get(realName);
@@ -187,10 +173,12 @@ public class MarcXmlHandler implements ContentHandler {
 
     switch (elementType) {
       case RECORD:
-        recordList.add(this.record);
+        Record _completed = this.record;
         recordInProgress.remove(this.record);
-        if (!recordInProgress.isEmpty())
+        if (!recordInProgress.isEmpty()) {
           this.record = recordInProgress.get(recordInProgress.size() - 1);
+          this.record.addSubRecord(_completed);
+        }
         break;
       case CONTROLFIELD:
       case LEADER:
@@ -214,10 +202,10 @@ public class MarcXmlHandler implements ContentHandler {
   }
 
   public void endDocument() {
-    // put last element of the list (the most external, as first)
-    Record last = recordList.get(recordList.size() - 1);
-    recordList.remove(last);
-    recordList.add(0, last);
+  }
+
+  public void characters(char[] ch, int start, int length) {
+    if (bDATA) buffer.append(new String(ch, start, length));
   }
 
   private DataField newDataField(String tag, char ind1, char ind2, String... subfieldCodesAndData) {

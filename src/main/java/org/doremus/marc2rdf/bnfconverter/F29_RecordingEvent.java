@@ -1,6 +1,7 @@
 package org.doremus.marc2rdf.bnfconverter;
 
 import org.doremus.marc2rdf.main.Artist;
+import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.E53_Place;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -10,17 +11,17 @@ import org.doremus.ontology.MUS;
 import java.util.List;
 import java.util.Objects;
 
-public class F29_RecordingEvent extends BIBDoremusResource {
+public class F29_RecordingEvent extends DoremusResource {
 
-  public F29_RecordingEvent(Record record, Record mainRecord, int i) {
-    super(record, mainRecord, i);
+  public F29_RecordingEvent(Record record, String identifier) {
+    super(record, identifier);
     this.setClass(FRBROO.F29_Recording_Event);
 
-    getDatafieldsByCodeFull(352, 'a').stream()
+    record.getDatafieldsByCodePropagate(352, 'a').stream()
       .filter(x -> x.toLowerCase().contains("prod."))
       .forEach(this::addNote);
 
-    getDatafieldsByCodeFull(700).stream()
+    record.getDatafieldsByCodePropagate(700).stream()
       .filter(df -> "3160".equals(df.getString(4)))
       .map(ArtistConverter::parseArtistField)
       .forEach(p -> this.addActivity(p, "collecteur"));
@@ -38,14 +39,18 @@ public class F29_RecordingEvent extends BIBDoremusResource {
       this.addProperty(MUS.U192_used_noise_reduction_technique, "Dual-ended systems", "en");
   }
 
+  public F29_RecordingEvent(Record record) {
+    this(record, record.getIdentifier());
+  }
+
   private String get280c() {
-    List<String> field280 = getDatafieldsByCodeFull(280, 'c');
+    List<String> field280 = record.getDatafieldsByCodePropagate(280, 'c');
     if (field280.size() == 0) return "";
     return field280.get(0).toLowerCase();
   }
 
   private String parseRecordingMethod() {
-    return getDatafieldsByCodeFull("009", 'g').stream()
+    return record.getDatafieldsByCodePropagate("009", 'g').stream()
       .map(x -> x.charAt(5))
       .map(c -> {
         switch (c) {

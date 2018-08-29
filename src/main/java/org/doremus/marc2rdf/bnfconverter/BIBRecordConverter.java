@@ -5,14 +5,15 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
+import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,6 +31,9 @@ public class BIBRecordConverter {
   private F3_ManifestationProductType manif;
   private M46_SetOfTracks tracks;
   private M29_Editing editing;
+  private F31_Performance performance;
+  private F25_PerformancePlan performancePlan;
+  private F29_RecordingEvent recordingEvent;
 
   public BIBRecordConverter(Record record, Model model, BIBRecordConverter mainRecordConv) {
     this.record = record;
@@ -44,18 +48,19 @@ public class BIBRecordConverter {
     provActivity = BNF2RDF.computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
     if (BNF2RDF.getRecordCode(record).equals("g"))
-      if (isANL(record)) convertANL();
+      if (record.isANL()) convertANL();
       else convertDAV();
   }
 
-  public BIBRecordConverter(Record record, Model model, BIBRecordConverter mainRecordConv, DataField df, int i) {
+  public BIBRecordConverter(Record record, Model model, BIBRecordConverter mainRecordConv,
+                            DataField df, String identifier) {
     // inner
     this.record = record;
     this.model = model;
     this.mainRecordConv = mainRecordConv;
     this.mainRecord = mainRecordConv.getRecord();
 
-    System.out.println("--> " + record.getIdentifier() + "|" + i + (isANL(record) ? " ANL" + record.getLevel() : ""));
+    System.out.println("--> " + identifier + (record.isANL() ? " ANL" + record.getLevel() : ""));
     this.ark = mainRecordConv.ark;
 
     // PROV-O tracing
@@ -101,8 +106,9 @@ public class BIBRecordConverter {
           .addProperty(CIDOC.P41_classified, f14.asResource())
           .addProperty(CIDOC.P41_classified, f22.asResource());
 
-        String deriv = f28.getDerivation();
-        if (deriv != null) {
+        String derivation = f28.getDerivation();
+        if (derivation != null) {
+          Resource deriv = VocabularyManager.getVocabulary("derivation").findConcept(derivation, false);
           assignment.addProperty(CIDOC.P42_assigned, deriv);
           f14.setDerivationType(deriv);
         }
@@ -113,38 +119,44 @@ public class BIBRecordConverter {
     DataField manuscriptField = record.getDatafieldsByCode(325).stream().findFirst().orElse(null);
     F4_ManifestationSingleton manuscript = null;
     if (manuscriptField != null) {
-      String manuId = manuscriptField.isCode('u') ? manuscriptField.getString('u') : record.getIdentifier() + i;
+      String manuId = manuscriptField.isCode('u') ? manuscriptField.getString('u') : identifier;
       manuscript = new F4_ManifestationSingleton(manuId, manuscriptField);
       manuscript.add(f22);
       f28.add(manuscript);
     }
 
-    tracks = new M46_SetOfTracks(record, df, i);
+    tracks = new M46_SetOfTracks(record, df, identifier);
 
-    F26_Recording recording = new F26_Recording(record, mainRecord, i);
-    F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record, mainRecord, i);
-    recording.getProducers().forEach(recordingEvent::addProducer);
-    F21_RecordingWork recordingWork = new F21_RecordingWork(record, i);
+    M43_PerformedExpression performedExpression = new M43_PerformedExpression(record, identifier, df);
+    M44_PerformedWork performedWork = new M44_PerformedWork(record, identifier, df);
+    M42_PerformedExpressionCreation performedExpressionCreation =
+      new M42_PerformedExpressionCreation(record, identifier);
 
-    recordingEvent.add(recording).add(recordingWork);
-    recordingWork.add(recording);
+    performance = new F31_Performance(record, identifier);
+    performancePlan = new F25_PerformancePlan(identifier);
+    recordingEvent = new F29_RecordingEvent(record, identifier);
+    if (!performance.hasTimeSpace() && mainRecordConv.performance.hasInformation()) {
+      performance = mainRecordConv.performance;
+      performancePlan = mainRecordConv.performancePlan;
+      recordingEvent = mainRecordConv.recordingEvent;
+    }
 
-    M43_PerformedExpression performedExpression = new M43_PerformedExpression(record, record.getIdentifier() + i, df);
-    M44_PerformedWork performedWork = new M44_PerformedWork(record, record.getIdentifier() + i, df);
-    M42_PerformedExpressionCreation performedExpressionCreation = new M42_PerformedExpressionCreation(record,
-      record.getIdentifier() + i);
-
-    F31_Performance performance = new F31_Performance(record, record.getIdentifier() + i);
-    F25_PerformancePlan performancePlan = new F25_PerformancePlan(record.getIdentifier() + i, df);
-
+    F26_Recording recording = new F26_Recording(record, identifier);
     recordingEvent.addTimeSpan(performance.getTime());
     recordingEvent.setPlace(performance.getPlace());
+
+    F21_RecordingWork recordingWork = new F21_RecordingWork(record, identifier);
+
+    recording.getProducers().forEach(recordingEvent::addProducer);
+    recordingWork.add(recording);
+    recordingEvent.add(recording).add(recordingWork);
+
+
     performedExpressionCreation.addTimeSpan(performance.getTime());
     performedExpressionCreation.setPlace(performance.getPlace());
     performedExpressionCreation.setGeoContext(performance.getGeoContext());
 
     performedExpression.add(f22);
-    performance.add(f22);
 
     f15.add(performedExpression).add(performedWork);
     this.model.add(f15.getModel()).add(f28.getModel());
@@ -153,7 +165,7 @@ public class BIBRecordConverter {
     performancePlan.add(f22);
     performedExpressionCreation.add(performedExpression).add(performedWork)
       .add(performancePlan).add(manuscript);
-    performance.add(performedExpressionCreation).add(performancePlan);
+    performance.add(f22).add(performedExpressionCreation).add(performancePlan);
     recordingEvent.add(performance);
     tracks.add(performedExpression);
 
@@ -173,15 +185,17 @@ public class BIBRecordConverter {
     return record;
   }
 
-  public static boolean isANL(Record record) {
-    ControlField leader = record.getControlfieldByCode("leader");
-    return leader.getData().charAt(8) == 'd';
-  }
-
   private void convertANL() {
-    DataField df = record.getDatafieldByCode(144);
-    if (df == null) df = record.getDatafieldByCode(744);
-    BIBRecordConverter conv = new BIBRecordConverter(record, model, this.mainRecordConv, df, 0);
+    BIBRecordConverter conv = null;
+
+    List<Record> detailedANL = record.getSubRecords();
+    if (detailedANL.isEmpty()) detailedANL = Collections.singletonList(record);
+
+    for (Record r : detailedANL) {
+      DataField df = r.getDatafieldByCode(144);
+      if (df == null) df = r.getDatafieldByCode(744);
+      conv = new BIBRecordConverter(r, model, this.mainRecordConv, df, r.getIdentifier());
+    }
 
     int i = 0;
 
@@ -201,13 +215,17 @@ public class BIBRecordConverter {
 
     F17_AggregationWork aggregationWork = new F17_AggregationWork(record);
     this.tracks = new M46_SetOfTracks(record);
-    F28_ExpressionCreation aggregationEvent = new F28_ExpressionCreation(record);
+    F28_ExpressionCreation aggregationEvent = new F28_ExpressionCreation(record, record.getIdentifier() + "t");
 
     publicationEvent.add(publicationExpression).add(publicationWork);
     publicationWork.add(publicationExpression);
     manif.add(publicationExpression);
     aggregationWork.add(tracks);
     aggregationEvent.add(aggregationWork).add(tracks);
+
+    performance = new F31_Performance(record);
+    performancePlan = new F25_PerformancePlan(record.getIdentifier());
+    recordingEvent = new F29_RecordingEvent(record);
 
     editing = new M29_Editing(record);
 
@@ -216,10 +234,11 @@ public class BIBRecordConverter {
       case 3:
         int i = 0;
         for (DataField df : record.getDatafieldsByCode(744)) {
-          this.incorporate(new BIBRecordConverter(record, model, this, df, ++i));
+          this.incorporate(new BIBRecordConverter(record, model, this, df, record.getIdentifier() + ++i));
         }
       case 1:
-        this.incorporate(new BIBRecordConverter(record, model, this, record.getDatafieldByCode(144), 0));
+        this.incorporate(new BIBRecordConverter(record, model, this,
+          record.getDatafieldByCode(144), record.getIdentifier()));
     }
 
     for (DoremusResource r : Arrays.asList(manif, publicationExpression, publicationEvent, publicationWork,
@@ -236,7 +255,7 @@ public class BIBRecordConverter {
   private static final List<String> CONDUCTOR_CODES = Arrays.asList("1080", "1040");
 
   public static int getCase(Record record) {
-    if (isANL(record)) return 2;
+    if (record.isANL()) return 2;
 
     // case 1 or case 3
     if (record.getDatafieldsByCode(744).size() == 0)

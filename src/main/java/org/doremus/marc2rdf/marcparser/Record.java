@@ -5,18 +5,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Record {
-
-  private List<DataField> dataFields;
-  private List<ControlField> controlFields;
-  private List<Attr> attrList;
+  private final List<Record> subRecords;
+  private final List<DataField> dataFields;
+  private final List<ControlField> controlFields;
+  private final List<Attr> attrList;
   private String id;
   private String type;
   private int level;
+  private Record parent;
 
   public Record(String type, String id) {
     controlFields = new ArrayList<>();
     dataFields = new ArrayList<>();
     attrList = new ArrayList<>();
+    subRecords = new ArrayList<>();
     this.type = type;
     this.id = id;
     this.level = 0;
@@ -44,6 +46,10 @@ public class Record {
     return this.isType("Bibliographic");
   }
 
+  public boolean isANL() {
+    ControlField leader = getControlfieldByCode("leader");
+    return this.isBIB() && leader != null && leader.getData().charAt(8) == 'd';
+  }
 
   void addControlField(Etiq field) {
     controlFields.add((ControlField) field);
@@ -103,6 +109,25 @@ public class Record {
       .stream().findFirst().orElse(null);
   }
 
+  public List<String> getDatafieldsByCodePropagate(int code, char subFieldCode) {
+    return getDatafieldsByCodePropagate("" + code, subFieldCode);
+  }
+
+  public List<String> getDatafieldsByCodePropagate(String code, char subFieldCode) {
+    List<String> results = getDatafieldsByCode(code, subFieldCode);
+    if (results.size() > 0 || this.isRoot()) return results;
+    else return this.parent.getDatafieldsByCodePropagate(code, subFieldCode);
+  }
+
+  public List<DataField> getDatafieldsByCodePropagate(int code) {
+    return getDatafieldsByCodePropagate("" + code);
+  }
+
+  public List<DataField> getDatafieldsByCodePropagate(String code) {
+    List<DataField> results = getDatafieldsByCode(code);
+    if (results.size() > 0 || this.isRoot()) return results;
+    else return this.parent.getDatafieldsByCodePropagate(code);
+  }
 
   public ControlField getControlfieldByCode(String code) {
     return this.controlFields.stream()
@@ -152,4 +177,22 @@ public class Record {
   public int getLevel() {
     return level;
   }
+
+  void addSubRecord(Record subRecord) {
+    this.subRecords.add(subRecord);
+    subRecord.setParent(this);
+  }
+
+  public List<Record> getSubRecords() {
+    return this.subRecords;
+  }
+
+  private void setParent(Record record) {
+    this.parent = record;
+  }
+
+  private boolean isRoot() {
+    return this.parent == null;
+  }
+
 }

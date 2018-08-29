@@ -26,8 +26,13 @@ public class F31_Performance extends DoremusResource {
     this.setClass(FRBROO.F31_Performance);
   }
 
+  public F31_Performance(Record record) {
+    this(record, record.getIdentifier());
+  }
+
   public F31_Performance(Record record, String identifier) {
-    this(identifier);
+    super(record, identifier);
+    this.setClass(FRBROO.F31_Performance);
 
     // in public
     List<String> notes = record.getDatafieldsByCode(317, 'a');
@@ -105,6 +110,19 @@ public class F31_Performance extends DoremusResource {
     return this.place;
   }
 
+  public void setPlace(E53_Place place) {
+    this.addProperty(CIDOC.P7_took_place_at, place);
+  }
+
+  private void setGeoContext(E53_Place place) {
+    this.addProperty(MUS.U65_has_geographical_context, place);
+    this.geoContext = this.country;
+  }
+
+  public E53_Place getGeoContext() {
+    return this.geoContext;
+  }
+
   public F31_Performance add(M42_PerformedExpressionCreation m42_performedExpressionCreation) {
     this.addProperty(CIDOC.P9_consists_of, m42_performedExpressionCreation);
     return this;
@@ -120,17 +138,16 @@ public class F31_Performance extends DoremusResource {
     return this;
   }
 
-
-  public void setPlace(E53_Place place) {
-    this.addProperty(CIDOC.P7_took_place_at, place);
+  public boolean hasTimeSpace() {
+    return this.timeSpan != null || this.place != null;
   }
 
-  private void setGeoContext(E53_Place place) {
-    this.addProperty(MUS.U65_has_geographical_context, place);
-    this.geoContext = this.country;
-  }
-
-  public E53_Place getGeoContext() {
-    return this.geoContext;
+  public boolean hasInformation() {
+    boolean result = hasTimeSpace();
+    for (DataField ignored : record.getDatafieldsByCodePropagate(111)) result = true;
+    for (DataField ignored : record.getDatafieldsByCodePropagate(711)) result = true;
+    for (DataField ignored : record.getDatafieldsByCodePropagate(101)) result = true;
+    for (DataField ignored : record.getDatafieldsByCodePropagate(701)) result = true;
+    return result;
   }
 }
