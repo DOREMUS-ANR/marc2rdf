@@ -63,7 +63,7 @@ public class GeoNames {
     String key = rawString;
 
     if (country != null && !country.isEmpty())
-      if (country.length() > 2) {
+      if (GeoNames.getCountryUri(country) ==null) {
         key += " (" + country + ")";
         country = null;
       }
@@ -71,7 +71,7 @@ public class GeoNames {
     ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
 
     String cacheKey = key;
-    if(country!=null) {
+    if (country != null) {
       try {
         cacheKey += "|" + country;
         searchCriteria.setCountryCode(country);
@@ -181,7 +181,10 @@ public class GeoNames {
   }
 
   public static String getCountryUri(String countryCode) {
-    int countryId = Integer.parseInt(countries.get(countryCode));
+    countryCode = countryCode.toUpperCase();
+    countryCode = countries.get(countryCode);
+    if (countryCode == null) return null;
+    int countryId = Integer.parseInt(countryCode);
     if (!cache.containsKey(countryCode)) {
       //  save the country also
       downloadRdf(countryId);

@@ -1,12 +1,10 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.ControlField;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -24,18 +22,21 @@ public class BIBRecordConverter {
   private static final Pattern EXTRAIT_PATTERN = Pattern.compile("(extr(ait|\\.)|choix)", Pattern.CASE_INSENSITIVE);
 
   private final String ark;
+  private final BIBRecordConverter mainRecordConv;
   public Resource provActivity, intermarcRes;
   private Model model;
   private Record record, mainRecord;
   private F24_PublicationExpression publicationExpression;
   private F3_ManifestationProductType manif;
   private M46_SetOfTracks tracks;
+  private M29_Editing editing;
 
-  public BIBRecordConverter(Record record, Model model, Record mainRecord) {
+  public BIBRecordConverter(Record record, Model model, BIBRecordConverter mainRecordConv) {
     this.record = record;
     this.model = model;
+    this.mainRecordConv = mainRecordConv;
 
-    this.mainRecord = (mainRecord == null) ? this.record : mainRecord;
+    this.mainRecord = (mainRecordConv == null) ? this.record : mainRecordConv.getRecord();
     this.ark = this.mainRecord.getAttrByName("IDPerenne").getData();
 
     // PROV-O tracing
@@ -51,42 +52,74 @@ public class BIBRecordConverter {
     // inner
     this.record = record;
     this.model = model;
+    this.mainRecordConv = mainRecordConv;
     this.mainRecord = mainRecordConv.getRecord();
 
-    this.ark = this.mainRecord.getAttrByName("IDPerenne").getData();
+    System.out.println("--> " + record.getIdentifier() + "|" + i + (isANL(record) ? " ANL" + record.getLevel() : ""));
+    this.ark = mainRecordConv.ark;
 
     // PROV-O tracing
     intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
     provActivity = BNF2RDF.computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
     // work
-    String l = df.getString('l');
-    String _id = df.getString(3);
-    F22_SelfContainedExpression f22 = new F22_SelfContainedExpression(_id);
-    F28_ExpressionCreation f28 = new F28_ExpressionCreation(_id);
-    F15_ComplexWork f15 = new F15_ComplexWork(_id);
+    F22_SelfContainedExpression f22 = null;
+    F28_ExpressionCreation f28 = null;
+    F15_ComplexWork f15 = null;
+    F14_IndividualWork f14_outer = null;
+    boolean isArrangment = false;
+    Property prop = MUS.U58_has_full_published_recording;
 
-    Property prop = EXTRAIT_PATTERN.matcher(l).find() ?
-      MUS.U59_has_partial_published_recording : MUS.U58_has_full_published_recording;
+    if (df != null) {
+      String l = df.getString('l');
+      if (l == null) l = "";
+      String _id = df.getString(3);
+      f22 = new F22_SelfContainedExpression(_id);
+      f28 = new F28_ExpressionCreation(_id);
+      f15 = new F15_ComplexWork(_id);
+      f14_outer = new F14_IndividualWork(_id);
+      prop = EXTRAIT_PATTERN.matcher(l).find() ?
+        MUS.U59_has_partial_published_recording : MUS.U58_has_full_published_recording;
 
-    if (l.toLowerCase().contains("arr.")) {
-      F28_ExpressionCreation derivedCreation = getDerivedWork();
-      F14_IndividualWork derived = derivedCreation.getWork();
-      f22 = derivedCreation.getExpression();
-      derived.addProperty(FRBROO.R2_is_derivative_of, new F14_IndividualWork(_id));
-      f15.add(derived);
+      isArrangment = l.toLowerCase().contains("arr.");
+    }
+    if (isArrangment || f22 == null) {
+      f22 = new F22_SelfContainedExpression(record);
+      F14_IndividualWork f14 = new F14_IndividualWork(record);
+      f28 = new F28_ExpressionCreation(record);
+      if (f15 == null) f15 = new F15_ComplexWork(record);
+
+      f14.add(f22);
+      f28.add(f22).add(f14);
+      f15.add(f14).add(f22);
+
+      if (isArrangment) {
+        f14.addProperty(FRBROO.R2_is_derivative_of, f14_outer);
+        Resource assignment = model.createResource(f14.getUri() + "/derivation_assignment")
+          .addProperty(RDF.type, MUS.M39_Derivation_Type_Assignment)
+          .addProperty(CIDOC.P14_carried_out_by, BNF2RDF.BnF)
+          .addProperty(CIDOC.P41_classified, f14.asResource())
+          .addProperty(CIDOC.P41_classified, f22.asResource());
+
+        String deriv = f28.getDerivation();
+        if (deriv != null) {
+          assignment.addProperty(CIDOC.P42_assigned, deriv);
+          f14.setDerivationType(deriv);
+        }
+      }
     }
 
     // handwritten score
     DataField manuscriptField = record.getDatafieldsByCode(325).stream().findFirst().orElse(null);
-    F4_Manifestation_Singleton manuscript = null;
+    F4_ManifestationSingleton manuscript = null;
     if (manuscriptField != null) {
-      manuscript = new F4_Manifestation_Singleton(df);
+      String manuId = manuscriptField.isCode('u') ? manuscriptField.getString('u') : record.getIdentifier() + i;
+      manuscript = new F4_ManifestationSingleton(manuId, manuscriptField);
       manuscript.add(f22);
       f28.add(manuscript);
     }
 
-    M46_SetOfTracks sot = new M46_SetOfTracks(record, df, i);
+    tracks = new M46_SetOfTracks(record, df, i);
 
     F26_Recording recording = new F26_Recording(record, mainRecord, i);
     F29_RecordingEvent recordingEvent = new F29_RecordingEvent(record, mainRecord, i);
@@ -95,7 +128,6 @@ public class BIBRecordConverter {
 
     recordingEvent.add(recording).add(recordingWork);
     recordingWork.add(recording);
-//    editing.add(sot);
 
     M43_PerformedExpression performedExpression = new M43_PerformedExpression(record, record.getIdentifier() + i, df);
     M44_PerformedWork performedWork = new M44_PerformedWork(record, record.getIdentifier() + i, df);
@@ -123,12 +155,13 @@ public class BIBRecordConverter {
       .add(performancePlan).add(manuscript);
     performance.add(performedExpressionCreation).add(performancePlan);
     recordingEvent.add(performance);
-    sot.add(performedExpression);
+    tracks.add(performedExpression);
 
     mainRecordConv.publicationExpression.add(performedExpression).addProperty(prop, f22);
-    mainRecordConv.tracks.add(performedExpression);
+    mainRecordConv.tracks.add(tracks);
+    mainRecordConv.editing.add(tracks);
 
-    for (DoremusResource r : Arrays.asList(sot, recording, recordingEvent, performedExpression,
+    for (DoremusResource r : Arrays.asList(tracks, recording, recordingEvent, performedExpression,
       performance)) {
       r.addProvenance(intermarcRes, provActivity);
       this.model.add(r.getModel());
@@ -146,9 +179,17 @@ public class BIBRecordConverter {
   }
 
   private void convertANL() {
-    BIBRecordConverter conv = new BIBRecordConverter(record, model, this, null, 0);
-    // TODO fields 331
-    // TODO Niv=2
+    DataField df = record.getDatafieldByCode(144);
+    if (df == null) df = record.getDatafieldByCode(744);
+    BIBRecordConverter conv = new BIBRecordConverter(record, model, this.mainRecordConv, df, 0);
+
+    int i = 0;
+
+    for (DataField df331 : record.getDatafieldsByCode(331)) {
+      M24_Track track = new M24_Track(record.getIdentifier() + ++i, df331);
+      conv.tracks.add(track);
+    }
+
   }
 
   private void convertDAV() {
@@ -168,19 +209,17 @@ public class BIBRecordConverter {
     aggregationWork.add(tracks);
     aggregationEvent.add(aggregationWork).add(tracks);
 
-    M29_Editing editing = new M29_Editing(record);
+    editing = new M29_Editing(record);
 
-    System.out.println(getCase(record));
+    System.out.println("case " + getCase(record));
     switch (getCase(record)) {
-      case 1:
-        new BIBRecordConverter(record, model, this, null, 0);
-        break;
       case 3:
         int i = 0;
-        BIBRecordConverter conv = new BIBRecordConverter(record, model, this, record.getDatafieldByCode(144), 0);
         for (DataField df : record.getDatafieldsByCode(744)) {
-          conv = new BIBRecordConverter(record, model, this, record.getDatafieldByCode(144), 0);
+          this.incorporate(new BIBRecordConverter(record, model, this, df, ++i));
         }
+      case 1:
+        this.incorporate(new BIBRecordConverter(record, model, this, record.getDatafieldByCode(144), 0));
     }
 
     for (DoremusResource r : Arrays.asList(manif, publicationExpression, publicationEvent, publicationWork,
@@ -190,6 +229,9 @@ public class BIBRecordConverter {
     }
   }
 
+  private void incorporate(BIBRecordConverter bibRecordConverter) {
+    this.model.add(bibRecordConverter.getModel());
+  }
 
   private static final List<String> CONDUCTOR_CODES = Arrays.asList("1080", "1040");
 
@@ -234,70 +276,4 @@ public class BIBRecordConverter {
   }
 
 
-  private F28_ExpressionCreation getDerivedWork() {
-    F22_SelfContainedExpression f22 = new F22_SelfContainedExpression(record.getIdentifier() + "d");
-    F28_ExpressionCreation f28 = new F28_ExpressionCreation(record.getIdentifier() + "d");
-    F14_IndividualWork f14 = new F14_IndividualWork(record.getIdentifier() + "d");
-
-    Resource assignment = model.createResource(f14.getUri() + "/derivation_assignment")
-      .addProperty(RDF.type, MUS.M39_Derivation_Type_Assignment)
-      .addProperty(CIDOC.P14_carried_out_by, BNF2RDF.BnF)
-      .addProperty(CIDOC.P41_classified, f14.asResource())
-      .addProperty(CIDOC.P41_classified, f22.asResource());
-
-
-    // title
-    List<Literal> titles = BIBDoremusResource.parseTitleField(record.getDatafieldByCode(245), true, false);
-    titles.forEach(f22::setTitle);
-    // title translation
-    titles = BIBDoremusResource.parseTitleField(record.getDatafieldByCode(247), true, false);
-    titles.forEach(f22::setVariantTitle);
-
-    // casting
-    M6_Casting casting = new M6_Casting(record, f22.getUri() + "/casting/1");
-    if (casting.doesContainsInfo()) f22.addProperty(MUS.U13_has_casting, casting);
-
-    // composers and derivation type
-    record.getDatafieldsByCode(700)
-      .forEach(df -> {
-        Person person = ArtistConverter.parseArtistField(df);
-        String role = "arrangeur";
-        String deriv = null;
-
-        switch (df.getString(4)) {
-          case "0010":
-          case "0011":
-          case "0013":
-            role = "adaptateur";
-            deriv = "adaptation";
-            break;
-          case "0050":
-          case "0051":
-          case "0053":
-            deriv = "arrangement";
-            break;
-          case "0430":
-            role = "harmonisateur";
-            deriv = "harmonisation";
-            break;
-          case "0730":
-            role = "transcripteur";
-            deriv = "transcription";
-            break;
-          case "0780":
-            role = "orchestrateur";
-            deriv = "orchestration";
-        }
-
-        f28.addActivity(person, role);
-        if (deriv != null) {
-          f14.setDerivationType(deriv);
-          assignment.addProperty(CIDOC.P42_assigned, deriv);
-        }
-      });
-
-    f14.add(f22);
-    f28.add(f22).add(f14);
-    return f28;
-  }
 }

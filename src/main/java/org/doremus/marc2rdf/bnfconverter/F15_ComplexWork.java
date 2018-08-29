@@ -22,13 +22,14 @@ public class F15_ComplexWork extends DoremusResource {
 
   public F15_ComplexWork(Record record) {
     super(record);
-
     this.setClass(FRBROO.F15_Complex_Work);
-    this.addProperty(DC.identifier, record.getIdentifier());
-    String ark = record.getAttrByName("IDPerenne").getData();
-    if (ark != null) this.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
 
-    parseDerivation();
+    if (record.isTUM()) {
+      this.addProperty(DC.identifier, record.getIdentifier());
+      String ark = record.getAttrByName("IDPerenne").getData();
+      if (ark != null) this.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
+      parseDerivation();
+    }
   }
 
   private void parseDerivation() {
@@ -76,6 +77,11 @@ public class F15_ComplexWork extends DoremusResource {
   }
 
   public F15_ComplexWork add(F22_SelfContainedExpression f22) {
+    if (record == null || !record.isTUM()) {
+      this.addProperty(MUS.U38_has_descriptive_expression, f22);
+      return this;
+    }
+
     boolean versionContained = versionContained();
 
     Property predicate = versionContained ?

@@ -1,4 +1,4 @@
-143 $a,genre label,genre URI,context label,context uri
+143_$a,genre_label,genre_URI,context_label,context_uri
 Chant ambrosien,Chants ambrosiens,http://catalogue.bnf.fr/ark:/12148/cb165702612,,
 Chant byzantin,Chants byzantins,http://catalogue.bnf.fr/ark:/12148/cb13736071c,,
 Chant grégorien,Chants grégoriens,http://catalogue.bnf.fr/ark:/12148/cb13318328f,,
@@ -18,9 +18,7 @@ Chant hispano-mozarabe,Musique vocale chrétienne,http://catalogue.bnf.fr/ark:/1
 Chant néo-gallican,Musique vocale chrétienne,http://catalogue.bnf.fr/ark:/12148/cb133191222,Église catholique -- Rite gallican,http://catalogue.bnf.fr/ark:/12148/cb12234656n
 Chant norbertin,Musique vocale chrétienne,http://catalogue.bnf.fr/ark:/12148/cb133191222,Ordre de Prémontré,http://catalogue.bnf.fr/ark:/12148/cb11868370v
 Chant orthodoxe,Musique vocale chrétienne,http://catalogue.bnf.fr/ark:/12148/cb133191222,Orthodoxes,http://catalogue.bnf.fr/ark:/12148/cb119672846
-Chant orthodoxe copte,Musique vocale chrétienne,http://catalogue.bnf.fr/ark:/12148/cb133191222,"Orthodoxes
-Copte","http://catalogue.bnf.fr/ark:/12148/cb119672846
-http://catalogue.bnf.fr/ark:/12148/cb119522060"
+Chant orthodoxe copte,Musique vocale chrétienne,http://catalogue.bnf.fr/ark:/12148/cb133191222,"Orthodoxes,Copte","http://catalogue.bnf.fr/ark:/12148/cb119672846,http://catalogue.bnf.fr/ark:/12148/cb119522060"
 Chant syriaque orthodoxe,Chants syriaques,http://catalogue.bnf.fr/ark:/12148/cb16141053t,Orthodoxes,http://catalogue.bnf.fr/ark:/12148/cb119672846
 Chant hébraïque,Musique vocale sacrée,http://catalogue.bnf.fr/ark:/12148/cb16237559p,Juifs,http://catalogue.bnf.fr/ark:/12148/cb11932167h
 Chant liturgique ashkénaze,Musique vocale sacrée,http://catalogue.bnf.fr/ark:/12148/cb16237559p,Ashkénazes,http://catalogue.bnf.fr/ark:/12148/cb11971742d

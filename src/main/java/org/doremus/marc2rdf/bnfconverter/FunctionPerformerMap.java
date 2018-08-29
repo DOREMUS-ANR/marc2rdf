@@ -2,8 +2,8 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.ontology.MUS;
@@ -51,7 +51,7 @@ public class FunctionPerformerMap {
   public static FunctionPerformerMap getFrom245(String txt) {
     if (txt == null || txt.isEmpty()) return null;
     return getList().stream()
-      .filter(f -> f.abbr245 != null && txt.contains(f.abbr245) || f.label != null && txt.contains(f.label245))
+      .filter(f -> f.abbr245 != null && txt.contains(f.abbr245) || f.label245 != null && txt.contains(f.label245))
       .findFirst().orElse(null);
   }
 
@@ -79,7 +79,7 @@ public class FunctionPerformerMap {
     if (this.mop != null)
       return VocabularyManager.getVocabulary("mop-iaml").getConcept(this.mop);
     if (this.isLabelFunction) return null;
-    return ResourceFactory.createResource()
+    return ModelFactory.createDefaultModel().createResource()
       .addProperty(RDF.type, MUS.M14_Medium_Of_Performance)
       .addProperty(RDFS.label, this.label);
   }

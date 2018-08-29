@@ -8,6 +8,7 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.marc2rdf.marcparser.Subfield;
 import org.doremus.ontology.CIDOC;
+import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
 import java.util.Objects;
@@ -36,11 +37,6 @@ public class M46_SetOfTracks extends BIBDoremusResource {
       );
   }
 
-  static Stream<M40_Context> parseContext(Record record) {
-    return record.getDatafieldsByCode(143).stream()
-      .map(M40_Context::fromField)
-      .filter(Objects::nonNull);
-  }
 
   public M46_SetOfTracks(Record record, DataField datafield, int i) {
     // Expression globale résultant d'un editing
@@ -86,6 +82,13 @@ public class M46_SetOfTracks extends BIBDoremusResource {
     }
   }
 
+  static Stream<M40_Context> parseContext(Record record) {
+    return record.getDatafieldsByCode(143).stream()
+      .map(M40_Context::fromField)
+      .filter(Objects::nonNull);
+  }
+
+
   private void parseISRCId() {
     for (DataField df : record.getDatafieldsByCode("030")) {
       String current = null;
@@ -114,4 +117,12 @@ public class M46_SetOfTracks extends BIBDoremusResource {
     return this;
   }
 
+  public M46_SetOfTracks add(M24_Track track) {
+    this.addProperty(FRBROO.R5_has_component, track);
+    return this;
+  }
+  public M46_SetOfTracks add(M46_SetOfTracks tracks) {
+    this.addProperty(FRBROO.R5_has_component, tracks);
+    return this;
+  }
 }

@@ -140,9 +140,11 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
 
     M28_Individual_Performance ip = new M28_Individual_Performance(this.uri + "/" + ++countConsistOf);
     ip.setAgent(agent);
-    ip.setFunction(function.getFunction());
-    ip.setMoP(function.getMop());
     ip.setCharacter(character);
+    if (function != null) {
+      ip.setFunction(function.getFunction());
+      ip.setMoP(function.getMop());
+    }
 
     this.individualPerformances.add(ip);
   }
@@ -272,13 +274,14 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   }
 
   public M42_PerformedExpressionCreation add(F25_PerformancePlan plan) {
-    this.mainPerformance.add(plan);
+    this.addProperty(FRBROO.R25_performed, plan);
+    if (this.mainPerformance != null) this.mainPerformance.add(plan);
     return this;
   }
 
   public M42_PerformedExpressionCreation add(F22_SelfContainedExpression f22) {
     this.expression.addProperty(MUS.U54_is_performed_expression_of, f22);
-    this.mainPerformance.add(f22);
+    if (this.mainPerformance != null) this.mainPerformance.add(f22);
     return this;
   }
 
@@ -294,7 +297,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
     return this;
   }
 
-  public M42_PerformedExpressionCreation add(F4_Manifestation_Singleton manuscript) {
+  public M42_PerformedExpressionCreation add(F4_ManifestationSingleton manuscript) {
     this.addProperty(CIDOC.P16_used_specific_object, manuscript);
     return this;
   }

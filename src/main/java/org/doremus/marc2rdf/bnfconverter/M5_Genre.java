@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class M5_Genre extends DoremusResource {
   private static List<ChantContextMap> list = null;
-  private final Resource subGenre;
+  private Resource subGenre;
   private List<Resource> religiousContext;
 
   public M5_Genre(DataField df) {
@@ -49,8 +49,9 @@ public class M5_Genre extends DoremusResource {
         .addProperty(CIDOC.P1_is_identified_by, label);
     }
 
-    this.subGenre =
-      VocabularyManager.searchInCategory(subLabel, null, "genre", false);
+    if (subLabel != null)
+      this.subGenre =
+        VocabularyManager.searchInCategory(subLabel, null, "genre", false);
   }
 
 
@@ -70,21 +71,21 @@ public class M5_Genre extends DoremusResource {
   }
 
 
-  private static class ChantContextMap {
-    @CsvBindByName(column = "143 $a")
+  public static class ChantContextMap {
+    @CsvBindByName(column = "143_$a")
     private String field;
-    @CsvBindByName(column = "genre label")
+    @CsvBindByName(column = "genre_label")
     private String genreLabel;
-    @CsvBindByName(column = "genre URI")
+    @CsvBindByName(column = "genre_URI")
     private String genreUri;
-    @CsvBindByName(column = "context label")
+    @CsvBindByName(column = "context_label")
     private String contextLabel;
-    @CsvBindByName(column = "context uri")
+    @CsvBindByName(column = "context_uri")
     private String contextUri;
 
     public List<String> getContext() {
       if (contextUri == null) return new ArrayList<>();
-      return Arrays.asList(contextUri.split("\n"));
+      return Arrays.asList(contextUri.split(","));
     }
   }
 

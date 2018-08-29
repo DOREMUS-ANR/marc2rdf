@@ -61,8 +61,10 @@ public class F31_Performance extends DoremusResource {
     String building = df.getString('c');
 
     E53_Place pCountry = null, pCity = null, pBuilding;
-    if (country != null)
+    if (country != null) {
       pCountry = E53_Place.withUri(GeoNames.getCountryUri(country));
+      if (pCountry == null) country = null;
+    }
     if (city != null) {
       pCity = new E53_Place(city, country, null);
       pCity.addSurroundingPlace(pCountry);
@@ -89,6 +91,7 @@ public class F31_Performance extends DoremusResource {
         return Stream.of(year, month, day);
       }).collect(Collectors.toList());
 
+    if (dates.size() == 0) return null;
     if (dates.size() == 6)
       return new TimeSpan(dates.get(0), dates.get(1), dates.get(2), dates.get(3), dates.get(4), dates.get(5));
     return new TimeSpan(dates.get(0), dates.get(1), dates.get(2));

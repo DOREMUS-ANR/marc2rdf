@@ -6,16 +6,15 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 
-public class F4_Manifestation_Singleton extends BIBDoremusResource {
-  public F4_Manifestation_Singleton(String identifier) {
+public class F4_ManifestationSingleton extends BIBDoremusResource {
+  public F4_ManifestationSingleton(String identifier) {
     super(identifier);
     this.setClass(FRBROO.F4_Manifestation_Singleton);
   }
 
-  public F4_Manifestation_Singleton(DataField df) {
+  public F4_ManifestationSingleton(String identifier, DataField df) {
     // for field 325
-
-    this(df.getString('u'));
+    this(identifier);
 
     this.addProperty(CIDOC.P2_has_type, "score");
     this.addProperty(CIDOC.P2_has_type, "manuscript");
@@ -30,7 +29,7 @@ public class F4_Manifestation_Singleton extends BIBDoremusResource {
       .addProperty(CIDOC.P102_has_title, title);
 
     // identifier
-    this.addComplexIdentifier(this.identifier, "Shelfmark");
+    this.addComplexIdentifier(df.getString('u'), "Shelfmark");
 
     // actor
     String actor = df.getString('n');
@@ -43,7 +42,7 @@ public class F4_Manifestation_Singleton extends BIBDoremusResource {
     }
   }
 
-  public F4_Manifestation_Singleton add(F22_SelfContainedExpression f22) {
+  public F4_ManifestationSingleton add(F22_SelfContainedExpression f22) {
     this.addProperty(CIDOC.P128_carries, f22);
     return this;
   }

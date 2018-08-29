@@ -36,7 +36,7 @@ public class BNF2RDF extends AbstractConverter {
 
   private static boolean modifiedOut = false;
   private boolean somethingHasBeenConverted;
-  private Record mainRecord;
+  private BIBRecordConverter mainRecordConv;
 
 
   public BNF2RDF() {
@@ -46,13 +46,14 @@ public class BNF2RDF extends AbstractConverter {
   }
 
   public Model convert(File file) throws FileNotFoundException {
+//    if(!file.getName().endsWith("37820741.xml")) return null;
     MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
 
     if (reader.getRecords() == null || reader.getRecords().size() == 0) {
       System.out.println("Exception occurred parsing file " + file);
     }
 
-    mainRecord =null;
+    mainRecordConv = null;
     for (Record r : reader.getRecords()) {
 //      try {
 //        ControlField leader = r.getControlfieldByCode("leader");
@@ -68,8 +69,8 @@ public class BNF2RDF extends AbstractConverter {
       if (r.getType() == null) return null;
 
       if (r.isBIB()) {
-        convertBIB(r, mainRecord);
-        if (mainRecord == null) mainRecord = r;
+        BIBRecordConverter conv = convertBIB(r, mainRecordConv);
+        if (mainRecordConv == null) mainRecordConv = conv;
       } else convertAuthority(r);
     }
 
@@ -89,9 +90,9 @@ public class BNF2RDF extends AbstractConverter {
     return leader.getData().charAt(r.isBIB() ? 22 : 9) + "";
   }
 
-  private void convertBIB(Record r, Record upperRecord) {
-    new BIBRecordConverter(r, model, upperRecord);
+  private BIBRecordConverter convertBIB(Record r, BIBRecordConverter upperRecord) {
     somethingHasBeenConverted = true;
+    return new BIBRecordConverter(r, model, upperRecord);
   }
 
   private void convertAuthority(Record r) {

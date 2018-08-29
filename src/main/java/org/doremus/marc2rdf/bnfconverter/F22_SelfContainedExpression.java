@@ -47,9 +47,26 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
   public List<Literal> titles;
 
-  public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) {
+  public F22_SelfContainedExpression(Record record) {
     super(record);
+    this.setClass(FRBROO.F22_Self_Contained_Expression);
+    if (!BIBRecordConverter.isANL(record)) return;
 
+    // title
+    List<Literal> titles = BIBDoremusResource.parseTitleField(record.getDatafieldByCode(245), true, false);
+    titles.forEach(this::setTitle);
+    // title translation
+    titles = BIBDoremusResource.parseTitleField(record.getDatafieldByCode(247), true, false);
+    titles.forEach(this::setVariantTitle);
+
+    // casting
+    M6_Casting casting = new M6_Casting(record, this.getUri() + "/casting/1");
+    if (casting.doesContainsInfo()) this.addProperty(MUS.U13_has_casting, casting);
+  }
+
+  public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) {
+    // TUM
+    super(record);
     this.setClass(FRBROO.F22_Self_Contained_Expression);
     this.addProperty(DC.identifier, record.getIdentifier());
 
@@ -193,8 +210,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     }
 
     M6_Casting casting = new M6_Casting(record, this.uri + "/casting/1");
-    if(casting.doesContainsInfo())
-      this.addProperty(MUS.U13_has_casting, casting);
+    if (casting.doesContainsInfo()) this.addProperty(MUS.U13_has_casting, casting);
 
     List<String> characters = record.getDatafieldsByCode("608", 'b');
     if (characters.size() > 0)
@@ -206,6 +222,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
   public F22_SelfContainedExpression(String identifier) {
     super(identifier);
+    this.setClass(FRBROO.F22_Self_Contained_Expression);
   }
 
   private void addOpus(String note) {

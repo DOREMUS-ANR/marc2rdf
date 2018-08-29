@@ -191,9 +191,10 @@ public class F30_PublicationEvent extends DoremusResource {
       parseTime(year);
     }
 
-    if ("l'auteur".equals(publisher)) // hypothesis: singular means only one author
-      addActivity(f28.getComposers().get(0), "publisher");
-    else addActivity(new CorporateBody(publisher), "publisher");
+    if (publisher != null)
+      if ("l'auteur".equals(publisher)) // hypothesis: singular means only one author
+        addActivity(f28.getComposers().get(0), "publisher");
+      else addActivity(new CorporateBody(publisher), "publisher");
 
     if (city != null && !city.startsWith("dans ") && !city.contains("&")) {
       city = city.replaceFirst("[.,:]^", "").trim();

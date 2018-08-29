@@ -7,6 +7,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.util.List;
 import java.util.Objects;
 
 public class F29_RecordingEvent extends BIBDoremusResource {
@@ -27,7 +28,7 @@ public class F29_RecordingEvent extends BIBDoremusResource {
     this.addProperty(CIDOC.P125_used_object_of_type, parseRecordingMethod(), "fr");
 
     // 280 c
-    String field280c = getDatafieldsByCodeFull(280, 'c').get(0).toLowerCase();
+    String field280c = get280c();
     String spatialization = "stereo";
     if (field280c.contains("mono")) spatialization = "mono";
     else if (field280c.contains("quadriphonie")) spatialization = "quadriphonie";
@@ -35,6 +36,12 @@ public class F29_RecordingEvent extends BIBDoremusResource {
 
     if (field280c.contains("dolby") || field280c.contains("dbx"))
       this.addProperty(MUS.U192_used_noise_reduction_technique, "Dual-ended systems", "en");
+  }
+
+  private String get280c() {
+    List<String> field280 = getDatafieldsByCodeFull(280, 'c');
+    if (field280.size() == 0) return "";
+    return field280.get(0).toLowerCase();
   }
 
   private String parseRecordingMethod() {

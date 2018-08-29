@@ -110,6 +110,7 @@ abstract class BIBDoremusResource extends DoremusResource {
 
   public static List<Literal> parseTitleField(DataField df, boolean parseE, boolean parseK) {
     List<Literal> list = new ArrayList<>();
+    if (df == null) return list;
 
     char lastCode = 0;
     String currentTitle = null, language = null, currentK = null;
@@ -260,6 +261,8 @@ abstract class BIBDoremusResource extends DoremusResource {
   }
 
   protected void addComplexIdentifier(String identifier, String type, DoremusResource issuer) {
+    if (identifier == null) return;
+
     Resource typeRes = VocabularyManager.searchInCategory(type, "fr", "id", false);
 
     Resource idRes = model.createResource(this.uri + "/id/" + identifier)

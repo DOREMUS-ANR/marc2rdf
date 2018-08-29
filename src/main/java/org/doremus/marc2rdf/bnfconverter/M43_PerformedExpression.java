@@ -69,11 +69,12 @@ public class M43_PerformedExpression extends BIBDoremusResource {
 
   private String parseLanguage() {
     ControlField field8 = record.getControlfieldByCode("008");
-    if(field8==null) return null;
+    if (field8 == null) return null;
 
     String langCode = field8.getData().substring(31, 34);
-    if (langCode.matches("m(mm|ul)")) langCode = record.getDatafieldByCode("041", 'a');
     if (langCode.equals("zxx") || langCode.equals("und")) return null;
+    if (langCode.matches("m(mm|ul)"))
+      langCode = record.getDatafieldByCode("041", 'a');
     return langCode;
 
   }

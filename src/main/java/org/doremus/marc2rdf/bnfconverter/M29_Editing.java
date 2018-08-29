@@ -5,6 +5,7 @@ import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,9 +16,14 @@ public class M29_Editing extends DoremusResource {
     super(record);
     this.setClass(MUS.M29_Editing);
 
+    parse280c();
+  }
 
-    // 280 c
-    String field280c = record.getDatafieldsByCode(280, 'c').get(0);
+  private void parse280c() {
+    List<String> field280 = record.getDatafieldsByCode(280, 'c');
+    if (field280.size() == 0) return;
+
+    String field280c = field280.get(0);
     Matcher m = SPARS_PATTERN.matcher(field280c);
     if (m.find()) {
       String SPARS = m.group(0);

@@ -1,7 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -38,7 +37,7 @@ public class M28_Individual_Performance extends DoremusResource {
   public void setFunction(String function) {
     if (function == null || function.isEmpty()) return;
     this.function = function;
-    Resource fun = ResourceFactory.createResource()
+    Resource fun = model.createResource()
       .addProperty(RDF.type, MUS.M31_Actor_Function)
       .addProperty(RDFS.label, function);
     this.addProperty(MUS.U31_had_function, fun);

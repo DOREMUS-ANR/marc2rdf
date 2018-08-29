@@ -33,6 +33,16 @@ public class M6_Casting extends DoremusResource {
     parseCastingDetail().stream()
       .filter(Objects::nonNull)
       .forEach(this::addCastingDetail);
+
+    if (record.isBIB() && !doesContainsInfo()) {
+      List<String> fields = record.getDatafieldsByCode(701, 4);
+      fields.addAll(record.getDatafieldsByCode(711, 4));
+      fields.stream()
+        .map(FunctionPerformerMap::get).filter(Objects::nonNull)
+        .map(FunctionPerformerMap::getMop).filter(Objects::nonNull)
+        .map(mop-> new M23_Casting_Detail(mop, "1", false))
+        .forEach(this::addCastingDetail);
+    }
   }
 
   public boolean doesContainsInfo() {

@@ -26,6 +26,7 @@ public class F28_ExpressionCreation extends DoremusResource {
   private int composerCount;
   public F22_SelfContainedExpression expression;
   private F14_IndividualWork work;
+  private String derivation;
 
   public F28_ExpressionCreation(String identifier) {
     super(identifier);
@@ -38,7 +39,46 @@ public class F28_ExpressionCreation extends DoremusResource {
     this.composerCount = 0;
 
     if (record.isTUM()) parseTum();
-    if (record.isBIB()) parseBib();
+    else if (BIBRecordConverter.isANL(record)) parseANL();
+    else if (record.isBIB()) parseBib();
+  }
+
+  private void parseANL() {
+    // composers and derivation type
+    record.getDatafieldsByCode(700)
+      .forEach(df -> {
+        Person person = ArtistConverter.parseArtistField(df);
+        String role = "arrangeur";
+
+        switch (df.getString(4)) {
+          case "0220":
+            role = "compositeur";
+            break;
+          case "0010":
+          case "0011":
+          case "0013":
+            role = "adaptateur";
+            derivation = "adaptation";
+            break;
+          case "0050":
+          case "0051":
+          case "0053":
+            derivation = "arrangement";
+            break;
+          case "0430":
+            role = "harmonisateur";
+            derivation = "harmonisation";
+            break;
+          case "0730":
+            role = "transcripteur";
+            derivation = "transcription";
+            break;
+          case "0780":
+            role = "orchestrateur";
+            derivation = "orchestration";
+        }
+        this.addActivity(person, role);
+      });
   }
 
   private void parseBib() {
@@ -230,7 +270,7 @@ public class F28_ExpressionCreation extends DoremusResource {
     return this;
   }
 
-  public F28_ExpressionCreation add(F4_Manifestation_Singleton manuscript) {
+  public F28_ExpressionCreation add(F4_ManifestationSingleton manuscript) {
     this.addProperty(FRBROO.R18_created, manuscript);
     return this;
   }
@@ -241,5 +281,9 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   public F22_SelfContainedExpression getExpression() {
     return expression;
+  }
+
+  public String getDerivation() {
+    return derivation;
   }
 }

@@ -95,6 +95,10 @@ public class ConstructURI {
         return "track";
       case "M40_Context":
         return "context";
+      case "M6_Casting":
+        return "casting";
+      case "M5_Genre":
+        return "genre";
       case "prov":
         return "activity";
       default:

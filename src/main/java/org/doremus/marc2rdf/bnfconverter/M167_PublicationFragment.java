@@ -42,11 +42,11 @@ public class M167_PublicationFragment extends DoremusResource {
       this.addProperty(MUS.U195_has_order_or_location_indication, n);
   }
 
-  private String concatFields(DataField df) {
+  public static String concatFields(DataField df) {
     return concatFields(df, "aefghijln");
   }
 
-  private String concatFields(DataField df, String filter) {
+  public static String concatFields(DataField df, String filter) {
     char previous = 'z';
     StringBuilder text = new StringBuilder();
     for (Subfield sf : df.getSubfields()) {

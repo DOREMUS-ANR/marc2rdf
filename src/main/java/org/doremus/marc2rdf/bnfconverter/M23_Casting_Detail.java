@@ -20,13 +20,16 @@ public class M23_Casting_Detail {
   }
 
   public M23_Casting_Detail(String code, String num, boolean isSoloist) {
-    if (num != null && !num.trim().isEmpty())
-      this.num = Integer.parseInt(num.trim());
+    this(VocabularyManager.getVocabulary("mop-iaml").getConcept(code), num, isSoloist);
+  }
+
+  public M23_Casting_Detail(Resource mop, String num, boolean isSoloist) {
+    this.mop = mop;
+
+    if (num != null && !num.trim().isEmpty()) this.num = Integer.parseInt(num.trim());
     else this.num = -1;
 
-    this.mop = VocabularyManager.getVocabulary("mop-iaml").getConcept(code);
     this.solo = isSoloist;
-
     this.model = ModelFactory.createDefaultModel();
   }
 
