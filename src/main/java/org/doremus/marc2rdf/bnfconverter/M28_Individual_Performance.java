@@ -68,6 +68,7 @@ public class M28_Individual_Performance extends DoremusResource {
   }
 
   public boolean isEnsemble() {
+    if (this.mop == null) return false;
     String uri = this.mop.getURI();
     return uri.matches("http://data\\.doremus\\.org/vocabulary/iaml/mop/o..");
   }

@@ -47,9 +47,9 @@ public class BIBRecordConverter {
     intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
     provActivity = BNF2RDF.computeProvActivity(record.getIdentifier(), intermarcRes, model);
 
-    if (BNF2RDF.getRecordCode(record).equals("g"))
-      if (record.isANL()) convertANL();
-      else convertDAV();
+
+    if (record.isANL()) convertANL();
+    else convertBIB();
   }
 
   public BIBRecordConverter(Record record, Model model, BIBRecordConverter mainRecordConv,
@@ -60,8 +60,9 @@ public class BIBRecordConverter {
     this.mainRecordConv = mainRecordConv;
     this.mainRecord = mainRecordConv.getRecord();
 
-    System.out.println("--> " + identifier + (record.isANL() ? " ANL" + record.getLevel() : ""));
     this.ark = mainRecordConv.ark;
+    if (!record.isDAV()) return;
+    System.out.println("--> " + identifier + (record.isANL() ? " ANL" + record.getLevel() : ""));
 
     // PROV-O tracing
     intermarcRes = BNF2RDF.computeProvIntermarc(ark, model);
@@ -206,7 +207,8 @@ public class BIBRecordConverter {
 
   }
 
-  private void convertDAV() {
+  private void convertBIB() {
+    if(!record.isDAV()) return;
     this.manif = new F3_ManifestationProductType(record);
 
     this.publicationExpression = new F24_PublicationExpression(record);

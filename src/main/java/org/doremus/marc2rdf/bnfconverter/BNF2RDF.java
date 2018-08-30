@@ -87,11 +87,6 @@ public class BNF2RDF extends AbstractConverter {
     return model;
   }
 
-  static String getRecordCode(Record r) {
-    ControlField leader = r.getControlfieldByCode("leader");
-    return leader.getData().charAt(r.isBIB() ? 22 : 9) + "";
-  }
-
   private BIBRecordConverter convertBIB(Record r, BIBRecordConverter upperRecord) {
     somethingHasBeenConverted = true;
     return new BIBRecordConverter(r, model, upperRecord);

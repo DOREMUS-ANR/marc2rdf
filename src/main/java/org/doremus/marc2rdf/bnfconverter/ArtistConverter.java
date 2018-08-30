@@ -143,7 +143,7 @@ public class ArtistConverter {
   static Person parseArtistField(DataField field) {
     String firstName = field.getString('m');
     String lastName = field.getString('a');
-    if (firstName == null && lastName == null)
+    if (lastName == null)
       return null;
 
     String birthDate = null;

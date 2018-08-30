@@ -12,9 +12,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class GeoNames {
   public static final Property NAME = ResourceFactory.createProperty("http://www.geonames.org/ontology#name");
@@ -150,11 +148,9 @@ public class GeoNames {
   }
 
   private static void saveCache() {
-    Properties properties = new Properties();
-
-    for (Map.Entry<String, Integer> entry : cache.entrySet()) {
+    SortedProperties properties = new SortedProperties();
+    for (Map.Entry<String, Integer> entry : cache.entrySet())
       properties.put(entry.getKey(), entry.getValue() + "");
-    }
 
     try {
       properties.store(new FileOutputStream("places.properties"), null);
@@ -192,4 +188,18 @@ public class GeoNames {
     }
     return toURI(countryId);
   }
+
+  private static class SortedProperties extends Properties {
+    public Enumeration keys() {
+      Enumeration keysEnum = super.keys();
+      Vector<String> keyList = new Vector<>();
+      while(keysEnum.hasMoreElements()){
+        keyList.add((String)keysEnum.nextElement());
+      }
+      Collections.sort(keyList);
+      return keyList.elements();
+    }
+
+  }
+
 }

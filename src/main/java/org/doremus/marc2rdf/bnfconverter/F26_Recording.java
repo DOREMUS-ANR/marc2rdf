@@ -70,7 +70,7 @@ public class F26_Recording extends DoremusResource {
   private String getRightYear() {
     String txt = record.getDatafieldsByCodePropagate("044", 'f')
       .stream().findFirst().orElse(" ");
-    if (txt.charAt(0) != 'c') return null;
+    if (txt.charAt(0) != 'c' || txt.length() < 6) return null;
     return txt.substring(1, 5);
   }
 

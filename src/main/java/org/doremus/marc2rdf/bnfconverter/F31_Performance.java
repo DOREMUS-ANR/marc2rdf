@@ -65,6 +65,10 @@ public class F31_Performance extends DoremusResource {
     String city = df.getString('a');
     String building = df.getString('c');
 
+    if ("s.l.".equalsIgnoreCase(city)) city = null;
+    if ("s.l.".equalsIgnoreCase(building)) building = null;
+    if ("s.l.".equalsIgnoreCase(country)) country = null;
+
     E53_Place pCountry = null, pCity = null, pBuilding;
     if (country != null) {
       pCountry = E53_Place.withUri(GeoNames.getCountryUri(country));
@@ -75,7 +79,7 @@ public class F31_Performance extends DoremusResource {
       pCity.addSurroundingPlace(pCountry);
     }
     if (building != null) {
-      pBuilding = new E53_Place(building + " (" + city + ")", country, null);
+      pBuilding = new E53_Place(building + (city != null ? " (" + city + ")" : ""), country, null);
       pBuilding.addSurroundingPlace(pCity);
       return pBuilding;
     }

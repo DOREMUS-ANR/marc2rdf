@@ -32,6 +32,11 @@ public class Record {
     return this.type;
   }
 
+  public String getIntermarcCode() {
+    ControlField leader = this.getControlfieldByCode("leader");
+    return leader.getData().charAt(this.isBIB() ? 22 : 9) + "";
+  }
+
   public boolean isType(String type) {
     return this.type.equals(type);
   }
@@ -49,6 +54,15 @@ public class Record {
   public boolean isANL() {
     ControlField leader = getControlfieldByCode("leader");
     return this.isBIB() && leader != null && leader.getData().charAt(8) == 'd';
+  }
+
+  public boolean isDAV() {
+    return this.getIntermarcCode().equals("g");
+  }
+
+  public boolean isMUS() {
+    return this.getIntermarcCode().equals("c") &&
+      this.getControlfieldByCode("009").getData().charAt(1) == ' ';
   }
 
   void addControlField(Etiq field) {

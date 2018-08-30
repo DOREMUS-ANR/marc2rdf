@@ -88,6 +88,7 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   private void parseBib() {
     record.getDatafieldsByCode(700).stream()
+      .filter(df -> "0180".equals(df.getString(4)))
       .map(ArtistConverter::parseArtistField)
       .forEach(person -> addActivity(person, "collecteur"));
   }
