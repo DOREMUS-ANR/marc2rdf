@@ -26,7 +26,6 @@ public class E53_Place extends DoremusResource {
   public E53_Place(String rawString, String countryCode, String continent) {
     super();
 
-    if (rawString.equalsIgnoreCase("s.l.")) throw new RuntimeException("bad place label");
     rawString = cleanString(rawString);
     if (rawString.equals("Cité de la musique (Paris)")) rawString = "Cité de la musique";
     this.name = null;
@@ -72,9 +71,12 @@ public class E53_Place extends DoremusResource {
 
   private String cleanString(String rawString) {
     rawString = rawString.trim()
-      .replaceAll("\\?", "")
+      .replaceAll("\\(?\\?\\)?", "")
+      .replaceAll("[,;:]?", "")
+      .replaceAll(" +", " ")
       .replaceAll("\\( ?\\)", "")
-      .replaceAll("(Né|Mort|Vit|inhumé)[eà]? à ", "")
+      .replaceAll("(?i)^\\(the\\)", "")
+      .replaceAll("(?i)(Né|Mort|Vit|inhumé)[eà]? à ", "")
       .replaceAll("^à ", "")
       .replaceAll("Grande[- ]Bretagne", "UK")
       .replaceAll("G[.-] ?B[.)]", "UK")

@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class DoremusResource {
-  private int activityCount;
+  protected int activityCount;
 
   protected String className;
   protected String sourceDb;
@@ -231,10 +231,18 @@ public abstract class DoremusResource {
   }
 
   protected void addComplexIdentifier(String identifier, String type) {
-    this.addComplexIdentifier(identifier, type, null);
+    this.addComplexIdentifier(identifier, type, null, null);
+  }
+
+  protected void addComplexIdentifier(String identifier, String type, String symbol) {
+    this.addComplexIdentifier(identifier, type, null, symbol);
   }
 
   protected void addComplexIdentifier(String identifier, String type, DoremusResource issuer) {
+    this.addComplexIdentifier(identifier, type, issuer, null);
+  }
+
+  protected void addComplexIdentifier(String identifier, String type, DoremusResource issuer, String symbol) {
     if (identifier == null) return;
 
     Resource typeRes = VocabularyManager.searchInCategory(type, "fr", "id", false);
@@ -246,6 +254,7 @@ public abstract class DoremusResource {
       .addProperty(RDFS.label, identifier);
 
     if (issuer != null) idRes.addProperty(FRBROO.R8_consists_of, issuer.asResource());
+    if (symbol != null) idRes.addProperty(FRBROO.R8_consists_of, symbol);
 
     this.addProperty(CIDOC.P1_is_identified_by, idRes);
   }

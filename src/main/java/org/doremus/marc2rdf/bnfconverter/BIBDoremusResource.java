@@ -79,11 +79,13 @@ abstract class BIBDoremusResource extends DoremusResource {
 
     if (!asParallel && forPublishing) {
       List<String> notes = record.getDatafieldsByCode(300, 'a');
-      notes.addAll(record.getDatafieldsByCode(350, 'a'));
+      if (record.isDAV()) notes.addAll(record.getDatafieldsByCode(350, 'a'));
       notes.stream()
-        .filter(s -> s.toLowerCase().startsWith("titre"))
-        .filter(s -> s.toLowerCase().contains("titre restitué") ||
-          (!s.contains("compositeur") && !s.contains("interprète")))
+        .filter(s -> {
+          s = s.toLowerCase();
+          return (s.startsWith("titre") && !s.contains("compositeur") && !s.contains("interprète")) ||
+            s.contains("titre restitué");
+        })
         .forEach(s -> titleStatement.addProperty(MUS.U50_has_annotation, s));
 
       record.getDatafieldsByCode(750).stream()

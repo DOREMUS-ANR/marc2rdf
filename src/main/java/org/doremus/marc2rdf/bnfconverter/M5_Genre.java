@@ -58,7 +58,7 @@ public class M5_Genre extends DoremusResource {
   public static M5_Genre fromField(DataField df) {
     // field 143
     String value = df.getString('a');
-    if (!value.startsWith("Chant")) return null;
+    if (value == null || !value.startsWith("Chant")) return null;
     return new M5_Genre(df);
   }
 

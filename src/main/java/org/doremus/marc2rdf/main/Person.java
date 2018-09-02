@@ -214,24 +214,6 @@ public class Person extends Artist {
     resource.addProperty(property, model.createResource(uri));
   }
 
-  public void addProperty(Property property, Resource object) {
-    if (property == null || object == null) return;
-    resource.addProperty(property, object);
-  }
-
-  public void addProperty(Property property, String object, String lang) {
-    if (property == null || object == null || object.isEmpty()) return;
-
-    if (lang != null)
-      resource.addProperty(property, model.createLiteral(object, lang));
-    else
-      resource.addProperty(property, object);
-  }
-
-  public void addProperty(Property property, String object) {
-    addProperty(property, object, null);
-  }
-
   private TimeSpan cleanDate(String d) {
     if (d == null || d.isEmpty() || d.startsWith(".") || d.equals("compositeur")) return null;
     if (d.equals("?")) return TimeSpan.emptyUncertain();
@@ -272,7 +254,7 @@ public class Person extends Artist {
   public static Person fromUnimarcField(DataField field) {
     if (field == null) return null;
     // for fields 700, 701, 721
-    String firstName = null, lastName = null, birthDate = null, deathDate = null;
+    String firstName = null, lastName = null, birthDate = null, deathDate = null, function = null;
     if (field.isCode('a'))  // surname
       lastName = field.getString('a').trim();
 
@@ -284,7 +266,27 @@ public class Person extends Artist {
       birthDate = dates[0].trim();
       if (dates.length > 1) deathDate = dates[1].trim();
     }
-    return new Person(firstName, lastName, birthDate, deathDate, null);
+
+    if (field.isCode('4'))  // function
+      function = parseFunction(field.getString('4'));
+
+
+    Person p = new Person(firstName, lastName, birthDate, deathDate, null);
+    p.setFunction(function);
+    return p;
+  }
+
+  private static String parseFunction(String code) {
+    if (code == null) return null;
+    switch (code) {
+      case "3250":
+        return "éditeur commercial";
+      case "3260":
+        return "imprimeur libraire";
+      case "3030":
+        return "imprimeur libraire antécédent";
+    }
+    return null;
   }
 
   @Override

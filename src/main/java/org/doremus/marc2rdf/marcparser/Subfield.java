@@ -19,6 +19,10 @@ public class Subfield {
     return code;
   }
 
+  public void setCode(char code) {
+    this.code = code;
+  }
+
   public void setData(String data) {
     this.data = data;
   }

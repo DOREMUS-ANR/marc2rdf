@@ -26,7 +26,7 @@ public class M23_Casting_Detail {
   public M23_Casting_Detail(Resource mop, String num, boolean isSoloist) {
     this.mop = mop;
 
-    if (num != null && !num.trim().isEmpty()) this.num = Integer.parseInt(num.trim());
+    if (num != null && num.trim().matches("\\d+")) this.num = Integer.parseInt(num.trim());
     else this.num = -1;
 
     this.solo = isSoloist;

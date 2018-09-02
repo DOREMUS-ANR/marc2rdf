@@ -93,4 +93,5 @@ public class CorporateBody extends Artist {
       this.setUri(match.getURI());
     }
   }
+
 }

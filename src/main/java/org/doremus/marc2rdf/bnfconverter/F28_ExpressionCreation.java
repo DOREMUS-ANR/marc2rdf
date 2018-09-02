@@ -53,8 +53,9 @@ public class F28_ExpressionCreation extends DoremusResource {
     record.getDatafieldsByCode(700)
       .forEach(df -> {
         Person person = ArtistConverter.parseArtistField(df);
-        String role = "arrangeur";
+        if (person == null) return;
 
+        String role = "arrangeur";
         switch (df.getString(4)) {
           case "0220":
             role = "compositeur";
@@ -228,6 +229,7 @@ public class F28_ExpressionCreation extends DoremusResource {
   }
 
   public void addActivity(Person actor, String role) {
+    if (actor == null) return;
     Resource activity = model.createResource(this.uri + "/activity/" + ++composerCount)
       .addProperty(RDF.type, CIDOC.E7_Activity)
       .addProperty(CIDOC.P14_carried_out_by, actor.asResource());

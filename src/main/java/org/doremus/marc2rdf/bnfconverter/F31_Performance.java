@@ -42,17 +42,17 @@ public class F31_Performance extends DoremusResource {
       .findAny()
       .ifPresent(x -> this.addProperty(MUS.U89_occured_in_performance_conditions, "en public", "fr"));
 
-    this.timeSpan = record.getDatafieldsByCode(314).stream()
-      .map(this::parseDate)
-      .filter(Objects::nonNull)
-      .findFirst().orElse(null);
-    this.addTimeSpan(timeSpan);
-
     this.place = record.getDatafieldsByCode(314).stream()
       .map(this::parsePlace)
       .filter(Objects::nonNull)
       .findFirst().orElse(null);
     this.setPlace(this.place);
+
+    this.timeSpan = record.getDatafieldsByCode(314).stream()
+      .map(this::parseDate)
+      .filter(Objects::nonNull)
+      .findFirst().orElse(null);
+    this.addTimeSpan(timeSpan);
 
     // geo context
     record.getDatafieldsByCode(143, 'a').stream()
@@ -75,8 +75,13 @@ public class F31_Performance extends DoremusResource {
       if (pCountry == null) country = null;
     }
     if (city != null) {
-      pCity = new E53_Place(city, country, null);
-      pCity.addSurroundingPlace(pCountry);
+      if (city.matches("\\d+")) {
+        df.getSubfield('a').setCode('d');
+        city = null;
+      } else {
+        pCity = new E53_Place(city, country, null);
+        pCity.addSurroundingPlace(pCountry);
+      }
     }
     if (building != null) {
       pBuilding = new E53_Place(building + (city != null ? " (" + city + ")" : ""), country, null);

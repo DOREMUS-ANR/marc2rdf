@@ -45,8 +45,11 @@ public class BNF2RDF extends AbstractConverter {
     this.somethingHasBeenConverted = false;
   }
 
+  private static boolean found = false;
+
   public Model convert(File file) throws FileNotFoundException {
-//    if (!file.getName().endsWith("42593128.xml")) return null;
+    if (file.getName().endsWith("42072423.xml")) found = true;
+    if (!found) return null;
     MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
 
     if (reader.getRecords() == null || reader.getRecords().size() == 0) {

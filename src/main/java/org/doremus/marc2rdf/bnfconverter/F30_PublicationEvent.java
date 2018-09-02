@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class F30_PublicationEvent extends DoremusResource {
-  private static final String UNKNOW_REGEX = "(?i)\\[?s\\. ?[lnd]\\.\\]?";
+  private static final String UNKNOW_REGEX = "(?i)\\[?s\\. ?[lnd]\\.]?";
   // "1re éd. : Paris : Revue et gazette musicale [1er janvier 1848]"
   // "1re éd. : Paris : Choudens, ca 1886"
   // "1re édition : Paris : Durand, 1891"
@@ -64,9 +64,9 @@ public class F30_PublicationEvent extends DoremusResource {
       .collect(Collectors.toList()));
 
     // publishers
-    record.getDatafieldsByCode(260).forEach(df -> parsePublisherField(df, publishers));
+    record.getDatafieldsByCode(260).forEach(df -> parsePublisherField(df, publishers, true));
 
-    publishers.forEach(cb -> this.addActivity(cb, "publisher"));
+    publishers.forEach(cb -> this.addActivity(cb, cb.getFunction() == null ? "publisher" : cb.getFunction()));
 
     // time
     this.addTimeSpan(parseDateMachine());
@@ -89,11 +89,11 @@ public class F30_PublicationEvent extends DoremusResource {
     return null;
   }
 
-  public static List<String> parsePublisherField(DataField df) {
-    return parsePublisherField(df, new ArrayList<>());
+  public static List<String> parsePublisherField(DataField df, boolean asPublisher) {
+    return parsePublisherField(df, new ArrayList<>(), asPublisher);
   }
 
-  private static List<String> parsePublisherField(DataField df, List<Artist> publishers) {
+  private static List<String> parsePublisherField(DataField df, List<Artist> publishers, boolean asPublisher) {
     List<String> pubNotes = new ArrayList<>();
     String current = null;
     char previous = 'z';
@@ -114,7 +114,8 @@ public class F30_PublicationEvent extends DoremusResource {
           if (previous == 'a') current += " (" + value + ")";
           break;
         case 'c':
-          if (value.matches("\\[?distrib.+") || value.matches(UNKNOW_REGEX)) {
+          boolean ok = value.matches("\\[?distrib.+") ^ asPublisher; // THIS IS A XOR
+          if (!ok || value.matches(UNKNOW_REGEX)) {
             place = null;
             break;
           }
@@ -168,10 +169,8 @@ public class F30_PublicationEvent extends DoremusResource {
 
         String[] parts = descr.split("[,:]");
         if (parts.length == 1) {
-          // I cannot know if it is a city or the publisher
-          // i.e. "1re éd. : Barcelone, 1912", "1re éd. : Universal edition"
-          // TODO try to disambiguate the city
-          // if (!parts[0].contains("\"")) city = parts[0].trim();
+          // I set it as city, it will be ignored if Geonames fails
+          city = parts[0];
         } else {
           publisher = parts[parts.length - 1].trim();
           if (publisher.contains("in")) publisher = null;

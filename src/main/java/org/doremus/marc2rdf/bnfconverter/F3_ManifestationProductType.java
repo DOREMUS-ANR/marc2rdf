@@ -1,6 +1,7 @@
 package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.*;
@@ -13,29 +14,70 @@ import org.doremus.ontology.CRO;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class F3_ManifestationProductType extends DoremusResource {
+  private static final String DISTRIB_REGEX_DAV = "^distrib\\.";
+  private static final String DISTRIB_REGEX_MUS = "\\[?di(strib|ff)\\.]?";
+
   private static final String CARRIER_DURATION_REGEX = "(\\d+) ([^(]+) \\((.+)\\)";
   private static final Pattern CARRIER_DURATION_PATTERN = Pattern.compile(CARRIER_DURATION_REGEX);
   private static final String PSPEED_REGEX = "\\d{2} t";
   private static final Pattern DIMENSION_PATTERN = Pattern.compile("(\\d+(?:x\\d+)?) ?(.+)");
+  private static final String BROCHURE_REGEX = "\\(?\\[?(\\d+)]? p\\.?\\)?";
+  private static final Pattern BROCHURE_PATTERN = Pattern.compile(BROCHURE_REGEX);
+
+  private Pattern distribPattern;
+  private int countPagination;
 
   public F3_ManifestationProductType(Record record) {
     super(record);
     this.setClass(FRBROO.F3_Manifestation_Product_Type);
 
+    countPagination = 0;
+    this.distribPattern = Pattern.compile(record.isMUS() ? DISTRIB_REGEX_MUS : DISTRIB_REGEX_DAV, Pattern.CASE_INSENSITIVE);
+
     this.addProperty(MUS.CLU206_should_have_media_type, parseMediaType());
 
+    if (record.isDAV()) {
+      // carrier type
+      List<String> a051 = record.getDatafieldsByCode("051", 'a');
+      record.getDatafieldsByCode("050", 'a')
+        .forEach(a -> this.addProperty(MUS.CLU207_should_have_carrier_type, Carrier.fromField050a(a, a051)));
 
-    // carrier type
-    List<String> a051 = record.getDatafieldsByCode("051", 'a');
-    for (String a : record.getDatafieldsByCode("050", 'a'))
-      this.addProperty(MUS.CLU207_should_have_carrier_type, Carrier.fromField050a(a, a051));
+      // container
+      for (String cont : record.getDatafieldsByCode("028", 'c')) {
+        this.addProperty(MUS.CLU198_should_have_container, model.createResource()
+          .addProperty(RDF.type, MUS.M171_Container)
+          .addProperty(RDFS.label, cont.replaceAll("^conditionn[ée] dans", ""))
+          .addProperty(CIDOC.P3_has_note, cont));
+      }
 
+      // sys requirements
+      record.getDatafieldsByCode("337")
+        .forEach(sr -> this.addProperty(MUS.U194_has_system_requirements,
+          sr.getString('k') + " : " + sr.getString('a')));
+    } else if (record.isMUS()) {
+      // carrier type
+      String carrier = "volume";
+      if (record.getDatafieldsByCode("020", 'b').stream().anyMatch(x -> x.contains("en feuilles")))
+        carrier = "feuille";
+      else if (record.getDatafieldsByCode(280, 'a').stream()
+        .filter(x -> x.matches(BROCHURE_REGEX))
+        .map(F3_ManifestationProductType::extractPageNumbers)
+        .anyMatch(i -> i <= 48))
+        carrier = "brochure";
+
+      this.addProperty(MUS.CLU207_should_have_carrier_type, carrier, "fr");
+
+      // pagination
+      record.getDatafieldsByCode(280, 'a').forEach(this::parsePagination);
+    }
 
     // distribution rights
     Artist distributor = parseDistributor();
@@ -46,39 +88,53 @@ public class F3_ManifestationProductType extends DoremusResource {
       this.addProperty(CIDOC.P104_is_subject_to, dr);
     }
 
-    // container
-    for (String cont : record.getDatafieldsByCode("028", 'c')) {
-      this.addProperty(MUS.CLU198_should_have_container, model.createResource()
-        .addProperty(RDF.type, MUS.M171_Container)
-        .addProperty(RDFS.label, cont.replaceAll("^conditionn[ée] dans", ""))
-        .addProperty(CIDOC.P3_has_note, cont));
-    }
-
     // carrier extent
     for (String ce : record.getDatafieldsByCode("280", 'a')) {
       Matcher m = CARRIER_DURATION_PATTERN.matcher(ce);
       if (!m.find()) continue;
 
-      this.addProperty(MUS.U208_has_extent_of_carrier, m.group(1) + " " + m.group(2));
+      this.addProperty(MUS.U208_has_extent_of_carrier,
+        record.isDAV() ? m.group(1) + " " + m.group(2) : m.group(0));
 
-      for (String d : m.group(3).split(","))
-        this.addProperty(MUS.CLU53_should_have_duration, Utils.duration2iso(d), XSDDatatype.XSDdayTimeDuration);
-      this.addDimension(m.group(1), m.group(2));
-    }
-
-    // sys requirements
-    for (DataField sr : record.getDatafieldsByCode("337")) {
-      this.addProperty(MUS.U194_has_system_requirements, sr.getString('k') + " : " + sr.getString('a'));
+      if(record.isDAV()) {
+        for (String d : m.group(3).split(","))
+          this.addProperty(MUS.CLU53_should_have_duration, Utils.duration2iso(d), XSDDatatype.XSDdayTimeDuration);
+        this.addDimension(m.group(1), m.group(2));
+      }
     }
 
     ControlField control9 = record.getControlfieldByCode("009");
     if (control9 != null) parseAuxiliary(control9.getData());
   }
 
+  private void parsePagination(String txt) {
+    int multiplier = 1;
+    if (txt.contains("chacune"))
+      multiplier = Integer.parseInt(txt.substring(0, 2));
+
+    List<Integer> numbers = Arrays.stream(txt.split("[-,]"))
+      .map(F3_ManifestationProductType::extractPageNumbers)
+      .filter(n -> n > 0).collect(Collectors.toList());
+
+    if (numbers.size() == 0) return;
+    for (int i = 1; i < multiplier; i++)
+      //noinspection CollectionAddedToSelf
+      numbers.addAll(numbers);
+
+    numbers.forEach(n -> this.addProperty(MUS.CLU210_should_have_pagination, createPagination(n)));
+  }
+
+  private Resource createPagination(Integer n) {
+    return model.createResource(this.uri + "/pagination/" + ++countPagination)
+      .addProperty(RDF.type, CIDOC.E54_Dimension)
+      .addProperty(CIDOC.P90_has_value, model.createTypedLiteral(n))
+      .addProperty(CIDOC.P91_has_unit, "page");
+  }
 
   public F3_ManifestationProductType(String identifier) {
     super(identifier);
     this.setClass(FRBROO.F3_Manifestation_Product_Type);
+    countPagination = 0;
   }
 
   public static F3_ManifestationProductType fromField(DataField df, String identifier) {
@@ -99,6 +155,12 @@ public class F3_ManifestationProductType extends DoremusResource {
     f3.addDimension(dim);
 
     return f3;
+  }
+
+  private static Integer extractPageNumbers(String input) {
+    Matcher m = BROCHURE_PATTERN.matcher(input);
+    if (!m.find()) return -1;
+    return Integer.parseInt(m.group(1));
   }
 
   private void addDimension(String text) {
@@ -122,15 +184,24 @@ public class F3_ManifestationProductType extends DoremusResource {
       this.addProperty(FRBROO.CLP57_should_have_number_of_parts, Utils.toSafeNumLiteral(control9.substring(42, 45)));
 
     String note = null;
-    String x = control9.substring(8, 10);
+    String x = control9.substring(record.isDAV() ? 8 : 9, 10);
     if (x.startsWith(" ") || x.startsWith("#"))
       note = "pas de restriction de communication";
-    if (x.equals("11"))
-      note = "communication soumise à restriction: communication sur accord de l’ayant - droit";
-    if (x.equals("13"))
-      note = "communication soumise à restriction: communication interdite pendant une période déterminée";
-    if (x.equals("14"))
-      note = "communication soumise à restriction: non communicable";
+
+    switch (x) {
+      case "11":
+      case "1":
+        note = "communication soumise à restriction: communication sur accord de l’ayant - droit";
+        break;
+      case "13":
+      case "3":
+        note = "communication soumise à restriction: communication interdite pendant une période déterminée";
+        break;
+      case "14":
+      case "4":
+        note = "communication soumise à restriction: non communicable";
+        break;
+    }
 
     if (note != null)
       this.addProperty(CIDOC.P104_is_subject_to, model.createResource(this.uri + "/communication_right")
@@ -143,7 +214,8 @@ public class F3_ManifestationProductType extends DoremusResource {
     for (String field : record.getDatafieldsByCode(280, 'c')) {
       for (String ps : field.split(",")) {
         ps = ps.trim();
-        switch (control9.charAt(14)) {
+        char control = record.isDAV() ? control9.charAt(14) : 'z';
+        switch (control) {
           case 'a':
             if (!ps.matches(PSPEED_REGEX)) {
               this.addProperty(MUS.U215_has_groove_caracteristics, ps);
@@ -200,7 +272,7 @@ public class F3_ManifestationProductType extends DoremusResource {
         found = m.find();
         if (found) return m.group(0);
       } else if ('c' == s.getCode()) {
-        if (s.getData().toLowerCase().startsWith("distrib."))
+        if (distribPattern.matcher(s.getData()).find())
           found = true;
       } else found = false;
     }
@@ -217,17 +289,20 @@ public class F3_ManifestationProductType extends DoremusResource {
 
     // search for residence
     DataField df = record.getDatafieldByCode(260);
+    if (record.isMUS() && df.isCode('r')) return distributor;
+
     List<Subfield> sf = df.getSubfields();
     Collections.reverse(sf);
-
 
     boolean found = false;
     for (Subfield s : sf) {
       if (found && 'a' == s.getCode()) {
         distributor.addResidence(s.getData());
       } else if ('c' == s.getCode()) {
-        if (s.getData().toLowerCase().startsWith("distrib.")) {
-          distributor.addName(s.getData().replaceAll("^distrib\\.", "").trim());
+
+        Matcher m = distribPattern.matcher(s.getData());
+        if (m.find()) {
+          distributor.addName(s.getData().replace(m.group(0), "").trim());
           found = true;
         }
       } else found = false;

@@ -208,12 +208,17 @@ public class BIBRecordConverter {
   }
 
   private void convertBIB() {
-    if(!record.isDAV()) return;
     this.manif = new F3_ManifestationProductType(record);
+    if (record.isMUS()) {
+      F32_Carrier_Production_Event cpe = new F32_Carrier_Production_Event(record);
+      cpe.add(manif);
+      if(cpe.hasInformation()) this.model.add(cpe.getModel());
+    }
 
     this.publicationExpression = new F24_PublicationExpression(record);
     F30_PublicationEvent publicationEvent = new F30_PublicationEvent(record);
     F19_PublicationWork publicationWork = new F19_PublicationWork(record);
+    if (!record.isDAV()) return;
 
     F17_AggregationWork aggregationWork = new F17_AggregationWork(record);
     this.tracks = new M46_SetOfTracks(record);
