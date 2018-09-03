@@ -3,6 +3,7 @@ package org.doremus.marc2rdf.bnfconverter;
 import org.doremus.marc2rdf.main.Artist;
 import org.doremus.marc2rdf.main.CorporateBody;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -34,11 +35,11 @@ public class F26_Recording extends DoremusResource {
     String year = getRightYear();
     producers = record.getDatafieldsByCodePropagate(722).stream()
       .filter(df -> "3160".equals(df.getString(4)))
-      .map(ArtistConverter::parseArtistField)
+      .map(Person::fromIntermarcField)
       .collect(Collectors.toList());
     producers.addAll(record.getDatafieldsByCodePropagate(732).stream()
       .filter(df -> "3160".equals(df.getString(4)))
-      .map(CorporateBody::fromUnimarcField)
+      .map(CorporateBody::fromIntermarcField)
       .collect(Collectors.toList()));
 
     int i = 0;

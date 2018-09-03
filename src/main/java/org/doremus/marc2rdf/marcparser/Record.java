@@ -61,8 +61,9 @@ public class Record {
   }
 
   public boolean isMUS() {
-    return this.getIntermarcCode().equals("c") &&
-      this.getControlfieldByCode("009").getData().charAt(1) == ' ';
+    ControlField controlField9 = this.getControlfieldByCode("009");
+    if(this.isANL()) controlField9 = this.parent.getControlfieldByCode("009");
+    return this.getIntermarcCode().equals("c") && controlField9.getData().charAt(1) == ' ';
   }
 
   void addControlField(Etiq field) {
@@ -116,6 +117,14 @@ public class Record {
       .flatMap(field -> field.getSubfields(subFieldCode).stream())
       .map(Subfield::getData)
       .collect(Collectors.toList());
+  }
+
+  public String getDatafieldByCode(int code, int subFieldCode) {
+    return getDatafieldByCode(code, String.valueOf(subFieldCode).charAt(0));
+  }
+
+  public String getDatafieldByCode(int code, char subFieldCode) {
+    return getDatafieldByCode("" + code, subFieldCode);
   }
 
   public String getDatafieldByCode(String code, char subFieldCode) {

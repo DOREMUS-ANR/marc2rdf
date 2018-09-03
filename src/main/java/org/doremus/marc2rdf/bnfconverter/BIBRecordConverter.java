@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 
 
 public class BIBRecordConverter {
-  private static final Pattern EXTRAIT_PATTERN = Pattern.compile("(extr(ait|\\.)|choix)", Pattern.CASE_INSENSITIVE);
+  private static final Pattern EXTRAIT_PATTERN = Pattern.compile("(extr(aits?|\\.)|choix)", Pattern.CASE_INSENSITIVE);
+  private static final Pattern ARR_PATTERN = Pattern.compile("(Arr\\.|(Réduc|Orchestra)tion|Esquisse)", Pattern.CASE_INSENSITIVE);
 
   private final String ark;
   private final BIBRecordConverter mainRecordConv;
@@ -53,7 +54,7 @@ public class BIBRecordConverter {
   }
 
   public BIBRecordConverter(Record record, Model model, BIBRecordConverter mainRecordConv,
-                            DataField df, String identifier) {
+                            DataField df, int index, String identifier) {
     // inner
     this.record = record;
     this.model = model;
@@ -61,7 +62,6 @@ public class BIBRecordConverter {
     this.mainRecord = mainRecordConv.getRecord();
 
     this.ark = mainRecordConv.ark;
-    if (!record.isDAV()) return;
     System.out.println("--> " + identifier + (record.isANL() ? " ANL" + record.getLevel() : ""));
 
     // PROV-O tracing
@@ -74,7 +74,10 @@ public class BIBRecordConverter {
     F15_ComplexWork f15 = null;
     F14_IndividualWork f14_outer = null;
     boolean isArrangment = false;
-    Property prop = MUS.U58_has_full_published_recording;
+    boolean isExtrait = false;
+    boolean isSketch = false;
+    boolean isScientificEdition = record.getDatafieldsByCode(700, 4)
+      .stream().anyMatch("0360"::equals);
 
     if (df != null) {
       String l = df.getString('l');
@@ -84,20 +87,22 @@ public class BIBRecordConverter {
       f28 = new F28_ExpressionCreation(_id);
       f15 = new F15_ComplexWork(_id);
       f14_outer = new F14_IndividualWork(_id);
-      prop = EXTRAIT_PATTERN.matcher(l).find() ?
-        MUS.U59_has_partial_published_recording : MUS.U58_has_full_published_recording;
 
-      isArrangment = l.toLowerCase().contains("arr.");
+      isExtrait = EXTRAIT_PATTERN.matcher(l).find();
+      isSketch = l.contains("Esquisse");
+      isArrangment = ARR_PATTERN.matcher(l).find();
     }
-    if (isArrangment || f22 == null) {
-      f22 = new F22_SelfContainedExpression(record);
-      F14_IndividualWork f14 = new F14_IndividualWork(record);
-      f28 = new F28_ExpressionCreation(record);
-      if (f15 == null) f15 = new F15_ComplexWork(record);
 
-      f14.add(f22);
-      f28.add(f22).add(f14);
-      f15.add(f14).add(f22);
+    if (isScientificEdition || isArrangment || f22 == null) {
+      if (isExtrait) {
+        F23_Expression_Fragment f23 = new F23_Expression_Fragment(record, identifier, index);
+        f22.add(f23);
+        f22 =f23;
+      } else f22 = new F22_SelfContainedExpression(record, identifier, index);
+
+      F14_IndividualWork f14 = new F14_IndividualWork(identifier);
+      f28 = new F28_ExpressionCreation(record, identifier, isSketch, isArrangment);
+      if (f15 == null) f15 = new F15_ComplexWork(record);
 
       if (isArrangment) {
         f14.addProperty(FRBROO.R2_is_derivative_of, f14_outer);
@@ -114,7 +119,21 @@ public class BIBRecordConverter {
           f14.setDerivationType(deriv);
         }
       }
+
+      f14.add(f22);
+      f28.add(f22).add(f14);
+      f15.add(f14).add(f22);
+      this.model.add(f15.getModel());
     }
+
+    f22.extendFromMUS(record);
+
+    Property prop = record.isMUS() ? CIDOC.P165_incorporates : isExtrait ?
+      MUS.U59_has_partial_published_recording : MUS.U58_has_full_published_recording;
+    mainRecordConv.publicationExpression.addProperty(prop, f22);
+
+
+    if (!record.isDAV()) return;
 
     // handwritten score
     DataField manuscriptField = record.getDatafieldsByCode(325).stream().findFirst().orElse(null);
@@ -170,7 +189,7 @@ public class BIBRecordConverter {
     recordingEvent.add(performance);
     tracks.add(performedExpression);
 
-    mainRecordConv.publicationExpression.add(performedExpression).addProperty(prop, f22);
+    mainRecordConv.publicationExpression.add(performedExpression);
     mainRecordConv.tracks.add(tracks);
     mainRecordConv.editing.add(tracks);
 
@@ -195,7 +214,7 @@ public class BIBRecordConverter {
     for (Record r : detailedANL) {
       DataField df = r.getDatafieldByCode(144);
       if (df == null) df = r.getDatafieldByCode(744);
-      conv = new BIBRecordConverter(r, model, this.mainRecordConv, df, r.getIdentifier());
+      conv = new BIBRecordConverter(r, model, this.mainRecordConv, df, -1, r.getIdentifier());
     }
 
     int i = 0;
@@ -212,44 +231,47 @@ public class BIBRecordConverter {
     if (record.isMUS()) {
       F32_Carrier_Production_Event cpe = new F32_Carrier_Production_Event(record);
       cpe.add(manif);
-      if(cpe.hasInformation()) this.model.add(cpe.getModel());
+      if (cpe.hasInformation()) this.model.add(cpe.getModel());
     }
 
     this.publicationExpression = new F24_PublicationExpression(record);
     F30_PublicationEvent publicationEvent = new F30_PublicationEvent(record);
     F19_PublicationWork publicationWork = new F19_PublicationWork(record);
-    if (!record.isDAV()) return;
 
-    F17_AggregationWork aggregationWork = new F17_AggregationWork(record);
-    this.tracks = new M46_SetOfTracks(record);
-    F28_ExpressionCreation aggregationEvent = new F28_ExpressionCreation(record, record.getIdentifier() + "t");
+    if (record.isDAV()) {
+      F17_AggregationWork aggregationWork = new F17_AggregationWork(record);
+      this.tracks = new M46_SetOfTracks(record);
+      F28_ExpressionCreation aggregationEvent = new F28_ExpressionCreation(record, record.getIdentifier() + "t");
 
+      aggregationWork.add(tracks);
+      aggregationEvent.add(aggregationWork).add(tracks).addProvenance(intermarcRes, provActivity);
+      performance = new F31_Performance(record);
+      performancePlan = new F25_PerformancePlan(record.getIdentifier());
+      recordingEvent = new F29_RecordingEvent(record);
+
+      editing = new M29_Editing(record);
+
+      this.model.add(aggregationEvent.getModel());
+    }
     publicationEvent.add(publicationExpression).add(publicationWork);
     publicationWork.add(publicationExpression);
     manif.add(publicationExpression);
-    aggregationWork.add(tracks);
-    aggregationEvent.add(aggregationWork).add(tracks);
 
-    performance = new F31_Performance(record);
-    performancePlan = new F25_PerformancePlan(record.getIdentifier());
-    recordingEvent = new F29_RecordingEvent(record);
-
-    editing = new M29_Editing(record);
 
     System.out.println("case " + getCase(record));
     switch (getCase(record)) {
       case 3:
         int i = 0;
         for (DataField df : record.getDatafieldsByCode(744)) {
-          this.incorporate(new BIBRecordConverter(record, model, this, df, record.getIdentifier() + ++i));
+          this.incorporate(new BIBRecordConverter(record, model, this, df, i, record.getIdentifier() + ++i));
         }
       case 1:
         this.incorporate(new BIBRecordConverter(record, model, this,
-          record.getDatafieldByCode(144), record.getIdentifier()));
+          record.getDatafieldByCode(144), -1, record.getIdentifier()));
     }
 
-    for (DoremusResource r : Arrays.asList(manif, publicationExpression, publicationEvent, publicationWork,
-      aggregationEvent, aggregationWork, tracks, editing)) {
+    for (DoremusResource r : Arrays.asList(manif, publicationExpression, publicationEvent, publicationWork, tracks, editing)) {
+      if (r == null) continue;
       r.addProvenance(intermarcRes, provActivity);
       this.model.add(r.getModel());
     }
@@ -275,21 +297,33 @@ public class BIBRecordConverter {
     List<DataField> z701 = record.getDatafieldsByCode(701);
     List<DataField> z711 = record.getDatafieldsByCode(711);
     List<DataField> z100 = record.getDatafieldsByCode(100);
+    List<DataField> z700 = record.getDatafieldsByCode(700);
+    List<DataField> z110 = record.getDatafieldsByCode(110);
+    List<DataField> z710 = record.getDatafieldsByCode(710);
 
-    z101.addAll(z701); // person
-    z111.addAll(z711); // ensemble
+    if (record.isDAV()) {
+      z101.addAll(z701); // person
+      z111.addAll(z711); // ensemble
 
-    if (z101.size() > 1) return -1;
-    if (z101.size() > 0 && z100.size() == 0) return -1;
+      if (z101.size() > 1) return -1;
+      if (z101.size() > 0 && z100.size() == 0) return -1;
 
-    // conductors should not be counted
-    z101 = z101.stream().filter(x -> {
-      String code = x.getString('4');
-      return !CONDUCTOR_CODES.contains(code);
-    }).collect(Collectors.toList());
+      // conductors should not be counted
+      z101 = z101.stream().filter(x -> {
+        String code = x.getString('4');
+        return !CONDUCTOR_CODES.contains(code);
+      }).collect(Collectors.toList());
 
-    z101.addAll(z111);
-    return z101.size() > 1 ? -1 : 3;
+      z101.addAll(z111);
+      return z101.size() > 1 ? -1 : 3;
+    }
+
+    z100.addAll(z110); // should be present 1
+    z700.addAll(z710); // should be absent
+
+    // composers should not be counted
+    z700 = z700.stream().filter(x -> !"0220".equals(x.getString('4'))).collect(Collectors.toList());
+    return (z100.size() == 1 && z700.size() == 0) ? 3 : -1;
   }
 
 

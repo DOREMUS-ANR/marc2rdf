@@ -1,0 +1,292 @@
+context,function,mop,mopLabel,code,label,245abbr,245label,note,isLabelFun
+performance,,,,,,acc.,accompagnement,,TRUE
+performance,,vso,soprano,,,dessus,dessus,,TRUE
+performance,,,,,,réal.,réalisation,,TRUE
+performance,narrateur,,,,,récitant,récitant,,TRUE
+performance,,,,1720,Claquettes,,,,TRUE
+performance,,,,1777,Sculptures et environnements sonores,,,,TRUE
+performance,acteur,,,1010,Acteur,,,,TRUE
+performance,acteur,,,1011,Acteur présumé,,,,TRUE
+performance,acteur,,,1013,Acteur prétendu,,,,TRUE
+performance,,,,1017,Humoriste,,,,TRUE
+performance,,,,1020,Artiste de cirque,,,,TRUE
+performance,,,,1830,Siffleur,,,,TRUE
+performance,,,,1837,Bruits corporels,,,,TRUE
+performance,bruiteur,,,1840,Bruitages,,,,TRUE
+performance,disc jockey,,,1850,Disc jockey,,,,TRUE
+performance,remixeur,,,1860,Remixeur,,,,TRUE
+performance,chef d'orchestre,,,1040,Direction d'orchestre,dir.,chef d´orchestre,,TRUE
+performance,,,,1050,Marionettiste,,,,TRUE
+performance,danseur,,,1060,Danse,,,,TRUE
+performance,chef de choeur,,,1080,Direction de chœur,chef de choeur,chef de choeur,,TRUE
+performance,mime,,,1090,Mime,,,,TRUE
+performance,,mui,instrument – unspecified,1100,Instrumentiste,,,,TRUE
+performance,,mui,instrument – unspecified,1101,Instrumentiste présumé,,,,TRUE
+performance,,mui,instrument – unspecified,1103,Instrumentiste prétendu,,,,TRUE
+performance,,mui,instrument – unspecified,1108,Instrumentiste (musique ethnique),,,,TRUE
+performance,interprète,,,1990,Interprète,,,,TRUE
+performance,,,,9990,Fonction indéterminée,,,,TRUE
+performance,,vun,voice - unspecified,1030,Chant,chant,chant,,TRUE
+performance,,vun,voice - unspecified,1031,Chanteur présumé,,,,TRUE
+performance,,vun,voice - unspecified,1033,Chanteur prétendu,,,,TRUE
+performance,,vun,voice - unspecified,1039,Chant (sons traités par l'électronique),,,,TRUE
+performance,,vre,reciting voice,1110,Voix parlée,V,voix,,FALSE
+performance,,vre,reciting voice,1119,Voix parlée (sons traités par l'électronique),,,,FALSE
+performance,,vso,soprano,1120,Soprano,S,,,FALSE
+performance,,vso,soprano,1129,Soprano (sons traités par l'électronique),,,,FALSE
+performance,,vct,countertenor,,,sopraniste,sopraniste,,FALSE
+performance,,vms,mezzosoprano,1130,Mezzo-soprano,MS,mezzo-soprano,,FALSE
+performance,,vms,mezzosoprano,1139,Mezzo-soprano (sons traités par l'électronique),,,,FALSE
+performance,,val,alto,1140,Alto (voix),A,"alto, contralto (tessiture)",,FALSE
+performance,,val,alto,1149,Alto (voix ; sons traités par l'électronique),,,,FALSE
+performance,,vte,tenor,1150,Ténor,T,ténor,,FALSE
+performance,,vte,tenor,1159,Ténor (sons traités par l'électronique),,,,FALSE
+performance,,vbr,baritone,1160,Baryton (voix),BAR,baryton,,FALSE
+performance,,vbr,baritone,1169,Baryton (voix ; sons traités par l'électronique),,,,FALSE
+performance,,vbr,baritone,1170,Baryton-basse,BAR B,baryton basse,,FALSE
+performance,,vbr,baritone,1179,Baryton-basse (sons traités par l'électronique),,,,FALSE
+performance,,vbs,bass,1180,Basse (voix),B,basse (tessiture),,FALSE
+performance,,vbs,bass,1189,Basse (voix ; sons traités par l'électronique),,,,FALSE
+performance,,vct,countertenor,1190,Contre-ténor,CT,contreténor,,FALSE
+performance,,vhc,haute-contre,1197,Haute-contre,HC,haute-contre,,FALSE
+performance,,vct,countertenor,1199,Contre-ténor (sons traités par l'électronique),,,,FALSE
+performance,,vbs,bass,,,BContre,basse-contre,,FALSE
+performance,,vbr,baritone,,,BTaille,basse-taille,,FALSE
+performance,,vso,soprano,,,C,cantus,,FALSE
+performance,,vso,soprano,,,D,"déchant, discantus",,FALSE
+performance,,vcv,child voice,1200,Voix chantée d'enfant,,,,FALSE
+performance,,svl,violin,1210,Violon,vl,violon,,FALSE
+performance,,sun,"strings, bowed – unspecified",1217,Cordes frottées (divers),,,,FALSE
+performance,,sun__y,"strings, bowed – ethnic",1218,Cordes frottées (musique ethnique),,,,FALSE
+performance,,svl,violin,1219,Violon électrique,vl électr.,violon électrique,,FALSE
+performance,,sva,viola,1220,Alto (instrument),alto,alto (instr.),,FALSE
+performance,,sva,viola,1229,Alto (instrument ; traité par l'électronique),,,,FALSE
+performance,,svc,cello,1230,Violoncelle,vlc,violoncelle,,FALSE
+performance,,svc,cello,1239,Violoncelle électrique,vlc électr.,violoncelle électrique,,FALSE
+performance,,sdb,double bass,1240,Contrebasse,cb,contrebasse,,FALSE
+performance,,sdb,double bass,1249,Contrebasse électrique,cb électr.,contrebasse électrique,,FALSE
+performance,,wdb,double bassoon,,,cbasson,contrebasson,,FALSE
+performance,,svgf,basse de viola,1250,Basse de viole,,,,FALSE
+performance,,svg,viola da gamba,1257,Viole,vle,violle,,FALSE
+performance,,,,1258,Cordophones divers (musique ethnique),,,,FALSE
+performance,,svd,viola d’amore,1260,Viole d'amour,,,,FALSE
+performance,,svg,viola da gamba,,,viole de gambe,viole de gambe,,FALSE
+performance,,szz,"strings, bowed – other",1268,Hardingfele,,,,FALSE
+performance,,tha,harp,1270,Harpe,hrp,harpe,,FALSE
+performance,,tha,harp,1277,Harpes (diverses),,,,FALSE
+performance,,tha,harp,1278,Harpes (musique ethnique),,,,FALSE
+performance,,tgu,guitar,1280,Guitare,guit.,guitare,,FALSE
+performance,,tgu,guitar,1287,Guitares (diverses),,,,FALSE
+performance,,tgu,guitar,1288,Guitares (musique ethnique),,,,FALSE
+performance,,tgu,electric guitar,1289,Guitare électrique,électr.,électrique,,FALSE
+performance,,tgu__r,guitar,1290,Guitare basse,guit. b,guitare basse,,FALSE
+performance,,tguf_r,electric bass guitar,1299,Guitare basse électrique,électr.,électrique,,FALSE
+performance,,thg,hawaiian guitar,1300,Guitare hawaïenne,,,,FALSE
+performance,,tgu,guitar,1309,Pedal steel guitar,,,,FALSE
+performance,,tlu,lute,1310,Luth,,,,FALSE
+performance,,tlu,lute,1317,Luths (divers),,,,FALSE
+performance,,tlu,lute,1318,Luths (musique ethnique),,,,FALSE
+performance,,tth,theorbo,1320,Théorbe,,,,FALSE
+performance,,tma,mandolin,1330,Mandoline,,,,FALSE
+performance,,tun,"strings, plucked – unspecified",1337,Instruments à plectre (divers),,,,FALSE
+performance,,tvi,vihuela,1340,Vihuela,,,,FALSE
+performance,,tbj,banjo,1350,Banjo,bjo,banjo,,FALSE
+performance,,tun,"strings, plucked – unspecified",1357,Cordes pincées (divers),,,,FALSE
+performance,,tun__y,"strings, plucked – ethnique",1358,Cordes pincées (musique ethnique),,,,FALSE
+performance,,tzi,zither,1360,Cithare,,,,FALSE
+performance,,tzi,zither,1367,Cithares (diverses),,,,FALSE
+performance,,tzi,zither,1368,Cithares (musique ethnique),,,,FALSE
+performance,,pci,cimbalom,1370,Cymbalum,,,,FALSE
+performance,,,,1377,Cordes frappées (divers),,,,FALSE
+performance,,,,1378,Cordes frappées (musique ethnique),,,,FALSE
+performance,,wfl,flute,1380,Flûte,fl.,flûte,,FALSE
+performance,,wun,woodwind – unspecified,1387,Bois (divers),,,,FALSE
+performance,,wun__y,woodwind – ethnique,1388,Flûtes (musique ethnique),,,,FALSE
+performance,,wfl,flute,1389,Flûte (sons traités par l'électronique),,,,FALSE
+performance,,wpi,piccolo,1390,Piccolo,picc.,piccolo,,FALSE
+performance,,wpi,piccolo,,,flûte piccolo,fl. picc.,,FALSE
+performance,,wre,recorder,1400,Flûte à bec,fl. à bec,flûte à bec,,FALSE
+performance,,wre,recorder,1407,Flûtes à bec (diverses),,,,FALSE
+performance,,wpp,panpipes,1410,Flûte de Pan,,,,FALSE
+performance,,wpp,panpipes,1418,Flûtes de Pan (musique ethnique),,,,FALSE
+performance,,wsa,saxophone,,,saxo sopranino,saxophone sopranino,,FALSE
+performance,,wfl,flute,,,fl. sopranino,flûte sopranino,,FALSE
+performance,,wre,recorder,,,fl. à bec sopranino,flûte à bec sopranino,,FALSE
+performance,,wcl,clarinet,1420,Clarinette,clar.,clarinette,,FALSE
+performance,,,,1427,Instruments à anche (divers),,,,FALSE
+performance,,,,1428,Instruments à anche (musique ethnique),,,,FALSE
+performance,,wob,oboe,1430,Hautbois,htb,hautbois,,FALSE
+performance,,woa,oboe d’amore,,,htb d´amour,hautbois d´amour,,FALSE
+performance,,mwd,wind instrument,1437,Instruments à vent (divers),,,,FALSE
+performance,,mwd,wind instrument,1438,Instruments à vent divers (musique ethnique),,,,FALSE
+performance,,weh,english horn,1440,Cor anglais,,,,FALSE
+performance,,wsa,saxophone,1450,Saxophone,saxo,saxophone,,FALSE
+performance,,ely,lyricon,1459,Lyricon,,,,FALSE
+performance,,wba,bassoon,1460,Basson,,,,FALSE
+performance,,btr,trumpet,1470,Trompette,trp,trompette,,FALSE
+performance,,bun,brass – unspecified,1477,Cuivres (divers),,,,FALSE
+performance,,bun__y,brass - ethnique,1478,Trompes (musique ethnique),,,,FALSE
+performance,,bvb,valved bugle,1480,Bugle,,,,FALSE
+performance,,bco,cornet,1490,Cornet à pistons,cnt à pistons,cornet à pistons,,FALSE
+performance,,bct,cornett,1500,Cornet à bouquin,cnt à bouquin,cornet à bouquin,,FALSE
+performance,,bho,horn,1510,Cor,,,,FALSE
+performance,,btb,trombone,1520,Trombone,trb,trombone,,FALSE
+performance,,btb,trombone,1527,Trombones (divers),,,,FALSE
+performance,,btu,tuba,1530,Tuba,,,,FALSE
+performance,,btu,tuba,1537,Tubas (divers),,,,FALSE
+performance,,mmi,mirliton,1540,Mirliton,,,,FALSE
+performance,,mha,harmonica,1550,Harmonica,hrmca,harmonica,,FALSE
+performance,,,,1557,Instruments à anche libre (divers),,,,FALSE
+performance,,,,1558,Instruments à anche libre (musique ethnique),,,,FALSE
+performance,,kpf,piano,1560,Piano,p,piano,,FALSE
+performance,,kun,keyboard - unspecified,,,clavier,clavier (musique classique),,FALSE
+performance,,kun,keyboard - unspecified,,,,instrument à clavier,,FALSE
+performance,,kun,keyboard - unspecified,,,claviers,"claviers (jazz, rock)",,FALSE
+performance,,kun,keyboard - unspecified,1567,Claviers (divers),,,,FALSE
+performance,,kpf__r,electric piano,1569,Piano électrique,électr.,électrique,,FALSE
+performance,,kfp,fortepiano,1570,Pianoforte,pf,piano-forte,,FALSE
+performance,,khp,harpsichord,1580,Clavecin,clav.,clavecin,,FALSE
+performance,,khp,harpsichord,1587,Clavecins (divers),,,,FALSE
+performance,,kor,organ,1590,Orgue,org.,orgue,,FALSE
+performance,,kor,organ,,,org. pos.,orgue positif,,FALSE
+performance,,kor,organ,1597,Orgues (divers),,,,FALSE
+performance,,kor,organ,1598,Orgue (musique ethnique),,,,FALSE
+performance,,kor__r,electric organ,1599,Orgue électronique,,,,FALSE
+performance,,mbo,barrel organ,1600,Orgue mécanique,,,,FALSE
+performance,,mbo,barrel organ,1607,Orgues mécaniques (divers),,,,FALSE
+performance,,khm,harmonium,1610,Harmonium,,,,FALSE
+performance,,kcl,clavichord,1620,Clavicorde,,,,FALSE
+performance,,kac,accordion,1630,Accordéon,acrdn,accordéon chromatique,,FALSE
+performance,,kac,accordion,,,acrdn diato.,accordéon diatonique,,FALSE
+performance,,kac,accordion,1637,Accordéons (divers),,,,FALSE
+performance,,kac,accordion,1638,Accordéon (musique ethnique),,,,FALSE
+performance,,sun,"strings, bowed – unspecified",,,vièle à archet,vièle à archet,,FALSE
+performance,,mhg,hurdy-gurdy,1640,Vielle à roue,vielle,vielle à roue,,FALSE
+performance,,mhg,hurdy-gurdy,1649,Vielle à roue électrique,vielle électr.,vielle à roue électrique,,FALSE
+performance,,pds,drums,1650,Batterie,batt.,batterie,,FALSE
+performance,,pds,drums,1651,Batterie (interprète présumé),,,,FALSE
+performance,,pds,drums,1653,Batterie (interprète prétendu),,,,FALSE
+performance,,pun,percussion – unspecified,1657,Membranophones (divers),,,,FALSE
+performance,,pun__y,percussion – ethnique,1658,Membranophones (musique ethnique),,,,FALSE
+performance,,pds,drums,1659,Batterie électrique,électr.,électrique,,FALSE
+performance,,pdr,drum,1660,Tambour,tamb.,tambour,,FALSE
+performance,,pun,percussion – unspecified,1667,Percussions,perc.,percussions,,FALSE
+performance,,pun__y,percussion – ethnique,1668,Percussions (musique ethnique),,,,FALSE
+performance,,pti,timpani,1670,Timbales,timb.,timbales,,FALSE
+performance,,pxy,xylophone,1680,Xylophone,xyl.,xylophone,,FALSE
+performance,,pxy,xylophone,1688,Xylophones (musique ethnique),,,,FALSE
+performance,,pmb,marimba,1690,Marimba,,,,FALSE
+performance,,pvi,vibraphone,1700,Vibraphone,vibr.,vibraphone,,FALSE
+performance,,pme,metallophone,1707,Métallophones (divers),,,,FALSE
+performance,,kca,carillon,1710,Carillon,,,,FALSE
+performance,,pun,percussion – unspecified,1717,Idiophones par percussion (divers),,,,FALSE
+performance,,pun__y,percussion – ethnique,1718,Idiophones par percussion (musique ethnique),,,,FALSE
+performance,,,,1728,Idiophones secoués (musique ethnique),,,,FALSE
+performance,,mjh,jew’s harp,1730,Guimbarde,,,,FALSE
+performance,,mjh,jew’s harp,1738,Guimbarde (musique ethnique),,,,FALSE
+performance,,,,1738,Idiophones pincés (musique ethnique),,,,FALSE
+performance,,mgh,glassharmonica,1740,Harmonica de verre,,,,FALSE
+performance,,,,1747,Cristallophones,,,,FALSE
+performance,,,,1748,Idiophones frottés (musique ethnique),,,,FALSE
+performance,,ema,ondes Martenot,1750,Ondes Martenot,,,,FALSE
+performance,,esy,synthetizer,1760,Synthétiseur,synth.,synthétiseur,,FALSE
+performance,,eun,electronic – non specified,1767,Instrument électronique,,,,FALSE
+performance,,eun,electronic – non specified,1770,Instrument électronique (non autonome),,,,FALSE
+performance,,oun,orchestra – unspecified,1780,Orchestre,orch.,orchestre,,FALSE
+performance,,oie,instrumental ensemble,1787,Ensembles (divers),,,,FALSE
+performance,,oie,instrumental ensemble,1790,Ensemble instrumental,ens. instr.,ensemble instrumental,,FALSE
+performance,,oie,instrumental ensemble,1797,Groupe instrumental,groupe instr.,groupe instrumental,,FALSE
+performance,,oie,instrumental ensemble,1798,Ensemble instrumental (musique ethnique),,,,FALSE
+performance,,cun,choir - unspecified,,,choeur,choeur (musique classique),,FALSE
+performance,,cun,choir - unspecified,,,choeurs,"choeurs (jazz, rock, variétés)",,FALSE
+performance,,cmi,mixed choir,1800,Chœur mixte,,,,FALSE
+performance,,czz,choir other,1807,Chœur à voix égales,,,,FALSE
+performance,,cve,vocal ensemble,1810,Ensemble vocal,ens voc.,ensemble vocal,,FALSE
+performance,,cve,vocal ensemble,1817,Groupe vocal,groupe voc.,vocal,,FALSE
+performance,,cve,vocal ensemble,1818,Ensemble vocal (musique ethnique),,,,FALSE
+performance,,oiv,vocal and instrumental ensemble,1820,Ensemble vocal et instrumental,ens voc. et. instr.,ensemble vocal et instrumental,,FALSE
+performance,,oiv,vocal and instrumental ensemble,1827,Groupe vocal et instrumental,groupe voc. et instr.,groupe vocal et instrumental,,FALSE
+performance,,oiv,vocal and instrumental ensemble,1828,Ensemble vocal et instrumental (musique ethnique),,,,FALSE
+performance,,ost,string orchestra,1870,Ensemble de cordes,,,,FALSE
+performance,,ost,string orchestra,1878,Ensemble de cordes (musique ethnique),,,,FALSE
+performance,,owi,wind orchestra,1880,Ensemble à vent,,,,FALSE
+performance,,owi,wind orchestra,1888,Ensemble à vent (musique ethnique),,,,FALSE
+performance,,owi,wind orchestra,1890,Ensemble de cuivres,,,,FALSE
+performance,,owi,wind orchestra,1898,Ensemble de cuivres (musique ethnique),,,,FALSE
+performance,,kpf,piano,1900,Piano à 4 mains,,,,FALSE
+performance,,kfp,fortepiano,1910,Pianoforte à 4 mains,,,,FALSE
+performance,,kce,celesta,1920,Célesta,,,,FALSE
+performance,,wbp,bagpipe,1930,Cornemuse,,,,FALSE
+performance,,wbp,bagpipe,1937,Cornemuses (diverses),,,,FALSE
+performance,,wbp,bagpipe,1938,Cornemuses (musique ethnique),,,,FALSE
+performance,,,,1940,Washboard,,,,FALSE
+performance,,,,1947,Idiophones raclés (divers),,,,FALSE
+performance,,,,1948,Idiophones raclés (musique ethnique),,,,FALSE
+performance,musicien (interprète),,,1980,Interprète (autre),,,,TRUE
+composition,adaptateur,,,0010,Adaptateur,,,,TRUE
+composition,adaptateur,,,0011,Adaptateur présumé,,,,TRUE
+composition,adaptateur,,,0013,Adaptateur prétendu,,,,TRUE
+composition,auteur des notes,,,0040,Annotateur,,,,TRUE
+composition,auteur des notes,,,0041,Annotateur présumé,,,,TRUE
+composition,auteur des notes,,,0043,Annotateur prétendu,,,,TRUE
+composition,arrangeur,,,0050,Arrangeur,arr.,arrangement,,TRUE
+composition,arrangeur,,,0051,Arrangeur présumé,,,,TRUE
+composition,arrangeur,,,0053,Arrangeur prétendu,,,,TRUE
+composition,auteur du texte,,,0070,Auteur du texte,aut.,auteur,,TRUE
+composition,auteur du texte,,,0071,Auteur présumé du texte,,,,TRUE
+composition,auteur du texte,,,0073,Auteur prétendu du texte,,,,TRUE
+composition,auteur de l’argument,,,0080,Auteur de l'argument,,,,TRUE
+composition,auteur de l’argument,,,0081,Auteur présumé de l'argument,,,,TRUE
+composition,auteur de l’argument,,,0083,Auteur prétendu de l'argument,,,,TRUE
+composition,,,,0120,Auteur du commentaire,,,,TRUE
+composition,,,,0121,Auteur présumé du commentaire,,,,TRUE
+composition,,,,0123,Auteur prétendu du commentaire,,,,TRUE
+composition,auteur du texte,,,0130,Auteur du matériel d'accompagnement,,,dans une F28 associée au F22 correspondant à un matériel d’accompagnement - voir mapping lignes 94-97,TRUE
+composition,créateur de la réduction musicale,,,0790,Auteur de la réduction musicale,réduct.,réduction,,FALSE
+composition,chorégraphe,,,0160,Chorégraphe,,,,TRUE
+composition,chorégraphe,,,0161,Chorégraphe présumé,,,,TRUE
+composition,chorégraphe,,,0163,Chorégraphe prétendu,,,,TRUE
+composition,collecteur,,,0180,Collecteur,,,,TRUE
+composition,commanditaire,,,0190,Commanditaire,,,,TRUE
+composition,compilateur,,,0210,Compilateur,,,,TRUE
+composition,compositeur,,,0220,Compositeur,comp.,compositeur,,TRUE
+composition,compositeur,,,0221,Compositeur présumé,,,,TRUE
+composition,compositeur,,,0223,Compositeur prétendu,,,,TRUE
+composition,continuateur,,,0260,Continuateur,,,,TRUE
+composition,continuateur,,,0261,Continuateur présumé,,,,TRUE
+composition,continuateur,,,0263,Continuateur prétendu,,,,TRUE
+composition,destinataire,,,0290,Dédicataire,,,,TRUE
+composition,dessinateur,,,0310,Dessinateur,,,,TRUE
+composition,dessinateur,,,0311,Dessinateur présumé,,,,TRUE
+composition,dessinateur,,,0313,Dessinateur prétendu,,,,TRUE
+composition,harmonisateur,,,0430,Harmonisateur,harm.,harmonisateur,,TRUE
+composition,,,,0440,Illustrateur,,,,TRUE
+composition,,,,0441,Illustrateur présumé,,,,TRUE
+composition,,,,0443,Illustrateur prétendu,,,,TRUE
+composition,librettiste,,,0470,Librettiste,livret,librettiste,,TRUE
+composition,librettiste,,,0471,Librettiste présumé,,,,TRUE
+composition,librettiste,,,0473,Librettiste prétendu,,,,TRUE
+composition,metteur en scène,,,0500,Metteur en scène,,,,TRUE
+composition,orchestrateur,,,0780,Orchestrateur,orch.,orchestrateur,,TRUE
+composition,parolier,,,0510,Parolier,par.,parolier,,TRUE
+composition,peintre,,,0520,Peintre,,,,TRUE
+composition,peintre,,,0521,Peintre présumé,,,,TRUE
+composition,peintre,,,0523,Peintre prétendu,,,,TRUE
+composition,photographe,,,0530,Photographe,,,,TRUE
+composition,photographe,,,0531,Photographe présumé,,,,TRUE
+composition,photographe,,,0533,Photographe prétendu,,,,TRUE
+composition,auteur de la postface,,,0540,Postfacier,,,,TRUE
+composition,auteur de la préface,,,0550,Préfacier,,,,TRUE
+composition,présentateur dans un spectacle,,,0560,Présentateur,,,,TRUE
+composition,producteur (radio),,,0570,Producteur artistique,,,,TRUE
+composition,réalisateur,,,0610,Réalisateur,,,,TRUE
+composition,réalisateur,,,0611,Réalisateur présumé,,,,TRUE
+composition,réalisateur,,,0613,Réalisateur prétendu,,,,TRUE
+composition,réalisateur de la basse continue,,,0770,Réalisation de la basse continue,bc,basse continue,,FALSE
+composition,réviseur (musique),,,,,rév.,révision,,FALSE
+composition,scénariste,,,0630,Scénariste,,,,TRUE
+composition,traducteur,,,0680,Traducteur,trad.,traducteur,,TRUE
+composition,transcripteur,,,0730,Transcripteur,transcr.,transcripteur,,TRUE
+publication,éditeur,,,3250,éditeur commercial,,,,
+publication,imprimeur,,,3260,imprimeur libraire,,,,
+publication,imprimeur,,,3030,imprimeur libraire antécédent,,,,

@@ -64,9 +64,9 @@ public class F24_PublicationExpression extends BIBDoremusResource {
       String a051 = record.getDatafieldByCode("051", 'a');
       char control92 = control9.charAt(2);
 
-      if (a051.equals("ntm") || control92 == ' ' || control92 == 'd')
+      if ("ntm".equals(a051) || control92 == ' ' || control92 == 'd')
         this.addProperty(MUS.U227_has_content_type, "musique notée");
-      else if (a051.equals("tcm") || control92 == 'f')
+      else if ("tcm".equals(a051) || control92 == 'f')
         this.addProperty(MUS.U227_has_content_type, "musique notée tactile");
     }
 
@@ -274,7 +274,8 @@ public class F24_PublicationExpression extends BIBDoremusResource {
     if (record.isDAV()) cats = parseCategorization(record);
     else cats = Stream.of(control2categorization(control9));
 
-    cats.peek(r -> this.addProperty(MUS.U19_is_categorized_as, r))
+    cats.filter(Objects::nonNull)
+      .peek(r -> this.addProperty(MUS.U19_is_categorized_as, r))
       .forEach(r -> model.createResource(this.uri + "/assignment/" + r.getLocalName())
         .addProperty(RDF.type, CIDOC.E13_Attribute_Assignment)
         .addProperty(CIDOC.P141_assigned, r)
@@ -452,7 +453,8 @@ public class F24_PublicationExpression extends BIBDoremusResource {
         String code = df.getString('a');
         if (code == null || code.isEmpty()) code = df.getString('b');
         return code;
-      }).map(F24_PublicationExpression::toBnFCategorizationUri);
+      }).filter(Objects::nonNull)
+      .map(F24_PublicationExpression::toBnFCategorizationUri);
   }
 
   private static Resource toBnFCategorizationUri(String code) {

@@ -14,7 +14,9 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class F28_ExpressionCreation extends DoremusResource {
@@ -34,63 +36,67 @@ public class F28_ExpressionCreation extends DoremusResource {
   }
 
   public F28_ExpressionCreation(Record record) {
-    this(record, record.getIdentifier());
+    this(record, record.getIdentifier(), false, false);
   }
 
   public F28_ExpressionCreation(Record record, String identifier) {
+    this(record, identifier, false, false);
+  }
+
+  public F28_ExpressionCreation(Record record, String identifier, boolean isSketch, boolean isArrangment) {
     this(identifier);
     this.record = record;
 
     this.composerCount = 0;
 
     if (record.isTUM()) parseTum();
-    else if (record.isANL()) parseANL();
-    else if (record.isBIB()) parseBib();
+    else if (record.isBIB())
+      if (identifier.endsWith("t")) parseBIB(); // creation of aggregation work
+      else parseANL(isSketch, isArrangment); // creation of musical work
   }
 
-  private void parseANL() {
-    // composers and derivation type
-    record.getDatafieldsByCode(700)
-      .forEach(df -> {
-        Person person = ArtistConverter.parseArtistField(df);
-        if (person == null) return;
 
-        String role = "arrangeur";
-        switch (df.getString(4)) {
-          case "0220":
-            role = "compositeur";
-            break;
-          case "0010":
-          case "0011":
-          case "0013":
-            role = "adaptateur";
+  private void parseANL(boolean isSketch, boolean isArrangment) {
+    // composers and derivation type
+    List<DataField> fields = new ArrayList<>();
+    if (record.isDAV() || isArrangment || !isSketch) record.getDatafieldsByCode(700);
+    if (record.isMUS() && (isSketch || !isArrangment)) fields.addAll(record.getDatafieldsByCode(100));
+    fields.stream()
+      .map(Person::fromIntermarcField).filter(Objects::nonNull)
+      .forEach(person -> {
+        String function = person.getFunction();
+        if (function == null) function = "arrangeur";
+
+        switch (function) {
+          case "adaptateur":
             derivation = "adaptation";
-            break;
-          case "0050":
-          case "0051":
-          case "0053":
+          case "arrangeur":
             derivation = "arrangement";
             break;
-          case "0430":
-            role = "harmonisateur";
+          case "harmonisateur":
             derivation = "harmonisation";
             break;
-          case "0730":
-            role = "transcripteur";
+          case "transcripteur":
             derivation = "transcription";
             break;
-          case "0780":
-            role = "orchestrateur";
+          case "orchestrateur":
             derivation = "orchestration";
         }
-        this.addActivity(person, role);
+
+        this.addActivity(person, function);
       });
+
+    if (BIBRecordConverter.getCase(record) == 1) {
+      record.getDatafieldsByCode(300, 'a').stream()
+        .filter(txt -> txt.startsWith("Date de composition"))
+        .forEach(this::addNote);
+    }
   }
 
-  private void parseBib() {
+  private void parseBIB() {
     record.getDatafieldsByCode(700).stream()
       .filter(df -> "0180".equals(df.getString(4)))
-      .map(ArtistConverter::parseArtistField)
+      .map(Person::fromIntermarcField)
       .forEach(person -> addActivity(person, "collecteur"));
   }
 
@@ -105,35 +111,35 @@ public class F28_ExpressionCreation extends DoremusResource {
     List<DataField> tAut = this.record.getDatafieldsByCode(322);
     tAut.addAll(this.record.getDatafieldsByCode(320));
     for (DataField d : tAut) {
-      Person author = ArtistConverter.parseArtistField(d);
+      Person author = Person.fromIntermarcField(d);
       if (author == null) continue;
-      String role = null;
+      String function = null;
       if (d.getEtiq().equals("322"))
         switch (d.getIndicator1()) {
           case ' ':
           case '8':
-            role = "auteur du texte";
+            function = "auteur du texte";
             break;
           case '6':
-            role = "librettiste";
+            function = "librettiste";
             break;
           case '7':
-            role = "parolier";
+            function = "parolier";
             break;
           case '9':
-            role = "auteur de l'argument";
+            function = "auteur de l'argument";
             break;
         }
       else switch (d.getIndicator1()) {
         case ' ':
-          role = "auteur du texte";
+          function = "auteur du texte";
           break;
         case '4':
-          role = "librettiste";
+          function = "librettiste";
           break;
       }
 
-      addActivity(author, role);
+      addActivity(author, function);
     }
 
     int motivationCount = 0;
@@ -146,13 +152,13 @@ public class F28_ExpressionCreation extends DoremusResource {
       );
     }
 
-    List<DataField> inspirations = this.record.getDatafieldsByCode("301");
-    inspirations.addAll(this.record.getDatafieldsByCode("302"));
+    List<DataField> inspirations = this.record.getDatafieldsByCode(301);
+    inspirations.addAll(this.record.getDatafieldsByCode(302));
     for (DataField insp : inspirations) {
       if (insp.getIndicator1() == '5' || insp.getIndicator1() == '7') return;
       if (!insp.isCode(3)) return;
 
-      F15_ComplexWork targetWork = new F15_ComplexWork(insp.getSubfield('3').getData());
+      F15_ComplexWork targetWork = new F15_ComplexWork(insp.getString(3));
       this.addProperty(CIDOC.P15_was_influenced_by, targetWork);
     }
 

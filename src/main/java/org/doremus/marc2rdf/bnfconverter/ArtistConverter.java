@@ -136,37 +136,11 @@ public class ArtistConverter {
   private static List<Person> getArtistsInfo(Record record, boolean full) {
     return record.getDatafieldsByCode("100").stream()
       .filter(field -> full || field.isCode('3'))
-      .map(ArtistConverter::parseArtistField)
+      .map(Person::fromIntermarcField)
       .collect(Collectors.toList());
   }
 
-  static Person parseArtistField(DataField field) {
-    String firstName = field.getString('m');
-    String lastName = field.getString('a');
-    if (lastName == null)
-      return null;
 
-    String birthDate = null;
-    String deathDate = null;
-    String lang = null;
-
-    if (field.isCode('d')) { // birth - death dates
-      String d = field.getString('d');
-
-      // av. J.-C.
-      d = d.replaceAll("av\\. J\\.?-C\\.?", "BC");
-      String[] dates = d.split("[-–]");
-      birthDate = dates[0].trim();
-      if (dates.length > 1) deathDate = dates[1].trim();
-    }
-
-    if (field.isCode('w')) { // lang
-      String w = field.getString('w');
-      lang = Utils.intermarcExtractLang(w);
-    }
-
-    return new Person(firstName, lastName, birthDate, deathDate, lang);
-  }
 
   private static List<String[]> getAlternateNames(Record record) {
     List<String[]> names = new ArrayList<>();

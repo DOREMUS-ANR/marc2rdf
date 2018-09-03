@@ -38,18 +38,14 @@ public class BNF2RDF extends AbstractConverter {
   private boolean somethingHasBeenConverted;
   private BIBRecordConverter mainRecordConv;
 
-
   public BNF2RDF() {
     super();
     this.graphName = "bnf";
     this.somethingHasBeenConverted = false;
   }
 
-  private static boolean found = false;
-
   public Model convert(File file) throws FileNotFoundException {
-    if (file.getName().endsWith("42072423.xml")) found = true;
-    if (!found) return null;
+//    if (file.getName().endsWith("42072423.xml")) found = true;
     MarcXmlReader reader = new MarcXmlReader(file, BNF2RDF.bnfXmlHandlerBuilder);
 
     if (reader.getRecords() == null || reader.getRecords().size() == 0) {

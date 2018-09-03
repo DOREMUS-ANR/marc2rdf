@@ -281,9 +281,9 @@ public class F3_ManifestationProductType extends DoremusResource {
   }
 
   private Artist parseDistributor() {
-    Artist distributor = Person.fromUnimarcField(record.getDatafieldByCode(721));
+    Artist distributor = Person.fromIntermarcField(record.getDatafieldByCode(721));
     if (distributor != null)
-      distributor = CorporateBody.fromUnimarcField(record.getDatafieldByCode(731));
+      distributor = CorporateBody.fromIntermarcField(record.getDatafieldByCode(731));
 
     if (distributor == null) return null;
 

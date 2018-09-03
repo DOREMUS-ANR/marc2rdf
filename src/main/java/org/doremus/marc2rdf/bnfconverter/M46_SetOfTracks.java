@@ -95,7 +95,7 @@ public class M46_SetOfTracks extends BIBDoremusResource {
       for (Subfield sf : df.getSubfields()) {
         switch (sf.getCode()) {
           case 'a':
-            if (current != null) this.addComplexIdentifier(current, "ISRC", null);
+            if (current != null) this.addComplexIdentifier(current, "ISRC", null, null);
             current = sf.getData().trim();
             break;
           case 'b':
@@ -103,7 +103,7 @@ public class M46_SetOfTracks extends BIBDoremusResource {
             current += " (" + sf.getData().trim() + ")";
         }
       }
-      if (current != null) this.addComplexIdentifier(current, "ISRC", null);
+      if (current != null) this.addComplexIdentifier(current, "ISRC", null, null);
     }
   }
 

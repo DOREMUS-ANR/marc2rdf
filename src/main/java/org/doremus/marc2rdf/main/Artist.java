@@ -61,7 +61,7 @@ public abstract class Artist extends DoremusResource {
 
   }
 
-  protected void setFunction(String function) {
+  public void setFunction(String function) {
     this.function = function;
   }
 

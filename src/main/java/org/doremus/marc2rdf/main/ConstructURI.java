@@ -50,6 +50,7 @@ public class ConstructURI {
   private static String getCollectionName(String className) {
     switch (className) {
       case "F22_SelfContainedExpression":
+      case "F23_Expression_Fragment":
       case "F25_PerformancePlan":
       case "M43_PerformedExpression":
         return "expression";
@@ -59,6 +60,7 @@ public class ConstructURI {
       case "F42_RepresentativeExpressionAssignment":
       case "F42_Representative_Expression_Assignment":
       case "F29_RecordingEvent":
+      case "F32_Carrier_Production_Event":
         return "event";
       case "F14_IndividualWork":
       case "F15_ComplexWork":

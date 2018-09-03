@@ -8,6 +8,7 @@ import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.isnimatcher.ISNIRecord;
+import org.doremus.marc2rdf.bnfconverter.FunctionMap;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.Schema;
@@ -252,9 +253,10 @@ public class Person extends Artist {
   }
 
   public static Person fromUnimarcField(DataField field) {
+    // philharmonie
     if (field == null) return null;
     // for fields 700, 701, 721
-    String firstName = null, lastName = null, birthDate = null, deathDate = null, function = null;
+    String firstName = null, lastName = null, birthDate = null, deathDate = null;
     if (field.isCode('a'))  // surname
       lastName = field.getString('a').trim();
 
@@ -267,26 +269,44 @@ public class Person extends Artist {
       if (dates.length > 1) deathDate = dates[1].trim();
     }
 
-    if (field.isCode('4'))  // function
-      function = parseFunction(field.getString('4'));
-
-
-    Person p = new Person(firstName, lastName, birthDate, deathDate, null);
-    p.setFunction(function);
-    return p;
+    return new Person(firstName, lastName, birthDate, deathDate, null);
   }
 
-  private static String parseFunction(String code) {
-    if (code == null) return null;
-    switch (code) {
-      case "3250":
-        return "éditeur commercial";
-      case "3260":
-        return "imprimeur libraire";
-      case "3030":
-        return "imprimeur libraire antécédent";
+  public static Person fromIntermarcField(DataField field) {
+    if (field == null) return null;
+
+    String firstName = field.getString('m');
+    String lastName = field.getString('a');
+    if (lastName == null) return null;
+
+    String birthDate = null;
+    String deathDate = null;
+    String lang = null;
+    String function = null;
+
+    if (field.isCode('d')) { // birth - death dates
+      String d = field.getString('d');
+
+      // av. J.-C.
+      d = d.replaceAll("av\\. J\\.?-C\\.?", "BC");
+      String[] dates = d.split("[-–]");
+      birthDate = dates[0].trim();
+      if (dates.length > 1) deathDate = dates[1].trim();
     }
-    return null;
+
+    if (field.isCode('4')) { // function
+      FunctionMap fm = FunctionMap.get(field.getString('4'));
+      if (fm != null) function = fm.getFunction();
+    }
+
+    if (field.isCode('w')) { // lang
+      String w = field.getString('w');
+      lang = Utils.intermarcExtractLang(w);
+    }
+
+    Person p = new Person(firstName, lastName, birthDate, deathDate, lang);
+    p.setFunction(function);
+    return p;
   }
 
   @Override

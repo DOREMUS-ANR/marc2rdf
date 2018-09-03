@@ -1,9 +1,6 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.doremus.marc2rdf.main.Artist;
-import org.doremus.marc2rdf.main.CorporateBody;
-import org.doremus.marc2rdf.main.DoremusResource;
-import org.doremus.marc2rdf.main.TimeSpan;
+import org.doremus.marc2rdf.main.*;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.FRBROO;
@@ -29,16 +26,15 @@ public class F32_Carrier_Production_Event extends DoremusResource {
       .filter(df -> "3050".equals(df.getString(4)))
       .forEach(df -> {
         Artist printer = (df.getEtiq().equals("727")) ?
-          ArtistConverter.parseArtistField(df) :
-          CorporateBody.fromUnimarcField(df);
+          Person.fromIntermarcField(df) :
+          CorporateBody.fromIntermarcField(df);
 
         if (printer == null) return;
 
         if (this.place != null) printer.addResidence(this.place);
 
         String function = "imprimeur";
-        if ("3310".equals(df.getString(4)))
-          function = "graveur de musique";
+        if ("3310".equals(df.getString(4))) function = "graveur de musique";
 
         this.hasInformation = true;
         this.addActivity(printer, function);

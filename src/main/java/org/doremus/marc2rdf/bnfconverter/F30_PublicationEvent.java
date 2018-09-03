@@ -57,16 +57,16 @@ public class F30_PublicationEvent extends DoremusResource {
   private void parseBIB() {
     // publishers
     List<Artist> publishers = record.getDatafieldsByCode(720).stream()
-      .map(Person::fromUnimarcField)
+      .map(Person::fromIntermarcField)
       .collect(Collectors.toList());
     publishers.addAll(record.getDatafieldsByCode(730).stream()
-      .map(CorporateBody::fromUnimarcField)
+      .map(CorporateBody::fromIntermarcField)
       .collect(Collectors.toList()));
 
     // publishers
     record.getDatafieldsByCode(260).forEach(df -> parsePublisherField(df, publishers, true));
 
-    publishers.forEach(cb -> this.addActivity(cb, cb.getFunction() == null ? "publisher" : cb.getFunction()));
+    publishers.forEach(x -> this.addActivity(x, x.getFunction() == null ? "publisher" : x.getFunction()));
 
     // time
     this.addTimeSpan(parseDateMachine());

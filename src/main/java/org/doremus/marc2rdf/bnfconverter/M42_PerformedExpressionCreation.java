@@ -99,7 +99,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
         this.addProperty(MUS.U193_used_historical_instruments, txt);
         continue;
       }
-      FunctionPerformerMap fpm = FunctionPerformerMap.getFrom245(txt);
+      FunctionMap fpm = FunctionMap.getFrom245(txt, "performance");
       if (fpm == null) continue;
       Resource mop = fpm.getMop();
       if (mop == null) continue;
@@ -136,8 +136,8 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
   }
 
   private void parsePerformer(DataField df, boolean isPerson) {
-    Artist agent = isPerson ? ArtistConverter.parseArtistField(df) : CorporateBody.fromUnimarcField(df);
-    FunctionPerformerMap function = FunctionPerformerMap.get(df.getString(4));
+    Artist agent = isPerson ? Person.fromIntermarcField(df) : CorporateBody.fromIntermarcField(df);
+    FunctionMap function = FunctionMap.get(df.getString(4));
     String character = df.getString(9);
 
     M28_Individual_Performance ip = new M28_Individual_Performance(this.uri + "/" + ++countConsistOf);

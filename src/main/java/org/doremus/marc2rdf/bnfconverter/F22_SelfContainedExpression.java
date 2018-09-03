@@ -1,9 +1,11 @@
 package org.doremus.marc2rdf.bnfconverter;
 
 import net.sf.junidecode.Junidecode;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -48,20 +50,48 @@ public class F22_SelfContainedExpression extends DoremusResource {
   public List<Literal> titles;
 
   public F22_SelfContainedExpression(Record record) {
-    super(record);
+    this(record, record.getIdentifier());
+  }
+
+  public F22_SelfContainedExpression(Record record, String identifier) {
+    super(record, identifier);
     this.setClass(FRBROO.F22_Self_Contained_Expression);
-    if (!record.isANL()) return;
+  }
+
+  public F22_SelfContainedExpression(Record record, String identifier, int index) {
+    // works instatiated in BIB/ANL records
+    this(record, identifier);
 
     // title
-    List<Literal> titles = BIBDoremusResource.parseTitleField(record.getDatafieldByCode(245), true, false);
-    titles.forEach(this::setTitle);
+    this.setTitle(parseBIBTitle(record.getDatafieldByCode(245), index));
     // title translation
-    titles = BIBDoremusResource.parseTitleField(record.getDatafieldByCode(247), true, false);
-    titles.forEach(this::setVariantTitle);
+    this.setVariantTitle(parseBIBTitle(record.getDatafieldByCode(247), index));
 
     // casting
     M6_Casting casting = new M6_Casting(record, this.getUri() + "/casting/1");
     if (casting.doesContainsInfo()) this.addProperty(MUS.U13_has_casting, casting);
+  }
+
+  private Literal parseBIBTitle(DataField df, int index) {
+    if (df == null) return null;
+    char mainCode = (record.isDAV() || index < 0) ? 'a' : 'b';
+    if (index < 0) index = 0;
+
+    String title = df.getStrings(mainCode).get(index);
+    String language = null;
+
+    if (df.isCode('e')) title += " : " + df.getString('i');
+
+    if (df.isCode('h') || df.isCode('i')) title += ". ";
+    if (df.isCode('h')) {
+      title += df.getString('h');
+      if (df.isCode('i')) title += ", ";
+    }
+    if (df.isCode('i')) title += df.getString('i');
+
+    if (df.isCode('w')) language = Utils.intermarcExtractLang(df.getString('w'));
+
+    return ResourceFactory.createLangLiteral(title, language);
   }
 
   public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) {
@@ -403,6 +433,11 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return this;
   }
 
+  public F22_SelfContainedExpression add(F23_Expression_Fragment fragment) {
+    this.addProperty(FRBROO.R15_has_fragment, fragment);
+    return this;
+  }
+
   public void setTitle(Literal title) {
     this.addProperty(CIDOC.P102_has_title, title);
   }
@@ -410,4 +445,25 @@ public class F22_SelfContainedExpression extends DoremusResource {
   public void setVariantTitle(Literal title) {
     this.addProperty(MUS.U68_has_variant_title, title);
   }
+
+  public void extendFromMUS(Record record) {
+    this.addProperty(MUS.U227_has_content_type, "musique notée");
+
+    String genre = record.getDatafieldByCode(606, 'a');
+    if (genre != null)
+      VocabularyManager.getVocabulary("genre-rameau").findConcept(genre, false);
+
+    record.getDatafieldsByCode(300, 'a').stream()
+      .filter(txt -> txt.startsWith("Degre") || txt.startsWith("Niveau"))
+      .forEach(this::addNote);
+
+    if (BIBRecordConverter.getCase(record) == 1) {
+      record.getDatafieldsByCode(300, 'a').stream()
+        .filter(txt -> txt.startsWith("Durée"))
+        .map(txt -> txt.replaceFirst("Durée ?: ?(ca)? ?", ""))
+        .map(Utils::duration2iso)
+        .forEach(d -> this.addProperty(MUS.U78_estimated_duration, d, XSDDatatype.XSDdayTimeDuration));
+    }
+  }
+
 }

@@ -13,9 +13,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class FunctionPerformerMap {
-  private static List<FunctionPerformerMap> list = null;
+public class FunctionMap {
+  private static List<FunctionMap> list = null;
+
+  @CsvBindByName(column = "context")
+  private String context;
 
   @CsvBindByName(column = "function")
   private String function;
@@ -41,34 +45,38 @@ public class FunctionPerformerMap {
     return null;
   }
 
-  public static FunctionPerformerMap get(String code) {
+  public static FunctionMap get(String code) {
     if (code == null) return null;
     return getList().stream()
       .filter(f -> code.equals(f.code))
       .findAny().orElse(null);
   }
 
-  public static FunctionPerformerMap getFrom245(String txt) {
+  public static FunctionMap getFrom245(String txt, String context) {
     if (txt == null || txt.isEmpty()) return null;
-    return getList().stream()
+    return getList(context).stream()
       .filter(f -> f.abbr245 != null && txt.contains(f.abbr245) || f.label245 != null && txt.contains(f.label245))
       .findFirst().orElse(null);
   }
 
 
-  public static List<FunctionPerformerMap> getList() {
+  private static List<FunctionMap> getList() {
     if (list == null) init();
     return list;
+  }
+
+  public static List<FunctionMap> getList(String context) {
+    return getList().stream().filter(x -> x.context.equals(context)).collect(Collectors.toList());
   }
 
   private static void init() {
     ClassLoader cl = ClassLoader.getSystemClassLoader();
     @SuppressWarnings("ConstantConditions")
-    File csv = new File(cl.getResource("bib_function_performers.csv").getFile());
+    File csv = new File(cl.getResource("bib_function_mapping.csv").getFile());
 
     try {
       //noinspection unchecked
-      list = new CsvToBeanBuilder(new FileReader(csv)).withType(FunctionPerformerMap.class).build().parse();
+      list = new CsvToBeanBuilder(new FileReader(csv)).withType(FunctionMap.class).build().parse();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
