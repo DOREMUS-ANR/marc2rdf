@@ -61,9 +61,13 @@ public class Record {
   }
 
   public boolean isMUS() {
-    ControlField controlField9 = this.getControlfieldByCode("009");
-    if(this.isANL()) controlField9 = this.parent.getControlfieldByCode("009");
-    return this.getIntermarcCode().equals("c") && controlField9.getData().charAt(1) == ' ';
+    Record rc = this;
+    ControlField cf9 = this.getControlfieldByCode("009");
+    while (cf9==null && rc.parent!=null){
+      rc = rc.parent;
+      cf9 = rc.getControlfieldByCode("009");
+    }
+    return this.getIntermarcCode().equals("c") && cf9.getData().charAt(1) == ' ';
   }
 
   void addControlField(Etiq field) {
