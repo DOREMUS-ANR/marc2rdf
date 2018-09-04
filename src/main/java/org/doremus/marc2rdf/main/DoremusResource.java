@@ -244,7 +244,6 @@ public abstract class DoremusResource {
 
   protected void addComplexIdentifier(String identifier, String type, DoremusResource issuer, String symbol) {
     if (identifier == null) return;
-
     Resource typeRes = VocabularyManager.searchInCategory(type, "fr", "id", false);
 
     Resource idRes = model.createResource(this.uri + "/id/" + identifier)

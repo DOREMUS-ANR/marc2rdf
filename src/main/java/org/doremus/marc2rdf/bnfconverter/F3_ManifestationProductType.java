@@ -110,7 +110,7 @@ public class F3_ManifestationProductType extends DoremusResource {
   private void parsePagination(String txt) {
     int multiplier = 1;
     if (txt.contains("chacune"))
-      multiplier = Integer.parseInt(txt.substring(0, 2));
+      multiplier = Integer.parseInt(txt.substring(0, 2).trim());
 
     List<Integer> numbers = Arrays.stream(txt.split("[-,]"))
       .map(F3_ManifestationProductType::extractPageNumbers)

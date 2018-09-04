@@ -314,7 +314,7 @@ public class F24_PublicationExpression extends BIBDoremusResource {
         String _id = df.getString('a');
         String sym = df.getString('b');
         Artist issuer = Artist.fromString(df.getString('e'));
-        String type = df.getIndicator1() == '1' ? "Numéro d'édition" : "Cotage";
+        String type = df.getIndicator1() == '1' ? "numéro d'éditeur" : "Cotage";
         this.addComplexIdentifier(_id, type, issuer, sym);
       });
     }

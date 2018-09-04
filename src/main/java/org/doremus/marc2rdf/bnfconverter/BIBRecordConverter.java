@@ -97,8 +97,11 @@ public class BIBRecordConverter {
       if (isExtrait) {
         F23_Expression_Fragment f23 = new F23_Expression_Fragment(record, identifier, index);
         f22.add(f23);
-        f22 =f23;
+        f22 = f23;
       } else f22 = new F22_SelfContainedExpression(record, identifier, index);
+
+      if (f22.titles.size() < 1)
+        f22.setTitle(F22_SelfContainedExpression.parseTUMTitle(df, false, false));
 
       F14_IndividualWork f14 = new F14_IndividualWork(identifier);
       f28 = new F28_ExpressionCreation(record, identifier, isSketch, isArrangment);

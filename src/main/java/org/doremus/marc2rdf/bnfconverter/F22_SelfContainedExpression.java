@@ -24,10 +24,7 @@ import org.doremus.string2vocabulary.VocabularyManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -56,6 +53,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
   public F22_SelfContainedExpression(Record record, String identifier) {
     super(record, identifier);
     this.setClass(FRBROO.F22_Self_Contained_Expression);
+    this.titles = new ArrayList<>();
   }
 
   public F22_SelfContainedExpression(Record record, String identifier, int index) {
@@ -77,6 +75,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
     char mainCode = (record.isDAV() || index < 0) ? 'a' : 'b';
     if (index < 0) index = 0;
 
+    if (!df.isCode(mainCode)) return null;
+
     String title = df.getStrings(mainCode).get(index);
     String language = null;
 
@@ -96,15 +96,12 @@ public class F22_SelfContainedExpression extends DoremusResource {
 
   public F22_SelfContainedExpression(Record record, F28_ExpressionCreation f28) {
     // TUM
-    super(record);
-    this.setClass(FRBROO.F22_Self_Contained_Expression);
+    this(record, record.getIdentifier());
     this.addProperty(DC.identifier, record.getIdentifier());
 
     String ark = record.getAttrByName("IDPerenne").getData();
     if (ark != null)
       this.addProperty(OWL.sameAs, model.createResource("http://data.bnf.fr/" + ark));
-
-    this.titles = new ArrayList<>();
 
     int dedCount = 0;
     for (String dedication : getDedicace()) {
@@ -141,10 +138,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
       }
     }
 
-    List<Literal> s444 = getTitle(444, true);
-    List<Literal> ns444 = getTitle(444, false);
-    List<Literal> a144 = getTitle(144, true);
-    a144.addAll(getTitle(144, false));
+    List<Literal> s444 = parseTUMTitle(444, true);
+    List<Literal> ns444 = parseTUMTitle(444, false);
+    List<Literal> a144 = parseTUMTitle(144, true);
+    a144.addAll(parseTUMTitle(144, false));
 
     for (Literal title : s444)
       this.addProperty(MUS.U70_has_original_title, title).addProperty(RDFS.label, title);
@@ -302,52 +299,50 @@ public class F22_SelfContainedExpression extends DoremusResource {
     return dedicaces;
   }
 
-  private List<Literal> getTitle(int code, boolean significativeWanted) {
-    List<Literal> titleList = new ArrayList<>();
-    List<DataField> titleFields = record.getDatafieldsByCode(code);
-
-    String DESCR_CHARS = "ejbtunpkqfcg";
-
-    for (DataField field : titleFields) {
-      if (!field.isCode('a')) continue;
-
-      StringBuilder title = new StringBuilder(field.getString('a'));
-      String language = null;
-
-      if (title.length() == 0) continue;
-
-      if (!isMeaningfulTitle(title.toString())) {
-        if (significativeWanted) continue;
-        for (char c : DESCR_CHARS.toCharArray())
-          if (field.isCode(c)) title.append(". ").append(field.getString(c));
-      }
-
-      if (field.isCode('h')) title.append(". ").append(field.getString('h'));
-      if (field.isCode('i')) title.append(". ").append(field.getString('i'));
-
-      if (field.isCode('w'))
-        language = Utils.intermarcExtractLang(field.getString('w'));
-
-      Literal titleLiteral = (language == null || language.isEmpty()) ?
-        this.model.createLiteral(title.toString().trim()) :
-        this.model.createLiteral(title.toString().trim(), language);
-
-      titleList.add(titleLiteral);
-    }
-
-    return titleList;
+  private List<Literal> parseTUMTitle(int code, boolean significativeWanted) {
+    return record.getDatafieldsByCode(code).stream()
+      .map(df -> parseTUMTitle(df, significativeWanted, false))
+      .filter(Objects::nonNull).collect(Collectors.toList());
   }
 
-  private List<String> notMeaningfulTitles = null;
+  public static Literal parseTUMTitle(DataField field, boolean significativeWanted, boolean considerL) {
+    // also fields 144 and 744 of BIB
+    if (!field.isCode('a')) return null;
+    String DESCR_CHARS = "ejbtunpkqfcg";
 
-  private boolean isMeaningfulTitle(String title) {
+    StringBuilder title = new StringBuilder(field.getString('a'));
+    String language = null;
+
+    if (title.length() == 0) return null;
+
+    if (!isMeaningfulTitle(title.toString())) {
+      if (significativeWanted) return null;
+      for (char c : DESCR_CHARS.toCharArray())
+        if (field.isCode(c)) title.append(". ").append(field.getString(c));
+    }
+
+    if (field.isCode('h')) title.append(". ").append(field.getString('h'));
+    if (field.isCode('i')) title.append(". ").append(field.getString('i'));
+    if (considerL && field.isCode('l')) title.append(" (").append(field.getString('l')).append(")");
+
+    if (field.isCode('w'))
+      language = Utils.intermarcExtractLang(field.getString('w'));
+
+    return (language == null || language.isEmpty()) ?
+      ResourceFactory.createPlainLiteral(title.toString().trim()) :
+      ResourceFactory.createLangLiteral(title.toString().trim(), language);
+  }
+
+  private static List<String> notMeaningfulTitles = null;
+
+  private static boolean isMeaningfulTitle(String title) {
     if (notMeaningfulTitles == null) loadNotMeaningfulTitles();
     return notMeaningfulTitles.stream().noneMatch(str -> str.trim().equals(title));
   }
 
-  private void loadNotMeaningfulTitles() {
+  private static void loadNotMeaningfulTitles() {
     notMeaningfulTitles = new ArrayList<>();
-    File file = new File(this.getClass().getClassLoader().getResource("notMeaningfulTitles.txt").getFile());
+    File file = new File(BNF2RDF.class.getClassLoader().getResource("notMeaningfulTitles.txt").getFile());
 
     try (Scanner scanner = new Scanner(file)) {
       while (scanner.hasNextLine()) {
@@ -439,7 +434,8 @@ public class F22_SelfContainedExpression extends DoremusResource {
   }
 
   public void setTitle(Literal title) {
-    this.addProperty(CIDOC.P102_has_title, title);
+    this.titles.add(title);
+    this.addProperty(RDFS.label, title).addProperty(CIDOC.P102_has_title, title);
   }
 
   public void setVariantTitle(Literal title) {
