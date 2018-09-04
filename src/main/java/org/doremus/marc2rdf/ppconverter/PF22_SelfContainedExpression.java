@@ -77,13 +77,13 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     for (String uniTitle : getUniformTitle("144")) {
       this.resource.addProperty(MUS.U71_has_uniform_title, uniTitle);
-      if(!titleFound) this.resource.addProperty(RDFS.label, uniTitle);
+      if (!titleFound) this.resource.addProperty(RDFS.label, uniTitle);
       titleFound = true;
     }
 
-    for (String uniTitle : getUniformTitle("444")){
+    for (String uniTitle : getUniformTitle("444")) {
       this.resource.addProperty(MUS.U68_has_variant_title, uniTitle);
-      if(!titleFound) this.resource.addProperty(RDFS.label, uniTitle);
+      if (!titleFound) this.resource.addProperty(RDFS.label, uniTitle);
       titleFound = true;
     }
 
@@ -101,6 +101,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
 
     for (String opus : getOpus()) {
+      opus = opus.replaceFirst("^Nr\\. ", "");
+
       // is it for real an opus information?
 
       // completely numeric: it is

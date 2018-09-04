@@ -157,10 +157,12 @@ public class PM6_Casting extends DoremusResource {
           if (subPart.startsWith("en ") | subPart.startsWith("à ") || subPart.startsWith("de ")) {
             subPart = part + " " + subPart;
           }
+          if(subPart.matches("\\d+")) continue;
           cDets.add(new PM23_Casting_Detail(subPart.trim(), subQuantity, isSubSolo, uri + "/detail/" + ++detailNum));
           quantity -= subQuantity;
         }
       }
+      if(part.matches("\\d+")) continue;
       cDets.add(new PM23_Casting_Detail(part, quantity, isSolo, uri + "/detail/" + ++detailNum));
     }
 

@@ -103,7 +103,8 @@ public class F24_PublicationExpression extends BIBDoremusResource {
     // edition
     String note = record.getDatafieldsByCode(250, 'a')
       .stream().findFirst().orElse(null);
-    annotations = Collections.singletonList(parseEditionSupplement());
+    //noinspection ArraysAsListWithZeroOrOneArgument
+    annotations = Stream.of(parseEditionSupplement()).filter(Objects::nonNull).collect(Collectors.toList());
     if (record.isMUS()) {
       annotations.addAll(record.getDatafieldsByCode(420).stream()
         .filter(df -> df.isCode(3))

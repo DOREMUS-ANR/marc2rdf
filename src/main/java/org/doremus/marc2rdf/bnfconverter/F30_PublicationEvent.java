@@ -9,6 +9,7 @@ import org.doremus.ontology.FRBROO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,10 +58,10 @@ public class F30_PublicationEvent extends DoremusResource {
   private void parseBIB() {
     // publishers
     List<Artist> publishers = record.getDatafieldsByCode(720).stream()
-      .map(Person::fromIntermarcField)
+      .map(Person::fromIntermarcField).filter(Objects::nonNull)
       .collect(Collectors.toList());
     publishers.addAll(record.getDatafieldsByCode(730).stream()
-      .map(CorporateBody::fromIntermarcField)
+      .map(CorporateBody::fromIntermarcField).filter(Objects::nonNull)
       .collect(Collectors.toList()));
 
     // publishers

@@ -10,6 +10,7 @@ import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
 import org.doremus.ontology.MUS;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -76,7 +77,8 @@ public class F31_Performance extends DoremusResource {
     }
     if (city != null) {
       if (city.matches("\\d+")) {
-        df.getSubfield('a').setCode('d');
+        if (Arrays.asList(4, 6, 8).contains(city.length()))
+          df.getSubfield('a').setCode('d');
         city = null;
       } else {
         pCity = new E53_Place(city, country, null);
@@ -85,7 +87,7 @@ public class F31_Performance extends DoremusResource {
     }
     if (building != null) {
       pBuilding = new E53_Place(building + (city != null ? " (" + city + ")" : ""), country, null);
-      pBuilding.addSurroundingPlace(pCity);
+      pBuilding.addSurroundingPlace(pCity != null ? pCity : pCountry);
       return pBuilding;
     }
     this.country = pCountry;

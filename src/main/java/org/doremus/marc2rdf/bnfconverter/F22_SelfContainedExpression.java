@@ -75,7 +75,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     char mainCode = (record.isDAV() || index < 0) ? 'a' : 'b';
     if (index < 0) index = 0;
 
-    if (!df.isCode(mainCode)) return null;
+    if (df.getStrings(mainCode).size() < index + 1) return null;
 
     String title = df.getStrings(mainCode).get(index);
     String language = null;
@@ -181,11 +181,12 @@ public class F22_SelfContainedExpression extends DoremusResource {
       }
       String label = (catalogName != null) ? (catalogName + " " + catalogNum) : catalog;
 
-      Resource M1CatalogStatement = model.createResource(this.uri + "/catalog/" + label.replaceAll("[ /]", "_"))
+      String cUri = this.uri + "/catalog/" + label.replaceAll("[<>]", "")
+        .trim().replaceAll("[ /]", "_");
+      Resource M1CatalogStatement = model.createResource(cUri)
         .addProperty(RDF.type, MUS.M1_Catalogue_Statement)
         .addProperty(RDFS.label, label)
         .addProperty(CIDOC.P3_has_note, catalog.trim());
-
 
       if (catalogNum != null) {
         Resource match = VocabularyManager.getMODS("catalogue").findModsResource(catalogName, f28.getComposerUris());

@@ -76,7 +76,7 @@ public class RecordConverter {
     PF29_RecordingEvent recording = new PF29_RecordingEvent(record);
 
     PF31_Performance performance = new PF31_Performance(record);
-    performance.setTime(recording.getTime());
+    performance.addTimeSpan(recording.getTime());
     performance.setPlace(recording.getPlaces());
 
     performance.getPlayedWorks().forEach(tracks::add);
@@ -211,7 +211,6 @@ public class RecordConverter {
       .addProperty(RDFS.comment, "Reprise et conversion de la notice MARC de la Philharmonie de Paris", "fr")
       .addProperty(RDFS.comment, "Resumption and conversion of the MARC record of the Philharmonie de Paris", "en")
       .addProperty(PROV.atTime, Instant.now().toString(), XSDDatatype.XSDdateTime);
-
   }
 
   private static Resource computeProvIntermarc(String identifier, Model model) {

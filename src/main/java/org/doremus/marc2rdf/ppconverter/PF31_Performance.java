@@ -8,7 +8,6 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.E53_Place;
-import org.doremus.marc2rdf.main.TimeSpan;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -162,15 +161,6 @@ public class PF31_Performance extends DoremusResource {
 
   public void setPlace(List<E53_Place> places) {
     for (E53_Place p : places) this.setPlace(p);
-  }
-
-
-  public void setTime(TimeSpan timeSpan) {
-    if (timeSpan == null) {
-      log("Missing time");
-      return;
-    }
-    this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
   }
 
   public String getUri() {

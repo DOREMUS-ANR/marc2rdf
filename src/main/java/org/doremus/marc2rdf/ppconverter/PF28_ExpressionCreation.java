@@ -9,7 +9,6 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
-import org.doremus.ontology.MUS;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 
 public class PF28_ExpressionCreation extends DoremusResource {
   private List<Person> composers;
-  private int composersCount = 0;
 
   public PF28_ExpressionCreation(String identifier) {
     super(identifier);
@@ -41,22 +39,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
 
   private void convertUNI44() {
     this.composers = findArtistWithFunction(Function.COMPOSER);
-    for (Person composer : this.composers) {
-      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
-        .addProperty(RDF.type, CIDOC.E7_Activity)
-        .addProperty(MUS.U31_had_function, model.createLiteral("compositeur", "fr"))
-        .addProperty(CIDOC.P14_carried_out_by, composer.asResource())
-      );
-      model.add(composer.getModel());
-    }
-
-//    // unstructured roles
-//    char[] unstrRolesCode = new char[]{'f', 'g'};
-//    for (DataField df : record.getDatafieldsByCode(200)) {
-//      for (char c : unstrRolesCode)
-//        if (df.isCode(c))
-//          this.resource.addProperty(MUS.U226_has_responsibility_detail, df.getString(c));
-//    }
+    this.composers.forEach(composer -> this.addActivity(composer, "compositeur"));
   }
 
   private void convertUNI100() {
@@ -77,11 +60,7 @@ public class PF28_ExpressionCreation extends DoremusResource {
           System.out.println(record.getIdentifier() + " | not a date: " + start + "/" + end);
         }
       }
-      if (timeSpan != null) {
-        timeSpan.setUri(this.uri + "/interval");
-        this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-        this.model.add(timeSpan.getModel());
-      }
+      this.addTimeSpan(timeSpan);
     }
 
     String dateText = getDateText();
@@ -111,27 +90,10 @@ public class PF28_ExpressionCreation extends DoremusResource {
     }
 
     this.composers = findArtistWithFunction(Function.COMPOSER);
-    for (Person composer : this.composers) {
-      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
-        .addProperty(RDF.type, CIDOC.E7_Activity)
-        .addProperty(MUS.U31_had_function, model.createLiteral("compositeur", "fr"))
-        .addProperty(CIDOC.P14_carried_out_by, composer.asResource())
-      );
-
-      model.add(composer.getModel());
-    }
+    this.composers.forEach(composer -> this.addActivity(composer, "compositeur"));
 
     List<Person> librettists = findArtistWithFunction(Function.LIBRETTIST);
-    for (Person librettist : librettists) {
-      this.resource.addProperty(CIDOC.P9_consists_of, model.createResource(this.uri + "/activity/" + ++composersCount)
-        .addProperty(RDF.type, CIDOC.E7_Activity)
-        .addProperty(MUS.U31_had_function, "librettist")
-        .addProperty(CIDOC.P14_carried_out_by, librettist.asResource())
-      );
-
-      model.add(librettist.getModel());
-    }
-
+    librettists.forEach(librettist -> this.addActivity(librettist, "librettist"));
   }
 
   public List<Person> getComposers() {
@@ -145,17 +107,17 @@ public class PF28_ExpressionCreation extends DoremusResource {
   }
 
   public PF28_ExpressionCreation add(PF25_PerformancePlan plan) {
-    this.resource.addProperty(FRBROO.R17_created, plan.asResource());
+    this.addProperty(FRBROO.R17_created, plan);
     return this;
   }
 
   public PF28_ExpressionCreation add(PF22_SelfContainedExpression expression) {
-    this.resource.addProperty(FRBROO.R17_created, expression.asResource());
+    this.addProperty(FRBROO.R17_created, expression);
     return this;
   }
 
   public PF28_ExpressionCreation add(PF14_IndividualWork work) {
-    this.resource.addProperty(FRBROO.R19_created_a_realisation_of, work.asResource());
+    this.addProperty(FRBROO.R19_created_a_realisation_of, work);
     return this;
   }
 

@@ -20,7 +20,6 @@ public abstract class AbstractRight extends DoremusResource {
 
     if (year != null && !year.isEmpty()) {
       TimeSpan ts = new TimeSpan(year);
-
       ts.setUri(this.uri + "/interval");
       if(ts.asResource() ==null) return;
       this.model.add(ts.getModel());

@@ -75,7 +75,6 @@ public class Converter {
   }
 
   private static String getDirFromFileChooser() throws InterruptedException {
-    /* Selectionnez le dossier contenant les fichiers a convertir */
     FileChooser folder = new FileChooser();
 
     JFrame frame = new JFrame("MARC to RDF");

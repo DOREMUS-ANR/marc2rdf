@@ -258,8 +258,14 @@ public class TimeSpan {
     Resource startInstant = makeInstant(startDate, startType);
     Resource endInstant = makeInstant(endDate, endType);
 
-    if (startInstant != null) this.resource.addProperty(Time.hasBeginning, startInstant);
-    if (endInstant != null) this.resource.addProperty(Time.hasEnd, endInstant);
+    if (startInstant != null) {
+      startInstant = ResourceUtils.renameResource(startInstant, this.uri + "/start");
+      this.resource.addProperty(Time.hasBeginning, startInstant);
+    }
+    if (endInstant != null) {
+      endInstant = ResourceUtils.renameResource(endInstant, this.uri + "/end");
+      this.resource.addProperty(Time.hasEnd, endInstant);
+    }
 
     if (this.startQuality != null)
       this.resource.addProperty(CIDOC.P79_beginning_is_qualified_by, startQuality.toString());
@@ -277,6 +283,7 @@ public class TimeSpan {
 
 
   public Resource asResource() {
+    if (!this.hasUri()) throw new RuntimeException("Time Span without URI");
     if (this.resource == null) initResource();
     return this.resource;
   }

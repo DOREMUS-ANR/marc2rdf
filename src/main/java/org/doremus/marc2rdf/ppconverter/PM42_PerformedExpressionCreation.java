@@ -60,7 +60,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   public PM42_PerformedExpressionCreation(String identifier) {
     super(identifier);
-    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
+    this.setClass(MUS.M42_Performed_Expression_Creation);
     this.M43_Performed_Expression = new PM43_PerformedExpression(identifier);
     this.M44_Performed_Work = new PM44_PerformedWork(identifier);
     this.connectTriplet();
@@ -68,7 +68,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
 
   public PM42_PerformedExpressionCreation(Record record) {
     super(record);
-    this.resource.addProperty(RDF.type, MUS.M42_Performed_Expression_Creation);
+    this.setClass(MUS.M42_Performed_Expression_Creation);
 
     List<String> concertIds = record.getDatafieldsByCode(935, 3);
     if (!concertIds.isEmpty())
@@ -86,17 +86,11 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     String frenchPremiereNote = searchInNote(frenchCreationRegex);
     if (frenchPremiereNote != null) this.addNote(frenchPremiereNote);
 
-    timeSpan = getDate();
-    if (timeSpan != null) {
-      timeSpan.setUri(this.uri + "/interval");
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-      this.model.add(timeSpan.getModel());
-    }
+    this.addTimeSpan(getDate());
 
-    this.resource.addProperty(MUS.U205_has_cast_detail, getCastDetail(record));
+    this.addProperty(MUS.U205_has_cast_detail, getCastDetail(record));
 
-    getMuseeMusique(record).forEach(note ->
-      this.resource.addProperty(MUS.U193_used_historical_instruments, note));
+    getMuseeMusique(record).forEach(note -> this.addProperty(MUS.U193_used_historical_instruments, note));
 
     this.addCommand(searchInNote(SPECIFIC_COMMAND_PATTERN, 1));
 
@@ -190,17 +184,12 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     parseNote(note);
 
     if (place != null) {
-      this.resource.addProperty(CIDOC.P7_took_place_at, place.asResource());
+      this.addProperty(CIDOC.P7_took_place_at, place);
       this.F31_Performance.setPlace(place);
-      this.model.add(place.getModel());
     }
 
-    if (timeSpan != null) {
-      timeSpan.setUri(this.F31_Performance.getUri() + "/interval");
-      this.resource.addProperty(CIDOC.P4_has_time_span, timeSpan.asResource());
-      this.F31_Performance.setTime(timeSpan);
-      this.model.add(timeSpan.getModel());
-    }
+    this.addTimeSpan(timeSpan);
+    this.F31_Performance.addTimeSpan(timeSpan);
   }
 
   private final static Pattern MUSEE_MUSIQUE_PATTERN = Pattern.compile("(?i)(musée de la Musique|collection)");

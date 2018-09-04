@@ -67,7 +67,7 @@ public class PP2RDF extends AbstractConverter {
       // Skip TUMs (AIC:14). We will convert them contextually to UNI:100
       if (r.isType("AIC:14")) continue;
 
-      if (Integer.parseInt(r.getIdentifier()) < 1067688) return null;
+//      if (Integer.parseInt(r.getIdentifier()) < 1067688) return null;
 
       RecordConverter mainRecord;
       try {
@@ -86,10 +86,12 @@ public class PP2RDF extends AbstractConverter {
           continue;
         }
 
-        PF15_ComplexWork first = mainRecord.getF15();
+        PF15_ComplexWork mainF15 = mainRecord.getF15();
+        boolean first = true;
         for (String idTUM : idTUMs)
           try {
-            convertTum(idTUM.trim(), r.getIdentifier(), model, first);
+            convertTum(idTUM.trim(), r.getIdentifier(), model, mainF15, first);
+            first = false;
           } catch (FileNotFoundException fe) {
             System.out.println("TUM specified but not found: notice " + r.getIdentifier() + ", tum " + idTUM);
           }
@@ -107,15 +109,15 @@ public class PP2RDF extends AbstractConverter {
     return model;
   }
 
-  private static RecordConverter convertTum(String idTUM, String upperIdentifier, Model model, PF15_ComplexWork first) throws FileNotFoundException {
+  private static RecordConverter convertTum(String idTUM, String upperIdentifier, Model model, PF15_ComplexWork mainF15, boolean first) throws FileNotFoundException {
     File tum = getTUM(properties.getProperty("TUMFolder"), idTUM);
     if (tum == null) throw new FileNotFoundException();
     MarcXmlReader tumReader = new MarcXmlReader(tum, PP2RDF.ppXmlHandlerBuilder);
     Record tumRecord = tumReader.getRecords().get(0);
 
-    String id = (first == null) ? upperIdentifier : tumRecord.getIdentifier();
+    String id = first ? upperIdentifier : tumRecord.getIdentifier();
     try {
-      return new RecordConverter(tumRecord, model, id, first);
+      return new RecordConverter(tumRecord, model, id, mainF15);
     } catch (URISyntaxException e) {
       e.printStackTrace();
       return null;

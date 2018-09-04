@@ -24,7 +24,7 @@ public class Utils {
 
   public static final String opusHeaderRegex = "(?i)^(?:op(?:\\.|us| )|Oeuvre|WoO|Werk nr\\.?) ?" +
     "(?:post(?:hume|h?\\.|h))?";
-  public static final String opusSubnumberRegex = "(?i)(?:,? n(?:[o°.]| °)[s.]?)";
+  public static final String opusSubnumberRegex = "(?i)(?:,? n(?:[ro°.]| °)[s.]?)";
 
   public final static String DURATION_REGEX = "(?:(\\d{1,2}) ?h)? ?(?:(\\d{1,2}) ?mi?[nm])? ??(\\d{1,2})?(?: s(?:ec)?)?$";
   private final static Pattern DURATION_PATTERN = Pattern.compile(DURATION_REGEX);
