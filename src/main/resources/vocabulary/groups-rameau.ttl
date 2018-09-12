@@ -20411,7 +20411,7 @@ bnf:cb121441658
     skos:closeMatch res:XX4577077, n3:, sub:sh85028681;
     skos:editorialNote
         "Ethnologie r\u00e9gionale / J. Poirier, 1972-1978. - . - Colorados / F. Barriga L\u00f3pez, 1986. - . - Encycl. of world cultures / D. Levinson, 1991-1996. - . -"@fr;
-    skos:exactMatch re:Tsa’chila, ent:Q941167;
+    skos:exactMatch re:Tsa%C3%A2%C2%80%C2%99chila, ent:Q941167;
     skos:prefLabel "Colorado (Indiens)"@fr;
     skos:related bnf:cb121451347;
     skos:scopeNote

@@ -63,10 +63,11 @@ public class Record {
   public boolean isMUS() {
     Record rc = this;
     ControlField cf9 = this.getControlfieldByCode("009");
-    while (cf9==null && rc.parent!=null){
+    while (cf9 == null && rc.parent != null) {
       rc = rc.parent;
       cf9 = rc.getControlfieldByCode("009");
     }
+    assert cf9 != null;
     return this.getIntermarcCode().equals("c") && cf9.getData().charAt(1) == ' ';
   }
 

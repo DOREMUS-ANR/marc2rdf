@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.bnfconverter;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.*;
@@ -38,6 +39,7 @@ public class F3_ManifestationProductType extends DoremusResource {
   public F3_ManifestationProductType(Record record) {
     super(record);
     this.setClass(FRBROO.F3_Manifestation_Product_Type);
+    this.addProperty(DC.identifier, this.identifier);
 
     countPagination = 0;
     this.distribPattern = Pattern.compile(record.isMUS() ? DISTRIB_REGEX_MUS : DISTRIB_REGEX_DAV, Pattern.CASE_INSENSITIVE);

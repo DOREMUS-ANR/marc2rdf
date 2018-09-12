@@ -36,6 +36,8 @@ public class BIBRecordConverter {
   private F25_PerformancePlan performancePlan;
   private F29_RecordingEvent recordingEvent;
 
+  private static List<Integer> caseStats = Arrays.asList(0, 0, 0, 0);
+
   public BIBRecordConverter(Record record, Model model, BIBRecordConverter mainRecordConv) {
     this.record = record;
     this.model = model;
@@ -134,7 +136,7 @@ public class BIBRecordConverter {
     Property prop = record.isMUS() ? CIDOC.P165_incorporates : isExtrait ?
       MUS.U59_has_partial_published_recording : MUS.U58_has_full_published_recording;
     mainRecordConv.publicationExpression.addProperty(prop, f22);
-
+    this.model.add(mainRecordConv.publicationExpression.getModel());
 
     if (!record.isDAV()) return;
 
@@ -195,6 +197,10 @@ public class BIBRecordConverter {
     mainRecordConv.publicationExpression.add(performedExpression);
     mainRecordConv.tracks.add(tracks);
     mainRecordConv.editing.add(tracks);
+    this.model.add(mainRecordConv.publicationExpression.getModel());
+    this.model.add(mainRecordConv.tracks.getModel());
+    this.model.add(mainRecordConv.editing.getModel());
+
 
     for (DoremusResource r : Arrays.asList(tracks, recording, recordingEvent, performedExpression,
       performance)) {
@@ -262,6 +268,7 @@ public class BIBRecordConverter {
 
 
     System.out.println("case " + getCase(record));
+    incrementCaseStats(getCase(record));
     switch (getCase(record)) {
       case 3:
         int i = 0;
@@ -280,6 +287,12 @@ public class BIBRecordConverter {
     }
   }
 
+  private static void incrementCaseStats(int aCase) {
+    if (aCase < 0) aCase = 0;
+    caseStats.set(aCase, caseStats.get(aCase) + 1);
+    System.out.println(caseStats);
+  }
+
   private void incorporate(BIBRecordConverter bibRecordConverter) {
     this.model.add(bibRecordConverter.getModel());
   }
@@ -287,7 +300,7 @@ public class BIBRecordConverter {
   private static final List<String> CONDUCTOR_CODES = Arrays.asList("1080", "1040");
 
   public static int getCase(Record record) {
-    if (record.isANL()) return 2;
+    if (record.isANL() || record.getSubRecords().size() > 0) return 2;
 
     // case 1 or case 3
     if (record.getDatafieldsByCode(744).size() == 0)
@@ -321,12 +334,19 @@ public class BIBRecordConverter {
       return z101.size() > 1 ? -1 : 3;
     }
 
+    // if record is MUS
     z100.addAll(z110); // should be present 1
     z700.addAll(z710); // should be absent
 
     // composers should not be counted
-    z700 = z700.stream().filter(x -> !"0220".equals(x.getString('4'))).collect(Collectors.toList());
-    return (z100.size() == 1 && z700.size() == 0) ? 3 : -1;
+    List<DataField> z7004 = z700.stream().filter(x -> !"0220".equals(x.getString('4'))).collect(Collectors.toList());
+    if (z100.size() == 1 && z7004.size() == 0) return 3;
+
+    z700 =z700.stream()
+      .filter(x -> "0220".equals(x.getString('4')))
+      .filter(x -> "0220".equals(x.getString('3')))
+      .collect(Collectors.toList());
+    return (z100.size() == 1 && z700.size() > 0) ? 3 : -1;
   }
 
 
