@@ -121,8 +121,10 @@ public class M46_SetOfTracks extends BIBDoremusResource {
     this.addProperty(FRBROO.R5_has_component, track);
     return this;
   }
+
   public M46_SetOfTracks add(M46_SetOfTracks tracks) {
-    this.addProperty(FRBROO.R5_has_component, tracks);
+    if (!this.getIdentifier().equals(tracks.getIdentifier()))
+      this.addProperty(FRBROO.R5_has_component, tracks);
     return this;
   }
 }

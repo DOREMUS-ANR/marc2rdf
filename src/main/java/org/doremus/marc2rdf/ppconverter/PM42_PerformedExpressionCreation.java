@@ -280,7 +280,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
               Resource mop = VocabularyManager.searchInCategory(pt, "fr", "mop", true);
 
               PM28_Individual_Performance ip = new PM28_Individual_Performance(mainUri, ++counter);
-              if (operaRole.contains("soliste")) {
+              if (operaRole != null && operaRole.contains("soliste")) {
                 ip.setSolo();
                 operaRole = operaRole.replace("soliste", "").trim();
                 if (operaRole.isEmpty()) operaRole = null;

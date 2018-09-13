@@ -77,6 +77,7 @@ public class F30_PublicationEvent extends DoremusResource {
     String data = record.getControlfieldByCode("008").getData();
     char code = data.charAt(6);
     String year = data.substring(8, 12);
+    System.out.println(year);
 
     switch (code) {
       case 's':

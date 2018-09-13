@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.doremus.marc2rdf.main.DoremusResource;
+import org.doremus.marc2rdf.main.Person;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
@@ -248,19 +249,28 @@ public class BIBRecordConverter {
     F19_PublicationWork publicationWork = new F19_PublicationWork(record);
 
     if (record.isDAV()) {
-      F17_AggregationWork aggregationWork = new F17_AggregationWork(record);
       this.tracks = new M46_SetOfTracks(record);
-      F28_ExpressionCreation aggregationEvent = new F28_ExpressionCreation(record, record.getIdentifier() + "t");
 
-      aggregationWork.add(tracks);
-      aggregationEvent.add(aggregationWork).add(tracks).addProvenance(intermarcRes, provActivity);
+      List<Person> collector = record.getDatafieldsByCode(700).stream()
+        .filter(df -> "0180".equals(df.getString(4)))
+        .map(Person::fromIntermarcField)
+        .collect(Collectors.toList());
+
+      if (collector.size() > 0) {
+        F17_AggregationWork aggregationWork = new F17_AggregationWork(record);
+        F28_ExpressionCreation aggregationEvent = new F28_ExpressionCreation(record.getIdentifier() + "t");
+        collector.forEach(person -> aggregationEvent.addActivity(person, "collecteur"));
+        aggregationWork.add(tracks);
+        aggregationEvent.add(aggregationWork).add(tracks).addProvenance(intermarcRes, provActivity);
+        this.model.add(aggregationEvent.getModel());
+      }
+
       performance = new F31_Performance(record);
       performancePlan = new F25_PerformancePlan(record.getIdentifier());
       recordingEvent = new F29_RecordingEvent(record);
 
       editing = new M29_Editing(record);
 
-      this.model.add(aggregationEvent.getModel());
     }
     publicationEvent.add(publicationExpression).add(publicationWork);
     publicationWork.add(publicationExpression);
@@ -342,7 +352,7 @@ public class BIBRecordConverter {
     List<DataField> z7004 = z700.stream().filter(x -> !"0220".equals(x.getString('4'))).collect(Collectors.toList());
     if (z100.size() == 1 && z7004.size() == 0) return 3;
 
-    z700 =z700.stream()
+    z700 = z700.stream()
       .filter(x -> "0220".equals(x.getString('4')))
       .filter(x -> "0220".equals(x.getString('3')))
       .collect(Collectors.toList());

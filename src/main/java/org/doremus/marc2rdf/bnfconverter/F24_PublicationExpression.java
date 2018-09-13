@@ -31,7 +31,7 @@ public class F24_PublicationExpression extends BIBDoremusResource {
     "Victoires de la musique|^prix|^r[èeé]compense|^oscar)";
   private static final Pattern AWARD_PATTERN = Pattern.compile(AWARD_REGEX, Pattern.CASE_INSENSITIVE);
 
-  private static final String BNF_CATEGORIZATION_NS = "http://data.doremus.org/vocabulary/categorization/bnf/";
+  private static final String BNF_CATEGORIZATION_NS = "http://data.doremus.org/categorization/bnf/";
   private static final String MUS_SUP_CONTENT_REGEX = "(?i)^(Not(?:e sur|ice)|Pr[éeè](?:sentation|face)" +
     "|Introduction|Apparat critique)";
 

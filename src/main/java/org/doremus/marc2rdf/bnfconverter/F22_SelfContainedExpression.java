@@ -80,7 +80,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     String title = df.getStrings(mainCode).get(index);
     String language = null;
 
-    if (df.isCode('e')) title += " : " + df.getString('i');
+    if (df.isCode('e')) title += " : " + df.getString('e');
 
     if (df.isCode('h') || df.isCode('i')) title += ". ";
     if (df.isCode('h')) {
