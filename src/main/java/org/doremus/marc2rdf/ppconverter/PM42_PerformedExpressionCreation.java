@@ -2,6 +2,7 @@ package org.doremus.marc2rdf.ppconverter;
 
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.DC;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.*;
@@ -61,6 +62,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   public PM42_PerformedExpressionCreation(String identifier) {
     super(identifier);
     this.setClass(MUS.M42_Performed_Expression_Creation);
+    this.addProperty(DC.identifier, identifier);
     this.M43_Performed_Expression = new PM43_PerformedExpression(identifier);
     this.M44_Performed_Work = new PM44_PerformedWork(identifier);
     this.connectTriplet();
@@ -69,6 +71,7 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   public PM42_PerformedExpressionCreation(Record record) {
     super(record);
     this.setClass(MUS.M42_Performed_Expression_Creation);
+    this.addProperty(DC.identifier, this.identifier);
 
     List<String> concertIds = record.getDatafieldsByCode(935, 3);
     if (!concertIds.isEmpty())

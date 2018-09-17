@@ -105,6 +105,11 @@ public class RecordConverter {
     PM46_SetOfTracks tracks = new PM46_SetOfTracks(record);
     tracks.addProvenance(intermarcRes, provActivity);
     if (tracks.recordAsATrack()) this.convertUNI44();
+    else {
+      PM42_PerformedExpressionCreation perfExpression = new PM42_PerformedExpressionCreation(record);
+      perfExpression.addProvenance(intermarcRes, provActivity);
+      tracks.add(perfExpression.getExpression());
+    }
     model.add(tracks.getModel());
   }
 
