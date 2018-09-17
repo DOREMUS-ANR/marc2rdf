@@ -178,12 +178,11 @@ public class PF28_ExpressionCreation extends DoremusResource {
   private List<Person> findArtistWithFunction(Function function) {
     if (record.isType("AIC:14")) return new ArrayList<>();
 
-    List<DataField> fields = record.getDatafieldsByCode("700");
-    if (!record.isTUM() && function == Function.COMPOSER)
-      // 700 is composer by default only for work records
-      fields = fields.stream()
-        .filter(x -> x.hasSubfieldValue('4', function.code))
-        .collect(Collectors.toList());
+    boolean tumComposer = record.isTUM() && function == Function.COMPOSER;
+
+    List<DataField> fields = record.getDatafieldsByCode("700").stream()
+      .filter(x -> tumComposer || x.hasSubfieldValue('4', function.code))
+      .collect(Collectors.toList());
 
     fields.addAll(record.getDatafieldsByCode("701").stream()
       .filter(x -> x.hasSubfieldValue('4', function.code))
