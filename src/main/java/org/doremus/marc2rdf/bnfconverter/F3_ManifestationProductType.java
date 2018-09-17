@@ -30,7 +30,7 @@ public class F3_ManifestationProductType extends DoremusResource {
   private static final Pattern CARRIER_DURATION_PATTERN = Pattern.compile(CARRIER_DURATION_REGEX);
   private static final String PSPEED_REGEX = "\\d{2} t";
   private static final Pattern DIMENSION_PATTERN = Pattern.compile("(\\d+(?:x\\d+)?) ?(.+)");
-  private static final String BROCHURE_REGEX = "\\(?\\[?(\\d+)]? p\\.?\\)?";
+  private static final String BROCHURE_REGEX = "(?:^|[\\[(])(\\d+)]? p\\.?([\\])]|$)";
   private static final Pattern BROCHURE_PATTERN = Pattern.compile(BROCHURE_REGEX);
 
   private Pattern distribPattern;
