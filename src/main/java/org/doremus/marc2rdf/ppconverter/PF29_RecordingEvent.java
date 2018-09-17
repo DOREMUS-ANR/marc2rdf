@@ -147,7 +147,7 @@ public class PF29_RecordingEvent extends DoremusResource {
   }
 
   public PF29_RecordingEvent add(PF4_ManifestationSingleton support) {
-    this.resource.addProperty(FRBROO.R18_created, support.asResource());
+    this.addProperty(FRBROO.R18_created, support);
     support.addProperty(CIDOC.P128_carries, this.getRecording());
     return this;
   }

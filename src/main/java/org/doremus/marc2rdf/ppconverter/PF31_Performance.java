@@ -92,15 +92,17 @@ public class PF31_Performance extends DoremusResource {
   }
 
   static void parseCategorization(DoremusResource _this) {
+    int catCount = 0;
     for (DataField df : _this.getRecord().getDatafieldsByCode(610)) {
       String value = df.getString('a').trim();
       if (df.hasSubfieldValue('b', "03")) //descripteur géographique
         _this.addProperty(MUS.U65_has_geographical_context, new PM40_Context(value));
 
 
-      _this.addProperty(MUS.U19_is_categorized_as, _this.getModel().createResource()
-        .addProperty(RDF.type, MUS.M19_Categorization)
-        .addProperty(RDFS.label, value));
+      _this.addProperty(MUS.U19_is_categorized_as,
+        _this.getModel().createResource(_this.getUri() + "/categorization/" + ++catCount)
+          .addProperty(RDF.type, MUS.M19_Categorization)
+          .addProperty(RDFS.label, value));
     }
   }
 
