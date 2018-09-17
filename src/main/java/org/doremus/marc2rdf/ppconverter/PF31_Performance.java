@@ -82,13 +82,10 @@ public class PF31_Performance extends DoremusResource {
     getGenericNotes(record).forEach(this::addNote);
 
     // conditions
-    if (record.isType("UNI:2"))
-      this.addProperty(MUS.U89_occured_in_performance_conditions, "en intérieur", "fr")
-        .addProperty(MUS.U89_occured_in_performance_conditions, "dans les conditions du direct", "fr")
-        .addProperty(MUS.U89_occured_in_performance_conditions, "en public", "fr");
-    else if (record.isType("UNI:4"))
-      this.addProperty(MUS.U89_occured_in_performance_conditions, "en direct", "fr")
-        .addProperty(MUS.U89_occured_in_performance_conditions, withPublic ? "en public" : "sans public", "fr");
+    this.addProperty(MUS.U89_occured_in_performance_conditions, "en intérieur", "fr")
+      .addProperty(MUS.U89_occured_in_performance_conditions, "dans les conditions du direct", "fr")
+      .addProperty(MUS.U89_occured_in_performance_conditions, (record.isType("UNI:2") || withPublic) ?
+        "en public" : "sans public", "fr");
   }
 
   static void parseCategorization(DoremusResource _this) {
