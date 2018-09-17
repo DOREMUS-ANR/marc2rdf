@@ -42,7 +42,6 @@ public class PF31_Performance extends DoremusResource {
       PM42_PerformedExpressionCreation m42 = new PM42_PerformedExpressionCreation(track);
       this.add(m42);
       m42.setConcert(this);
-      performancePlan.add(m42);
       playedWorks.add(m42.getExpression());
       if (record.isType("UNI:2")) {
         for (String pe : playedExpr) m42.linkWorkById(pe);
