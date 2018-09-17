@@ -70,9 +70,8 @@ public class F3_ManifestationProductType extends DoremusResource {
       if (record.getDatafieldsByCode("020", 'b').stream().anyMatch(x -> x.contains("en feuilles")))
         carrier = "feuille";
       else if (record.getDatafieldsByCode(280, 'a').stream()
-        .filter(x -> x.matches(BROCHURE_REGEX))
         .map(F3_ManifestationProductType::extractPageNumbers)
-        .anyMatch(i -> i <= 48))
+        .anyMatch(i -> i > 0 && i <= 48))
         carrier = "brochure";
 
       this.addProperty(MUS.CLU207_should_have_carrier_type, carrier, "fr");
@@ -85,7 +84,7 @@ public class F3_ManifestationProductType extends DoremusResource {
     Artist distributor = parseDistributor();
     String time = parseDistributionTime();
     if (distributor != null || time != null) {
-      String drUri = this.uri + "/distribution_rigth";
+      String drUri = this.uri + "/distribution_right";
       DistributionRight dr = new DistributionRight(drUri, distributor, time);
       this.addProperty(CIDOC.P104_is_subject_to, dr);
     }
@@ -98,14 +97,16 @@ public class F3_ManifestationProductType extends DoremusResource {
       this.addProperty(MUS.U208_has_extent_of_carrier,
         record.isDAV() ? m.group(1) + " " + m.group(2) : m.group(0));
 
-      if(record.isDAV()) {
+      if (record.isDAV()) {
         for (String d : m.group(3).split(","))
           this.addProperty(MUS.CLU53_should_have_duration, Utils.duration2iso(d), XSDDatatype.XSDdayTimeDuration);
         this.addDimension(m.group(1), m.group(2));
       }
     }
 
-    ControlField control9 = record.getControlfieldByCode("009");
+    record.getDatafieldsByCode("280", 'd').forEach(this::addDimension);
+
+      ControlField control9 = record.getControlfieldByCode("009");
     if (control9 != null) parseAuxiliary(control9.getData());
   }
 
@@ -187,8 +188,7 @@ public class F3_ManifestationProductType extends DoremusResource {
 
     String note = null;
     String x = control9.substring(record.isDAV() ? 8 : 9, 10);
-    if (x.startsWith(" ") || x.startsWith("#"))
-      note = "pas de restriction de communication";
+    if (x.startsWith(" ") || x.startsWith("#")) note = "pas de restriction de communication";
 
     switch (x) {
       case "11":

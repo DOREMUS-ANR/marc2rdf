@@ -41,7 +41,7 @@ public class F32_Carrier_Production_Event extends DoremusResource {
       });
 
     if (this.activityCount == 0) {
-      Artist printer = Artist.fromString(this.agent);
+      Artist printer = Artist.fromString(this.agent, true);
       if (this.place != null) printer.addResidence(this.place);
       this.addActivity(printer, "imprimeur");
     }

@@ -41,14 +41,17 @@ public abstract class Artist extends DoremusResource {
 
   protected abstract void interlink();
 
-
   public static Artist fromString(String txt) {
+    return fromString(txt, false);
+  }
+
+  public static Artist fromString(String txt, boolean defaultGroup) {
     if (txt == null) return null;
 
     Artist artist;
     String _txt = txt.toLowerCase();
-    if (_txt.equals("l'eic") || _txt.startsWith("les ") || _txt.contains("philarmo") || _txt.contains
-      ("orchestr") ||
+    if (defaultGroup || _txt.equals("l'eic") || _txt.startsWith("les ")
+      || _txt.contains("philarmo") || _txt.contains("orchestr") ||
       _txt.contains("ensemble") || _txt.contains("membre") || _txt.contains("trio") ||
       _txt.contains("quartet") || _txt.contains("quatuor") || _txt.contains("choeur")) {
       txt = txt.replaceAll("^(l['+]|l[ae]s? )", "").trim();
