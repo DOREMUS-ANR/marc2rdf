@@ -18,6 +18,7 @@ public class F14_IndividualWork extends DoremusResource {
 
   public F14_IndividualWork(String identifier) {
     super(identifier);
+    this.setClass(FRBROO.F14_Individual_Work);
   }
 
   public F14_IndividualWork add(F22_SelfContainedExpression expression) {

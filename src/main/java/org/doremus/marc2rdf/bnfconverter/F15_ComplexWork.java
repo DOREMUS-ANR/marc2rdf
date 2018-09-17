@@ -18,6 +18,7 @@ import java.util.List;
 public class F15_ComplexWork extends DoremusResource {
   public F15_ComplexWork(String identifier) {
     super(identifier);
+    this.setClass(FRBROO.F15_Complex_Work);
   }
 
   public F15_ComplexWork(Record record) {

@@ -307,6 +307,10 @@ public class F22_SelfContainedExpression extends DoremusResource {
   }
 
   public static Literal parseTUMTitle(DataField field, boolean significativeWanted, boolean considerL) {
+    return parseTUMTitle(field, significativeWanted, considerL, false);
+  }
+
+  public static Literal parseTUMTitle(DataField field, boolean significativeWanted, boolean considerL, boolean considerM) {
     // also fields 144 and 744 of BIB
     if (!field.isCode('a')) return null;
     String DESCR_CHARS = "ejbtunpkqfcg";
@@ -325,6 +329,7 @@ public class F22_SelfContainedExpression extends DoremusResource {
     if (field.isCode('h')) title.append(". ").append(field.getString('h'));
     if (field.isCode('i')) title.append(". ").append(field.getString('i'));
     if (considerL && field.isCode('l')) title.append(" (").append(field.getString('l')).append(")");
+    if (considerM && field.isCode('m')) title.append(" (").append(field.getString('m')).append(")");
 
     if (field.isCode('w'))
       language = Utils.intermarcExtractLang(field.getString('w'));

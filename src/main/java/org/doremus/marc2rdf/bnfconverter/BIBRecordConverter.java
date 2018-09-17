@@ -105,6 +105,9 @@ public class BIBRecordConverter {
 
       if (f22.titles.size() < 1)
         f22.setTitle(F22_SelfContainedExpression.parseTUMTitle(df, false, false));
+      if (isArrangment)
+        f22.addProperty(MUS.U71_has_uniform_title,
+          F22_SelfContainedExpression.parseTUMTitle(df, false, true, true));
 
       F14_IndividualWork f14 = new F14_IndividualWork(identifier);
       f28 = new F28_ExpressionCreation(record, identifier, isSketch, isArrangment);
@@ -128,8 +131,8 @@ public class BIBRecordConverter {
 
       f14.add(f22);
       f28.add(f22).add(f14);
-      f15.add(f14).add(f22);
-      this.model.add(f15.getModel());
+      f15.add(f14);
+      this.model.add(f15.getModel()).add(f28.getModel());
     }
 
     f22.extendFromMUS(record);

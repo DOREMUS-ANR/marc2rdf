@@ -1,6 +1,5 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.Resource;
 import org.doremus.marc2rdf.main.DoremusResource;
 import org.doremus.marc2rdf.main.Utils;
 import org.doremus.marc2rdf.marcparser.Record;
@@ -50,8 +49,8 @@ public class M6_Casting extends DoremusResource {
   }
 
   private void addCastingDetail(M23_Casting_Detail detail) {
-    Resource M23CastingDetail = detail.asResource(this.uri + "/detail/" + ++detailNum);
-    this.addProperty(MUS.U23_has_casting_detail, M23CastingDetail);
+    detail.setUri(this.uri + "/detail/" + ++detailNum);
+    this.addProperty(MUS.U23_has_casting_detail, detail);
     this.containsInfo = true;
   }
 

@@ -1,6 +1,5 @@
 package org.doremus.marc2rdf.bnfconverter;
 
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.doremus.marc2rdf.main.Artist;
@@ -12,7 +11,6 @@ import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.marc2rdf.marcparser.Record;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.FRBROO;
-import org.doremus.ontology.MUS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,6 @@ public class F28_ExpressionCreation extends DoremusResource {
   public static final String DATE_REGEX_1 = "Dates? de composition.+";
   public static final String DATE_REGEX_2 = ".*\\(.*comp.*\\)";
   private List<Person> composers;
-  private int composerCount;
   public F22_SelfContainedExpression expression;
   private F14_IndividualWork work;
   private String derivation;
@@ -47,8 +44,6 @@ public class F28_ExpressionCreation extends DoremusResource {
     this(identifier);
     this.record = record;
 
-    this.composerCount = 0;
-
     if (record.isTUM()) parseTum();
     else if (record.isBIB())
       if (identifier.endsWith("t")) parseBIB(); // creation of aggregation work
@@ -59,8 +54,9 @@ public class F28_ExpressionCreation extends DoremusResource {
   private void parseANL(boolean isSketch, boolean isArrangment) {
     // composers and derivation type
     List<DataField> fields = new ArrayList<>();
-    if (record.isDAV() || isArrangment || !isSketch) record.getDatafieldsByCode(700);
+    if (record.isDAV() || isArrangment || !isSketch) fields.addAll(record.getDatafieldsByCode(700));
     if (record.isMUS() && (isSketch || !isArrangment)) fields.addAll(record.getDatafieldsByCode(100));
+
     fields.stream()
       .map(Person::fromIntermarcField).filter(Objects::nonNull)
       .forEach(person -> {
@@ -232,19 +228,6 @@ public class F28_ExpressionCreation extends DoremusResource {
 
   public List<Person> getComposers() {
     return this.composers;
-  }
-
-  public void addActivity(Person actor, String role) {
-    if (actor == null) return;
-    Resource activity = model.createResource(this.uri + "/activity/" + ++composerCount)
-      .addProperty(RDF.type, CIDOC.E7_Activity)
-      .addProperty(CIDOC.P14_carried_out_by, actor.asResource());
-
-    if (role != null)
-      activity.addProperty(MUS.U31_had_function, model.createLiteral(role, "fr"));
-
-    this.addProperty(CIDOC.P9_consists_of, activity);
-    model.add(actor.getModel());
   }
 
   public List<String> getMotivations() {

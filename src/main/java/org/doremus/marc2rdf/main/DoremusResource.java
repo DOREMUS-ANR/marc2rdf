@@ -134,7 +134,7 @@ public abstract class DoremusResource {
   }
 
   public void setUri(String uri) {
-    if (this.uri == null || uri.equals(this.uri)) return;
+    if (uri == null || uri.equals(this.uri)) return;
 
     this.uri = uri;
     if (this.resource != null)
