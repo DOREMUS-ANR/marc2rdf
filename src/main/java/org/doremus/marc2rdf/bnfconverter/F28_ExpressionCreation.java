@@ -135,6 +135,7 @@ public class F28_ExpressionCreation extends DoremusResource {
           break;
       }
 
+      if(function==null) continue;
       addActivity(author, function);
     }
 

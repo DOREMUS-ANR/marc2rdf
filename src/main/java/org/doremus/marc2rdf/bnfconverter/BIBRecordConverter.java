@@ -232,10 +232,11 @@ public class BIBRecordConverter {
 
     int i = 0;
 
-    for (DataField df331 : record.getDatafieldsByCode(331)) {
-      M24_Track track = new M24_Track(record.getIdentifier() + ++i, df331);
-      conv.tracks.add(track);
-    }
+    if (record.isDAV())
+      for (DataField df331 : record.getDatafieldsByCode(331)) {
+        M24_Track track = new M24_Track(record.getIdentifier() + ++i, df331);
+        conv.tracks.add(track);
+      }
 
   }
 
