@@ -55,34 +55,31 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   }
 
   private void convertUNI44() {
-    for (String title : getTitle())
-      this.resource.addProperty(CIDOC.P102_has_title, title).addProperty(RDFS.label, title);
+    getTitle().forEach(title -> this.addProperty(CIDOC.P102_has_title, title).addProperty(RDFS.label, title));
   }
 
   private void convertUNI100(List<String> composers) {
-    this.resource.addProperty(DC.identifier, identifier);
-    this.resource.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier));
+    this.addProperty(DC.identifier, identifier);
+    this.addProperty(OWL.sameAs, model.createResource("http://digital.philharmoniedeparis.fr/doc/CIMU/" + identifier));
 
     this.opusMemory = new ArrayList<>();
 
     boolean titleFound = false;
     for (String title : getTitle()) {
-      this.resource.addProperty(CIDOC.P102_has_title, title)
-        .addProperty(RDFS.label, title);
+      this.addProperty(CIDOC.P102_has_title, title).addProperty(RDFS.label, title);
       titleFound = true;
     }
 
-    for (String subTitle : getSubTitle())
-      this.resource.addProperty(MUS.U67_has_subtitle, subTitle);
+    for (String subTitle : getSubTitle()) this.addProperty(MUS.U67_has_subtitle, subTitle);
 
     for (String uniTitle : getUniformTitle("144")) {
-      this.resource.addProperty(MUS.U71_has_uniform_title, uniTitle);
+      this.addProperty(MUS.U71_has_uniform_title, uniTitle);
       if (!titleFound) this.resource.addProperty(RDFS.label, uniTitle);
       titleFound = true;
     }
 
     for (String uniTitle : getUniformTitle("444")) {
-      this.resource.addProperty(MUS.U68_has_variant_title, uniTitle);
+      this.addProperty(MUS.U68_has_variant_title, uniTitle);
       if (!titleFound) this.resource.addProperty(RDFS.label, uniTitle);
       titleFound = true;
     }
@@ -125,7 +122,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     for (String key : getKey()) {
       key = key.replaceFirst("\\.$", "").trim(); //remove final dot
       String keyUri = this.uri + "/key/" + Junidecode.unidecode(key).toLowerCase().replaceAll(" ", "_");
-      this.resource.addProperty(MUS.U11_has_key,
+      this.addProperty(MUS.U11_has_key,
         model.createResource(keyUri)
           .addProperty(RDF.type, MUS.M4_Key)
           .addProperty(RDFS.label, key, "fr")
@@ -136,7 +133,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     List<String> genres = getGenre();
     for (String genre : genres) {
       Literal label = model.createLiteral(genre, "fr");
-      this.resource.addProperty(MUS.U12_has_genre, model.createResource()
+      this.addProperty(MUS.U12_has_genre, model.createResource()
         .addProperty(RDF.type, MUS.M5_Genre)
         .addProperty(RDFS.label, label)
         .addProperty(CIDOC.P1_is_identified_by, label)
@@ -145,23 +142,19 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
     for (String orderNumber : getOrderNumber()) {
       List<Integer> range = Utils.toRange(orderNumber);
-      if (range == null)
-        this.resource.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNumber));
+      if (range == null) this.addProperty(MUS.U10_has_order_number, Utils.toSafeNumLiteral(orderNumber));
       else {
-        for (int i : range) this.resource.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
+        for (int i : range) this.addProperty(MUS.U10_has_order_number, model.createTypedLiteral(i));
       }
     }
 
     int castingNum = 0;
 
     for (String castingString : getCasting()) {
-      castingString = castingString.trim()
-        .replaceFirst("\\.$", "");
+      castingString = castingString.trim().replaceFirst("\\.$", "");
       String castingUri = this.uri + "/casting/" + (++castingNum);
       PM6_Casting M6Casting = new PM6_Casting(castingString, castingUri);
-
-      this.resource.addProperty(MUS.U13_has_casting, M6Casting.asResource());
-      this.model.add(M6Casting.getModel());
+      this.addProperty(MUS.U13_has_casting, M6Casting);
     }
 
   }
@@ -196,7 +189,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     else if (catalogName != null)
       M1CatalogStatement.addProperty(MUS.U40_has_catalogue_name, catalogName);
 
-    this.resource.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
+    this.addProperty(MUS.U16_has_catalogue_statement, M1CatalogStatement);
 
     if (catalogNum == null) return;
 
@@ -238,7 +231,7 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     if (opusData.isEmpty()) {
       // it means that it is only written "op. posthume" or similar
       // add it as a note to F22
-      this.resource.addProperty(CIDOC.P3_has_note, opus);
+      this.addNote(opus);
       return;
     }
 
@@ -284,12 +277,12 @@ public class PF22_SelfContainedExpression extends DoremusResource {
         range.forEach(i -> M2OpusStatement.addProperty(MUS.U43_has_opus_subnumber, model.createTypedLiteral(i)));
     }
 
-    this.resource.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
+    this.addProperty(MUS.U17_has_opus_statement, M2OpusStatement);
   }
 
 
   public PF22_SelfContainedExpression add(PF50_ControlledAccessPoint accessPoint) {
-    this.resource.addProperty(CIDOC.P1_is_identified_by, accessPoint.asResource());
+    this.addProperty(CIDOC.P1_is_identified_by, accessPoint);
     return this;
   }
 
@@ -300,6 +293,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     switch (record.getType()) {
       case "UNI:100":
       case "UNI:44":
+      case "UNI:4":
+      case "UNI:42":
       case "UNI:2":
         titleList = record.getDatafieldsByCode("200", 'a');
         break;
@@ -388,15 +383,11 @@ public class PF22_SelfContainedExpression extends DoremusResource {
 
   private List<String> getCatalog() {
     if (!record.isType("AIC:14")) return new ArrayList<>();
-
-
     List<String> catalogFields = record.getDatafieldsByCode("444", 'k');
     catalogFields.addAll(record.getDatafieldsByCode("144", 'k'));
 
-    return catalogFields.stream()
-      .map(String::trim)
-      .distinct()
-      .collect(Collectors.toList());
+    return catalogFields.stream().map(String::trim)
+      .distinct().collect(Collectors.toList());
   }
 
   private List<String> getOpus() {
@@ -430,11 +421,8 @@ public class PF22_SelfContainedExpression extends DoremusResource {
     fields.addAll(record.getDatafieldsByCode("144", 'n'));
 
     return fields.stream()
-      .map(orderNumber ->
-        orderNumber.replaceAll("(?i)n(?:o| ?°|r\\.)s?", "").trim()
-      )
-      .distinct()
-      .collect(Collectors.toList());
+      .map(orderNumber -> orderNumber.replaceAll("(?i)n(?:o| ?°|r\\.)s?", "").trim())
+      .distinct().collect(Collectors.toList());
   }
 
   private List<String> getGenre() {
@@ -451,17 +439,17 @@ public class PF22_SelfContainedExpression extends DoremusResource {
   }
 
   public PF22_SelfContainedExpression add(PF30_PublicationEvent f30) {
-    this.resource.addProperty(MUS.U4_had_princeps_publication, f30.asResource());
+    this.addProperty(MUS.U4_had_princeps_publication, f30);
     return this;
   }
 
   public PF22_SelfContainedExpression addPremiere(PM42_PerformedExpressionCreation m42) {
-    this.resource.addProperty(MUS.U5_had_premiere, m42.getMainPerformance());
+    this.addProperty(MUS.U5_had_premiere, m42.getMainPerformance());
     return this;
   }
 
   public PF22_SelfContainedExpression add(PF22_SelfContainedExpression child) {
-    this.resource.addProperty(FRBROO.R5_has_component, child.asResource());
+    this.addProperty(FRBROO.R5_has_component, child);
     return this;
   }
 

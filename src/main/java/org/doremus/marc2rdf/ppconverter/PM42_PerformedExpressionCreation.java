@@ -610,11 +610,9 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
   }
 
   public PM42_PerformedExpressionCreation add(PF22_SelfContainedExpression f22) {
-    this.M43_Performed_Expression.asResource()
-      .addProperty(MUS.U54_is_performed_expression_of, f22.asResource());
+    this.M43_Performed_Expression.addProperty(MUS.U54_is_performed_expression_of, f22);
     if (this.F31_Performance != null)
-      this.F31_Performance.asResource()
-        .addProperty(FRBROO.R66_included_performed_version_of, f22.asResource());
+      this.F31_Performance.addProperty(FRBROO.R66_included_performed_version_of, f22);
 
     this.model.add(M43_Performed_Expression.getModel())
       .add(F31_Performance.getModel());
@@ -622,13 +620,12 @@ public class PM42_PerformedExpressionCreation extends DoremusResource {
     return this;
   }
 
-
   public boolean isPremiere() {
     return isPremiere;
   }
 
-  public Resource getMainPerformance() {
-    return this.F31_Performance.asResource();
+  public PF31_Performance getMainPerformance() {
+    return this.F31_Performance;
   }
 
   void linkWorkById(String workIdentifier) {
