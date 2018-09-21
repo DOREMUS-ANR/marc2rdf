@@ -18,6 +18,7 @@ import org.doremus.string2vocabulary.VocabularyManager;
 import org.pmw.tinylog.Logger;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +36,8 @@ public abstract class DoremusResource {
   protected String identifier;
   private Resource publisher;
 
+  private List<String> activitiesCache;
+
   public DoremusResource() {
     // do nothing, enables customisation for child class
     this.model = ModelFactory.createDefaultModel();
@@ -49,6 +52,8 @@ public abstract class DoremusResource {
       this.publisher = PP2RDF.PHILHARMONIE;
     } else
       this.publisher = BNF2RDF.BnF;
+
+    activitiesCache = new ArrayList<>();
   }
 
   public DoremusResource(String identifier) {
@@ -222,6 +227,9 @@ public abstract class DoremusResource {
   public void addActivity(Artist agent, String function) {
     if (agent == null) return;
 
+    String cacheId = agent.getFullName() + function;
+    if (activitiesCache.contains(cacheId)) return;
+
     Resource activity = model.createResource(this.uri + "/activity/" + ++activityCount)
       .addProperty(RDF.type, CIDOC.E7_Activity)
       .addProperty(MUS.U31_had_function, function)
@@ -229,6 +237,7 @@ public abstract class DoremusResource {
 
     this.addProperty(CIDOC.P9_consists_of, activity);
     this.model.add(agent.getModel());
+    activitiesCache.add(cacheId);
   }
 
   protected void addComplexIdentifier(String identifier, String type) {
