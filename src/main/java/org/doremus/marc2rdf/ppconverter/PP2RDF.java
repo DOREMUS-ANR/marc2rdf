@@ -66,8 +66,9 @@ public class PP2RDF extends AbstractConverter {
     for (Record r : reader.getRecords()) {
       // Skip TUMs (AIC:14). We will convert them contextually to UNI:100
       if (r.isType("AIC:14")) continue;
+      if (!r.isType("UNI:2")) continue;
 
-//      if (Integer.parseInt(r.getIdentifier()) < 1067688) return null;
+//      if (Integer.parseInt(r.getIdentifier()) < 969224) return null;
 
       RecordConverter mainRecord;
       try {

@@ -69,7 +69,7 @@ public class PF31_Performance extends DoremusResource {
       if (note.contains("sans public")) withPublic = false;
 
     PM42_PerformedExpressionCreation.parseArtist(record, this.uri)
-      .forEach(ip -> this.addProperty(CIDOC.P9_consists_of, ip.asResource()));
+      .forEach(ip -> this.addProperty(CIDOC.P9_consists_of, ip));
 
     this.addProperty(MUS.U205_has_cast_detail, PM42_PerformedExpressionCreation.getCastDetail(record));
 
