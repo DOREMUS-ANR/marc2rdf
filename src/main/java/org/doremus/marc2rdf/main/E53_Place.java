@@ -36,6 +36,7 @@ public class E53_Place extends DoremusResource {
       uri = GeoNames.toURI(tp.getGeoNameId());
       this.name = tp.getName();
     } else {
+      System.out.println(rawString);
       try {
         uri = ConstructURI.build("E53_Place", rawString).toString();
       } catch (URISyntaxException e) {
@@ -84,6 +85,7 @@ public class E53_Place extends DoremusResource {
       .replaceAll("Tex[.)]", "Texas")
       .replaceAll("Conn[.)],?", "Connecticut")
       .replaceAll("Calif[.)],?", "California")
+      .replaceAll("Del[.)],?", "Delaware")
       .replaceAll("Okla?[.)]", "Oklahoma")
       .replaceAll("Mich[.)]", "Michigan")
       .replaceAll("Fla[.)]", "Florida")
@@ -92,8 +94,8 @@ public class E53_Place extends DoremusResource {
       .replaceAll("Tenn?[.)]", "Tennessee")
       .replaceAll("Ariz[.)]", "Arizona")
       .replaceAll("Ark?[.)]", "Arkansas")
-      .replaceAll("Va[.)]", "Virginia")
       .replaceAll("W\\. ?Va?[.)]?", "West Virginia")
+      .replaceAll("Va[.)]", "Virginia")
       .replaceAll("Ala[.)]", "Alabama")
       .replaceAll("Kent[.)]", "Kentucky")
       .replaceAll("Colo[.)]", "Colorado")
@@ -105,8 +107,9 @@ public class E53_Place extends DoremusResource {
       .replaceAll("Minn[.)]", "Minnesota")
       .replaceAll("Miss[.)]", "Mississipi")
       .replaceAll("Mis[.)]", "Missouri")
-      .replaceAll("Wis[.)]", "Wisconsin")
+      .replaceAll("Wisc?[.)]", "Wisconsin")
       .replaceAll("Ind[.)]", "Indiana")
+      .replaceAll("Mont\\.$", "Montana")
       .replaceAll("I[lI]l[.)]", "Illinois")
       .replaceAll("Ont[.)]", "Ontario")
       .replaceAll("Neb[.)]", "Nebraska")
@@ -118,6 +121,7 @@ public class E53_Place extends DoremusResource {
       .replaceAll("N\\. ?C[.)]", "North Carolina")
       .replaceAll("S\\. ?C[.)]", "South Carolina")
       .replaceAll("B\\. ?C[.)]", "British Columbia")
+      .replaceAll("C\\.[ -]?B[.)]", "British Columbia")
       .replaceAll("N\\. ?M[.)]", "New Mexico")
       .replaceAll("N\\. ?H[.)]", "New Hampshire")
       .replaceAll("N\\. ?B[.)]", "New Brunswick")

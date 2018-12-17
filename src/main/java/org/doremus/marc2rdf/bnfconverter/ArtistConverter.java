@@ -125,7 +125,10 @@ public class ArtistConverter {
     if (df == null) return null;
 
     char code = birth ? 'a' : 'b';
-    return df.getString(code);
+    String value = df.getString(code);
+    if (value == null) return null;
+    if (value.startsWith("Nom complet")) return null;
+    return value.replaceAll("Née? (à|au) ", "");
   }
 
 
@@ -139,7 +142,6 @@ public class ArtistConverter {
       .map(Person::fromIntermarcField)
       .collect(Collectors.toList());
   }
-
 
 
   private static List<String[]> getAlternateNames(Record record) {

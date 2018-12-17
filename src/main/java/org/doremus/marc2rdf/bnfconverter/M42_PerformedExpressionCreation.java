@@ -218,7 +218,7 @@ public class M42_PerformedExpressionCreation extends DoremusResource {
         }
         String post = parts.length > 1 ? parts[1].trim() : "";
 
-        Pattern pC = Pattern.compile("(?:sous la dir(?:\\.|ection) d['eu] ?|dir\\. : )([^)]+)");
+        Pattern pC = Pattern.compile("(?:sous la (?:dir(?:\\.|ection)|conduite) d['eu] ?|dir\\. : )([^)]+)");
         Matcher mC = pC.matcher(post);
         if (mC.find()) {
           conductor = mC.group(1);

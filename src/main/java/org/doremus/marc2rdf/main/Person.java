@@ -1,5 +1,6 @@
 package org.doremus.marc2rdf.main;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -12,7 +13,6 @@ import org.doremus.marc2rdf.bnfconverter.FunctionMap;
 import org.doremus.marc2rdf.marcparser.DataField;
 import org.doremus.ontology.CIDOC;
 import org.doremus.ontology.Schema;
-import org.geonames.Toponym;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -103,16 +103,12 @@ public class Person extends Artist {
   }
 
   public void setBirthPlace(String place) {
-    if (place == null) return;
+    if (place == null || StringUtils.isBlank(place) ||
+      place.replaceAll("\\.", "").equalsIgnoreCase("sl")) return;
     this.birthPlace = place;
     if (resource == null) return;
 
-    Toponym place_toponym = GeoNames.query(place);
-    E53_Place placeEntity = (place_toponym == null) ? new E53_Place(place) : new E53_Place(place);
-
-    this.resource.addProperty(Schema.birthPlace, placeEntity.asResource());
-    this.model.add(placeEntity.getModel());
-
+    this.addProperty(Schema.birthPlace, new E53_Place(place));
   }
 
   public void setDeathPlace(String place) {
@@ -120,19 +116,19 @@ public class Person extends Artist {
     this.deathPlace = place;
     if (resource == null) return;
 
-    // if not country specified
-    String country = null;
-    if (this.birthPlace != null && !place.contains("(") && this.birthPlace.contains("(")) {
-      // add the one of the birth place
-      country = this.birthPlace.split("[()]")[1];
-    }
+//    // if not country specified
+//    String country = null;
+//    if (this.birthPlace != null && !place.contains("(") && this.birthPlace.contains("(")) {
+//      // add the one of the birth place only if it is 2 letters
+//      // or a known country
+//      String candidateCountry = this.birthPlace.split("[()]")[1];
+//      if (candidateCountry.length() == 2)
+//        country = candidateCountry;
+//      else  if (candidateCountry.equalsIgnoreCase("italie"))
+//        country = "it";
+//    }
 
-    Toponym place_toponym = GeoNames.query(place, country);
-    if (place_toponym == null) GeoNames.query(place);
-    E53_Place placeEntity = new E53_Place(place);
-
-    this.resource.addProperty(Schema.deathPlace, placeEntity.asResource());
-    this.model.add(placeEntity.getModel());
+    this.addProperty(Schema.deathPlace, new E53_Place(place));
   }
 
   public String getLang() {
